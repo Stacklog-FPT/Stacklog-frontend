@@ -1,0 +1,123 @@
+.check-task-by-all-container {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: 460px;
+  padding-bottom: 40px;
+  overflow-y: auto;
+  overflow-x: auto;
+  display: block;
+}
+
+.check-task-by-all-content {
+  width: 100%;
+  padding-right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.check-task-by-all-content-member {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &-class {
+    select {
+      width: 314px;
+      height: auto;
+      background: none;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+      padding: 6px 10px;
+      appearance: none;
+      cursor: pointer;
+      background-image: url("../../../../assets/icon/arrow-down.png");
+      background-repeat: no-repeat;
+      background-position: 120px;
+      background-size: 15px 15px;
+
+      &::-ms-expand {
+        display: none;
+      }
+
+      &:hover {
+        color: #000;
+      }
+    }
+
+    position: relative;
+  }
+
+  &-student {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 164px;
+    height: auto;
+
+    ul {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      padding-left: 10px;
+      margin: 0;
+
+      li {
+        position: relative;
+        margin-left: -10px;
+        &:nth-child(n + 4):not(.extra-count) {
+          display: none;
+        }
+
+        img {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          border: 2px solid #fff;
+          object-fit: cover;
+        }
+      }
+    }
+  }
+
+  &-button-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-left: 5px;
+    img {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+.extra-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: #333;
+  font-size: 14px;
+  font-weight: bold;
+  border: 2px solid #fff;
+  margin-left: -10px;
+  z-index: 1;
+}
+
+.task-column-container {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  align-items: flex-start;
+}

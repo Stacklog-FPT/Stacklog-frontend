@@ -1,0 +1,103 @@
+$color-text: #ffffff;
+$-color-text-add: #545454;
+
+.column-container {
+  width: 260px;
+  height: auto;
+  max-height: auto;
+}
+
+.column {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prop-status {
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;
+  border-radius: 25px;
+
+  &-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+
+      img {
+        width: 10px;
+        height: 10px;
+      }
+
+      span {
+        line-height: 24px;
+        font-size: 16px;
+        font-weight: bold;
+        color: $color-text;
+      }
+    }
+
+    .prop-status-text-total-task {
+      line-height: 24px;
+      font-size: 16px;
+      font-weight: bold;
+      color: $color-text;
+    }
+  }
+
+  &-right {
+    img {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+  }
+}
+
+.column-task {
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.no-tasks {
+  display: none;
+}
+
+.btn-add-task {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 13px;
+  margin-right: 10px;
+  cursor: pointer;
+  i {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    font-size: 8px;
+    line-height: 21px;
+    cursor: pointer;
+  }
+  span {
+    display: flex;
+    align-items: center;
+    padding-right: 5px;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 21px;
+    cursor: pointer;
+  }
+}

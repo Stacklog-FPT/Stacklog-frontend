@@ -1,0 +1,71 @@
+$color-is-active: #000;
+$color-not-active: #8a8a8a;
+$border-is-active: #06d0a0;
+$border-not-active: #8a8a8a;
+
+.task-by-type {
+  display: flex;
+  align-items: start;
+  justify-content: start;
+
+  &-list {
+    width: 1072px;
+    height: 40px;
+    display: flex;
+    align-items: start;
+    margin: 0;
+    padding: 0;
+  }
+
+  &-element {
+    width: 268px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 10px;
+    margin: 0;
+    padding-left: 5px;
+    cursor: pointer;
+    border-bottom: 3px solid $border-not-active; 
+    transition: border-bottom 0.3s ease, transform 0.2s ease;
+    span {
+      font-size: 16px;
+      font-weight: medium;
+      line-height: 24px;
+      color: $color-not-active;
+      transition: color 0.3s ease, font-weight 0.3s ease; 
+    }
+
+    
+    &.active {
+      border-bottom: 3px solid $border-is-active; 
+      transform: scale(1.02); 
+      span {
+        color: $color-is-active;
+        font-weight: bold;
+      }
+    }
+
+    
+    i {
+      color: $color-not-active;
+      transition: color 0.3s ease; 
+    }
+
+    &.active i {
+      color: $color-is-active;
+    }
+
+   
+    &:hover {
+      transform: scale(1.02); 
+      span {
+        color: $color-is-active; 
+      }
+      i {
+        color: $color-is-active; 
+      }
+    }
+  }
+}

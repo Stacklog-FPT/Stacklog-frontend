@@ -1,0 +1,140 @@
+$back-ground-color-white: #ffffff;
+$color-text: #545454;
+$color-text-heading: #8a8a8a;
+$color-border: #c8cad4;
+$color-hover: #045745;
+
+.navbar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  width: 288px;
+  height: 1322px;
+  background-color: $back-ground-color-white;
+  box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.wrapper_navbar_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 120px;
+  border-bottom: 1px solid $color-border;
+  width: 100%;
+  padding: 20px 20px;
+
+  &_logo {
+    width: 139px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+  }
+
+  &_icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.nav-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 20px;
+  width: 100%;
+  height: auto;
+
+  &-text {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    color: $color-text;
+  }
+
+  i {
+    color: $color-text;
+  }
+
+  span {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: $color-text;
+  }
+}
+
+.navbar-dashboard,
+.navbar-support {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  padding: 8px 24px;
+  gap: 20px;
+  border-bottom: 1px solid $color-border;
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    margin: 0;
+    padding: 10px 20px;
+    width: 240px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    list-style: none;
+
+    &:hover {
+      background-color: $color-hover;
+
+      .nav-link {
+        color: $back-ground-color-white;
+
+        .nav-icon-container {
+          span,
+          i {
+            color: $back-ground-color-white;
+          }
+        }
+      }
+    }
+
+    // .nav-link {
+    //   display: flex;
+    //   align-items: center;
+    //   color: $color-text;
+
+    .nav-link.active {
+      background-color: $color-hover;
+
+      .nav-link {
+        color: $back-ground-color-white;
+
+        .nav-icon-container {
+          span,
+          i {
+            color: $back-ground-color-white;
+          }
+        }
+      }
+    }
+    // }
+  }
+
+  &-heading {
+    font-size: 14px;
+    color: $color-text-heading;
+    font-weight: bold;
+    line-height: 21px;
+    text-transform: uppercase;
+  }
+}

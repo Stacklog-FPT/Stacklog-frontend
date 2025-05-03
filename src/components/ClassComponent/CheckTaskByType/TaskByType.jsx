@@ -1,13 +1,14 @@
 import React from "react";
 import "./TaskByType.scss";
-const TaskByType = () => {
-  const [activeType, setActiveType] = React.useState("All");
+
+const TaskByType = ({ activeType, setActiveType }) => {
   const taskTypes = [
     { type: "All", icon: "fa-solid fa-globe" },
     { type: "By Status", icon: "fa-solid fa-chart-line" },
     { type: "Checklist", icon: "fa-solid fa-list" },
     { type: "My task", icon: "fa-solid fa-user" },
   ];
+
   return (
     <div className="task-by-type">
       <ul className="task-by-type-list">

@@ -66,10 +66,12 @@ $-color-text-add: #545454;
 
 .column-task {
   width: 100%;
+  min-height: 160px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  cursor: grab;
 }
 
 .no-tasks {
@@ -78,7 +80,7 @@ $-color-text-add: #545454;
 
 .btn-add-task {
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: start;
   gap: 13px;
   margin-right: 10px;
@@ -94,7 +96,7 @@ $-color-text-add: #545454;
   span {
     display: flex;
     align-items: center;
-    padding-right: 5px;
+    padding-right: 8px;
     font-weight: 500;
     font-size: 15px;
     line-height: 21px;

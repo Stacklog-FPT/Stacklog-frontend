@@ -17,6 +17,11 @@ $color-percent: #344054;
   background-size: cover, 20% 50%;
   background-position: bottom, right;
   background-repeat: no-repeat, no-repeat;
+  transition: transform 0.2s ease;
+}
+
+.task-container:hover {
+  cursor: grab;
 }
 
 .task-content {

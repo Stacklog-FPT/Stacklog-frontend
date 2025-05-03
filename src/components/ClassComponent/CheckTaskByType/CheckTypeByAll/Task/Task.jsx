@@ -4,12 +4,37 @@ import iconMore from "../../../../../assets/icon/task/iconMore.png";
 import iconDeadLine from "../../../../../assets/icon/task/iconDeadLine.png";
 import addButton from "../../../../../assets/icon/avatar_add_button.png";
 import iconDontKnow from "../../../../../assets/icon/task/iconDontKnow.png";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
 const Task = (props) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: props.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1, // Visual feedback during drag
+  };
+
   const visibleMembers = props.members.slice(0, 3);
   const extraCount = props.members.length - visibleMembers.length;
+
   return (
-    <div className="task-container">
-      <div className="task-content">  
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="task-container"
+    >
+      <div className="task-content">
         <div className="task-content-head">
           <span>{props.title}</span>
           <div className="task-content-head-icon">

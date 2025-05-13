@@ -11,8 +11,18 @@ $color-bg-bell: #da4343;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: $color-background-white;
   border-radius: 20px;
+
+  &.input-light {
+    background-color: $color-background-white;
+  }
+
+  &.input-dark {
+    background-color: #000000;
+    i {
+      color: #fff;
+    }
+  }
 
   &-home {
     width: 24px;
@@ -24,30 +34,60 @@ $color-bg-bell: #da4343;
     display: flex;
     align-items: center;
 
-    input[type="text"] {
-      width: 800px;
-      height: 40px;
-      padding: 8px 8px 8px 40px;
-      background-color: $color-background-white;
-      border: 1px solid $color-border-input;
-      border-radius: 8px;
-      font-size: 16px;
+    &.light {
+      input[type="text"] {
+        width: 800px;
+        height: 40px;
+        padding: 8px 8px 8px 40px;
+        background-color: $color-background-white;
+        border: 1px solid $color-border-input;
+        border-radius: 8px;
+        font-size: 16px;
 
-      &:focus {
-        outline: none;
-        border-color: $color-background-white;
-        background-color: $color-border-input;
+        &:focus {
+          outline: none;
+          border-color: $color-background-white;
+          background-color: $color-border-input;
+        }
+      }
+
+      .fa-magnifying-glass {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+        font-size: 18px;
+        pointer-events: none;
       }
     }
 
-    .fa-magnifying-glass {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #666;
-      font-size: 18px;
-      pointer-events: none;
+    &.dark {
+      input[type="text"] {
+        width: 800px;
+        height: 40px;
+        padding: 8px 8px 8px 40px;
+        background-color: #000000;
+        border: 1px solid #666;
+        border-radius: 8px;
+        font-size: 16px;
+
+        &:focus {
+          outline: none;
+          border-color: #000000;
+          background-color: $color-border-input;
+        }
+      }
+
+      .fa-magnifying-glass {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+        font-size: 18px;
+        pointer-events: none;
+      }
     }
   }
 }
@@ -81,7 +121,6 @@ $color-bg-bell: #da4343;
       color: #fff;
       padding: 10px;
     }
-
 
     &-total {
       background-color: $color-bg-bell;

@@ -3,22 +3,30 @@ import { Link } from "react-router-dom";
 import "./InputSearch.scss";
 import ButtonMode from "../ButtonMode/ButtonMode";
 import { AnnouncementContext } from "../../context/AnnoucementContext";
+import { ColorModeContext } from "../../context/ColorModeContext";
 
 const InputSearch = () => {
   const [searchItem, setSearchItem] = useState("");
   const { isAnnouncementVisible } = useContext(AnnouncementContext);
   const { toggleAnnouncement } = useContext(AnnouncementContext);
+  const { mode } = useContext(ColorModeContext);
   const handleChange = (e) => {
     setSearchItem(e.target.value);
   };
   return (
-    <div className="input-search">
+    <div
+      className={`input-search ${
+        mode === "light" ? "input-light" : "input-dark"
+      }`}
+    >
       <div className="input-search-home">
         <Link>
           <i className="fa-solid fa-house"></i>
         </Link>
       </div>
-      <div className="input-search-field">
+      <div
+        className={`input-search-field ${mode === "light" ? "light" : "dark"}`}
+      >
         <i className="fa-solid fa-magnifying-glass"></i>
         <input
           type="text"

@@ -22,7 +22,11 @@ const ButtonMode = () => {
   if (!mode) return null;
 
   return (
-    <div className="input-search-user-darkmode">
+    <div
+      className={`input-search-user-darkmode  ${
+        mode === "light" ? "light" : "dark"
+      }`}
+    >
       <i
         className={`fa-solid fa-sun ${mode === "light" ? "active" : ""}`}
         onClick={handleToggleMode}

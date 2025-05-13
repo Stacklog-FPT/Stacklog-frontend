@@ -11,11 +11,12 @@ $color-hover: #045745;
   justify-content: start;
   width: 288px;
   height: 1322px;
-  .light {
-    background-color: $back-ground-color-white;
+
+  &.nav-light {
+    background-color: #ffffff;
     box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
   }
-  .dark {
+  &.nav-dark {
     background-color: #000;
     box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
     color: $back-ground-color-white;

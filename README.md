@@ -10,5 +10,11 @@ Database: MongoDB
 Routes: Express
 MERN Stack
 
+## Libraries
+Axios
+TailwindCss
+Scss
+
 ## About Tool
 - Vite
+

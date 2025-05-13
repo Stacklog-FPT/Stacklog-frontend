@@ -5,16 +5,18 @@ import "./styles/main.scss";
 import App from "./App.jsx";
 import theme from "./theme.js";
 import { CssBaseline } from "@mui/material";
+import { AnnouncementProvider } from "./context/AnnoucementContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <CssVarsProvider
-      theme={theme}
-      colorSchemeSelector=".mui-mode"
-      defaultMode="light"
-    >
-      {/* <CssBaseline /> */}
-      <App />
-    </CssVarsProvider>
+    <AnnouncementProvider>
+      <CssVarsProvider
+        theme={theme}
+        colorSchemeSelector=".mui-mode"
+        defaultMode="light"
+      >
+        <App />
+      </CssVarsProvider>
+    </AnnouncementProvider>
   </StrictMode>
 );

@@ -6,11 +6,9 @@ import logo from "../../assets/logo-login.png";
 
 const LoginPage = () => {
   const handleGoogleSuccess = (credentialResponse) => {
-    console.log("Google Login Success:", credentialResponse);
   };
 
   const handleGoogleFailure = () => {
-    console.log("Google Login Failed");
   };
 
   return (

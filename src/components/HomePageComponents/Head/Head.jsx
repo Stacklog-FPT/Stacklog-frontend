@@ -48,8 +48,6 @@ const Head = () => {
       return "Good Night";
     }
   };
-  console.log(`${dayOfWeeks}, ${month} ${date}`);
-  console.log(`${getCurrentSession()}, Lê Văn Lu`);
   return (
     <div className="head-container">
       <div className="head-container-left">

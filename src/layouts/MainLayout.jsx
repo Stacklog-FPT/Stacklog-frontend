@@ -9,7 +9,8 @@ import { AnnouncementContext } from "../context/AnnoucementContext";
 const MainLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
   const { isAnnouncementVisible } = useContext(AnnouncementContext);
-  console.log("from mainlayout: ", isAnnouncementVisible);
+  const someState = false;
+  console.log("from mainlayout:", someState);
   return (
     <div className="layout">
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />

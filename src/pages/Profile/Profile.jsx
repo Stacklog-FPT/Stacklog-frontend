@@ -31,7 +31,6 @@ const Profile = () => {
   const toggleEdit = () => {
     setIsEditing((prev) => !prev);
     if (isEditing) {
-      console.log("Profile updated:", profileData);
     }
   };
 

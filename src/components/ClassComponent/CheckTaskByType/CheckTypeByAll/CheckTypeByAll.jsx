@@ -9,14 +9,12 @@ import { useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
-  console.log("droppableCollisions:", droppableCollisions);
 
   if (droppableCollisions.length > 0) {
     return droppableCollisions;
   }
 
   const sortableCollisions = closestCorners(args) || [];
-  console.log("sortableCollisions:", sortableCollisions);
 
   return sortableCollisions.length > 0 ? sortableCollisions : null;
 };
@@ -142,24 +140,14 @@ const CheckTypeByAll = () => {
     const activeTask = tasks.find((task) => task.id === activeId);
     if (!activeTask) return;
 
-    // Debug log
-    console.log({
-      activeId,
-      overId: over.id,
-      overData: over.data.current,
-      activeColumn,
-    });
-
     let updatedTasks = [...tasks];
     const activeIndex = tasks.findIndex((task) => task.id === activeId);
 
-    // Kiểm tra xem có thả vào khu vực droppable của cột không
     const droppableId = over.id;
     const isOverDroppable = droppableId.startsWith("droppable-");
     const isOverTask = tasks.some((task) => task.id === over.id);
 
     if (isOverDroppable || activeColumn) {
-      // Thả vào cột (bao gồm cột rỗng)
       const targetStatus =
         activeColumn || droppableId.replace("droppable-", "");
       const targetTasks = tasks.filter(

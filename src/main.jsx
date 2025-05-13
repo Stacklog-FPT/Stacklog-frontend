@@ -1,22 +1,19 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 import "./styles/main.scss";
 import App from "./App.jsx";
-import theme from "./theme.js";
-import { CssBaseline } from "@mui/material";
+import theme from "./theme.jsx";
 import { AnnouncementProvider } from "./context/AnnoucementContext.jsx";
+import ColorModeProvider from "./context/ColorModeContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AnnouncementProvider>
-      <CssVarsProvider
-        theme={theme}
-        colorSchemeSelector=".mui-mode"
-        defaultMode="light"
-      >
+      <ColorModeProvider>
         <App />
-      </CssVarsProvider>
+      </ColorModeProvider>
     </AnnouncementProvider>
   </StrictMode>
 );

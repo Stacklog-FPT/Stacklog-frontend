@@ -1,22 +1,20 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import "./ButtonMode.scss";
-import { useColorScheme } from "@mui/material/styles";
+import { ColorModeContext } from "../../context/ColorModeContext";
 
 const ButtonMode = () => {
-  const { mode, setMode } = useColorScheme();
-
-  console.log("Current mode:", mode);
+  const { mode, toggleMode } = useContext(ColorModeContext);
 
   useEffect(() => {
     const savedMode = localStorage.getItem("theme");
     if (savedMode && savedMode !== mode) {
-      setMode(savedMode);
+      toggleMode(savedMode);
     }
-  }, [setMode, mode]);
+  }, [mode, toggleMode]);
 
   const handleToggleMode = () => {
     const newMode = mode === "light" ? "dark" : "light";
-    setMode(newMode);
+    toggleMode(newMode);
     localStorage.setItem("theme", newMode);
     console.log("Toggled to:", newMode);
   };

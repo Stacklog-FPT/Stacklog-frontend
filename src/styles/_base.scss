@@ -1,4 +1,19 @@
 $color-green-default: #045745;
+
+.light {
+  --bg-color: #f9f9f9;
+  --text-color: #333;
+  --primary-color: #045745;
+  --secondary-color: #0288d1;
+}
+
+.dark {
+  --bg-color: #1a1a1a;
+  --text-color: #e0e0e0;
+  --primary-color: #045745;
+  --secondary-color: #4fc3f7;
+}
+
 *,
 *::before,
 *::after {
@@ -7,6 +22,9 @@ $color-green-default: #045745;
   box-sizing: border-box;
 }
 body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: "Roboto", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

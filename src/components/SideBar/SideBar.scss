@@ -11,8 +11,15 @@ $color-hover: #045745;
   justify-content: start;
   width: 288px;
   height: 1322px;
-  background-color: $back-ground-color-white;
-  box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
+  .light {
+    background-color: $back-ground-color-white;
+    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
+  }
+  .dark {
+    background-color: #000;
+    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
+    color: $back-ground-color-white;
+  }
 }
 
 .wrapper_navbar_header {

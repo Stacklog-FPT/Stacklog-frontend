@@ -4,7 +4,7 @@ import "./SideBar.scss";
 import sideBarIcon from "../../assets/icon/sidebaricon/Side-Bar-Icon.png";
 import { Link, NavLink } from "react-router-dom";
 
-const SideBar = ({ isOpen, setIsOpen }) => {
+const SideBar = ({ isOpen, setIsOpen, mode }) => {
   const dashBoardItems = [
     { name: "Home", path: "/", icon: "fa-solid fa-house" },
     { name: "Class", path: "/class", icon: "fa-solid fa-users" },
@@ -18,7 +18,11 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   ];
 
   return (
-    <div className={`navbar-container ${isOpen ? "open" : "close"}`}>
+    <div
+      className={`navbar-container ${isOpen ? "open" : "close"} ${
+        mode ? "light" : "dark"
+      } `}
+    >
       <div className="wrapper_navbar">
         <Link to="/">
           <div className="wrapper_navbar_header">

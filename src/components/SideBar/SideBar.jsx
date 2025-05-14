@@ -1,7 +1,8 @@
-import React from "react";
 import logo from "../../assets/main-logo.png";
 import "./SideBar.scss";
 import sideBarIcon from "../../assets/icon/sidebaricon/Side-Bar-Icon.png";
+import logoDark from "../../assets/darkMode/logo-darkmode.png";
+import sideBarDark from "../../assets/darkMode/sidebar-dark-mode.png";
 import { Link, NavLink } from "react-router-dom";
 
 const SideBar = ({ isOpen, setIsOpen, mode }) => {
@@ -26,21 +27,40 @@ const SideBar = ({ isOpen, setIsOpen, mode }) => {
       <div className="wrapper_navbar">
         <Link to="/">
           <div className="wrapper_navbar_header">
-            <img
-              src={logo}
-              className="wrapper_navbar_header_logo"
-              alt="Logo web"
-            />
-            <img
-              src={sideBarIcon}
-              alt="Sidebar icon"
-              className="wrapper_navbar_header_icon"
-            />
+            {mode === "light" ? (
+              <>
+                <img
+                  src={logo}
+                  className="wrapper_navbar_header_logo"
+                  alt="Logo web"
+                />
+                <img
+                  src={sideBarIcon}
+                  alt="Sidebar icon"
+                  className="wrapper_navbar_header_icon"
+                />
+              </>
+            ) : (
+              <>
+                <img
+                  src={logoDark}
+                  className="wrapper_navbar_header_logo"
+                  alt="Logo web"
+                  width="1000px"
+                  height="20px"
+                />
+                <img
+                  src={sideBarDark}
+                  alt="Sidebar icon"
+                  className="wrapper_navbar_header_icon"
+                />
+              </>
+            )}
           </div>
         </Link>
 
         {/* DashBoard */}
-        <nav className="navbar-dashboard">
+        <nav className={`navbar-dashboard`}>
           <h2 className="navbar-dashboard-heading">DashBoard</h2>
           <ul>
             {dashBoardItems.map((item, index) => (

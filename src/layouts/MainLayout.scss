@@ -10,9 +10,15 @@ $color-primary: #045745;
     flex: 1;
     padding: 20px;
     transition: margin-left 0.3s ease;
+    overflow-y: auto;
+    overflow-x: auto;
+    min-height: 100vh;
+    background-color: $color-html;
 
     .main-content-area {
       margin-top: 20px;
+      min-height: calc(100% - 20px);
+      overflow: inherit;
     }
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./CheckTypeByAll.scss";
 import avatar_add_button from "../../../../assets/icon/avatar_add_button.png";
 import iconFilter from "../../../../assets/icon/task/iconFilter.png";
@@ -6,6 +6,7 @@ import iconMore from "../../../../assets/icon/task/iconMore.png";
 import Column from "./Column/Column";
 import { DndContext, rectIntersection, closestCorners } from "@dnd-kit/core";
 import { useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
+import AddTask from "../../../Task/AddTask/AddTask";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -20,6 +21,8 @@ const customCollisionDetection = (args) => {
 };
 
 const CheckTypeByAll = () => {
+  const [activeColumn, setActiveColumn] = useState(null);
+  const [showAddTask, setShowAddTask] = useState(null);
   const [classes, setClasses] = useState([
     { id: "class-01", name: "SDN301c" },
     { id: "class-02", name: "SWD301c" },
@@ -58,6 +61,7 @@ const CheckTypeByAll = () => {
       dueDate: "27 Mar - 9:00",
       percentProgress: "56%",
       status: "In Progress",
+      prioritize: "high",
     },
     {
       id: "task-2",
@@ -66,6 +70,7 @@ const CheckTypeByAll = () => {
       dueDate: "25 Mar - 17:00",
       percentProgress: "50%",
       status: "In Progress",
+      prioritize: "high",
     },
     {
       id: "task-3",
@@ -74,6 +79,7 @@ const CheckTypeByAll = () => {
       dueDate: "31 Mar - 24:00",
       percentProgress: "71%",
       status: "To Do",
+      prioritize: "high",
     },
     {
       id: "task-4",
@@ -82,6 +88,7 @@ const CheckTypeByAll = () => {
       dueDate: "31 Mar - 24:00",
       percentProgress: "45%",
       status: "To Do",
+      prioritize: "high",
     },
     {
       id: "task-5",
@@ -90,6 +97,7 @@ const CheckTypeByAll = () => {
       dueDate: "31 Mar - 24:00",
       percentProgress: "25%",
       status: "To Do",
+      prioritize: "high",
     },
     {
       id: "task-6",
@@ -98,8 +106,12 @@ const CheckTypeByAll = () => {
       dueDate: "31 Mar - 24:00",
       percentProgress: "19%",
       status: "Over due",
+      prioritize: "high",
     },
   ]);
+
+  const visibleMembers = members.slice(0, 3);
+  const extraCount = members.length - visibleMembers.length;
 
   const statuses = [
     { id: 1, status: "To Do", color: "#D8E7E4" },
@@ -115,8 +127,6 @@ const CheckTypeByAll = () => {
       },
     })
   );
-
-  const [activeColumn, setActiveColumn] = useState(null);
 
   const handleDragOver = (event) => {
     const { over } = event;
@@ -153,36 +163,30 @@ const CheckTypeByAll = () => {
       const targetTasks = tasks.filter(
         (task) => task.status === targetStatus && task.id !== activeId
       );
-      let dropIndex = over.data.current?.sortable?.index ?? 0; // Chèn vào đầu nếu cột rỗng
+      let dropIndex = over.data.current?.sortable?.index ?? 0;
 
-      // Cập nhật trạng thái của task
       updatedTasks = updatedTasks.map((task) =>
         task.id === activeId ? { ...task, status: targetStatus } : task
       );
 
-      // Tính toán chỉ số mới trong danh sách chung
       let targetIndex = 0;
       if (targetTasks.length === 0) {
-        // Nếu cột rỗng, chèn vào vị trí hợp lý
         const firstTaskInOtherColumn = tasks.findIndex(
           (task) => task.status === targetStatus
         );
         targetIndex =
           firstTaskInOtherColumn === -1 ? tasks.length : firstTaskInOtherColumn;
       } else {
-        // Nếu cột không rỗng, chèn vào vị trí thả
         targetIndex =
           tasks.findIndex((task) => task.status === targetStatus) + dropIndex;
       }
 
-      // Di chuyển task
       updatedTasks.splice(activeIndex, 1);
       updatedTasks.splice(targetIndex, 0, {
         ...activeTask,
         status: targetStatus,
       });
     } else if (isOverTask) {
-      // Thả lên một task khác
       const overTask = tasks.find((task) => task.id === over.id);
       if (!overTask) return;
 
@@ -190,11 +194,9 @@ const CheckTypeByAll = () => {
       const targetStatus = overTask.status;
 
       if (activeTask.status === targetStatus) {
-        // Sắp xếp lại trong cùng cột
         updatedTasks.splice(activeIndex, 1);
         updatedTasks.splice(overIndex, 0, activeTask);
       } else {
-        // Di chuyển sang cột khác
         updatedTasks = updatedTasks.map((task) =>
           task.id === activeId ? { ...task, status: targetStatus } : task
         );
@@ -207,11 +209,20 @@ const CheckTypeByAll = () => {
     }
 
     setTasks(updatedTasks);
-    setActiveColumn(null); // Reset active column sau khi thả
+    setActiveColumn(null);
   };
 
-  const visibleMembers = members.slice(0, 3);
-  const extraCount = members.length - visibleMembers.length;
+  const handleShowAddTask = (status) => {
+    setShowAddTask(status);
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        setShowAddTask((prev) => prev == null);
+      }
+    });
+  }, []);
 
   return (
     <DndContext
@@ -263,9 +274,16 @@ const CheckTypeByAll = () => {
                 color={item.color}
                 tasks={tasks.filter((task) => task.status === item.status)}
                 members={members}
+                onShowAddTask={handleShowAddTask}
               />
             ))}
           </div>
+          {showAddTask && (
+            <AddTask
+              status={showAddTask}
+              onCancel={() => setShowAddTask(null)}
+            />
+          )}
         </div>
       </div>
     </DndContext>

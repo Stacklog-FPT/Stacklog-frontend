@@ -9,7 +9,7 @@ import {
 } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
 
-const Column = ({ color, status, tasks, members }) => {
+const Column = ({ color, status, tasks, members, onShowAddTask }) => {
   const { setNodeRef } = useDroppable({
     id: `droppable-${status}`,
   });
@@ -54,7 +54,7 @@ const Column = ({ color, status, tasks, members }) => {
             )}
           </div>
         </SortableContext>
-        <div className="btn-add-task" onClick={() => alert("Hello World")}>
+        <div className="btn-add-task" onClick={onShowAddTask}>
           <i className="fa-solid fa-plus"></i>
           <span>Add Task</span>
         </div>

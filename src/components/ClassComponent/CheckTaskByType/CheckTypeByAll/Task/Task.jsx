@@ -20,7 +20,7 @@ const Task = (props) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1, // Visual feedback during drag
+    opacity: isDragging ? 0.5 : 1, 
   };
 
   const visibleMembers = props.members.slice(0, 3);

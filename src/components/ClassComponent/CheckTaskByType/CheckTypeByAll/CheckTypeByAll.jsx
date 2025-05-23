@@ -282,6 +282,7 @@ const CheckTypeByAll = () => {
             <AddTask
               status={showAddTask}
               onCancel={() => setShowAddTask(null)}
+              members={members}
             />
           )}
         </div>

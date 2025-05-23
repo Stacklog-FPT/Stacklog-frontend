@@ -13,6 +13,16 @@ $color-bg-bell: #da4343;
   justify-content: space-between;
   border-radius: 20px;
 
+  &-home {
+    a {
+      color: #000000;
+    }
+
+    a.dark {
+      color: #ffffff;
+    }
+  }
+
   &.input-light {
     background-color: $color-background-white;
   }

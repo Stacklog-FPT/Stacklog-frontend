@@ -116,26 +116,11 @@ $color-hover: #045745;
       }
     }
 
-    // .nav-link {
-    //   display: flex;
-    //   align-items: center;
-    //   color: $color-text;
-
-    .nav-link.active {
-      background-color: $color-hover;
-
-      .nav-link {
-        color: $back-ground-color-white;
-
-        .nav-icon-container {
-          span,
-          i {
-            color: $back-ground-color-white;
-          }
-        }
-      }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      color: $color-text;
     }
-    // }
   }
 
   &-heading {

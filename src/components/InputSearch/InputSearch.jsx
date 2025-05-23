@@ -19,7 +19,11 @@ const InputSearch = () => {
         mode === "light" ? "input-light" : "input-dark"
       }`}
     >
-      <div className="input-search-home">
+      <div
+        className={`input-search-home ${
+          mode === "light" ? "light" : "dark"
+        }`}
+      >
         <Link>
           <i className="fa-solid fa-house"></i>
         </Link>

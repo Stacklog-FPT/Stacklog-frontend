@@ -16,7 +16,7 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.0.2",
     "@mui/material": "^7.0.2",
-    "@react-oauth/google": "^0.12.1",
+    "@react-oauth/google": "^0.12.2",
     "axios": "^1.8.4",
     "bootstrap": "^5.3.6",
     "react": "^18.2.0",

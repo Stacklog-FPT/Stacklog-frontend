@@ -1,3 +1,3 @@
-export const EditProfile = async (id, userEdit) => {
-    
-}
+const userApi = () => {};
+
+export default userApi;

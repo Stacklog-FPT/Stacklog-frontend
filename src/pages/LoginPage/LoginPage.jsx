@@ -5,14 +5,12 @@ import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import logo from "../../assets/logo-login.png";
 
 const LoginPage = () => {
-  const handleGoogleSuccess = (credentialResponse) => {
-  };
+  const handleGoogleSuccess = (credentialResponse) => {};
 
-  const handleGoogleFailure = () => {
-  };
+  const handleGoogleFailure = () => {};
 
   return (
-    <GoogleOAuthProvider clientId="YOUR_CLIENT_ID.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId="300777288453-f1ton6ndi83jhpijj78eb4blpc5e91vo.apps.googleusercontent.com">
       <div className="form-login-container">
         <div className="wrapper-form">
           <div className="form_text">

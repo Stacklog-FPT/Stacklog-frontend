@@ -3,6 +3,7 @@ $color-bg-light: #ffffff;
 .meeting {
   width: 100%;
   height: auto;
+  overflow-y: auto;
   background-color: $color-bg-light;
   border-radius: 20px;
   padding-bottom: 20px;
@@ -25,11 +26,11 @@ $color-bg-light: #ffffff;
   }
 
   &__content {
-    width:100%;
+    width: 100%;
     height: auto;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 20px;
   }
 }

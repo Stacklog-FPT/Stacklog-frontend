@@ -1,0 +1,110 @@
+$color-border-input: #e8e8e8;
+$color-background-white: #ffffff;
+$color-border-input: #e8e8e8;
+$color-bg-darkmode: #edf2f2;
+.group__container {
+  width: 300px;
+  height: 100vh;
+  background-color: #fff;
+  border-left: 1px solid #c8cad4;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 20px;
+  .group__heading {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 10px;
+    select {
+      width: 214px;
+      height: auto;
+      background: none;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+      padding: 6px 10px;
+      appearance: none;
+      cursor: pointer;
+      border-radius: 10px;
+      background-image: url("../../../assets/icon/arrow-down.png");
+      background-repeat: no-repeat;
+      background-position: 120px;
+      background-size: 15px 15px;
+
+      &::-ms-expand {
+        display: none;
+      }
+
+      &:hover {
+        color: #000;
+      }
+      &:focus {
+        border: none;
+      }
+    }
+
+    .group__input {
+      position: relative;
+      display: flex;
+      align-items: center;
+      input[type="text"] {
+        width: 250px;
+        height: 40px;
+        padding: 8px 8px 8px 40px;
+        border-radius: 8px;
+        font-size: 16px;
+      }
+      &.light {
+        input[type="text"] {
+          background-color: $color-background-white;
+          border: 1px solid $color-border-input;
+
+          &:focus {
+            outline: none;
+            border-color: $color-background-white;
+            background-color: $color-border-input;
+          }
+        }
+
+        .fa-magnifying-glass {
+          position: absolute;
+          left: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #666;
+          font-size: 18px;
+          pointer-events: none;
+        }
+      }
+
+      &.dark {
+        input[type="text"] {
+          background-color: #000000;
+          border: 1px solid #666;
+
+          &:focus {
+            outline: none;
+            border-color: #000000;
+            background-color: $color-border-input;
+          }
+        }
+
+        .fa-magnifying-glass {
+          position: absolute;
+          left: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #666;
+          font-size: 18px;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+}

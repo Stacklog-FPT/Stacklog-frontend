@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import { AnnouncementProvider } from "./context/AnnoucementContext.jsx";
 import ColorModeProvider from "./context/ColorModeContext.jsx";
 
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AnnouncementProvider>

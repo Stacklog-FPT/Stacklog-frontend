@@ -1,0 +1,16 @@
+$color-text-heading: #8a8a8a;
+.group__chat__container {
+  width: 100%;
+  .group__chat__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #8a8a8a;
+    h2 {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      line-height: 21px;
+    }
+  }
+}

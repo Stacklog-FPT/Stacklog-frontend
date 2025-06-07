@@ -11,10 +11,11 @@ import ChatPage from "../pages/ChatPage/ChatPage";
 import GradesPage from "../pages/GradesPage/GradesPage";
 import PlanPage from "../pages/PlanPage/PlanPage";
 import Profile from "../pages/Profile/Profile";
+import MainLayoutWithProvider from "../layouts/MainLayout";
 
 const routes = [
   {
-    element: <MainLayout />,
+    element: <MainLayoutWithProvider />,
     children: [
       {
         path: "/",
@@ -43,10 +44,6 @@ const routes = [
       {
         path: "/grades",
         element: <GradesPage />,
-      },
-      {
-        path: "/chatbox",
-        element: <ChatPage />,
       },
       {
         path: "/plan",

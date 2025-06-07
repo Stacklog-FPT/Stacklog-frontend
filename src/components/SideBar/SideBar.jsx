@@ -7,6 +7,7 @@ import logoDark from "../../assets/darkMode/logo-darkmode.png";
 import sideBarDark from "../../assets/darkMode/sidebar-dark-mode.png";
 import "./SideBar.scss";
 import { ColorModeContext } from "../../context/ColorModeContext";
+import { GroupChatContext } from "../../context/GroupchatContext";
 
 const SideBar = ({ isOpen, setIsOpen }) => {
   const { mode } = useContext(ColorModeContext);
@@ -24,6 +25,12 @@ const SideBar = ({ isOpen, setIsOpen }) => {
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleChatClick = () => {
+    toggleGroupChat();
+    setIsOpen(!isOpen);
+    navigate("/chatbox");
   };
 
   return (
@@ -69,6 +76,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                   className={({ isActive }) =>
                     `nav-link ${isActive ? "active" : ""}`
                   }
+                  onClick={item.name === "Chat" ? handleChatClick : undefined}
                 >
                   {item.name === "Class" ? (
                     <div className="nav-icon-container">

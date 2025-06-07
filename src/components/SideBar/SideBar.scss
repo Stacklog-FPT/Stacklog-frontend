@@ -10,10 +10,11 @@ $color-hover: #045745;
   align-items: start;
   justify-content: start;
   width: 288px;
-  height: 1322px;
+  height: 100vh;
+  transition: width 0.3s ease;
 
   &.nav-light {
-    background-color: #ffffff;
+    background-color: $back-ground-color-white;
     box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
   }
   &.nav-dark {
@@ -21,16 +22,57 @@ $color-hover: #045745;
     box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
     color: $back-ground-color-white;
   }
+
+  &.close {
+    width: 80px;
+    .navbar-dashboard-heading,
+    .navbar-support-heading,
+    .nav-icon-container-text,
+    .fa-arrow-right {
+      display: none;
+    }
+    .wrapper_navbar_header {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 20px 10px;
+      &_logo {
+        width: 40px;
+        height: 40px;
+      }
+      &_toggle {
+        padding: 5px;
+      }
+    }
+    .nav-icon-container {
+      justify-content: center;
+      i {
+        font-size: 20px;
+      }
+    }
+    .navbar-dashboard,
+    .navbar-support {
+      padding: 10px 15px;
+      li {
+        width: 36px;
+        padding: 8px 5px;
+        .nav-link {
+          justify-content: center;
+        }
+      }
+    }
+  }
 }
 
 .wrapper_navbar_header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 120px;
   border-bottom: 1px solid $color-border;
   width: 100%;
   padding: 20px 20px;
+  box-sizing: border-box;
 
   &_logo {
     width: 139px;
@@ -38,11 +80,40 @@ $color-hover: #045745;
     display: flex;
     align-items: center;
     justify-content: start;
+    transition: width 0.3s ease, height 0.3s ease; /* Hiệu ứng thu gọn logo */
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* Đảm bảo logo không méo */
+    }
   }
 
-  &_icon {
-    width: 24px;
-    height: 24px;
+  &_toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    i {
+      font-size: 20px;
+      color: $color-text;
+      .nav-dark & {
+        color: $back-ground-color-white;
+      }
+    }
+    &:hover {
+      background-color: rgba($color-hover, 0.1);
+      border-radius: 50%;
+    }
+  }
+
+  &.isClose {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
 }
 
@@ -59,10 +130,12 @@ $color-hover: #045745;
     font-weight: 500;
     line-height: 24px;
     color: $color-text;
+    transition: opacity 0.3s ease;
   }
 
   i {
     color: $color-text;
+    font-size: 16px;
   }
 
   span {
@@ -70,6 +143,12 @@ $color-hover: #045745;
     font-size: 16px;
     line-height: 24px;
     color: $color-text;
+  }
+
+  &-inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
   }
 }
 
@@ -100,6 +179,7 @@ $color-hover: #045745;
     border-radius: 8px;
     cursor: pointer;
     list-style: none;
+    transition: width 0.3s ease, padding 0.3s ease;
 
     &:hover {
       background-color: $color-hover;
@@ -120,6 +200,7 @@ $color-hover: #045745;
       display: flex;
       align-items: center;
       color: $color-text;
+      text-decoration: none;
     }
   }
 
@@ -129,5 +210,6 @@ $color-hover: #045745;
     font-weight: bold;
     line-height: 21px;
     text-transform: uppercase;
+    transition: opacity 0.3s ease;
   }
 }

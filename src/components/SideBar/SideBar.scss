@@ -66,6 +66,7 @@ $color-hover: #045745;
 }
 
 .wrapper_navbar_header {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -80,11 +81,11 @@ $color-hover: #045745;
     display: flex;
     align-items: center;
     justify-content: start;
-    transition: width 0.3s ease, height 0.3s ease; /* Hiệu ứng thu gọn logo */
+    transition: width 0.3s ease, height 0.3s ease;
     img {
       width: 100%;
       height: 100%;
-      object-fit: contain; /* Đảm bảo logo không méo */
+      object-fit: contain;
     }
   }
 
@@ -110,6 +111,8 @@ $color-hover: #045745;
   }
 
   &.isClose {
+    width: 100%;
+    min-width: 100%;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -161,7 +164,7 @@ $color-hover: #045745;
   padding: 8px 24px;
   gap: 20px;
   border-bottom: 1px solid $color-border;
-
+  width: 100%;
   ul {
     display: flex;
     flex-direction: column;

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Profile.scss";
+import useEnterButton from "../../hooks/useEnterButton";
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -30,9 +31,9 @@ const Profile = () => {
 
   const toggleEdit = () => {
     setIsEditing((prev) => !prev);
-    if (isEditing) {
-    }
   };
+
+  useEnterButton(toggleEdit);
 
   return (
     <div className="profile-popup">

@@ -14,7 +14,6 @@ import GroupComponent from "../components/ChatPageComponents/GroupComponent/Grou
 
 const MainLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
-  console.log(isOpen);
   const { isAnnouncementVisible } = useContext(AnnouncementContext);
   const { mode } = useContext(ColorModeContext);
   const { isShowGroupChat, setIsShowGroupChat } = useContext(GroupChatContext);
@@ -26,7 +25,6 @@ const MainLayout = () => {
 
   useEffect(() => {
     if (location.pathname == "/chatbox") {
-      console.log("dô đây nè");
       setIsShowGroupChat(true);
       setIsOpen(false);
     }

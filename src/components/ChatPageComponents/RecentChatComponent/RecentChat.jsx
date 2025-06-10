@@ -1,8 +1,8 @@
 import React from 'react'
-
+import './RecentChat.scss'
 const RecentChat = () => {
   return (
-    <div>
+    <div className='recent__chat__container'>
       
     </div>
   )

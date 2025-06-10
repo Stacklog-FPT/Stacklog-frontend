@@ -11,9 +11,11 @@ import {
   GroupChatProvider,
 } from "../context/GroupchatContext";
 import GroupComponent from "../components/ChatPageComponents/GroupComponent/GroupComponent";
+import { SidebarContext } from "../context/SideBarContext";
 
 const MainLayout = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const { isOpen, setIsOpen } = useContext(SidebarContext);
+  console.log(isOpen);
   const { isAnnouncementVisible } = useContext(AnnouncementContext);
   const { mode } = useContext(ColorModeContext);
   const { isShowGroupChat, setIsShowGroupChat } = useContext(GroupChatContext);
@@ -27,8 +29,9 @@ const MainLayout = () => {
     if (location.pathname == "/chatbox") {
       setIsShowGroupChat(true);
       setIsOpen(false);
+    } else {
+      setIsOpen(true)
     }
-    setIsOpen(true);
   }, [location.pathname, setIsShowGroupChat]);
 
   return (

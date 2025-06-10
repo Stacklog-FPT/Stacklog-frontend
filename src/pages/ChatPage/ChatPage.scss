@@ -23,6 +23,7 @@ $color-border-input: #b5b5b5;
         align-items: center;
         justify-content: center;
         gap: 20px;
+        position: relative;
 
         img {
           width: 56px;
@@ -33,6 +34,16 @@ $color-border-input: #b5b5b5;
           font-weight: 700;
           font-size: 14px;
           line-height: 21px;
+        }
+
+        .online_dot {
+          padding: 7px 7px;
+          border-radius: 100%;
+          position: absolute;
+          background-color: green;
+          border: 1px solid #ffffff;
+          top: 41px;
+          left: 39px;
         }
       }
 

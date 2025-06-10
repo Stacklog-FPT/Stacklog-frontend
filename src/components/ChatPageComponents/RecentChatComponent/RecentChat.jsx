@@ -9,6 +9,7 @@ const RecentChat = () => {
       name: "Maeve",
       content: "Hello there, hangout?",
       isRead: true,
+      isOnline: true,
     },
     {
       id: 2,
@@ -16,6 +17,7 @@ const RecentChat = () => {
       name: "Adam Groff",
       content: "Oh hello, billard?",
       isRead: true,
+      isOnline: true,
     },
     {
       id: 3,
@@ -23,6 +25,7 @@ const RecentChat = () => {
       name: "Eric",
       content: "Hello, have time?",
       isRead: false,
+      isOnline: false,
     },
     {
       id: 4,
@@ -30,6 +33,7 @@ const RecentChat = () => {
       name: "Otis Milburn",
       content: "Opps, goodBye",
       isRead: false,
+      isOnline: false,
     },
     // {
     //   id: 5,
@@ -63,6 +67,7 @@ const RecentChat = () => {
                 <h2>{item.name}</h2>
                 <p>{item.content}</p>
               </div>
+              {item.isOnline && <div className="online_dot"></div>}
             </div>
           );
         })}

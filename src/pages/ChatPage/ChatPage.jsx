@@ -17,6 +17,7 @@ const ChatPage = () => {
             <div className="chat__heading__userinfor">
               <h2>{selectedUser?.name}</h2>
             </div>
+            {selectedUser?.isOnline && <div className="online_dot"></div>}
           </div>
 
           <div className="chat__heading__right">

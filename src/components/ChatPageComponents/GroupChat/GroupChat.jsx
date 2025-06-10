@@ -11,6 +11,7 @@ const GroupChat = () => {
       name: "Maeve",
       content: "Hello there, hangout?",
       isRead: true,
+      isOnline: true,
     },
     {
       id: 2,
@@ -18,6 +19,7 @@ const GroupChat = () => {
       name: "Adam Groff",
       content: "Oh hello, billard?",
       isRead: true,
+      isOnline: true,
     },
     {
       id: 3,
@@ -25,6 +27,7 @@ const GroupChat = () => {
       name: "Eric",
       content: "Hello, have time?",
       isRead: false,
+      isOnline: false,
     },
     {
       id: 4,
@@ -32,6 +35,7 @@ const GroupChat = () => {
       name: "Otis Milburn",
       content: "Opps, goodBye",
       isRead: false,
+      isOnline: false,
     },
   ]);
 

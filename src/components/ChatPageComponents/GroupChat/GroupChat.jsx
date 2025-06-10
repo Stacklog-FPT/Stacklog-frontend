@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import avatar from "../../../assets/ava-chat.png";
 import "./GroupChat.scss";
+import { ChatContext } from "../../../context/ChatContext";
 const GroupChat = () => {
+  const { setSelectedUser } = useContext(ChatContext);
   const [groupChat, setGroupChat] = useState([
     {
       id: 1,
@@ -32,6 +34,10 @@ const GroupChat = () => {
       isRead: false,
     },
   ]);
+
+  const handleUserClick = (user) => {
+    setSelectedUser(user);
+  };
   return (
     <div className="group__chat__container">
       <div className="group__chat__heading">
@@ -44,6 +50,7 @@ const GroupChat = () => {
             <div
               key={item.id}
               className={`group__chat__card${item.isRead ? " isRead" : ""}`}
+              onClick={() => handleUserClick(item)}
             >
               <img src={item.avatar} alt="avatar" />
               <div className="group__chat__card__content">

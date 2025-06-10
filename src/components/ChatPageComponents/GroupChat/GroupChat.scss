@@ -3,20 +3,22 @@ $color-text-head-content: #101828;
 $color-text-main-content: #667085;
 $background-is-read: #edf2f2;
 $background-is-hover: #dbeafe;
+
 .group__chat__container {
   width: 100%;
   max-height: 450px;
   margin-top: 5px;
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #8a8a8a #edf2f2;
+  scrollbar-width: none;
 
   &::-webkit-scrollbar {
     width: 2px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
   &::-webkit-scrollbar-track {
-    background: #edf2f2;
+    background-color: transparent !important;
     border-radius: 8px;
     margin: 1px 0;
   }
@@ -32,6 +34,15 @@ $background-is-hover: #dbeafe;
     background: #667085;
     border: 1px solid transparent;
     background-clip: padding-box;
+  }
+
+  &:hover {
+    scrollbar-width: thin;
+    scrollbar-color: #045745 #edf2f2;
+
+    &::-webkit-scrollbar {
+      opacity: 1;
+    }
   }
 
   .group__chat__heading {

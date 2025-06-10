@@ -3,7 +3,7 @@ $color-background-white: #ffffff;
 $color-bg-darkmode: #edf2f2;
 $color-border-input: #e8e8e8;
 .group__container {
-  width: 350px;
+  width: 330px;
   max-height: 100vh;
   background-color: #fff;
   border-left: 1px solid #c8cad4;
@@ -89,6 +89,8 @@ $color-border-input: #e8e8e8;
         padding: 8px 8px 8px 40px;
         border-radius: 8px;
         font-size: 16px;
+        margin-top: 20px;
+        margin-bottom: 20px;
       }
 
       &.light {

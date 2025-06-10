@@ -10,19 +10,41 @@ $color-scroll: #045745;
   margin-top: 15px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: $color-scroll;
+  scrollbar-width: none;
 
   &::-webkit-scrollbar {
     width: 2px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: $color-scroll;
-    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
   &::-webkit-scrollbar-track {
-    background: #edf2f2;
+    background-color: transparent !important;
+    border-radius: 8px;
+    margin: 1px 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #045745;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #667085;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
+
+  
+  &:hover {
+    scrollbar-width: thin; 
+    scrollbar-color: #045745 #edf2f2; 
+
+    &::-webkit-scrollbar {
+      opacity: 1; 
+    }
   }
 
   .recent__chat__heading {

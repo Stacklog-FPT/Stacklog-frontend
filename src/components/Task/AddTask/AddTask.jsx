@@ -57,6 +57,9 @@ const AddTask = (props) => {
         <div className="wrapper-priority-heading">
           <img src={iconPriority} alt="..."/>
           <h2>Priority</h2>
+          <div className="">
+
+          </div>
         </div>
         <div></div>
       </div>

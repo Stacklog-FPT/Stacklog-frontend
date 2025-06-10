@@ -3,10 +3,36 @@ $color-text-head-content: #101828;
 $color-text-main-content: #667085;
 $background-is-read: #edf2f2;
 $background-is-hover: #dbeafe;
-
 .group__chat__container {
   width: 100%;
+  max-height: 450px;
   margin-top: 5px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #8a8a8a #edf2f2;
+
+  &::-webkit-scrollbar {
+    width: 2px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #edf2f2;
+    border-radius: 8px;
+    margin: 1px 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #045745;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #667085;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
 
   .group__chat__heading {
     display: flex;
@@ -24,7 +50,6 @@ $background-is-hover: #dbeafe;
 
   .group__chat__list {
     width: 100%;
-    max-height: 450px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -33,27 +58,6 @@ $background-is-hover: #dbeafe;
     padding-top: 20px;
     padding-bottom: 5px;
     gap: 15px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #8a8a8a #edf2f2;
-
-    &::-webkit-scrollbar {
-      width: 8px; /* Chrome, Safari, Edge */
-    }
-
-    &::-webkit-scrollbar-track {
-      background: #edf2f2;
-      border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: #8a8a8a;
-      border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-      background: #667085;
-    }
 
     .group__chat__card {
       display: flex;

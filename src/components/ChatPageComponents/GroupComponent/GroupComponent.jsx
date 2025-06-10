@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import "./GroupComponent.scss";
 import { ColorModeContext } from "../../../context/ColorModeContext";
 import GroupChat from "../GroupChat/GroupChat";
+import RecentChat from "../RecentChatComponent/RecentChat";
 const GroupComponent = () => {
   const { mode } = useContext(ColorModeContext);
   const [groups, setGroups] = useState([
@@ -27,7 +28,12 @@ const GroupComponent = () => {
           <input type="text" placeholder="Search" />
         </div>
       </div>
-      <GroupChat />
+      <div>
+        <GroupChat />
+      </div>
+      <div>
+        <RecentChat />
+      </div>
     </div>
   );
 };

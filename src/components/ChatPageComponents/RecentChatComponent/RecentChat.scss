@@ -1,6 +1,102 @@
+$color-text-heading: #8a8a8a;
+$color-text-head-content: #101828;
+$color-text-main-content: #667085;
+$background-is-read: #edf2f2;
+$background-is-hover: #dbeafe;
+$color-scroll: #045745;
 .recent__chat__container {
-    width: 100%;
-    margin-top: 5px;
+  width: 100%;
+  max-height: 450px;
+  margin-top: 15px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: $color-scroll;
 
-    
+  &::-webkit-scrollbar {
+    width: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $color-scroll;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #edf2f2;
+  }
+
+  .recent__chat__heading {
+    padding-bottom: 5px;
+    h2 {
+      color: $color-text-heading;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      line-height: 21px;
+    }
+  }
+
+  .recent__chat__list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-left: 5px;
+    padding-top: 20px;
+    padding-bottom: 5px;
+    gap: 15px;
+
+    .recent__chat__card {
+      display: flex;
+      align-items: center;
+      justify-items: flex-start;
+      width: 280px;
+      height: 100px;
+      gap: 20px;
+      background-color: #ffffff;
+      border-radius: 16px;
+      padding: 16px 24px;
+      transition: background-color 0.3s ease, transform 0.2s ease,
+        box-shadow 0.3s ease;
+
+      img {
+        width: 60px;
+        height: 60px;
+        padding-bottom: 10px;
+      }
+
+      &__content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+
+        h2 {
+          font-size: 16px;
+          font-weight: 700;
+          line-height: 21px;
+          color: $color-text-head-content;
+        }
+
+        p {
+          font-size: 13px;
+          line-height: 20px;
+          font-weight: 400;
+          color: $color-text-main-content;
+        }
+      }
+
+      &.isRead {
+        background-color: $background-is-read;
+      }
+
+      &:hover {
+        background-color: $background-is-read;
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
 }

@@ -10,7 +10,13 @@ const FeatureChat = () => {
         <i className="fa-solid fa-arrow-down"></i>
       </div>
       <div className="feature__chat__user">
-        <img src={selectedUser?.avatar} />
+        <img
+          src={
+            selectedUser?.avatar
+              ? selectedUser?.avatar
+              : "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+          }
+        />
         <h2>{selectedUser?.name}</h2>
         <div className="feature__detail__class">
           <select>

@@ -13,7 +13,13 @@ const ChatPage = () => {
       <div className="chat__page__container">
         <div className="chat__heading">
           <div className="chat__heading__left">
-            <img src={selectedUser?.avatar} />
+            <img
+              src={
+                selectedUser?.avatar
+                  ? selectedUser?.avatar
+                  : "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+              }
+            />
             <div className="chat__heading__userinfor">
               <h2>{selectedUser?.name}</h2>
             </div>

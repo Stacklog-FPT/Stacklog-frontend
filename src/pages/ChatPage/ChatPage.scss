@@ -5,19 +5,22 @@ $color-border-input: #b5b5b5;
   display: flex;
   align-items: center;
   justify-content: space-around;
+  gap: 20px;
+
   .chat__page__container {
     width: 684px;
     height: 700px;
     margin-top: 20px;
     background-color: #fff;
     border-radius: 20px;
+    border: 1px solid #e8e8e8;
     .chat__heading {
       width: 100%;
       padding: 20px 24px 19px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-
+      border-bottom: 1px solid #e8e8e8;
       &__left {
         display: flex;
         align-items: center;
@@ -28,6 +31,7 @@ $color-border-input: #b5b5b5;
         img {
           width: 56px;
           height: 56px;
+          border-radius: 100px;
         }
 
         h2 {
@@ -68,13 +72,16 @@ $color-border-input: #b5b5b5;
         }
       }
     }
+    .chat__content {
+      padding: 0 32px 32px 32px;
+    }
     .chat__footer {
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 10px 20px;
+      padding: 15px 19px;
       input[type="text"] {
         width: 650px;
         height: 48px;

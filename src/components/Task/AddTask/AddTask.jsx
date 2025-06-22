@@ -2,7 +2,7 @@ import React from "react";
 import "./AddTask.scss";
 import avatar_add_button from "../../../assets/icon/avatar_add_button.png";
 import assignUser from "../../../assets/task/assign-user.png";
-import iconPriority from '../../../assets/task/icon-priority.png'
+import iconPriority from "../../../assets/task/icon-priority.png";
 import iconSubTask from "../../../assets/task/icon-subtask.png";
 const AddTask = (props) => {
   const visibleMembers = props.members.slice(0, 3);
@@ -55,13 +55,15 @@ const AddTask = (props) => {
       </div>
       <div className="wrapper-priority">
         <div className="wrapper-priority-heading">
-          <img src={iconPriority} alt="..."/>
+          <img src={iconPriority} alt="..." />
           <h2>Priority</h2>
-          <div className="">
-
-          </div>
+          <div className="priority_status"></div>
         </div>
-        <div></div>
+      </div>
+      <div className="wrapper-start-end-time">
+        <div className="wrapper_input_time">
+          <input type="text" placeholder="__/__/____" class="date-input"/>
+        </div>
       </div>
     </div>
   );

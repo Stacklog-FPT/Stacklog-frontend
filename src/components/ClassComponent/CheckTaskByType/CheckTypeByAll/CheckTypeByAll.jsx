@@ -7,6 +7,7 @@ import Column from "./Column/Column";
 import { DndContext, rectIntersection, closestCorners } from "@dnd-kit/core";
 import { useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import AddTask from "../../../Task/AddTask/AddTask";
+import CommentTask from "../../../Task/CommentTask/CommentTask";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -23,6 +24,8 @@ const customCollisionDetection = (args) => {
 const CheckTypeByAll = () => {
   const [activeColumn, setActiveColumn] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
+  const [showCommentTask, setShowCommentTask] = useState(null);
+  console.log(showCommentTask);
   const [classes, setClasses] = useState([
     { id: "class-01", name: "SDN301c" },
     { id: "class-02", name: "SWD301c" },
@@ -216,6 +219,14 @@ const CheckTypeByAll = () => {
     setShowAddTask(status);
   };
 
+  const handleShowComment = (taskId) => {
+    setShowCommentTask(taskId);
+  };
+
+  const handleCloseComment = () => {
+    setShowCommentTask(null);
+  };
+
   useEffect(() => {
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
@@ -275,6 +286,7 @@ const CheckTypeByAll = () => {
                 tasks={tasks.filter((task) => task.status === item.status)}
                 members={members}
                 onShowAddTask={handleShowAddTask}
+                onShowComment={handleShowComment}
               />
             ))}
           </div>
@@ -283,6 +295,13 @@ const CheckTypeByAll = () => {
               status={showAddTask}
               onCancel={() => setShowAddTask(null)}
               members={members}
+            />
+          )}
+
+          {showCommentTask && (
+            <CommentTask
+              taskId={showCommentTask}
+              isClose={handleCloseComment}
             />
           )}
         </div>

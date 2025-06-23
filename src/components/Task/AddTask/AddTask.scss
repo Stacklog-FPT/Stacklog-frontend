@@ -8,15 +8,15 @@ $color-hover: red;
   justify-content: flex-start;
   gap: 18px;
   width: 680px;
-  height: 755px;
+  max-height: 700px;
   background-color: #ffffff;
   z-index: 1000;
   position: absolute;
-  top: 9%;
+  top: 4%;
   left: 30%;
-  border-radius: 20px;
+  border-radius: 30px;
   padding: 20px 20px;
-  overflow-x: auto;
+  overflow-y: auto;
   overflow-x: hidden;
   .text-heading {
     font-weight: 500;
@@ -93,6 +93,7 @@ $color-hover: red;
         font-weight: 500;
         font-size: 15px;
         line-height: 21px;
+        padding-bottom: 3px;
       }
     }
 
@@ -145,6 +146,7 @@ $color-hover: red;
         font-weight: 500;
         font-size: 15px;
         line-height: 21px;
+        padding-top: 10px;
       }
 
       img {
@@ -195,11 +197,12 @@ $color-hover: red;
     &-heading {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       h2 {
         font-weight: 500;
         font-size: 15px;
         line-height: 21px;
+        padding-top: 10px;
       }
 
       img {
@@ -207,25 +210,124 @@ $color-hover: red;
         height: 15px;
       }
     }
+
+    select {
+      padding: 10px 25px;
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      &:focus {
+        border: none;
+      }
+
+      &:hover {
+        border: none;
+      }
+    }
   }
 
   .wrapper-start-end-time {
-    .date-input {
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 8px;
-      font-size: 16px;
-      width: 150px;
-      text-align: center;
-      outline: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    .wrapper_input_time {
+      width: 100%;
+      p {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 21px;
+      }
+      .date-input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 250px;
+
+        .date-input {
+          width: 100%;
+          padding: 10px 12px 10px 12px;
+          border: 1px solid #d1d5db;
+          border-radius: 6px;
+          font-size: 15px;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            Oxygen, Ubuntu, Cantarell, sans-serif;
+          color: #1f2937;
+          background-color: #ffffff;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+          transition: border-color 0.2s ease, box-shadow 0.2s ease;
+          outline: none;
+          text-align: left;
+          letter-spacing: 0.5px;
+
+          &::placeholder {
+            color: #9ca3af;
+            letter-spacing: 1px;
+            font-weight: 400;
+          }
+
+          &:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+          }
+
+          &:hover {
+            border-color: #9ca3af;
+          }
+
+          &:disabled {
+            background-color: #f3f4f6;
+            border-color: #e5e7eb;
+            cursor: not-allowed;
+            color: #6b7280;
+          }
+        }
+
+        .date-icon {
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #6b7280;
+          font-size: 16px;
+          pointer-events: none;
+        }
+      }
     }
-    .date-input::placeholder {
-      color: #888;
-      letter-spacing: 2px;
+  }
+
+  .wrapper-track-time {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    &-heading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      h2 {
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 21px;
+        padding-top: 10px;
+      }
+
+      img {
+        width: 15px;
+        height: 15px;
+      }
     }
-    .date-input:focus {
-      border-color: #007bff;
-      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+
+    &-input {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+
+      input[type="text"] {
+      }
     }
   }
 }

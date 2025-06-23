@@ -20,7 +20,7 @@ const Task = (props) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1, 
+    opacity: isDragging ? 0.5 : 1,
   };
 
   const visibleMembers = props.members.slice(0, 3);
@@ -79,7 +79,10 @@ const Task = (props) => {
         <div className="task-content-contact">
           <div className="task-content-contact-left">
             <div className="task-content-contact-left-element">
-              <i className="fa-solid fa-comment"></i>
+              <i
+                className="fa-solid fa-comment"
+                onClick={() => props.onShowComment(props.id)}
+              ></i>
               <span>8</span>
             </div>
             <div className="task-content-contact-left-element">

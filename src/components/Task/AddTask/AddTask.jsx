@@ -113,6 +113,12 @@ const AddTask = (props) => {
           <input type="text" placeholder="Enter your time" />
         </div>
       </div>
+      <div>
+        fhdasgbfidgahui
+      </div>
+      <div>
+        fhdasgbfidgahui
+      </div>
     </div>
   );
 };

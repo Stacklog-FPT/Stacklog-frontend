@@ -8,14 +8,15 @@ $color-hover: red;
   justify-content: flex-start;
   gap: 18px;
   width: 680px;
-  max-height: 700px;
+  max-height: 720px;
   background-color: #ffffff;
   z-index: 1000;
   position: absolute;
-  top: 4%;
+  top: 1%;
   left: 30%;
   border-radius: 30px;
   padding: 20px 20px;
+  scroll-behavior: smooth;
   overflow-y: auto;
   overflow-x: hidden;
   .text-heading {
@@ -46,6 +47,7 @@ $color-hover: red;
   }
 
   .wrapper-description {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -80,6 +82,7 @@ $color-hover: red;
   }
 
   .wrapper-subtask {
+    width: 100%;
     &-heading {
       display: flex;
       gap: 5px;

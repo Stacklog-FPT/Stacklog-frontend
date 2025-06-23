@@ -26,7 +26,6 @@ const CheckTypeByAll = () => {
   const [activeColumn, setActiveColumn] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
-  const [members, setMembers] = useState([]);
   const [tasks, setTasks] = useState([
     {
       id: "task-1",
@@ -47,14 +46,6 @@ const CheckTypeByAll = () => {
         },
         {
           id: "student-3",
-          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: "student-4",
-          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: "student-5",
           img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
         },
       ],
@@ -215,11 +206,7 @@ const CheckTypeByAll = () => {
       ],
     },
   ]);
-
-  tasks.forEach((task) =>
-    console.log(`Members for task ${task.id}:`, task.members)
-  );
-
+  const [members, setMembers] = useState([]);
   const statuses = [
     { id: 1, status: "To Do", color: "#D8E7E4" },
     { id: 2, status: "In Progress", color: "#045745" },
@@ -331,17 +318,22 @@ const CheckTypeByAll = () => {
     setShowCommentTask(null);
   };
 
-  const handleUpdateMembers = (newMembers) => {
-    setMembers(newMembers);
-  };
-
   useEffect(() => {
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         setShowAddTask((prev) => prev == null);
       }
     });
-  }, []);
+
+    const uniqueMembers = [
+      ...new Map(
+        tasks
+          .flatMap((task) => task.members)
+          .map((member) => [member.id, member])
+      ).values(),
+    ];
+    setMembers(uniqueMembers);
+  }, [tasks]);
 
   return (
     <DndContext

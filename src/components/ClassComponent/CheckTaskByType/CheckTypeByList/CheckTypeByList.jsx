@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./CheckTypeByList.scss";
+import Column from "./Column/Column";
 import ClassAndMember from "../../ClassAndMember/ClassAndMember";
 const CheckTypeByList = () => {
   const [tasks, setTasks] = useState([
@@ -67,6 +68,18 @@ const CheckTypeByList = () => {
   return (
     <div className="check__task__by__list__container">
       <ClassAndMember />
+      <div className="check__task__by__list__column">
+        {statuses.map((item) => {
+          return (
+            <Column
+              key={item.id}
+              color={item.color}
+              status={item.status}
+              tasks={tasks}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 };

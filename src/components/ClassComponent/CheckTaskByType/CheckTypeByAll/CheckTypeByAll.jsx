@@ -8,6 +8,7 @@ import { DndContext, rectIntersection, closestCorners } from "@dnd-kit/core";
 import { useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import AddTask from "../../../Task/AddTask/AddTask";
 import CommentTask from "../../../Task/CommentTask/CommentTask";
+import ClassAndMember from "../../ClassAndMember/ClassAndMember";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -25,37 +26,7 @@ const CheckTypeByAll = () => {
   const [activeColumn, setActiveColumn] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
-  console.log(showCommentTask);
-  const [classes, setClasses] = useState([
-    { id: "class-01", name: "SDN301c" },
-    { id: "class-02", name: "SWD301c" },
-    { id: "class-03", name: "MMA102c" },
-    { id: "class-04", name: "EXE101c" },
-  ]);
-
-  const [members, setMembers] = useState([
-    {
-      id: "student-1",
-      img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-    },
-    {
-      id: "student-2",
-      img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-    },
-    {
-      id: "student-3",
-      img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-    },
-    {
-      id: "student-4",
-      img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-    },
-    {
-      id: "student-5",
-      img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-    },
-  ]);
-
+  const [members, setMembers] = useState([]);
   const [tasks, setTasks] = useState([
     {
       id: "task-1",
@@ -65,6 +36,28 @@ const CheckTypeByAll = () => {
       percentProgress: "56%",
       status: "In Progress",
       prioritize: "high",
+      members: [
+        {
+          id: "student-1",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-2",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-3",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-4",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-5",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+      ],
     },
     {
       id: "task-2",
@@ -74,6 +67,28 @@ const CheckTypeByAll = () => {
       percentProgress: "50%",
       status: "In Progress",
       prioritize: "high",
+      members: [
+        {
+          id: "student-1",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-2",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-3",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-4",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-5",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+      ],
     },
     {
       id: "task-3",
@@ -83,6 +98,28 @@ const CheckTypeByAll = () => {
       percentProgress: "71%",
       status: "To Do",
       prioritize: "high",
+      members: [
+        {
+          id: "student-1",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-2",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-3",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-4",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-5",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+      ],
     },
     {
       id: "task-4",
@@ -92,6 +129,28 @@ const CheckTypeByAll = () => {
       percentProgress: "45%",
       status: "To Do",
       prioritize: "high",
+      members: [
+        {
+          id: "student-1",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-2",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-3",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-4",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-5",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+      ],
     },
     {
       id: "task-5",
@@ -101,6 +160,28 @@ const CheckTypeByAll = () => {
       percentProgress: "25%",
       status: "To Do",
       prioritize: "high",
+      members: [
+        {
+          id: "student-1",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-2",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-3",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-4",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-5",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+      ],
     },
     {
       id: "task-6",
@@ -110,11 +191,34 @@ const CheckTypeByAll = () => {
       percentProgress: "19%",
       status: "Over due",
       prioritize: "high",
+      members: [
+        {
+          id: "student-1",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-2",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-3",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-4",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+        {
+          id: "student-5",
+          img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        },
+      ],
     },
   ]);
 
-  const visibleMembers = members.slice(0, 3);
-  const extraCount = members.length - visibleMembers.length;
+  tasks.forEach((task) =>
+    console.log(`Members for task ${task.id}:`, task.members)
+  );
 
   const statuses = [
     { id: 1, status: "To Do", color: "#D8E7E4" },
@@ -227,6 +331,10 @@ const CheckTypeByAll = () => {
     setShowCommentTask(null);
   };
 
+  const handleUpdateMembers = (newMembers) => {
+    setMembers(newMembers);
+  };
+
   useEffect(() => {
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
@@ -244,39 +352,7 @@ const CheckTypeByAll = () => {
     >
       <div className="check-task-by-all-container">
         <div className="check-task-by-all-content">
-          <div className="check-task-by-all-content-member">
-            <div className="check-task-by-all-content-member-class">
-              <select>
-                {classes.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="check-task-by-all-content-member-student">
-              <ul
-                className="check-task-by-all-content-member-student-list"
-                data-extra-count={extraCount > 0 ? extraCount : ""}
-              >
-                {visibleMembers.map((item) => (
-                  <li key={item.id}>
-                    <img src={item.img} alt="Student Avatar" />
-                  </li>
-                ))}
-                {extraCount > 0 && (
-                  <li className="extra-count">
-                    <span>+{extraCount}</span>
-                  </li>
-                )}
-              </ul>
-              <div className="check-task-by-all-content-member-button-add">
-                <img src={avatar_add_button} alt="add_button_icon" />
-                <img src={iconFilter} alt="filter_button_icon" />
-                <img src={iconMore} alt="more_button_icon" />
-              </div>
-            </div>
-          </div>
+          <ClassAndMember />
           <div className="task-column-container">
             {statuses.map((item) => (
               <Column

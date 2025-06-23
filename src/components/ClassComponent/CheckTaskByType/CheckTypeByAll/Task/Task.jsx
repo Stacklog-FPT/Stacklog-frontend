@@ -22,7 +22,7 @@ const Task = (props) => {
     transition,
     opacity: isDragging ? 0.5 : 1,
   };
-
+  console.log(props.members)
   const visibleMembers = props.members.slice(0, 3);
   const extraCount = props.members.length - visibleMembers.length;
 

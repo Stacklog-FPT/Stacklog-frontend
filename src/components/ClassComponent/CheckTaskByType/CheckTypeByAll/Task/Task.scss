@@ -17,6 +17,7 @@ $color-percent: #344054;
   background-size: cover, 20% 50%;
   background-position: bottom, right;
   background-repeat: no-repeat, no-repeat;
+  z-index: 999;
   transition: transform 0.2s ease;
 }
 

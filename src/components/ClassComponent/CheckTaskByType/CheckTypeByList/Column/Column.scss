@@ -8,10 +8,10 @@ $-color-text-add: #545454;
   justify-content: flex-start;
   gap: 20px;
   .column-list {
-    width: 180px;
-    padding: 10px 20px;
+    width: 100%;
     .prop-status {
-      width: 100%;
+      padding: 10px 20px;
+      width: 140px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -27,8 +27,17 @@ $-color-text-add: #545454;
 
   .column-task {
     width: 100%;
+    padding: 10px 20px;
     table {
-        width: 100%;
+      width: 100%;
+      th {
+        color: #333333;
+          font-weight: 500;
+          font-size: 14px;
+        line-height: 21px;
+        border-bottom: 1px solid #595858;
+        padding-bottom: 10px;
+      }
     }
   }
 }

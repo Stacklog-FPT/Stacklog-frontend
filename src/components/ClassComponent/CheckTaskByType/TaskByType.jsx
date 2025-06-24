@@ -4,8 +4,8 @@ import "./TaskByType.scss";
 const TaskByType = ({ activeType, setActiveType }) => {
   const taskTypes = [
     { type: "All", icon: "fa-solid fa-globe" },
-    { type: "By Status", icon: "fa-solid fa-chart-line" },
     { type: "Checklist", icon: "fa-solid fa-list" },
+    { type: "By Status", icon: "fa-solid fa-chart-line" },
     { type: "My task", icon: "fa-solid fa-user" },
   ];
 

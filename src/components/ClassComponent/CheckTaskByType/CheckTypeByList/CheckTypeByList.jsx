@@ -2,6 +2,20 @@ import React, { useEffect, useState } from "react";
 import "./CheckTypeByList.scss";
 import Column from "./Column/Column";
 import ClassAndMember from "../../ClassAndMember/ClassAndMember";
+import { DndContext, rectIntersection, closestCorners } from "@dnd-kit/core";
+import { useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
+import AddTask from '../../../Task/AddTask/AddTask'
+import CommentTask from "../../../Task/CommentTask/CommentTask";
+
+const customCollisionDetection = (args) => {
+  const droppableCollisions = rectIntersection(args) || [];
+  if (droppableCollisions.length > 0) {
+    return droppableCollisions;
+  }
+  const sortableCollisions = closestCorners(args) || [];
+  return sortableCollisions.length > 0 ? sortableCollisions : null;
+};
+
 const CheckTypeByList = () => {
   const [tasks, setTasks] = useState([
     {
@@ -183,7 +197,11 @@ const CheckTypeByList = () => {
       ],
     },
   ]);
+
   const [members, setMembers] = useState([]);
+  const [activeColumn, setActiveColumn] = useState(null);
+  const [showAddTask, setShowAddTask] = useState(null);
+  const [showCommentTask, setShowCommentTask] = useState(null);
 
   const statuses = [
     { id: 1, status: "To Do", color: "#D8E7E4" },
@@ -191,6 +209,109 @@ const CheckTypeByList = () => {
     { id: 3, status: "Completed", color: "#000000" },
     { id: 4, status: "Over due", color: "#F05122" },
   ];
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const handleDragOver = (event) => {
+    const { over } = event;
+    if (over) {
+      const overId = over.id;
+      if (overId.startsWith("droppable-")) {
+        const targetStatus = overId.replace("droppable-", "");
+        setActiveColumn(targetStatus);
+      }
+    } else {
+      setActiveColumn(null);
+    }
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = active.id;
+    const activeTask = tasks.find((task) => task.id === activeId);
+    if (!activeTask) return;
+
+    let updatedTasks = [...tasks];
+    const activeIndex = tasks.findIndex((task) => task.id === activeId);
+
+    const droppableId = over.id;
+    const isOverDroppable = droppableId.startsWith("droppable-");
+    const isOverTask = tasks.some((task) => task.id === over.id);
+
+    if (isOverDroppable || activeColumn) {
+      const targetStatus =
+        activeColumn || droppableId.replace("droppable-", "");
+      const targetTasks = tasks.filter(
+        (task) => task.status === targetStatus && task.id !== activeId
+      );
+      let dropIndex = over.data.current?.sortable?.index ?? 0;
+
+      updatedTasks = updatedTasks.map((task) =>
+        task.id === activeId ? { ...task, status: targetStatus } : task
+      );
+
+      let targetIndex = 0;
+      if (targetTasks.length === 0) {
+        const firstTaskInOtherColumn = tasks.findIndex(
+          (task) => task.status === targetStatus
+        );
+        targetIndex =
+          firstTaskInOtherColumn === -1 ? tasks.length : firstTaskInOtherColumn;
+      } else {
+        targetIndex =
+          tasks.findIndex((task) => task.status === targetStatus) + dropIndex;
+      }
+
+      updatedTasks.splice(activeIndex, 1);
+      updatedTasks.splice(targetIndex, 0, {
+        ...activeTask,
+        status: targetStatus,
+      });
+    } else if (isOverTask) {
+      const overTask = tasks.find((task) => task.id === over.id);
+      if (!overTask) return;
+
+      const overIndex = tasks.findIndex((task) => task.id === over.id);
+      const targetStatus = overTask.status;
+
+      if (activeTask.status === targetStatus) {
+        updatedTasks.splice(activeIndex, 1);
+        updatedTasks.splice(overIndex, 0, activeTask);
+      } else {
+        updatedTasks = updatedTasks.map((task) =>
+          task.id === activeId ? { ...task, status: targetStatus } : task
+        );
+        updatedTasks.splice(activeIndex, 1);
+        updatedTasks.splice(overIndex, 0, {
+          ...activeTask,
+          status: targetStatus,
+        });
+      }
+    }
+
+    setTasks(updatedTasks);
+    setActiveColumn(null);
+  };
+
+  const handleShowAddTask = (status) => {
+    setShowAddTask(status);
+  };
+
+  const handleShowComment = (taskId) => {
+    setShowCommentTask(taskId);
+  };
+
+  const handleCloseComment = () => {
+    setShowCommentTask(null);
+  };
 
   useEffect(() => {
     const uniqueMembers = [
@@ -201,24 +322,56 @@ const CheckTypeByList = () => {
       ).values(),
     ];
     setMembers(uniqueMembers);
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        setShowAddTask(null);
+      }
+    });
+
+    return () => {
+      window.removeEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          setShowAddTask(null);
+        }
+      });
+    };
   }, [tasks]);
+
   return (
-    <div className="check__task__by__list__container">
-      <ClassAndMember />
-      <div className="check__task__by__list__column">
-        {statuses.map((item) => {
-          return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={customCollisionDetection}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="check__task__by__list__container">
+        <ClassAndMember />
+        <div className="check__task__by__list__column">
+          {statuses.map((item) => (
             <Column
               key={item.id}
               color={item.color}
               status={item.status}
-              tasks={tasks}
+              tasks={tasks.filter((task) => task.status === item.status)}
               members={members}
+              onShowAddTask={handleShowAddTask}
+              onShowComment={handleShowComment}
             />
-          );
-        })}
+          ))}
+        </div>
+        {showAddTask && (
+          <AddTask
+            status={showAddTask}
+            onCancel={() => setShowAddTask(null)}
+            members={members}
+          />
+        )}
+        {showCommentTask && (
+          <CommentTask taskId={showCommentTask} isClose={handleCloseComment} />
+        )}
       </div>
-    </div>
+    </DndContext>
   );
 };
 

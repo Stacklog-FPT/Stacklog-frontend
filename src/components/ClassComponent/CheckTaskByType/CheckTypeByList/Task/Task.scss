@@ -1,23 +1,30 @@
 .task_list_container {
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding: 5px 10px;
+
+  td {
+    padding: 10px;
+    vertical-align: middle;
+    text-align: left;
+  }
+
   .task_list_head {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
     gap: 10px;
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
   }
 
   .task_list_head_content {
-    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 5px;
     padding-top: 8px;
+
     h2 {
       font-weight: 500;
       font-size: 14px;
@@ -34,49 +41,63 @@
   }
 
   .task_list_member {
-    width: 100%;
     padding-top: 5px;
     display: flex;
     align-items: center;
-    justify-content: start;
+    justify-content: flex-start;
     ul {
       display: flex;
       align-items: center;
       list-style: none;
-      padding-left: 10px;
+      padding-left: 11px;
       margin: 0;
+
+      li {
+        position: relative;
+        margin-left: -12px;
+        &:nth-child(n + 4):not(.extra-count) {
+          display: none;
+        }
+
+        img {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          border: 2px solid #fff;
+          object-fit: cover;
+        }
+      }
     }
 
-    li {
-      position: relative;
+    .extra-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #f0f0f0;
+      color: #333;
+      font-size: 14px;
+      font-weight: bold;
+      border: 2px solid #fff;
       margin-left: -10px;
-      &:nth-child(n + 4):not(.extra-count) {
-        display: none;
-      }
-
-      img {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        border: 2px solid #fff;
-        object-fit: cover;
-      }
+      z-index: 1;
     }
   }
 
-  .extra-count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: #f0f0f0;
-    color: #333;
+  .task_list_due_date h2,
+  .task_list_priority h2 {
+    margin: 0;
+    font-weight: 500;
     font-size: 14px;
-    font-weight: bold;
-    border: 2px solid #fff;
-    margin-left: -10px;
-    z-index: 1;
+    line-height: 21px;
+    color: #000;
+  }
+
+  .task_list_action img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
   }
 }

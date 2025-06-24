@@ -1,41 +1,84 @@
 import React from "react";
 import "./Task.scss";
 import adjustIcon from "../../../../../assets/icon/checkTaskByList/adjust.png";
-const Task = (props) => {
-  const visibleMembers = props?.members?.slice(0, 3);
-  const extraCount = props?.members?.length - visibleMembers?.length;
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const visibleMembers = members?.slice(0, 3) || [];
+  const extraCount = members?.length - visibleMembers.length;
+
   return (
-    <div className="task_list_container">
-      <div className="task_list_head">
-        <img src={adjustIcon} />
-        <div className="task_list_head_content">
-          <p>.</p>
-          <h2>{props.title}</h2>
+    <tr
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="task_list_container"
+    >
+      <td>
+        <div className="task_list_head">
+          <img src={adjustIcon} alt="Adjust Icon" />
+          <div className="task_list_head_content">
+            <p>.</p>
+            <h2>{title}</h2>
+          </div>
         </div>
-      </div>
-
-      <div className="task_list_member">
-        <ul
-          className="task-content-members-student-list"
-          data-extra-count={extraCount > 0 ? extraCount : ""}
-        >
-          {visibleMembers.map((item) => (
-            <li key={item.id}>
-              <img src={item.img} alt="Student Avatar" />
-            </li>
-          ))}
-          {extraCount > 0 && (
-            <li className="extra-count">
-              <span>+{extraCount}</span>
-            </li>
-          )}
-        </ul>
-      </div>
-
-      <div className="task_list_due_date">
-        <h1>HelloWorld!</h1>
-      </div>
-    </div>
+      </td>
+      <td>
+        <div className="task_list_member">
+          <ul
+            className="task-content-members-student-list"
+            data-extra-count={extraCount > 0 ? extraCount : ""}
+          >
+            {visibleMembers.map((item) => (
+              <li key={item.id}>
+                <img src={item.img} alt="Student Avatar" />
+              </li>
+            ))}
+            {extraCount > 0 && (
+              <li className="extra-count">
+                <span>+{extraCount}</span>
+              </li>
+            )}
+          </ul>
+        </div>
+      </td>
+      <td>
+        <div className="task_list_due_date">
+          <h2>{dueDate || "No due date"}</h2>
+        </div>
+      </td>
+      <td>
+        <div className="task_list_priority">
+          <h2>{priority || "No priority"}</h2>
+        </div>
+      </td>
+      <td>
+        <div className="task_list_action">
+          <img
+            src={adjustIcon}
+            alt="Action Icon"
+            onClick={() => onShowComment?.(id)}
+          />
+        </div>
+      </td>
+    </tr>
   );
 };
 

@@ -11,16 +11,33 @@ $-color-text-add: #545454;
     width: 100%;
     .prop-status {
       padding: 10px 20px;
-      width: 140px;
+      width: 200px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      p {
-        color: #ffffff;
-        font-size: 16px;
-        font-style: 700;
-        line-height: 24px;
-        margin: 0;
+
+      &-length {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+
+        p {
+          color: #ffffff;
+          font-size: 16px;
+          font-style: 700;
+          line-height: 24px;
+          margin: 0;
+        }
+
+        .prop-status-text-total-task {
+          color: #ffffff;
+          font-size: 16px;
+          font-style: 600;
+          line-height: 24px;
+          margin: 0;
+        }
       }
     }
   }
@@ -32,8 +49,8 @@ $-color-text-add: #545454;
       width: 100%;
       th {
         color: #333333;
-          font-weight: 500;
-          font-size: 14px;
+        font-weight: 500;
+        font-size: 14px;
         line-height: 21px;
         border-bottom: 1px solid #595858;
         padding-bottom: 10px;

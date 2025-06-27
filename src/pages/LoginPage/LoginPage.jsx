@@ -10,7 +10,7 @@ const LoginPage = () => {
   const handleGoogleFailure = () => {};
 
   return (
-    <GoogleOAuthProvider clientId="300777288453-f1ton6ndi83jhpijj78eb4blpc5e91vo.apps.googleusercontent.com">
+    <GoogleOAuthProvider>
       <div className="form-login-container">
         <div className="wrapper-form">
           <div className="form_text">

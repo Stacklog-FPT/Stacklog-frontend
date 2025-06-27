@@ -4,6 +4,7 @@ import TaskByType from "../../components/ClassComponent/CheckTaskByType/TaskByTy
 import CheckTypeByAll from "../../components/ClassComponent/CheckTaskByType/CheckTypeByAll/CheckTypeByAll";
 import CheckTypeByList from "../../components/ClassComponent/CheckTaskByType/CheckTypeByList/CheckTypeByList";
 import CheckTaskBySelf from "../../components/ClassComponent/CheckTaskByType/CheckTaskBySelf/CheckTaskBySelf";
+import CheckTaskByStatus from "../../components/ClassComponent/CheckTaskByType/CheckTaskByStatus/CheckTaskByStatus";
 const ClassPage = () => {
   const [activeType, setActiveType] = React.useState("All");
   return (
@@ -15,7 +16,8 @@ const ClassPage = () => {
 
       {activeType === "All" && <CheckTypeByAll />}
       {activeType === "Checklist" && <CheckTypeByList />}
-      {activeType === "MyTask" && <CheckTaskBySelf />}
+      {activeType === "By Status" && <CheckTaskByStatus />}
+      {activeType === "My Task" && <CheckTaskBySelf />}
     </div>
   );
 };

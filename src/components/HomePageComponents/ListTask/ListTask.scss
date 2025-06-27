@@ -1,0 +1,22 @@
+.list__task__container {
+  width: 1112px;
+  height: auto;
+  padding: 12px 12px 20px 12px;
+  background-color: #fff;
+  border-radius: 20px;
+  .list__task__heading {
+    &__text {
+      width: 155px;
+      background-color: #045745;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+      p {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 30px;
+        color: #fff;
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+.my__plan__container {
+  width: 546px;
+  height: 578px;
+  border-radius: 20px;
+  background-color: #ffff;
+  padding: 5px 10px;
+  .my__plan__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    &__text {
+      width: 155px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background-color: #045745;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+      p {
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 30px;
+        color: #fff;
+      }
+    }
+
+    &__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding-right: 10px;
+    }
+  }
+}

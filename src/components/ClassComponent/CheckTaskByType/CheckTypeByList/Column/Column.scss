@@ -15,7 +15,7 @@ $-color-text-add: #545454;
       display: flex;
       align-items: center;
       justify-content: space-between;
-
+      margin-bottom: 15px;
       &-length {
         width: 100%;
         display: flex;
@@ -26,9 +26,11 @@ $-color-text-add: #545454;
         p {
           color: #ffffff;
           font-size: 16px;
-          font-style: 700;
+          font-style: 800;
           line-height: 24px;
+          letter-spacing: 1.75px;
           margin: 0;
+          font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
         }
 
         .prop-status-text-total-task {
@@ -54,6 +56,15 @@ $-color-text-add: #545454;
         line-height: 21px;
         border-bottom: 1px solid #595858;
         padding-bottom: 10px;
+        padding-left: 25px;
+      }
+
+      h2 {
+        padding-top: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 21px;
+        color: #545454;
       }
     }
   }

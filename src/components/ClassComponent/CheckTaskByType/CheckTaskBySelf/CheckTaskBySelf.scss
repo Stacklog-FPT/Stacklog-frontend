@@ -1,7 +1,28 @@
 .check__task__by__self__container {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 50px;
+  overflow-y: auto;
+}
+
+#orgChart {
+  width: 100%;
+  height: 500px;
+  overflow-x: auto;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+
+  .react-org-chart {
+    text-align: center;
+  }
+
+  .react-org-chart-line {
+    stroke: #007bff;
+    stroke-width: 2px;
+  }
 }

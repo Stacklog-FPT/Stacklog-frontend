@@ -6,12 +6,66 @@ import MyPlan from "../../components/HomePageComponents/MyPlan/MyPlan";
 import Document from "../../components/HomePageComponents/Document/Document";
 import ListTask from "../../components/HomePageComponents/ListTask/ListTask";
 const Home = () => {
+  const today = new Date();
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "November",
+    "March",
+    "June",
+    "September",
+    "December",
+  ];
+
+  const dayOfWeeks = days[today.getDay()];
+  const month = months[today.getMonth()];
+  const date = today.getDate();
+  const year = today.getFullYear();
+
+  const getCurrentHour = () => {
+    const now = new Date();
+    const hour = now.getHours();
+    return hour;
+  };
+
+  const getCurrentSession = () => {
+    let amPm = "";
+    if (getCurrentHour() == 1 && getCurrentHour() <= 12) {
+      amPm = "AM";
+    } else {
+      amPm = "PM";
+    }
+
+    return amPm;
+  };
   return (
     <div className="home__container">
       <Head />
       <Meeting />
       <div className="d-flex align-items-center justify-content-around mt-4 gap-4">
-        <MyPlan />
+        <MyPlan
+          getCurrentHour={getCurrentHour}
+          getCurrentSession={getCurrentSession}
+          dayOfWeeks={dayOfWeeks}
+          month={month}
+          date={date}
+          year={year}
+        />
         <Document />
       </div>
       <ListTask />

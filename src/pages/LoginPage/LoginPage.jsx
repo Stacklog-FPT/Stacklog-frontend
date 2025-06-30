@@ -1,13 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import "./LoginPage.scss";
 import { Link } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import userApi from "../../service/UserService";
 import logo from "../../assets/logo-login.png";
 
 const LoginPage = () => {
-  const handleGoogleSuccess = (credentialResponse) => {};
+  const [email, setEmail] = useState("");
+  const [passWord, setPassWord] = useState("");
+  const { login, error, isLoading } = userApi();
+  // const handleGoogleSuccess = (credentialResponse) => {};
 
-  const handleGoogleFailure = () => {};
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await login(email, passWord);
+      console.log("Login successfully: ", response);
+    } catch (e) {
+      console.error("Login Failed", e || e.message);
+    }
+  };
+  // const handleGoogleFailure = () => {};
 
   return (
     <GoogleOAuthProvider>
@@ -20,17 +34,27 @@ const LoginPage = () => {
               Welcome back! Please enter your details.
             </p>
           </div>
-          <div className="form">
+          <form className="form" onSubmit={handleLogin}>
             <div className="form_wrapper_input">
               <div className="form_wrapper_input_field">
                 <label className="form_wrapper_input_field_label">Email</label>
-                <input type="text" placeholder="Enter your email" />
+                <input
+                  type="text"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
               <div className="form_wrapper_input_field">
                 <label className="form_wrapper_input_field_label">
                   Password
                 </label>
-                <input type="password" placeholder="Enter password" />
+                <input
+                  type="password"
+                  placeholder="Enter password"
+                  value={passWord}
+                  onChange={(e) => setPassWord(e.target.value)}
+                />
               </div>
 
               <div className="form_wrapper_checkbox">
@@ -49,16 +73,18 @@ const LoginPage = () => {
               </div>
             </div>
             <div className="form_wrapper_button">
-              <button className="form_wrapper_button_field">Sign in</button>
-              <GoogleLogin
+              <button className="form_wrapper_button_field">
+                {isLoading ? "Signing in..." : "Sign in"}
+              </button>
+              {/* <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleFailure}
                 text="signin_with"
                 logo_alignment="left"
                 width="382"
-              />
+              /> */}
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </GoogleOAuthProvider>

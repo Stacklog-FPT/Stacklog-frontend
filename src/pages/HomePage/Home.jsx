@@ -10,7 +10,7 @@ const Home = () => {
     <div className="home__container">
       <Head />
       <Meeting />
-      <div className="d-flex align-items-center justify-content-around mt-4">
+      <div className="d-flex align-items-center justify-content-around mt-4 gap-4">
         <MyPlan />
         <Document />
       </div>

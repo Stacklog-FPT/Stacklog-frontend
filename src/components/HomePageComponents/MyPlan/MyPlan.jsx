@@ -5,7 +5,6 @@ import moreIcon from "../../../assets/home/planDocument/more_horiz.png";
 import zoomIcon from "../../../assets/home/planDocument/zoom_big.png";
 import planVector from "../../../assets/home/planDocument/planVector.png";
 import adjustVector from "../../../assets/home/planDocument/adjust.png";
-import dot from "../../../assets/home/planDocument/fiber_manual_record.png";
 
 const MyPlan = (props) => {
   const [activeType, setActiveType] = useState("Todo");
@@ -18,10 +17,10 @@ const MyPlan = (props) => {
       target: 5,
       tasks: [
         { id: 1, name: "Long", title: "Done FE " },
-        { id: 2, name: "Nhật", title: "Done BE" },
-        { id: 3, name: "Thành", title: "Done App" },
-        { id: 4, name: "Yến", title: "Analysis Requirement" },
-        { id: 5, name: "Việt", title: "Testing Application" },
+        { id: 2, name: "Long", title: "Done BE" },
+        { id: 3, name: "Long", title: "Done App" },
+        { id: 4, name: "Long", title: "Analysis Requirement" },
+        { id: 5, name: "Long", title: "Testing Application" },
       ],
     },
   ];
@@ -76,7 +75,10 @@ const MyPlan = (props) => {
                   {item.tasks.length > 0 && item.tasks ? (
                     item.tasks.map((item) => {
                       return (
-                        <div className="my__plan__list__target__item__task">
+                        <div
+                          className="my__plan__list__target__item__task"
+                          key={item.id}
+                        >
                           <div className="my__plan__list__target__item__task__content">
                             <img src={adjustVector} alt="this is icon..." />
                             <p>{item.name} -</p>

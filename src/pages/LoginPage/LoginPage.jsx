@@ -7,21 +7,21 @@ import logo from "../../assets/logo-login.png";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
-  const [passWord, setPassWord] = useState("");
+  const [password, setPassWord] = useState("");
   const { login, error, isLoading } = userApi();
-  // const handleGoogleSuccess = (credentialResponse) => {};
+  const handleGoogleSuccess = (credentialResponse) => {};
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await login(email, passWord);
+      const response = await login(email, password);
       console.log("Login successfully: ", response);
     } catch (e) {
       console.error("Login Failed", e || e.message);
     }
   };
-  // const handleGoogleFailure = () => {};
+  const handleGoogleFailure = () => {};
 
   return (
     <GoogleOAuthProvider>
@@ -52,7 +52,7 @@ const LoginPage = () => {
                 <input
                   type="password"
                   placeholder="Enter password"
-                  value={passWord}
+                  value={password}
                   onChange={(e) => setPassWord(e.target.value)}
                 />
               </div>
@@ -76,13 +76,13 @@ const LoginPage = () => {
               <button className="form_wrapper_button_field">
                 {isLoading ? "Signing in..." : "Sign in"}
               </button>
-              {/* <GoogleLogin
+              <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleFailure}
                 text="signin_with"
                 logo_alignment="left"
                 width="382"
-              /> */}
+              />
             </div>
           </form>
         </div>

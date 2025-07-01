@@ -15,7 +15,6 @@ import { SidebarContext } from "../context/SideBarContext";
 
 const MainLayout = () => {
   const { isOpen, setIsOpen } = useContext(SidebarContext);
-  console.log(isOpen);
   const { isAnnouncementVisible } = useContext(AnnouncementContext);
   const { mode } = useContext(ColorModeContext);
   const { isShowGroupChat, setIsShowGroupChat } = useContext(GroupChatContext);
@@ -26,13 +25,23 @@ const MainLayout = () => {
   }, [mode]);
 
   useEffect(() => {
-    if (location.pathname == "/chatbox") {
+    if (location.pathname === "/chatbox") {
       setIsShowGroupChat(true);
       setIsOpen(false);
     } else {
-      setIsOpen(true)
+      setIsOpen(true);
     }
-  }, [location.pathname, setIsShowGroupChat]);
+
+    if (location.pathname === "/class") {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [location.pathname, setIsShowGroupChat, setIsOpen]);
 
   return (
     <div className="layout">
@@ -43,7 +52,11 @@ const MainLayout = () => {
       {location.pathname === "/chatbox" && isShowGroupChat && (
         <GroupComponent />
       )}
-      <main className="main-content">
+      <main
+        className={`main-content ${
+          location.pathname === "/class-page" ? "no-scroll" : ""
+        }`}
+      >
         <InputSearch />
         <Outlet
           className={`main-content-area ${mode === "light" ? "light" : "dark"}`}

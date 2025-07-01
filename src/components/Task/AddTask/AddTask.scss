@@ -2,13 +2,13 @@ $color-text: #000;
 $color-input: #f1f7f7;
 $color-hover: red;
 .add-task-container {
+  width: 680px;
+  height: 780px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 18px;
-  width: 680px;
-  max-height: 720px;
+  gap: 5px;
   background-color: #ffffff;
   z-index: 1000;
   position: absolute;
@@ -17,7 +17,7 @@ $color-hover: red;
   border-radius: 30px;
   padding: 20px 20px;
   scroll-behavior: smooth;
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
   .text-heading {
     font-weight: 500;

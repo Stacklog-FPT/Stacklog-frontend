@@ -1,24 +1,33 @@
 $color-text: #000;
 $color-input: #f1f7f7;
 $color-hover: red;
-.add-task-container {
+
+.add-task {
+  position: absolute;
+  top: 10%;
+  left: 30%;
+  z-index: 1000;
   width: 680px;
-  height: 780px;
+  height: 600px;
+  background-color: #ffffff;
+  border-radius: 30px;
+}
+
+.add-task-container {
+  padding: 20px 20px;
+
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
   gap: 5px;
-  background-color: #ffffff;
-  z-index: 1000;
-  position: absolute;
-  top: 1%;
-  left: 30%;
-  border-radius: 30px;
-  padding: 20px 20px;
   scroll-behavior: smooth;
   overflow-y: scroll;
-  overflow-x: hidden;
+
+  & > * {
+    flex-shrink: 0;
+  }
   .text-heading {
     font-weight: 500;
     line-height: 30px;

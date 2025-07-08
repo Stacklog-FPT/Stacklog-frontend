@@ -1,22 +1,34 @@
 import React, { useState } from "react";
 import "./LoginPage.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import userApi from "../../service/UserService";
 import logo from "../../assets/logo-login.png";
+import { useAuth } from "../../context/AuthProvider";
 
 const LoginPage = () => {
+  const { loginSave } = useAuth();
+  const { login, error, isLoading } = userApi();
+  const [user, setUser] = useState({});
   const [email, setEmail] = useState("");
   const [password, setPassWord] = useState("");
-  const { login, error, isLoading } = userApi();
+  const navigate = useNavigate();
   const handleGoogleSuccess = (credentialResponse) => {};
-
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
       const response = await login(email, password);
-      console.log("Login successfully: ", response);
+      if (response) {
+        const userData = {
+          email: response.email,
+          username: response.username,
+          token: response.token,
+        };
+        
+        loginSave(userData);
+        navigate("/");
+      }
     } catch (e) {
       console.error("Login Failed", e || e.message);
     }
@@ -71,6 +83,7 @@ const LoginPage = () => {
                   <Link>Forgot password</Link>
                 </div>
               </div>
+              <div className="error-login">{error && <span>{error}</span>}</div>
             </div>
             <div className="form_wrapper_button">
               <button className="form_wrapper_button_field">

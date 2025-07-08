@@ -53,8 +53,10 @@ $color-border-input: #e8e8e8;
       }
 
       button {
+        width: 200px;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 8px;
         color: #fff;
         background-color: #000;
@@ -65,7 +67,8 @@ $color-border-input: #e8e8e8;
         transition: background-color 0.3s;
 
         &:hover {
-          background-color: $color-primary;
+          background-color: #111111;
+          color: $color-primary;
         }
       }
     }

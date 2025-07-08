@@ -6,7 +6,7 @@ const useFetchList = (path, query, config = {}) => {
   useEffect(() => {
     const fetchApi = async () => {
       const queryString = new URLSearchParams(query);
-      const response = await api.get(`${path}/search?${queryString}`, config);
+      const response = await api.get(`${path}`, config);
       setData(response.data[path]);
     };
 

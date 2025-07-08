@@ -12,55 +12,42 @@ import GradesPage from "../pages/GradesPage/GradesPage";
 import PlanPage from "../pages/PlanPage/PlanPage";
 import Profile from "../pages/Profile/Profile";
 import MainLayoutWithProvider from "../layouts/MainLayout";
+import { AuthProvider } from "../context/AuthProvider";
+import ProtectedRoutes from "./ProtectedRoutes";
 
 const routes = [
   {
-    element: <MainLayoutWithProvider />,
+    element: (
+      <AuthProvider>
+        <ProtectedRoutes />
+      </AuthProvider>
+    ),
     children: [
       {
-        path: "/",
-        element: <Home />,
-      },
-      {
-        path: "/class",
-        element: <ClassPage />,
-      },
-      {
-        path: "/tasks",
-        element: <TaskPage />,
-      },
-      {
-        path: "/schedule",
-        element: <SchedulePage />,
-      },
-      {
-        path: "/documents",
-        element: <DocumentPage />,
-      },
-      {
-        path: "/chatbox",
-        element: <ChatPage />,
-      },
-      {
-        path: "/grades",
-        element: <GradesPage />,
-      },
-      {
-        path: "/plan",
-        element: <PlanPage />,
-      },
-      {
-        path: "/user-detail",
-        element: <Profile />,
+        element: <MainLayout />,
+        children: [
+          { path: "/", element: <Home /> },
+          { path: "/class", element: <ClassPage /> },
+          { path: "/tasks", element: <TaskPage /> },
+          { path: "/schedule", element: <SchedulePage /> },
+          { path: "/documents", element: <DocumentPage /> },
+          { path: "/chatbox", element: <ChatPage /> },
+          { path: "/grades", element: <GradesPage /> },
+          { path: "/plan", element: <PlanPage /> },
+          { path: "/user-detail", element: <Profile /> },
+        ],
       },
     ],
   },
   {
     path: "/login",
-    element: <LoginPage />,
+    element: (
+      <AuthProvider>
+        <LoginPage />
+      </AuthProvider>
+    ),
   },
 ];
-
 const Routes = () => {
   const router = createBrowserRouter(routes);
   return <RouterProvider router={router} />;

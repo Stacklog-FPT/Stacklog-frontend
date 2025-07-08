@@ -6,16 +6,19 @@ import { AnnouncementProvider } from "./context/AnnoucementContext.jsx";
 import ColorModeProvider from "./context/ColorModeContext.jsx";
 import SidebarProvider from "./context/SideBarContext.jsx";
 import ChatProvider from "./context/ChatContext.jsx";
+import { AuthProvider } from "./context/AuthProvider.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AnnouncementProvider>
-      <ColorModeProvider>
-        <SidebarProvider>
-          <ChatProvider>
-            <App />
-          </ChatProvider>
-        </SidebarProvider>
-      </ColorModeProvider>
-    </AnnouncementProvider>
+    <AuthProvider>
+      <AnnouncementProvider>
+        <ColorModeProvider>
+          <SidebarProvider>
+            <ChatProvider>
+              <App />
+            </ChatProvider>
+          </SidebarProvider>
+        </ColorModeProvider>
+      </AnnouncementProvider>
+    </AuthProvider>
   </StrictMode>
 );

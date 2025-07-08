@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Profile.scss";
-import useEnterButton from "../../hooks/useEnterButton";
+import userApi from "../../service/UserService";
+import { useAuth } from "../../context/AuthProvider";
 
 const Profile = () => {
+  const { user, logoutAuth } = useAuth();
+  const { logout, error, isLoading } = userApi();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     name: "Lê Văn Lu",
@@ -33,8 +36,18 @@ const Profile = () => {
     setIsEditing((prev) => !prev);
   };
 
-  useEnterButton(toggleEdit);
-
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await logout(user.token);
+      console.log(response);
+      if (response) {
+        logoutAuth();
+      }
+    } catch (e) {
+      console.error("Login failed" || e.message);
+    }
+  };
   return (
     <div className="profile-popup">
       <div className="profile-popup-avatar">
@@ -70,6 +83,10 @@ const Profile = () => {
           <button onClick={toggleEdit}>
             <i className="fa-solid fa-pen-to-square"></i>{" "}
             {isEditing ? "Save Profile" : "Edit Profile"}
+          </button>
+          <button onClick={handleLogout}>
+            <i className="fa-solid fa-right-from-bracket"></i>
+            {isLoading ? "Is Logging" : "Logout"}
           </button>
         </div>
       </div>

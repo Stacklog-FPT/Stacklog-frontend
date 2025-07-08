@@ -24,6 +24,18 @@ const Task = (props) => {
   };
   const visibleMembers = props?.members?.slice(0, 3);
   const extraCount = props?.members?.length - visibleMembers?.length;
+  const formatDate = (date) => {
+    if (!date) return "";
+
+    const dateObj = new Date(date);
+    if (isNaN(dateObj)) return "";
+
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const year = dateObj.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
 
   return (
     <div
@@ -51,9 +63,9 @@ const Task = (props) => {
           <span>{props.percent}</span>
         </div>
         <div className="task-content-deadline">
-          <span>{props.createdAt}</span>
+          <span>{formatDate(props.createdAt)}</span>
           <img src={iconDeadLine} alt="this is icon deadline" />
-          <span>{props.dueDate}</span>
+          <span>{formatDate(props.createdAt)}</span>
         </div>
         <div className="task-content-members">
           <ul
@@ -61,7 +73,7 @@ const Task = (props) => {
             data-extra-count={extraCount > 0 ? extraCount : ""}
           >
             {visibleMembers.map((item) => (
-              <li key={item.id}>
+              <li key={item.assignTo}>
                 <img src={item.img} alt="Student Avatar" />
               </li>
             ))}

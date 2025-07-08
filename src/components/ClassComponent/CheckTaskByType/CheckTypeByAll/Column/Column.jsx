@@ -40,20 +40,20 @@ const Column = ({
         </div>
         <SortableContext
           id={status}
-          items={tasks.map((task) => task.id)}
+          items={tasks.map((task) => task.taskId)}
           strategy={verticalListSortingStrategy}
         >
           <div className="column-task" data-status={status}>
             {tasks && tasks.length > 0 ? (
               tasks.map((task) => (
                 <Task
-                  key={task.id}
-                  id={task.id}
-                  title={task.title}
-                  percent={task.percentProgress}
-                  members={task.members} 
-                  createdAt={task.createdAt}
-                  dueDate={task.dueDate}
+                  key={task?.taskId}
+                  id={task?.taskId}
+                  title={task?.taskTitle}
+                  percent={task?.percentProgress}
+                  members={task?.assigns}
+                  createdAt={task?.createdAt}
+                  dueDate={task?.taskDueDate}
                   onShowComment={onShowComment}
                 />
               ))

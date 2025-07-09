@@ -1,5 +1,6 @@
 import React from "react";
 import "./Task.scss";
+import Skeleton from "react-loading-skeleton";
 import iconMore from "../../../../../assets/icon/task/iconMore.png";
 import iconDeadLine from "../../../../../assets/icon/task/iconDeadLine.png";
 import addButton from "../../../../../assets/icon/avatar_add_button.png";
@@ -47,7 +48,7 @@ const Task = (props) => {
     >
       <div className="task-content">
         <div className="task-content-head">
-          <span>{props.title}</span>
+          <span>{props.title || <Skeleton />}</span>
           <div className="task-content-head-icon">
             <i className="fa-solid fa-pen"></i>
             <i className="fa-solid fa-bookmark"></i>
@@ -63,9 +64,9 @@ const Task = (props) => {
           <span>{props.percent}</span>
         </div>
         <div className="task-content-deadline">
-          <span>{formatDate(props.createdAt)}</span>
+          <span>{formatDate(props.createdAt) || <Skeleton />}</span>
           <img src={iconDeadLine} alt="this is icon deadline" />
-          <span>{formatDate(props.createdAt)}</span>
+          <span>{formatDate(props.createdAt) || <Skeleton />}</span>
         </div>
         <div className="task-content-members">
           <ul

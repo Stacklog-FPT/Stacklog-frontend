@@ -3,6 +3,8 @@ import "./Column.scss";
 import iconMore from "../../../../../assets/icon/task/iconMoreTask.png";
 import iconVector from "../../../../../assets/icon/task/iconVector.png";
 import Task from "../Task/Task";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -16,6 +18,7 @@ const Column = ({
   members,
   onShowAddTask,
   onShowComment,
+  isLoading = false, 
 }) => {
   const { setNodeRef } = useDroppable({
     id: `droppable-${status}`,
@@ -30,7 +33,13 @@ const Column = ({
               <img src={iconVector} alt="vector icon" />
               <span>{status}</span>
               <span className="prop-status-text-total-task">
-                {tasks ? tasks.length : 0}
+                {isLoading ? (
+                  <Skeleton width={20} height={16} />
+                ) : tasks ? (
+                  tasks.length
+                ) : (
+                  0
+                )}
               </span>
             </div>
           </div>
@@ -40,11 +49,22 @@ const Column = ({
         </div>
         <SortableContext
           id={status}
-          items={tasks.map((task) => task.taskId)}
+          items={tasks?.map((task) => task.taskId) || []} // Bảo vệ khi tasks là undefined
           strategy={verticalListSortingStrategy}
         >
           <div className="column-task" data-status={status}>
-            {tasks && tasks.length > 0 ? (
+            {isLoading ? (
+              // Hiển thị 3 skeleton khi đang loading
+              Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="task-skeleton"
+                  style={{ marginBottom: "10px" }}
+                >
+                  <Skeleton height={80} borderRadius={8} />
+                </div>
+              ))
+            ) : tasks && tasks.length > 0 ? (
               tasks.map((task) => (
                 <Task
                   key={task?.taskId}

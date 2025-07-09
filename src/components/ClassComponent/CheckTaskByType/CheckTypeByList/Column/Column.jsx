@@ -3,13 +3,22 @@ import "./Column.scss";
 import iconVector from "../../../../../assets/icon/task/iconVector.png";
 import add from "../../../../../assets/icon/checkTaskByList/add.png";
 import Task from "../Task/Task";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
 
-const Column = ({ color, status, tasks, onShowAddTask, onShowComment }) => {
+const Column = ({
+  color,
+  status,
+  tasks,
+  onShowAddTask,
+  onShowComment,
+  isLoading = false,
+}) => {
   const [showAdd, setShowAdd] = useState(null);
   const { setNodeRef } = useDroppable({
     id: `droppable-${status}`,
@@ -48,15 +57,39 @@ const Column = ({ color, status, tasks, onShowAddTask, onShowComment }) => {
                 </tr>
               </thead>
               <tbody>
-                {tasks && tasks.length > 0 ? (
-                  tasks.map((item) => (
+                {isLoading ? (
+                  Array.from({ length: 3 }).map((_, index) => (
+                    <tr key={index} className="task-skeleton">
+                      <td>
+                        <Skeleton width="80%" height={20} />
+                      </td>
+                      <td>
+                        <Skeleton width={60} height={20} />
+                      </td>
+                      <td>
+                        <Skeleton width={80} height={20} />
+                      </td>
+                      <td>
+                        <Skeleton width={50} height={20} />
+                      </td>
+                      <td>
+                        <Skeleton width={50} height={20} />
+                      </td>
+                      <td>
+                        <Skeleton width={30} height={20} />
+                      </td>
+                    </tr>
+                  ))
+                ) : tasks && tasks.length > 0 ? (
+                  tasks.map((task) => (
                     <Task
-                      key={item.id}
-                      id={item.id}
-                      title={item.title}
-                      members={item.members}
-                      dueDate={item.dueDate}
-                      priority={item.prioritize}
+                      key={task?.taskId}
+                      id={task?.taskId}
+                      title={task?.taskTitle}
+                      percent={task?.percentProgress}
+                      members={task?.assigns}
+                      createdAt={task?.createdAt}
+                      dueDate={task?.taskDueDate}
                       onShowComment={onShowComment}
                     />
                   ))

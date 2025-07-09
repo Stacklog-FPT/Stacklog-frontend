@@ -2,6 +2,7 @@ import React from "react";
 import "./Task.scss";
 import adjustIcon from "../../../../../assets/icon/checkTaskByList/adjust.png";
 import { useSortable } from "@dnd-kit/sortable";
+import Skeleton from "react-loading-skeleton";
 import { CSS } from "@dnd-kit/utilities";
 
 const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
@@ -20,9 +21,21 @@ const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const handleFormatDate = (date) => {
+    if (!date) return "";
+
+    const dateObj = new Date(date);
+    if (isNaN(dateObj)) return "";
+
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const year = dateObj.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
+
   const visibleMembers = members?.slice(0, 3) || [];
   const extraCount = members?.length - visibleMembers.length;
-
   return (
     <tr
       ref={setNodeRef}
@@ -36,7 +49,7 @@ const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
           <img src={adjustIcon} alt="Adjust Icon" />
           <div className="task_list_head_content">
             <p>.</p>
-            <h2>{title}</h2>
+            <h2>{title || <Skeleton/>}</h2>
           </div>
         </div>
       </td>
@@ -61,7 +74,7 @@ const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
       </td>
       <td>
         <div className="task_list_due_date">
-          <h2>{dueDate || "No due date"}</h2>
+          <h2>{handleFormatDate(dueDate) || "No due date"}</h2>
         </div>
       </td>
       <td>

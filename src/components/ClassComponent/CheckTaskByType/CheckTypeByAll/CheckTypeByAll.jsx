@@ -8,6 +8,7 @@ import CommentTask from "../../../Task/CommentTask/CommentTask";
 import ClassAndMember from "../../ClassAndMember/ClassAndMember";
 import { useAuth } from "../../../../context/AuthProvider";
 import taskService from "../../../../service/TaskService";
+import statusApi from "../../../../service/ColumnService";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -24,6 +25,7 @@ const CheckTypeByAll = () => {
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
   const [members, setMembers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const statuses = [
     { id: 1, status: "To Do", color: "#D8E7E4" },
     { id: 2, status: "In Progress", color: "#045745" },
@@ -31,8 +33,9 @@ const CheckTypeByAll = () => {
     { id: 4, status: "Over due", color: "#F05122" },
   ];
   const { getAllTask } = taskService();
+  const { getAllStatus } = statusApi();
   const [tasks, setTasks] = useState([]);
-
+  const [statusTask, setStatusTask] = useState([]);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -139,8 +142,6 @@ const CheckTypeByAll = () => {
         });
       }
     }
-
-    console.log("Updated tasks:", updatedTasks);
     setTasks(updatedTasks);
     setActiveColumn(null);
   };
@@ -157,6 +158,17 @@ const CheckTypeByAll = () => {
     setShowCommentTask(null);
   };
 
+  const handleGetStatusTask = async () => {
+    try {
+      const response = await getAllStatus(user.token);
+      if (response) {
+        console.log(response);
+      }
+    } catch (e) {
+      console.error(e.message);
+    }
+  };
+
   const handleGetTasks = async () => {
     try {
       const response = await getAllTask(user.token);
@@ -167,7 +179,7 @@ const CheckTypeByAll = () => {
             ...task.statusTask,
             statusTaskName: task.statusTask.statusTaskName
               .toLowerCase()
-              .replace(/\b\w/g, (c) => c.toUpperCase()), 
+              .replace(/\b\w/g, (c) => c.toUpperCase()),
           },
         }));
         setTasks(normalizedTasks);
@@ -179,8 +191,6 @@ const CheckTypeByAll = () => {
           ).values(),
         ];
         setMembers(uniqueMembers);
-        console.log("Tasks:", normalizedTasks);
-        console.log("Members:", uniqueMembers);
       }
     } catch (e) {
       console.error(e.message);
@@ -188,13 +198,24 @@ const CheckTypeByAll = () => {
   };
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        await Promise.all([handleGetStatusTask(), handleGetTasks()]);
+      } catch (e) {
+        console.error("Error fetching data:", e.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        setShowAddTask(null); 
+        setShowAddTask(null);
       }
     });
-
-    handleGetTasks();
 
     return () => {
       window.removeEventListener("keydown", (e) => {
@@ -221,6 +242,7 @@ const CheckTypeByAll = () => {
                 key={item.id}
                 status={item.status}
                 color={item.color}
+                isLoading={isLoading}
                 tasks={tasks.filter(
                   (task) => task?.statusTask?.statusTaskName === item.status
                 )}

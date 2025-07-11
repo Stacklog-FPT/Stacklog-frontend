@@ -166,7 +166,7 @@ const AddTask = (props) => {
           >
             {colorPriority.map((item) => (
               <option key={item.id} value={item.content}>
-                {item.content}
+                <p>{String(item.content)}</p>
               </option>
             ))}
           </select>

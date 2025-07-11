@@ -1,4 +1,5 @@
 $color-heading: #667085;
+
 .feature__chat__container {
   width: 240px;
   height: 700px;
@@ -8,6 +9,7 @@ $color-heading: #667085;
   justify-content: center;
   gap: 15px;
   margin-top: 20px;
+
   .feature__chat__heading {
     width: 100%;
     height: 64px;
@@ -17,6 +19,7 @@ $color-heading: #667085;
     padding: 20px;
     border-radius: 20px;
     background-color: #fff;
+
     h2 {
       font-weight: 700;
       font-size: 14px;
@@ -24,11 +27,13 @@ $color-heading: #667085;
       color: $color-heading;
       text-transform: uppercase;
     }
+
     i {
       font-size: 10px;
       color: #000;
     }
   }
+
   .feature__chat__user {
     width: 100%;
     height: 636px;
@@ -40,12 +45,13 @@ $color-heading: #667085;
     background-color: #fff;
     padding: 20px;
     border-radius: 20px;
-    background-color: #fff;
+
     img {
       width: 56px;
       height: 56px;
       border-radius: 100px;
     }
+
     h2 {
       font-weight: 700;
       font-size: 14px;
@@ -53,39 +59,34 @@ $color-heading: #667085;
       color: #101828;
     }
   }
+
   .feature__detail__class {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 20px;
-    select {
+
+    .class-selection,
+    .team-selection {
       width: 214px;
-      height: auto;
-      background: none;
-      border: none;
+      padding: 6px 20px;
       font-size: 14px;
       font-weight: 700;
       color: #8a8a8a;
-      padding: 6px 20px;
-      appearance: none;
-      cursor: pointer;
       border-radius: 10px;
       background-image: url("../../../assets/icon/arrow-down.png");
       background-repeat: no-repeat;
       background-position: calc(100% - 10px) center;
       background-size: 15px 15px;
-
-      &::-ms-expand {
-        display: none;
-      }
+      cursor: pointer;
 
       &:hover {
         color: #000;
       }
 
-      &:focus {
-        border: none;
+      p {
+        margin: 0;
       }
     }
   }

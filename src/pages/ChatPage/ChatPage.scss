@@ -9,8 +9,8 @@ $color-border-input: #b5b5b5;
 
   .chat__page__container {
     width: 684px;
-    height: 700px;
-    margin-top: 20px;
+    height: 650px;
+    margin-bottom: 25px;
     background-color: #fff;
     border-radius: 20px;
     border: 1px solid #e8e8e8;
@@ -73,7 +73,12 @@ $color-border-input: #b5b5b5;
       }
     }
     .chat__content {
+      width: 100%;
+      height: 420px;
       padding: 0 32px 32px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .chat__footer {
       width: 100%;
@@ -95,7 +100,7 @@ $color-border-input: #b5b5b5;
         display: flex;
         align-items: center;
         justify-content: space-between;
-
+        padding-top: 15px;
         .wrapper__feature {
           padding-top: 10px;
           display: flex;

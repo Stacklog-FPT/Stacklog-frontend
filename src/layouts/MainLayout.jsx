@@ -14,6 +14,7 @@ import GroupComponent from "../components/ChatPageComponents/GroupComponent/Grou
 import { SidebarContext } from "../context/SideBarContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { ClockLoader } from "react-spinners";
 
 const MainLayout = () => {
   const { isOpen, setIsOpen } = useContext(SidebarContext);
@@ -21,12 +22,14 @@ const MainLayout = () => {
   const { mode } = useContext(ColorModeContext);
   const { isShowGroupChat, setIsShowGroupChat } = useContext(GroupChatContext);
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    document.body.className = mode;
-  }, [mode]);
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000); 
 
-  useEffect(() => {
     if (location.pathname === "/chatbox") {
       setIsShowGroupChat(true);
       setIsOpen(false);
@@ -42,11 +45,27 @@ const MainLayout = () => {
 
     return () => {
       document.body.style.overflow = "auto";
+      clearTimeout(timer);
     };
   }, [location.pathname, setIsShowGroupChat, setIsOpen]);
 
+  useEffect(() => {
+    document.body.className = mode;
+  }, [mode]);
+
   return (
     <div className="layout">
+      {isLoading && (
+        <div className={`spinner-overlay ${isLoading ? "open" : ""}`}>
+          <ClockLoader
+            color={mode === "light" ? "#045745" : "#ffffff"}
+            loading={isLoading}
+            size={100}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        </div>
+      )}
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className="announcement-place">
         {isAnnouncementVisible && <Announcement />}

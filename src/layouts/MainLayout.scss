@@ -45,3 +45,34 @@ $color-primary: #045745;
     visibility: visible;
   }
 }
+
+.spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+
+  &.open {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.light {
+  background-color: $color-html;
+  color: #000000;
+}
+
+.dark {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}

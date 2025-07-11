@@ -42,7 +42,7 @@ $color-border-input: #e8e8e8;
 
   .group__heading {
     width: 100%;
-    // height: 100px;
+    height: 190px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -80,14 +80,11 @@ $color-border-input: #e8e8e8;
     }
 
     .group__input {
-      min-height: 100px;
       position: relative;
-      // display: flex;
-      // align-items: center;
 
       input[type="text"] {
         width: 250px;
-        height: 100px;
+        height: 40px;
         padding: 10px 8px 8px 40px;
         border-radius: 10px;
         font-size: 16px;

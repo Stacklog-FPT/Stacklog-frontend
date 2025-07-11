@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "./RecentChat.scss";
+import { ChatContext } from "../../../context/ChatContext";
 import avatar from "../../../assets/ava-chat.png";
 const RecentChat = () => {
+  const { setSelectedUser } = useContext(ChatContext);
   const [recentChat, setRecentChat] = useState([
     {
       id: 1,
@@ -35,21 +37,11 @@ const RecentChat = () => {
       isRead: false,
       isOnline: false,
     },
-    // {
-    //   id: 5,
-    //   avatar: avatar,
-    //   name: "Otis Milburn",
-    //   content: "Opps, goodBye",
-    //   isRead: false,
-    // },
-    // {
-    //   id: 6,
-    //   avatar: avatar,
-    //   name: "Otis Milburn",
-    //   content: "Opps, goodBye",
-    //   isRead: false,
-    // },
   ]);
+
+  const handleUserClick = (user) => {
+    setSelectedUser(user);
+  };
   return (
     <div className="recent__chat__container">
       <div className="recent__chat__heading">
@@ -61,6 +53,7 @@ const RecentChat = () => {
             <div
               key={item.id}
               className={`recent__chat__card${item.isRead ? " isRead" : ""}`}
+              onClick={() => handleUserClick(item)}
             >
               <img src={item.avatar} alt="avatar" />
               <div className="recent__chat__card__content">

@@ -7,7 +7,6 @@ export const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
-  console.log(user);
 
   const loginSave = (userData) => {
     setUser(userData);
@@ -36,7 +35,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook tiện dụng để dùng
 export const useAuth = () => {
   return useContext(AuthContext);
 };

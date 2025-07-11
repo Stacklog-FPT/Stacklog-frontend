@@ -5,35 +5,113 @@ import assignUser from "../../../assets/task/assign-user.png";
 import iconPriority from "../../../assets/task/icon-priority.png";
 import iconSubTask from "../../../assets/task/icon-subtask.png";
 import trackTime from "../../../assets/task/icon-track-time.png";
+import { useAuth } from "../../../context/AuthProvider";
+import taskService from "../../../service/TaskService";
+import { toast } from "react-toastify";
 
 const AddTask = (props) => {
   const visibleMembers = props.members.slice(0, 3);
   const extraCount = props.members.length - visibleMembers.length;
-
+  const { user } = useAuth();
+  const notify = () => toast.success("Add task is successfully");
+  const { addTask } = taskService();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [taskData, setTaskData] = useState({
+    taskId: "",
+    groupId: "1",
+    taskTitle: "",
+    taskDescription: "",
+    statusId: props.status,
+    documentId: "",
+    taskPoint: 5,
+    taskParentId: 0,
+    dueDate: "",
+    createdBy: "",
+    updatedBy: "",
+    priority: "",
+  });
   const [colorPriority, setColorPriority] = useState([
-    { id: 1, color: "#FFFAEB", content: "High" },
-    { id: 2, color: "#3a9e3e", content: "Normal" },
-    { id: 3, color: "#6d706e", content: "Chill" },
+    { id: 1, color: "#FFFAEB", content: "HIGH" },
+    { id: 2, color: "#3a9e3e", content: "NORMAL" },
+    { id: 3, color: "#6d706e", content: "CHILL" },
   ]);
-
-  const [selectedPriority, setSelectedPriority] = useState(
-    colorPriority[0].content
-  );
+  const [selectedPriority, setSelectedPriority] = useState("HIGH");
 
   const selectedColor =
     colorPriority.find((item) => item.content === selectedPriority)?.color ||
     "#FFFFFF";
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setTaskData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!taskData.taskTitle.trim()) {
+      alert("Task title is required!");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        taskId: "",
+        groupId: "1",
+        taskTitle: taskData.taskTitle,
+        taskDescription: taskData.taskDescription,
+        statusId: props.status,
+        documentId: "",
+        taskPoint: 5,
+        taskParentId: 0,
+        dueDate: taskData.dueDate,
+        createdBy: user.userName,
+        updatedBy: "",
+        priority: taskData.priority || "HIGH",
+      };
+      const response = await addTask(payload, user.token);
+      if (response.data) {
+        notify();
+      }
+      props.onCancel();
+    } catch (e) {
+      console.error(
+        "Failed to add task:",
+        e.response ? e.response.data : e.message
+      );
+      props.onCancel();
+      alert("Failed to add task. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="add-task">
-      <div className="add-task-container">
+      <form className="add-task-container" onSubmit={handleSubmit}>
         <div className="wrapper-title">
           <h2 className="text-heading">Title</h2>
           <i className="fa-solid fa-xmark" onClick={props.onCancel}></i>
         </div>
+        <div className="wrapper-title-input">
+          <input
+            type="text"
+            name="taskTitle"
+            placeholder="Enter task title..."
+            value={taskData.taskTitle}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
         <div className="wrapper-description">
           <h2>Description</h2>
-          <textarea placeholder="Enter a description..." required />
+          <textarea
+            placeholder="Enter a description..."
+            name="taskDescription"
+            value={taskData.taskDescription}
+            onChange={handleInputChange}
+            required
+          />
         </div>
         <div className="wrapper-subtask">
           <div className="wrapper-subtask-heading">
@@ -45,7 +123,7 @@ const AddTask = (props) => {
             <input type="text" placeholder="Create Subtask" />
           </div>
         </div>
-        <div className="wrapper-assign-user">
+        {/* <div className="wrapper-assign-user">
           <div className="wrapper-assign-user-heading">
             <img src={assignUser} alt="..." />
             <h2>Assign</h2>
@@ -66,20 +144,24 @@ const AddTask = (props) => {
                 </li>
               )}
             </ul>
-            <div className="button-add" onClick={() => alert("cc")}>
+            <div className="button-add">
               <img src={avatar_add_button} alt="add_button_icon" />
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="wrapper-priority">
           <div className="wrapper-priority-heading">
             <img src={iconPriority} alt="..." />
             <h2>Priority</h2>
           </div>
           <select
+            name="priority"
             className="priority_status"
             value={selectedPriority}
-            onChange={(e) => setSelectedPriority(e.target.value)}
+            onChange={(e) => {
+              setSelectedPriority(e.target.value);
+              setTaskData((prev) => ({ ...prev, priority: e.target.value }));
+            }}
             style={{ backgroundColor: selectedColor }}
           >
             {colorPriority.map((item) => (
@@ -99,7 +181,13 @@ const AddTask = (props) => {
           <div className="wrapper_input_time">
             <p>Deadline</p>
             <div className="date-input-container">
-              <input type="date" className="date-input" />
+              <input
+                type="date"
+                name="dueDate"
+                className="date-input"
+                value={taskData.dueDate}
+                onChange={handleInputChange}
+              />
             </div>
           </div>
         </div>
@@ -114,9 +202,12 @@ const AddTask = (props) => {
             <input type="text" placeholder="Enter your time" />
           </div>
         </div>
-        <div>fhdasgbfidgahui</div>
-        <div>fhdasgbfidgahui</div>
-      </div>
+        <div className="wrapper-btn-submit">
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Submit"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

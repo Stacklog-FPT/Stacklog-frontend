@@ -26,16 +26,11 @@ const CheckTypeByAll = () => {
   const [showCommentTask, setShowCommentTask] = useState(null);
   const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const statuses = [
-    { id: 1, status: "To Do", color: "#D8E7E4" },
-    { id: 2, status: "In Progress", color: "#045745" },
-    { id: 3, status: "Done", color: "#000000" },
-    { id: 4, status: "Over due", color: "#F05122" },
-  ];
   const { getAllTask } = taskService();
   const { getAllStatus } = statusApi();
+  const [statusTasks, setStatusTasks] = useState([]);
+  console.log(statusTasks);
   const [tasks, setTasks] = useState([]);
-  const [statusTask, setStatusTask] = useState([]);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -163,6 +158,7 @@ const CheckTypeByAll = () => {
       const response = await getAllStatus(user.token);
       if (response) {
         console.log(response);
+        setStatusTasks(response.data);
       }
     } catch (e) {
       console.error(e.message);
@@ -237,17 +233,18 @@ const CheckTypeByAll = () => {
         <div className="check-task-by-all-content">
           <ClassAndMember />
           <div className="task-column-container">
-            {statuses.map((item) => (
+            {statusTasks.map((item) => (
               <Column
-                key={item.id}
-                status={item.status}
-                color={item.color}
+                key={item.statusTaskId}
+                status={item.statusTaskName}
+                color={item.statusTaskColor}
                 isLoading={isLoading}
                 tasks={tasks.filter(
-                  (task) => task?.statusTask?.statusTaskName === item.status
+                  (task) =>
+                    task?.statusTask?.statusTaskName === item.statusTaskName
                 )}
                 members={members}
-                onShowAddTask={() => handleShowAddTask(item.status)}
+                onShowAddTask={() => handleShowAddTask(item.statusTaskName)}
                 onShowComment={handleShowComment}
               />
             ))}

@@ -36,7 +36,7 @@ const Column = ({
         <div className="column-task" data-status={status}>
           <SortableContext
             id={status}
-            items={tasks.map((task) => task.id)}
+            items={tasks.map((task) => task.taskId)}
             strategy={verticalListSortingStrategy}
           >
             <table>

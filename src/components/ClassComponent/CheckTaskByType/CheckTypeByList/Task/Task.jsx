@@ -49,7 +49,7 @@ const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
           <img src={adjustIcon} alt="Adjust Icon" />
           <div className="task_list_head_content">
             <p>.</p>
-            <h2>{title || <Skeleton/>}</h2>
+            <h2>{title || <Skeleton />}</h2>
           </div>
         </div>
       </td>
@@ -60,7 +60,7 @@ const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
             data-extra-count={extraCount > 0 ? extraCount : ""}
           >
             {visibleMembers.map((item) => (
-              <li key={item.id}>
+              <li key={item?.id || Math.random()}>
                 <img src={item.img} alt="Student Avatar" />
               </li>
             ))}

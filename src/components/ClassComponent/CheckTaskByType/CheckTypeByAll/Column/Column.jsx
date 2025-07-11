@@ -18,7 +18,7 @@ const Column = ({
   members,
   onShowAddTask,
   onShowComment,
-  isLoading = false, 
+  isLoading = false,
 }) => {
   const { setNodeRef } = useDroppable({
     id: `droppable-${status}`,
@@ -49,12 +49,11 @@ const Column = ({
         </div>
         <SortableContext
           id={status}
-          items={tasks?.map((task) => task.taskId) || []} // Bảo vệ khi tasks là undefined
+          items={tasks?.map((task) => task.taskId) || []}
           strategy={verticalListSortingStrategy}
         >
           <div className="column-task" data-status={status}>
             {isLoading ? (
-              // Hiển thị 3 skeleton khi đang loading
               Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={index}

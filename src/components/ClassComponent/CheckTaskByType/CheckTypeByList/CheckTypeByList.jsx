@@ -8,6 +8,7 @@ import AddTask from "../../../Task/AddTask/AddTask";
 import CommentTask from "../../../Task/CommentTask/CommentTask";
 import taskService from "../../../../service/TaskService";
 import { useAuth } from "../../../../context/AuthProvider";
+import statusApi from "../../../../service/ColumnService";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -21,6 +22,8 @@ const customCollisionDetection = (args) => {
 const CheckTypeByList = () => {
   const { user } = useAuth();
   const { getAllTask } = taskService();
+  const { getAllStatus } = statusApi();
+  const [statusTasks, setStatusTasks] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [members, setMembers] = useState([]);
   const [activeColumn, setActiveColumn] = useState(null);
@@ -162,7 +165,7 @@ const CheckTypeByList = () => {
     try {
       const response = await getAllStatus(user.token);
       if (response) {
-        console.log(response);
+        setStatusTasks(response.data);
       }
     } catch (e) {
       console.error(e.message);
@@ -191,8 +194,6 @@ const CheckTypeByList = () => {
           ).values(),
         ];
         setMembers(uniqueMembers);
-        console.log("Tasks:", normalizedTasks);
-        console.log("Members:", uniqueMembers);
       }
     } catch (e) {
       console.error("Failed to fetch tasks:", e.message);
@@ -238,14 +239,15 @@ const CheckTypeByList = () => {
       <div className="check__task__by__list__container">
         <ClassAndMember />
         <div className="check__task__by__list__column">
-          {statuses.map((item) => (
+          {statusTasks.map((item) => (
             <Column
-              key={item.id}
-              color={item.color}
-              status={item.status}
+              key={item.statusTaskId}
+              color={item.statusTaskColor}
+              status={item.statusTaskName}
               isLoading={isLoading}
               tasks={tasks.filter(
-                (task) => task?.statusTask?.statusTaskName === item.status
+                (task) =>
+                  task?.statusTask?.statusTaskName === item.statusTaskName
               )}
               members={members}
               onShowAddTask={handleShowAddTask}

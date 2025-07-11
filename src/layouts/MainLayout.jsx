@@ -12,6 +12,8 @@ import {
 } from "../context/GroupchatContext";
 import GroupComponent from "../components/ChatPageComponents/GroupComponent/GroupComponent";
 import { SidebarContext } from "../context/SideBarContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const MainLayout = () => {
   const { isOpen, setIsOpen } = useContext(SidebarContext);
@@ -58,6 +60,7 @@ const MainLayout = () => {
         }`}
       >
         <InputSearch />
+        <ToastContainer />
         <Outlet
           className={`main-content-area ${mode === "light" ? "light" : "dark"}`}
         />

@@ -19,16 +19,22 @@ const taskService = () => {
   };
 
   const addTask = async (taskData, token) => {
-    if (!token) throw new Error("Unauthorization!");
+    if (!token) throw new Error("Unauthorized!");
 
     try {
-
+      const response = await axios.post(`${API_TASK}/task`, taskData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return response;
     } catch (e) {
-      throw Error(e.message);
+      throw new Error(e.message);
     }
   };
 
-  return { getAllTask };
+  return { getAllTask, addTask };
 };
 
 export default taskService;

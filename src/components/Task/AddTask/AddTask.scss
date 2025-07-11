@@ -15,7 +15,6 @@ $color-hover: red;
 
 .add-task-container {
   padding: 20px 20px;
-
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -53,6 +52,24 @@ $color-hover: red;
       background-color: $color-hover;
       color: $color-input;
     }
+  }
+
+  .wrapper-title-input {
+    input {
+      width: 640px;
+      height: 37px;
+      padding: 8px 8px 8px 10px;
+      background-color: $color-input;
+      border-radius: 8px;
+      font-size: 16px;
+
+      &:focus {
+        outline: none;
+        border: none;
+      }
+    }
+
+    margin-bottom: 10px;
   }
 
   .wrapper-description {
@@ -340,6 +357,23 @@ $color-hover: red;
 
       input[type="text"] {
       }
+    }
+  }
+
+  .wrapper-btn-submit {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+    background-color: #045745;
+    color: #000;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 21px;
+    border-radius: 20px;
+    padding: 15px 20px;
+    &:hover {
+      background-color: #000;
+      color: #f3f4f6;
     }
   }
 }

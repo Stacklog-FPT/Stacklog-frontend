@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import errorIcon from "../../../assets/chatPageIcon/error.png";
 import fileIcon from "../../../assets/chatPageIcon/file_open.png";
 import attachmentIcon from "../../../assets/chatPageIcon/attachment.png";
@@ -7,6 +7,14 @@ import "./ChatWindow.scss";
 import { ChatContext } from "../../../context/ChatContext";
 const ChatWindow = () => {
   const { selectedUser } = useContext(ChatContext);
+  const [myMessage, setMyMessage] = useState("");
+
+  const onSend = () => {
+    if (myMessage.trim()) {
+      // Call socket
+      alert("This is your message: " + myMessage);
+    }
+  };
   return (
     <div className="chat__window">
       <div className="chat__page__container">
@@ -34,7 +42,13 @@ const ChatWindow = () => {
           <p>Cơ bản là nhắn tin ở đây từ từ có! OKE?</p>
         </div>
         <div className="chat__footer">
-          <input type="text" placeholder="Send a message" />
+          <input
+            type="text"
+            placeholder="Send a message"
+            value={myMessage}
+            onChange={(e) => setMyMessage(e.target.value)}
+            onKeyUp={(e) => e.key === "Enter" && onSend()}
+          />
           <div className="chat__footer__feature">
             <div className="wrapper__feature">
               <img src={errorIcon} alt="icon..." />
@@ -42,7 +56,7 @@ const ChatWindow = () => {
               <img src={attachmentIcon} alt="icon..." />
               <img src={smileIcon} alt="icon..." />
             </div>
-            <div className="send__message">
+            <div className="send__message" onClick={onSend}>
               <i className="fa-regular fa-paper-plane"></i>
             </div>
           </div>

@@ -15,6 +15,7 @@ import { SidebarContext } from "../context/SideBarContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClockLoader } from "react-spinners";
+import '../styles/main.scss'
 
 const MainLayout = () => {
   const { isOpen, setIsOpen } = useContext(SidebarContext);
@@ -22,13 +23,13 @@ const MainLayout = () => {
   const { mode } = useContext(ColorModeContext);
   const { isShowGroupChat, setIsShowGroupChat } = useContext(GroupChatContext);
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000); 
+    // setIsLoading(true);
+    // const timer = setTimeout(() => {
+    //   setIsLoading(false);
+    // }, 3000); 
 
     if (location.pathname === "/chatbox") {
       setIsShowGroupChat(true);
@@ -43,10 +44,10 @@ const MainLayout = () => {
       document.body.style.overflow = "auto";
     }
 
-    return () => {
-      document.body.style.overflow = "auto";
-      clearTimeout(timer);
-    };
+    // return () => {
+    //   document.body.style.overflow = "auto";
+    //   // clearTimeout(timer);
+    // };
   }, [location.pathname, setIsShowGroupChat, setIsOpen]);
 
   useEffect(() => {
@@ -55,17 +56,17 @@ const MainLayout = () => {
 
   return (
     <div className="layout">
-      {isLoading && (
+      {/* {isLoading && (
         <div className={`spinner-overlay ${isLoading ? "open" : ""}`}>
           <ClockLoader
             color={mode === "light" ? "#045745" : "#ffffff"}
             loading={isLoading}
-            size={100}
+            size={200}
             aria-label="Loading Spinner"
             data-testid="loader"
           />
         </div>
-      )}
+      )} */}
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className="announcement-place">
         {isAnnouncementVisible && <Announcement />}

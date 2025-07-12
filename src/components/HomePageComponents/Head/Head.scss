@@ -1,6 +1,3 @@
-$color-head-text: #333333;
-$color-name: #045745;
-$color-task-div: #045745;
 .head-container {
   margin-top: 20px;
   padding: 20px 0;
@@ -32,7 +29,7 @@ $color-task-div: #045745;
           font-weight: bold;
           font-size: 20px;
           line-height: 30px;
-          color: $color-head-text;
+          color: var(--text-color);
         }
       }
 
@@ -45,7 +42,7 @@ $color-task-div: #045745;
           line-height: 76px;
           letter-spacing: -0.45px;
           &.active {
-            color: $color-name;
+            color: var(--text--name);
           }
         }
       }
@@ -60,7 +57,7 @@ $color-task-div: #045745;
     &-task {
       width: 165px;
       height: 200px;
-      background-color: $color-task-div;
+      background-color: var(--color--div);
       border-radius: 20px;
       padding: 20px 20px 10px 20px;
       img {

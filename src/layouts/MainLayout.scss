@@ -12,7 +12,7 @@ $color-primary: #045745;
     transition: margin-left 0.3s ease;
     overflow-y: auto;
     max-height: 100vh;
-    background-color: $color-html;
+    background-color: var(--bg-color);
     .main-content-area {
       margin-top: 20px;
       // min-height: calc(100% - 20px);

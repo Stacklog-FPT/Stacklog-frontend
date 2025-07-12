@@ -30,7 +30,9 @@
     "react-spinners": "^0.17.0",
     "react-toastify": "^11.0.5",
     "sass": "^1.86.3",
-    "styled-components": "^6.1.19"
+    "socket.io-client": "^4.8.1",
+    "styled-components": "^6.1.19",
+    "websocket": "^1.0.35"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

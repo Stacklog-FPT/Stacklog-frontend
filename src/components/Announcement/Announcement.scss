@@ -1,4 +1,4 @@
-$color-bg: #fbfbfb;
+
 $colo-bg-read: #045745;
 .announcement-container {
   width: 350px;
@@ -7,12 +7,13 @@ $colo-bg-read: #045745;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: $color-bg;
+  background-color: var(--bg--color--announcement);
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
   border-top-color: 1px solid $colo-bg-read;
   padding: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  // overflow-y: auto;
 }
 
 .main-announcement {
@@ -54,6 +55,13 @@ $colo-bg-read: #045745;
   }
 
   &-list {
+    width: 100%;
+    height: 300px;
+    overflow-y: auto;
+
+    ::-webkit-scrollbar-button {
+      background-color: #044436;
+    }
     &-empty {
       display: flex;
       flex-direction: column;
@@ -81,6 +89,8 @@ $colo-bg-read: #045745;
   background-color: $colo-bg-read;
   padding: 5px 20px;
   color: #f9f9f9;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
   font-weight: 600;
 }

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "./LoginPage.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import userApi from "../../service/UserService";
 import logo from "../../assets/logo-login.png";
 import { useAuth } from "../../context/AuthProvider";
+import { ColorModeContext } from "../../context/ColorModeContext";
 
 const LoginPage = () => {
   const { loginSave } = useAuth();
@@ -25,7 +26,7 @@ const LoginPage = () => {
           username: response.username,
           token: response.token,
         };
-        
+
         loginSave(userData);
         navigate("/");
       }

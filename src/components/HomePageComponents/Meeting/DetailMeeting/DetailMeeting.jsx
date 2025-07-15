@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "./DetailMeeting.scss";
 import schedule from "../../../../assets/meetingIcon/schedule.png";
 import watch from "../../../../assets/meetingIcon/watch.png";
+import meetingIcon from "../../../../assets/home/meeting-icon.png";
 
 const DetailMeeting = () => {
   const [meetings, setMeetings] = useState([
@@ -70,16 +71,25 @@ const DetailMeeting = () => {
               <h2>{item.title}</h2>
               <i className="fa-regular fa-pen-to-square"></i>
             </div>
-            <p>{item.desc}</p>
-            <div className="detail__meeting__card__day">
-              <img src={schedule} alt="schedule" />
-              <p>{item.dateStart}</p>
+            <div className="detail__meeting__card__description">
+              <p>{item.desc}</p>
             </div>
-            <div className="detail__meeting__card__time">
-              <img src={watch} alt="watch" />
-              <span>{item.timeStart}</span>
-              <span>:</span>
-              <span>{item.timeEnd}</span>
+            <div className="detail__meeting__card__day__time">
+              <div>
+                <div className="detail__meeting__card__day__time__day">
+                  <i className="fa-solid fa-calendar-days"></i>
+                  <p>{item.dateStart}</p>
+                </div>
+                <div className="detail__meeting__card__day__time__time">
+                  <i className="fa-solid fa-clock"></i>
+                  <span>{item.timeStart}</span>
+                  <span>:</span>
+                  <span>{item.timeEnd}</span>
+                </div>
+              </div>
+              <div>
+                <img src={meetingIcon} alt="this is icon..."/>
+              </div>
             </div>
           </div>
         ))

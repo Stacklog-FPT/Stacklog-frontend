@@ -2,7 +2,8 @@
   width: 546px;
   height: 578px;
   border-radius: 20px;
-  background-color: #ffff;
+  background-color: var(--bg--nav);
+  color: var(--color--div-body);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -23,7 +24,8 @@
         font-size: 20px;
         line-height: 30px;
         color: #fff;
-        background-color: #045745;
+        background-color: var(--color--div-head);
+        color: var(--text--name);
         border-top-left-radius: 16px;
         border-top-right-radius: 16px;
         border-bottom-right-radius: 16px;
@@ -41,7 +43,7 @@
   .document__body {
     width: 100%;
     padding: 5px 10px;
-    background-color: #EDF2F2;
+    background-color: #edf2f2;
     border-radius: 8px;
 
     .document_name_column {

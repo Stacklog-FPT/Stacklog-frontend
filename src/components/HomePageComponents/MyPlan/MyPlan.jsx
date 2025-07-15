@@ -28,7 +28,6 @@ const MyPlan = (props) => {
     <div className="my__plan__container">
       <div className="my__plan__heading">
         <div className="my__plan__heading__text">
-          <img src={dragIcon} alt="Drag icon" />
           <p className="text-center pt-3">My Plan</p>
         </div>
         <div className="my__plan__heading__icon">

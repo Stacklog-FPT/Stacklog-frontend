@@ -30,7 +30,9 @@ const Card = (props) => {
           <p className="announcement-content-title">
             <b>{props.name}:</b> {props.title}
           </p>
-          <p className="announcement-content-time">{getTimeDifference(props.createdAt)}</p>
+          <p className="announcement-content-time">
+            {getTimeDifference(props.createdAt)}
+          </p>
         </div>
       </div>
       {props.isRead ? (

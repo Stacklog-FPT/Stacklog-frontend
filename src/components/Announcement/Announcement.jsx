@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./Announcement.scss";
 import Card from "./Card/Card";
 
+
 const Announcement = () => {
   const [announcements, setAnnouncements] = useState([
     {

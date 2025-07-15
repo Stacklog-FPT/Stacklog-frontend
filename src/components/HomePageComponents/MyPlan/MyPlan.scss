@@ -2,7 +2,7 @@
   width: 546px;
   height: 578px;
   border-radius: 20px;
-  background-color: var(--color--div-body);
+  background-color: var(--bg--nav);
   padding: 5px 10px;
 
   .my__plan__heading {
@@ -27,16 +27,8 @@
         font-weight: 700;
         font-size: 20px;
         line-height: 30px;
-        color: #fff;
+        color: var(--text--name);
       }
-    }
-
-    &__icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      padding-right: 10px;
     }
   }
 

@@ -2,7 +2,7 @@
   width: 1112px;
   height: auto;
   padding: 12px 12px 20px 12px;
-  background-color: #fff;
+  background-color: var(--bg--nav);
   border-radius: 20px;
 
   .list__task__heading {
@@ -11,7 +11,7 @@
     justify-content: space-between;
     &__text {
       width: 155px;
-      background-color: #045745;
+      background-color: var(--color--div-head);
       border-top-left-radius: 16px;
       border-top-right-radius: 16px;
       border-bottom-right-radius: 16px;
@@ -19,7 +19,7 @@
         font-weight: 700;
         font-size: 16px;
         line-height: 30px;
-        color: #fff;
+        color: var(--text--name);
       }
     }
     &__feature {

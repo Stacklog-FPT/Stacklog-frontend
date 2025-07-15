@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./Profile.scss";
 import userApi from "../../service/UserService";
 import { useAuth } from "../../context/AuthProvider";
+import avaChat from "../../assets/Logo.png";
 
 const Profile = () => {
   const { user, logoutAuth } = useAuth();
@@ -11,7 +12,7 @@ const Profile = () => {
     name: "Lê Văn Lu",
     role: "Student",
     image:
-      "https://scontent.fsgn2-4.fna.fbcdn.net/v/t51.75761-15/487464014_17855438160405001_2975665951900708652_n.jpg?stp=dst-jpegr_tt6&_nc_cat=101&ccb=1-7&_nc_sid=127cfc&_nc_ohc=pusnwsmEescQ7kNvwEUXcV0&_nc_oc=AdmYr6UmF9nTAPcZbC5Vv_UV8MNETpyyHxQSmqCf1Ueb60gbjBJqlw4A_81iAK3xIO0YvsC06MGY235dYbXtWZuk&_nc_zt=23&se=-1&_nc_ht=scontent.fsgn2-4.fna&_nc_gid=NmGpzOpK3AXB6KuFyXuIzw&oh=00_AfHIGhTyg_7RFERo4uPXa8bgTINH0isdPi7EoCkAN9kiNQ&oe=6804D738",
+      "https://i.pinimg.com/736x/f9/58/a1/f958a1d67ce15e9793a5001fedbd53ae.jpg",
     email: "levanlu@gmail.com",
     address: "Nguyễn Đức Trung, Thanh Khê, Đà Nẵng",
   });

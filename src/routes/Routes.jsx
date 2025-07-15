@@ -14,6 +14,9 @@ import Profile from "../pages/Profile/Profile";
 import MainLayoutWithProvider from "../layouts/MainLayout";
 import { AuthProvider } from "../context/AuthProvider";
 import ProtectedRoutes from "./ProtectedRoutes";
+import NotFoundPage from "../pages/404page/NotFoundPage";
+import AdminProtectedRoutes from "./AdminProtectedRoutes";
+import AdminDashBoard from "../pages/Admin/AdminDashBoard";
 
 const routes = [
   {
@@ -40,12 +43,30 @@ const routes = [
     ],
   },
   {
+    element: (
+      <AuthProvider>
+        <AdminProtectedRoutes />
+      </AuthProvider>
+    ),
+    children: [
+      {
+        element: <MainLayout />,
+        children: [{ path: "/admin", element: <AdminDashBoard /> }],
+      },
+    ],
+  },
+  {
     path: "/login",
     element: (
       <AuthProvider>
         <LoginPage />
       </AuthProvider>
     ),
+  },
+
+  {
+    path: "/404",
+    element: <NotFoundPage />,
   },
 ];
 const Routes = () => {

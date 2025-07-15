@@ -60,7 +60,7 @@ $color-white-dark: #f5f5f5;
   flex-direction: column;
   border-radius: 16px;
   padding: 40px;
-  background-color: $color-white;
+  background-color: var(--bg--nav);
   animation: show-form 0.5s ease-in-out;
 }
 
@@ -105,12 +105,12 @@ $color-white-dark: #f5f5f5;
       color: $color-label;
       box-sizing: border-box;
       transition: border-color 0.3s ease, box-shadow 0.3s ease,
-        background-color 0.3s ease; 
+        background-color 0.3s ease;
 
       &:focus {
-        outline: none; 
-        border-color: $color-primary-green-500; 
-        background-color: $color-white-dark; 
+        outline: none;
+        border-color: $color-primary-green-500;
+        background-color: $color-white-dark;
       }
     }
   }

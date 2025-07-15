@@ -3,6 +3,7 @@ import "./Profile.scss";
 import userApi from "../../service/UserService";
 import { useAuth } from "../../context/AuthProvider";
 import avaChat from "../../assets/Logo.png";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const { user, logoutAuth } = useAuth();
@@ -41,7 +42,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       const response = await logout(user.token);
-      (response);
+      response;
       if (response) {
         logoutAuth();
       }
@@ -115,29 +116,37 @@ const Profile = () => {
             )}
           </div>
         </div>
-        <div className="profile-popup-information-heading">
-          <h3>Current Class</h3>
-        </div>
-        <div className="profile-popup-information-content">
-          <div className="profile-popup-information-content-element">
-            <h4>Class</h4>
-            <p>SDN301c</p>
-          </div>
-          <div className="profile-popup-information-content-element">
-            <h4>Class</h4>
-            <p>MMA301c</p>
-          </div>
-        </div>
-        <div className="profile-popup-information-content">
-          <div className="profile-popup-information-content-element">
-            <h4>Class</h4>
-            <p>SWD301c</p>
-          </div>
-          <div className="profile-popup-information-content-element">
-            <h4>Class</h4>
-            <p>EXE101c</p>
-          </div>
-        </div>
+        {user?.role === "STUDENT" && user?.role === "LECTURE" ? (
+          <>
+            <div className="profile-popup-information-heading">
+              <h3>Current Class</h3>
+            </div>
+            <div className="profile-popup-information-content">
+              <div className="profile-popup-information-content-element">
+                <h4>Class</h4>
+                <p>SDN301c</p>
+              </div>
+              <div className="profile-popup-information-content-element">
+                <h4>Class</h4>
+                <p>MMA301c</p>
+              </div>
+            </div>
+            <div className="profile-popup-information-content">
+              <div className="profile-popup-information-content-element">
+                <h4>Class</h4>
+                <p>SWD301c</p>
+              </div>
+              <div className="profile-popup-information-content-element">
+                <h4>Class</h4>
+                <p>EXE101c</p>
+              </div>
+            </div>
+          </>
+        ) : (
+          <button className="btn__admin">
+            <Link to={"/admin"}>Go to AdminDashboard</Link>
+          </button>
+        )}
       </div>
     </div>
   );

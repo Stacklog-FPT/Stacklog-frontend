@@ -140,6 +140,24 @@ $color-border-input: #e8e8e8;
       }
     }
   }
+
+  .btn__admin {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--bg--primary-color);
+    color: var(--text-color);
+    transition: all 0.5 ease-in;
+
+    a {
+      text-decoration: none;
+      color: var(--color-text);
+    }
+    &:hover {
+      background-color: var(--color--hover--button);
+      transform: scaleY(1.1);
+    }
+  }
 }
 
 // .edit-input {

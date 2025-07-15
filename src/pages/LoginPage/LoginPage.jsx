@@ -25,6 +25,7 @@ const LoginPage = () => {
           email: response.email,
           username: response.username,
           token: response.token,
+          role: response.role,
         };
 
         loginSave(userData);

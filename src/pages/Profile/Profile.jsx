@@ -1,24 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Profile.scss";
 import userApi from "../../service/UserService";
 import { useAuth } from "../../context/AuthProvider";
-import avaChat from "../../assets/Logo.png";
 import { Link } from "react-router-dom";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Profile = () => {
   const { user, logoutAuth } = useAuth();
-  const { logout, error, isLoading } = userApi();
+  const { logout, getUserByEmail } = userApi();
   const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState({
-    name: "Lê Văn Lu",
-    role: "Student",
-    image:
-      "https://i.pinimg.com/736x/f9/58/a1/f958a1d67ce15e9793a5001fedbd53ae.jpg",
-    email: "levanlu@gmail.com",
-    address: "Nguyễn Đức Trung, Thanh Khê, Đà Nẵng",
-  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [profileData, setProfileData] = useState({});
+  console.log(profileData);
+  const [tempImage, setTempImage] = useState("");
 
-  const [tempImage, setTempImage] = useState(profileData.image);
+  const handleGetDetail = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await getUserByEmail(user.token, user.email);
+      if (response) {
+        setProfileData(response.user);
+        setTempImage(response.avatar_link || "avatar/default.png");
+      }
+    } catch (e) {
+      setError(e.message || "Failed to fetch user details");
+      console.error("Failed to fetch user details:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.token && user?.email) {
+      handleGetDetail();
+    } else {
+      setError("User not authenticated");
+      setLoading(false);
+    }
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -30,7 +52,7 @@ const Profile = () => {
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setTempImage(imageUrl);
-      setProfileData((prev) => ({ ...prev, image: imageUrl }));
+      setProfileData((prev) => ({ ...prev, avatar_link: imageUrl }));
     }
   };
 
@@ -42,53 +64,63 @@ const Profile = () => {
     e.preventDefault();
     try {
       const response = await logout(user.token);
-      response;
       if (response) {
         logoutAuth();
       }
     } catch (e) {
-      console.error("Login failed" || e.message);
+      console.error("Logout failed:", e.message);
     }
   };
+
   return (
     <div className="profile-popup">
+      {error && <p className="error">{error}</p>}
       <div className="profile-popup-avatar">
-        {isEditing ? (
-          <>
-            <label htmlFor="image-upload" className="image-upload-label">
-              <img src={tempImage} alt="Avatar" />
-              <input
-                id="image-upload"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{ display: "none" }}
-              />
-            </label>
-          </>
+        {loading ? (
+          <Skeleton circle width={100} height={100} />
+        ) : isEditing ? (
+          <label htmlFor="image-upload" className="image-upload-label">
+            <img src={tempImage || "avatar/default.png"} alt="Avatar" />
+            <input
+              id="image-upload"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              style={{ display: "none" }}
+            />
+          </label>
         ) : (
-          <img src={profileData.image} alt="Avatar" />
+          <img
+            src={profileData.avatar_link || "avatar/default.png"}
+            alt="Avatar"
+          />
         )}
         <div className="profile-popup-avatar-content">
-          {isEditing ? (
+          {loading ? (
+            <Skeleton width={150} height={20} />
+          ) : isEditing ? (
             <input
               type="text"
-              name="name"
-              value={profileData.name}
+              name="full_name"
+              value={profileData.full_name}
               onChange={handleInputChange}
               className="edit-input"
             />
           ) : (
-            <h2>{profileData.name}</h2>
+            <h2>{profileData.full_name || "Unknown User"}</h2>
           )}
-          <p>{profileData.role}</p>
+          {loading ? (
+            <Skeleton width={100} height={16} />
+          ) : (
+            <p>{profileData.role}</p>
+          )}
           <button onClick={toggleEdit}>
             <i className="fa-solid fa-pen-to-square"></i>{" "}
             {isEditing ? "Save Profile" : "Edit Profile"}
           </button>
           <button onClick={handleLogout}>
             <i className="fa-solid fa-right-from-bracket"></i>
-            {isLoading ? "Is Logging" : "Logout"}
+            {loading ? "Is Logging" : "Logout"}
           </button>
         </div>
       </div>
@@ -99,24 +131,48 @@ const Profile = () => {
         <div className="profile-popup-information-content">
           <div className="profile-popup-information-content-element">
             <h4>Email</h4>
-            <p>{profileData.email}</p>
+            {loading ? (
+              <Skeleton width={200} height={16} />
+            ) : (
+              <p>{profileData.email}</p>
+            )}
           </div>
           <div className="profile-popup-information-content-element">
-            <h4>Address</h4>
-            {isEditing ? (
+            <h4>Description</h4>
+            {loading ? (
+              <Skeleton width={200} height={16} />
+            ) : isEditing ? (
               <input
                 type="text"
-                name="address"
-                value={profileData.address}
+                name="description"
+                value={profileData.description}
                 onChange={handleInputChange}
                 className="edit-input"
               />
             ) : (
-              <p>{profileData.address}</p>
+              <p>{profileData.description || "No description"}</p>
+            )}
+          </div>
+          <div className="profile-popup-information-content-element">
+            <h4>Work ID</h4>
+            {loading ? (
+              <Skeleton width={200} height={16} />
+            ) : (
+              <p>{profileData.work_id}</p>
+            )}
+          </div>
+          <div className="profile-popup-information-content-element">
+            <h4>Personal Score</h4>
+            {loading ? (
+              <Skeleton width={100} height={16} />
+            ) : (
+              <p>{profileData.personal_score}</p>
             )}
           </div>
         </div>
-        {user?.role === "STUDENT" && user?.role === "LECTURE" ? (
+        {loading ? (
+          <Skeleton width={200} height={30} />
+        ) : profileData.role === "STUDENT" ? (
           <>
             <div className="profile-popup-information-heading">
               <h3>Current Class</h3>

@@ -1,11 +1,11 @@
-.list__lecture__container {
+.list__student__container {
   margin-top: 50px;
   width: 1112px;
   height: 646px;
   background-color: var(--bg--nav);
   padding: 10px 12px 20px 12px;
   border-radius: 20px;
-  .list__lecture {
+  .list__student {
     width: 100%;
     display: flex;
     align-items: center;
@@ -20,7 +20,7 @@
       &__title {
         width: 209px;
         height: 54px;
-        padding: 18px 35px 5px 20px;
+        padding: 18px 25px 5px 20px;
         background-color: var(--color--div-head);
         border-bottom-right-radius: 20px;
         border-top-left-radius: 20px;

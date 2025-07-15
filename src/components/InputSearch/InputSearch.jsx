@@ -10,10 +10,11 @@ const InputSearch = () => {
   const { isAnnouncementVisible } = useContext(AnnouncementContext);
   const { toggleAnnouncement } = useContext(AnnouncementContext);
   const { user } = useAuth();
-  
+
   const handleChange = (e) => {
     setSearchItem(e.target.value);
   };
+
   return (
     <div className="input-search">
       <div className="input-search-home">

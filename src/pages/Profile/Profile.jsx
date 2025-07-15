@@ -41,7 +41,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       const response = await logout(user.token);
-      console.log(response);
+      (response);
       if (response) {
         logoutAuth();
       }

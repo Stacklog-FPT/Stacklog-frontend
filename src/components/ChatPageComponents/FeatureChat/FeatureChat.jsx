@@ -4,7 +4,7 @@ import { ChatContext } from "../../../context/ChatContext";
 
 const FeatureChat = () => {
   const { selectedUser } = useContext(ChatContext);
-  console.log(selectedUser);
+  (selectedUser);
 
   return (
     <div className="feature__chat__container">

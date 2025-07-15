@@ -29,7 +29,7 @@ const CheckTypeByAll = () => {
   const { getAllTask } = taskService();
   const { getAllStatus } = statusApi();
   const [statusTasks, setStatusTasks] = useState([]);
-  console.log(statusTasks);
+  (statusTasks);
   const [tasks, setTasks] = useState([]);
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -157,7 +157,7 @@ const CheckTypeByAll = () => {
     try {
       const response = await getAllStatus(user.token);
       if (response) {
-        console.log(response);
+        (response);
         setStatusTasks(response.data);
       }
     } catch (e) {

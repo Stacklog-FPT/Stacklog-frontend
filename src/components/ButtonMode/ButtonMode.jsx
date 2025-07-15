@@ -16,7 +16,7 @@ const ButtonMode = () => {
     const newMode = mode === "light" ? "dark" : "light";
     toggleMode(newMode);
     localStorage.setItem("theme", newMode);
-    console.log("Toggled to:", newMode);
+    ("Toggled to:", newMode);
   };
 
   if (!mode) return null;

@@ -46,8 +46,11 @@
       gap: 40px;
       margin: 0;
       padding: 0;
-
       list-style: none;
+
+      li {
+        color: var(--text--color);
+      }
     }
 
     &__element {

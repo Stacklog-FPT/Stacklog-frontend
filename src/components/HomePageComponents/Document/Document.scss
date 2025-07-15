@@ -23,7 +23,6 @@
         font-weight: 700;
         font-size: 20px;
         line-height: 30px;
-        color: #fff;
         background-color: var(--color--div-head);
         color: var(--text--name);
         border-top-left-radius: 16px;
@@ -120,20 +119,21 @@
     margin-top: 20px;
     .button_index {
       border-radius: 50px;
+      border: none;
       padding: 5px 10px;
       color: #8a8a8a;
-      background-color: transparent o !important;
-
+      background-color: transparent !important;
       &.active {
         background-color: #edf2f2;
-        color: #000;
+        color: var(--text--color);
       }
     }
 
     .pagination__button {
       padding: 8px 12px;
       border-radius: 20px;
-      background-color: #ffffff;
+      background-color: transparent !important;
+      border: none;
       color: #374151;
       font-size: 14px;
       cursor: pointer;
@@ -150,9 +150,7 @@
       }
 
       &.active {
-        background-color: #03624c;
         color: #ffffff;
-        border-color: #03624c;
       }
     }
   }

@@ -29,7 +29,7 @@
           font-weight: bold;
           font-size: 20px;
           line-height: 30px;
-          color: var(--text-color);
+          color: var(--text--heading-1);
         }
       }
 
@@ -46,6 +46,16 @@
           }
         }
       }
+
+      .current-session-heading {
+        font-size: 52px;
+        font-weight: bold;
+        line-height: 76px;
+        letter-spacing: -0.45px;
+        &.active {
+          color: var(--text--heading-1);
+        }
+      }
     }
   }
 
@@ -57,7 +67,7 @@
     &-task {
       width: 165px;
       height: 200px;
-      background-color: var(--color--div);
+      background-color: var(--bg--primary-color);
       border-radius: 20px;
       padding: 20px 20px 10px 20px;
       img {
@@ -71,7 +81,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: #ffff;
+        color: var(--text-color);
         &-title {
           font-size: 14px;
           line-height: 21px;

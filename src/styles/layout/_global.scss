@@ -1,5 +1,5 @@
-body {
+body .layout {
   background-color: var(--bg-color);
-  color: --text-color;
-  transition: background-color 1s ease-in;
+  color: var(--text-color);
+  transition: background-color 0.5s ease-in;
 }

@@ -1,11 +1,10 @@
-$color-background-white: #ffffff;
-$color-border-input: #e8e8e8;
-$color-bg-darkmode: #edf2f2;
 $color-bg-bell: #da4343;
 
 .input-search {
   width: 100%;
   height: 80px;
+  background-color: var(--bg--nav);
+  color: var(--text-color);
   padding: 20px;
   display: flex;
   flex-direction: row;
@@ -16,89 +15,37 @@ $color-bg-bell: #da4343;
 
   &-home {
     a {
-      color: #000000;
+      text-decoration: none;
+      color: var(--text-color);
     }
-
-    a.dark {
-      color: #ffffff;
-    }
-  }
-
-  &.input-light {
-    background-color: $color-background-white;
-  }
-
-  &.input-dark {
-    background-color: #000000;
-    i {
-      color: #fff;
-    }
-  }
-
-  &-home {
-    width: 24px;
-    height: 24px;
   }
 
   &-field {
     position: relative;
     display: flex;
     align-items: center;
+    input[type="text"] {
+      width: 800px;
+      height: 40px;
+      padding: 8px 8px 8px 40px;
+      background-color: var();
+      border: 1px solid var(--color--boder-input);
+      border-radius: 8px;
+      font-size: 16px;
 
-    &.light {
-      input[type="text"] {
-        width: 800px;
-        height: 40px;
-        padding: 8px 8px 8px 40px;
-        background-color: $color-background-white;
-        border: 1px solid $color-border-input;
-        border-radius: 8px;
-        font-size: 16px;
-
-        &:focus {
-          outline: none;
-          border-color: $color-background-white;
-          background-color: $color-border-input;
-        }
-      }
-
-      .fa-magnifying-glass {
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #666;
-        font-size: 18px;
-        pointer-events: none;
+      &:focus {
+        outline: none;
       }
     }
 
-    &.dark {
-      input[type="text"] {
-        width: 800px;
-        height: 40px;
-        padding: 8px 8px 8px 40px;
-        background-color: #000000;
-        border: 1px solid #666;
-        border-radius: 8px;
-        font-size: 16px;
-
-        &:focus {
-          outline: none;
-          border-color: #000000;
-          background-color: $color-border-input;
-        }
-      }
-
-      .fa-magnifying-glass {
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #666;
-        font-size: 18px;
-        pointer-events: none;
-      }
+    .fa-magnifying-glass {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #666;
+      font-size: 18px;
+      pointer-events: none;
     }
   }
 }
@@ -109,16 +56,16 @@ $color-bg-bell: #da4343;
   justify-content: center;
   position: relative;
   gap: 12px;
-  &-darkmode {
-    width: 60px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    background-color: $color-bg-darkmode;
-    border-radius: 999px;
-  }
+  // &-darkmode {
+  //   width: 60px;
+  //   height: 28px;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  //   gap: 12px;
+  //   background-color: $color-bg-darkmode;
+  //   border-radius: 999px;
+  // }
   &-bell {
     width: 50px;
     height: auto;
@@ -143,7 +90,7 @@ $color-bg-bell: #da4343;
       right: 46px;
       border-radius: 100%;
       padding: 5px;
-      color: $color-background-white;
+      color: var(--bg-color);
 
       span {
         font-family: "Inter", sans-serif;
@@ -155,10 +102,10 @@ $color-bg-bell: #da4343;
   }
 
   &-avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 200px;
+    width: 25px;
+    height: 25px;
     img {
+      border-radius: 200px;
       width: 100%;
       height: 100%;
     }

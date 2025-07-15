@@ -59,7 +59,7 @@ const Head = () => {
             </h2>
           </div>
           <div className="head-container-left-content-current-session">
-            <h2>{getCurrentSession()}!</h2>
+            <h2 className="current-session-heading">{getCurrentSession()}!</h2>
             <h2 className="active">Lê Văn Lu</h2>
           </div>
         </div>

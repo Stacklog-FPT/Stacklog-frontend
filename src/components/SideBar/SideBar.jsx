@@ -34,11 +34,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   };
 
   return (
-    <div
-      className={`navbar-container ${isOpen ? "open" : "close"} ${
-        mode === "light" ? "nav-light" : "nav-dark"
-      }`}
-    >
+    <div className={`navbar-container ${isOpen ? "open" : "close"} `}>
       <div className="wrapper_navbar">
         <div
           className={`wrapper_navbar_header ${isOpen ? "isOpen" : "isClose"}`}

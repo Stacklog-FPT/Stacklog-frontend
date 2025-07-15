@@ -1,9 +1,20 @@
 :root {
+  // Color Background
   --bg-color: #edf2f2;
+  --bg--primary-color: #045745;
+  --bg--nav: #ffffff;
+  // Color text
   --text-color: #000;
   --text--heading-1: #333333;
   --text--name: #045745;
+  // Color Div
   --color--div-head: #045745;
   --color--div-body: #ffffff;
-  --bg--primary-color: #045745;
+
+  // Color Border
+  --color--border-1: #c8cad4;
+  --color--boder-input: #e8e8e8;
+
+  // Color hover
+  --color--hover: #045745;
 }

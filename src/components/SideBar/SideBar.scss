@@ -12,16 +12,8 @@ $color-hover: #045745;
   width: 288px;
   height: 100vh;
   transition: width 0.3s ease;
-
-  &.nav-light {
-    background-color: $back-ground-color-white;
-    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
-  }
-  &.nav-dark {
-    background-color: #000;
-    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
-    color: $back-ground-color-white;
-  }
+  background-color: var(--bg--nav);
+  color: var(--text-color);
 
   &.close {
     width: 67px;
@@ -89,7 +81,7 @@ $color-hover: #045745;
     }
   }
 
-  &_toggle {
+  .wrapper_navbar_toggle {
     background: none;
     border: none;
     cursor: pointer;

@@ -1,8 +1,16 @@
 body.dark {
-    --bg-color: #000;
+    // Color background
+    --bg-color: #262626;
+    --bg--primary-color: #057059;
+    --bg--nav: #000
+    // Color text
     --text-color: #fff;
     --text--heading-1: #f2f2f2;
     --text--name: #09aa87;
+    // Color border input
+    --color--boder-input: #e8e8e8;
+    // Color div
     --color--div-head: #f2f2f2;
     --color--div-body: #2a2a2a;
+    
 }

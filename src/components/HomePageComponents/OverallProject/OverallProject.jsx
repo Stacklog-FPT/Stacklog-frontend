@@ -41,7 +41,7 @@ const OverallProject = () => {
         </div>
 
         <div className="chart__wrapper">
-          <PieChart width={240} height={220}>
+          <PieChart width={240} height={240}>
             <Pie
               data={overallProject.progress}
               cx="50%"

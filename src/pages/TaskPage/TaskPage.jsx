@@ -1,9 +1,16 @@
 import React from "react";
+import TaskListComponent from "../../components/TaskListComponents/TaskListComponent/TaskListComponent";
 import "./TaskPage.scss";
+import IncomingTask from "../../components/TaskListComponents/IncomingTask/IncomingTask";
+import TotalTask from "../../components/TaskListComponents/TotalTask/TotalTask";
 const TaskPage = () => {
   return (
-    <div>
-      <h1>TaskPage</h1>
+    <div className="task__page">
+      <TaskListComponent />
+      <div className="incoming__total">
+        <IncomingTask />
+        <TotalTask />
+      </div>
     </div>
   );
 };

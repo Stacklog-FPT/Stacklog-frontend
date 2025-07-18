@@ -1,7 +1,7 @@
 import axios from "axios";
 import usePostApi from "../hooks/usePost";
 
-const API_AUTH = "http://103.166.183.142:8080/api";
+const API_AUTH = "http://103.166.183.142:8080/api/";
 const userApi = () => {
   const { postData, isLoading, error, data } = usePostApi();
 
@@ -57,6 +57,7 @@ const userApi = () => {
     }
   };
 
+  
   const getUserByRole = async (token, role) => {
     try {
       if (!token) throw new Error("Unauthorized: No token provided");
@@ -64,7 +65,7 @@ const userApi = () => {
       if (!role) throw new Error("Invalid role or lack of the role");
 
       const response = await axios.get(
-        `${API_AUTH}/profile/user/role/${role}`,
+        `${API_AUTH}profile/user/role/${role}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

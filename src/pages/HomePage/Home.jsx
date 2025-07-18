@@ -5,7 +5,10 @@ import "./Home.scss";
 import MyPlan from "../../components/HomePageComponents/MyPlan/MyPlan";
 import Document from "../../components/HomePageComponents/Document/Document";
 import ListTask from "../../components/HomePageComponents/ListTask/ListTask";
+import OverallProject from "../../components/HomePageComponents/OverallProject/OverallProject";
+import { useAuth } from "../../context/AuthProvider";
 const Home = () => {
+  const { user } = useAuth();
   const today = new Date();
   const days = [
     "Sunday",
@@ -55,7 +58,7 @@ const Home = () => {
   };
   return (
     <div className="home__container">
-      <Head />
+      <Head /> 
       <Meeting />
       <div className="d-flex align-items-center justify-content-around mt-4 gap-4">
         <MyPlan

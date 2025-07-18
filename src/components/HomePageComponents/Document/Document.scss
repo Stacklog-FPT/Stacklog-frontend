@@ -42,7 +42,8 @@
   .document__body {
     width: 100%;
     padding: 5px 10px;
-    background-color: #edf2f2;
+    background-color: var(--bg--color--table);
+
     border-radius: 8px;
 
     .document_name_column {
@@ -51,6 +52,7 @@
       align-items: center;
       justify-content: flex-start;
       gap: 15px;
+
       p {
         padding-top: 15px;
         padding-left: 5px;
@@ -71,7 +73,7 @@
           font-weight: 500;
           font-size: 13px;
           line-height: 20px;
-          color: #000;
+          color: var(--text-color);
         }
       }
 
@@ -79,7 +81,7 @@
         font-weight: 500;
         font-size: 13px;
         line-height: 20px;
-        color: #000;
+        color: var(--text-color);
         width: 60px;
         text-align: center;
       }
@@ -88,7 +90,7 @@
         font-weight: 500;
         font-size: 13px;
         line-height: 20px;
-        color: #000;
+        color: var(--text-color);
         width: 100px;
         text-align: center;
       }

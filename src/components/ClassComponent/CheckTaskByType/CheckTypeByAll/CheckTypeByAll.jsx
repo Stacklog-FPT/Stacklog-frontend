@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import "./CheckTypeByAll.scss";
 import Column from "./Column/Column";
 import { DndContext, rectIntersection, closestCorners } from "@dnd-kit/core";
@@ -26,11 +26,12 @@ const CheckTypeByAll = () => {
   const [showCommentTask, setShowCommentTask] = useState(null);
   const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { getAllTask } = taskService();
+  const { getAllTask, addTask, setSocket } = taskService();
   const { getAllStatus } = statusApi();
   const [statusTasks, setStatusTasks] = useState([]);
-  (statusTasks);
   const [tasks, setTasks] = useState([]);
+  const [stompClient, setStompClient] = useState(null);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -52,70 +53,32 @@ const CheckTypeByAll = () => {
     }
   };
 
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-    if (!over) return;
+  const handleDragEnd = useCallback(
+    (event) => {
+      const { active, over } = event;
+      if (!over) return;
 
-    const activeId = active.id;
-    const activeTask = tasks.find((task) => task.taskId === activeId);
-    if (!activeTask) return;
+      const activeId = active.id;
+      const activeTask = tasks.find((task) => task.taskId === activeId);
+      if (!activeTask) return;
 
-    let updatedTasks = [...tasks];
-    const activeIndex = tasks.findIndex((task) => task.taskId === activeId);
+      let updatedTasks = [...tasks];
+      const activeIndex = tasks.findIndex((task) => task.taskId === activeId);
 
-    const droppableId = over.id;
-    const isOverDroppable = droppableId.startsWith("droppable-");
-    const isOverTask = tasks.some((task) => task.taskId === over.id);
+      const droppableId = over.id;
+      const isOverDroppable = droppableId.startsWith("droppable-");
+      const isOverTask = tasks.some((task) => task.taskId === over.id);
 
-    if (isOverDroppable || activeColumn) {
-      const targetStatus =
-        activeColumn || droppableId.replace("droppable-", "");
-      const targetTasks = tasks.filter(
-        (task) =>
-          task?.statusTask?.statusTaskName === targetStatus &&
-          task.taskId !== activeId
-      );
-      let dropIndex = over.data.current?.sortable?.index ?? 0;
-
-      updatedTasks = updatedTasks.map((task) =>
-        task.taskId === activeId
-          ? {
-              ...task,
-              statusTask: { ...task.statusTask, statusTaskName: targetStatus },
-            }
-          : task
-      );
-
-      let targetIndex = 0;
-      if (targetTasks.length === 0) {
-        const firstTaskInOtherColumn = tasks.findIndex(
-          (task) => task?.statusTask?.statusTaskName === targetStatus
+      if (isOverDroppable || activeColumn) {
+        const targetStatus =
+          activeColumn || droppableId.replace("droppable-", "");
+        const targetTasks = tasks.filter(
+          (task) =>
+            task?.statusTask?.statusTaskName === targetStatus &&
+            task.taskId !== activeId
         );
-        targetIndex =
-          firstTaskInOtherColumn === -1 ? tasks.length : firstTaskInOtherColumn;
-      } else {
-        targetIndex =
-          tasks.findIndex(
-            (task) => task?.statusTask?.statusTaskName === targetStatus
-          ) + dropIndex;
-      }
+        let dropIndex = over.data.current?.sortable?.index ?? 0;
 
-      updatedTasks.splice(activeIndex, 1);
-      updatedTasks.splice(targetIndex, 0, {
-        ...activeTask,
-        statusTask: { ...activeTask.statusTask, statusTaskName: targetStatus },
-      });
-    } else if (isOverTask) {
-      const overTask = tasks.find((task) => task.taskId === over.id);
-      if (!overTask) return;
-
-      const overIndex = tasks.findIndex((task) => task.taskId === over.id);
-      const targetStatus = overTask?.statusTask?.statusTaskName;
-
-      if (activeTask?.statusTask?.statusTaskName === targetStatus) {
-        updatedTasks.splice(activeIndex, 1);
-        updatedTasks.splice(overIndex, 0, activeTask);
-      } else {
         updatedTasks = updatedTasks.map((task) =>
           task.taskId === activeId
             ? {
@@ -127,19 +90,68 @@ const CheckTypeByAll = () => {
               }
             : task
         );
+
+        let targetIndex = 0;
+        if (targetTasks.length === 0) {
+          const firstTaskInOtherColumn = tasks.findIndex(
+            (task) => task?.statusTask?.statusTaskName === targetStatus
+          );
+          targetIndex =
+            firstTaskInOtherColumn === -1
+              ? tasks.length
+              : firstTaskInOtherColumn;
+        } else {
+          targetIndex =
+            tasks.findIndex(
+              (task) => task?.statusTask?.statusTaskName === targetStatus
+            ) + dropIndex;
+        }
+
         updatedTasks.splice(activeIndex, 1);
-        updatedTasks.splice(overIndex, 0, {
+        updatedTasks.splice(targetIndex, 0, {
           ...activeTask,
           statusTask: {
             ...activeTask.statusTask,
             statusTaskName: targetStatus,
           },
         });
+      } else if (isOverTask) {
+        const overTask = tasks.find((task) => task.taskId === over.id);
+        if (!overTask) return;
+
+        const overIndex = tasks.findIndex((task) => task.taskId === over.id);
+        const targetStatus = overTask?.statusTask?.statusTaskName;
+
+        if (activeTask?.statusTask?.statusTaskName === targetStatus) {
+          updatedTasks.splice(activeIndex, 1);
+          updatedTasks.splice(overIndex, 0, activeTask);
+        } else {
+          updatedTasks = updatedTasks.map((task) =>
+            task.taskId === activeId
+              ? {
+                  ...task,
+                  statusTask: {
+                    ...task.statusTask,
+                    statusTaskName: targetStatus,
+                  },
+                }
+              : task
+          );
+          updatedTasks.splice(activeIndex, 1);
+          updatedTasks.splice(overIndex, 0, {
+            ...activeTask,
+            statusTask: {
+              ...activeTask.statusTask,
+              statusTaskName: targetStatus,
+            },
+          });
+        }
       }
-    }
-    setTasks(updatedTasks);
-    setActiveColumn(null);
-  };
+      setTasks(updatedTasks);
+      setActiveColumn(null);
+    },
+    [tasks, activeColumn]
+  );
 
   const handleShowAddTask = (status) => {
     setShowAddTask(status);
@@ -153,19 +165,19 @@ const CheckTypeByAll = () => {
     setShowCommentTask(null);
   };
 
-  const handleGetStatusTask = async () => {
+  const handleGetStatusTask = useCallback(async () => {
     try {
       const response = await getAllStatus(user.token);
       if (response) {
-        (response);
         setStatusTasks(response.data);
       }
     } catch (e) {
       console.error(e.message);
     }
-  };
+  }, []);
 
-  const handleGetTasks = async () => {
+  //user.token, getAllStatus
+  const handleGetTasks = useCallback(async () => {
     try {
       const response = await getAllTask(user.token);
       if (response) {
@@ -179,20 +191,76 @@ const CheckTypeByAll = () => {
           },
         }));
         setTasks(normalizedTasks);
-        const uniqueMembers = [
-          ...new Map(
-            normalizedTasks
-              .flatMap((task) => task.assigns)
-              .map((member) => [member.assignTo, member])
-          ).values(),
-        ];
-        setMembers(uniqueMembers);
+        // const uniqueMembers = [
+        //   ...new Map(
+        //     normalizedTasks
+        //       .flatMap((task) => task.assigns)
+        //       .map((member) => [member.assignTo, member])
+        //   ).values(),
+        // ];
+        // setMembers(uniqueMembers);
       }
     } catch (e) {
       console.error(e.message);
     }
-  };
+  }, []);
+  //user.token, getAllTask
+  useEffect(() => {
+    const stompInstance = setSocket(user.token);
+    setStompClient(stompInstance);
+    stompInstance.onmessage = (message) => {
+      const data = JSON.parse(message.body);
+      console.log("Received message from /topic/task:", data);
+      if (data.type === "taskUpdate") {
+        setTasks((prevTasks) => {
+          const taskExists = prevTasks.some(
+            (task) => task.taskId === data.taskId
+          );
+          if (taskExists) {
+            return prevTasks.map((task) =>
+              task.taskId === data.taskId
+                ? {
+                    ...task,
+                    ...data,
+                    statusTask: {
+                      ...task.statusTask,
+                      statusTaskName: data.statusTask.statusTaskName
+                        .toLowerCase()
+                        .replace(/\b\w/g, (c) => c.toUpperCase()),
+                    },
+                  }
+                : task
+            );
+          } else {
+            return [
+              ...prevTasks,
+              {
+                ...data,
+                statusTask: {
+                  ...data.statusTask,
+                  statusTaskName: data.statusTask.statusTaskName
+                    .toLowerCase()
+                    .replace(/\b\w/g, (c) => c.toUpperCase()),
+                },
+              },
+            ];
+          }
+        });
+      } else if (data.type === "taskDelete") {
+        setTasks((prevTasks) =>
+          prevTasks.filter((task) => task.taskId !== data.taskId)
+        );
+      }
+    };
 
+    return () => {
+      if (stompInstance && stompInstance.connected) {
+        stompInstance.disconnect();
+      }
+    };
+  }, []);
+
+  //user.token, setSocket
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -207,20 +275,18 @@ const CheckTypeByAll = () => {
 
     fetchData();
 
-    window.addEventListener("keydown", (e) => {
+    const handleEscape = (e) => {
       if (e.key === "Escape") {
         setShowAddTask(null);
       }
-    });
+    };
+
+    document.addEventListener("keydown", handleEscape);
 
     return () => {
-      window.removeEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          setShowAddTask(null);
-        }
-      });
+      document.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [handleGetStatusTask, handleGetTasks]);
 
   return (
     <DndContext

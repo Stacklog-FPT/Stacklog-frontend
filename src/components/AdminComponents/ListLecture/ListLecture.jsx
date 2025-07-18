@@ -1,6 +1,22 @@
 import React from "react";
 import "./ListLecture.scss";
+import { useAuth } from "../../../context/AuthProvider";
+import userApi from "../../../service/UserService";
 const ListLecture = () => {
+  const [lectures, setLectures] = React.useState([]);
+  const { user } = useAuth();
+  const { getUserByRole } = userApi();
+  const handleGetLectures = async () => {
+    const resp = await getUserByRole(user?.token, "lecture");
+    if (resp) {
+      console.log(resp);
+      setLectures(resp);
+    }
+  };
+
+  React.useEffect(() => {
+    handleGetLectures();
+  }, []);
   return (
     <div className="list__lecture__container">
       <div className="list__lecture">
@@ -14,6 +30,20 @@ const ListLecture = () => {
             <i className="fa-solid fa-plus"></i>
             <i className="fa-solid fa-trash"></i>
           </div>
+        </div>
+        <div className="list__lecture__table">
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" />
+                </th>
+                <th>Lecture</th>
+                <th>Email</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+          </table>
         </div>
       </div>
     </div>

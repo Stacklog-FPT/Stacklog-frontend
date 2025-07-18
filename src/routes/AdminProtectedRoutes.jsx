@@ -4,7 +4,6 @@ import { useAuth } from "../context/AuthProvider";
 
 const AdminProtectedRoutes = () => {
   const { user } = useAuth();
-  console.log(user);
 
   if (!user) return <Navigate to={"/login"} replace />;
 

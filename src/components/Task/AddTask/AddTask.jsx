@@ -70,6 +70,7 @@ const AddTask = (props) => {
         priority: taskData.priority || "HIGH",
       };
       const response = await addTask(payload, user.token);
+      console.log(response)
       if (response.data) {
         notify();
       }

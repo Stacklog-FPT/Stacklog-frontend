@@ -8,8 +8,10 @@
   .list__lecture {
     width: 100%;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 10px;
 
     &__heading {
       width: 100%;
@@ -47,6 +49,61 @@
           color: var(--text-color);
           &:hover {
             color: var(--color--active-line);
+          }
+        }
+      }
+    }
+
+    &__table {
+      width: 100%;
+      padding-top: 20px;
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 10px;
+        overflow: hidden;
+        border-radius: 10px;
+
+        input {
+          width: 15px;
+          height: 15px;
+          border-radius: 10px;
+          border: 1px solid #d0d5dd;
+          background-color: #ffff;
+          margin-top: 5px;
+        }
+
+        thead {
+          background-color: var(--bg--color--table);
+
+          th {
+            padding: 12px 20px;
+            text-align: left;
+            font-weight: 500;
+            font-size: 13px;
+            line-height: 21px;
+            color: var(--text-color);
+            &:nth-child(1) {
+              width: 68px;
+              text-align: center;
+            }
+            &:nth-child(2) {
+              width: 454px;
+            }
+            &:nth-child(3) {
+              width: 200px;
+            }
+            &:nth-child(4) {
+              width: 93px;
+            }
+            &:nth-child(5) {
+              width: 145px;
+            }
+            &:nth-child(6) {
+              width: 127px;
+            }
           }
         }
       }

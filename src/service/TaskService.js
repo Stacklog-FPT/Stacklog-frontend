@@ -1,9 +1,42 @@
+import SockJS from "sockjs-client";
+import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
 
 const API_TASK = "http://103.166.183.142:8080/api/task";
+const SOCKET_URL = "http://103.166.183.142:8080/ws/taskify";
+
 const taskService = () => {
+  let stompClient = null;
+
+  const setSocket = (token) => {
+    if (!token) {
+      throw new Error("Unauthorized!");
+    }
+
+    const socket = new SockJS(SOCKET_URL);
+    stompClient = Stomp.over(socket);
+
+    stompClient.connect(
+      { Authorization: `Bearer ${token}` },
+      () => {
+        console.log("STOMP connected");
+        stompClient.subscribe("/topic/task", (message) => {
+          const data = JSON.parse(message.body);
+          console.log("Received message from /topic/task:", data);
+        });
+      },
+      (error) => {
+        console.error("STOMP connection error:", error);
+      }
+    );
+
+    return stompClient;
+  };
+
   const getAllTask = async (token) => {
-    if (!token) throw new Error("Unauthorization!");
+    if (!token) {
+      throw new Error("Unauthorized!");
+    }
     try {
       const response = await axios.get(`${API_TASK}/task/group_1`, {
         headers: {
@@ -11,16 +44,16 @@ const taskService = () => {
         },
         withCredentials: true,
       });
-
       return response;
     } catch (e) {
-      throw Error(e.message);
+      throw new Error(e.message);
     }
   };
 
   const addTask = async (taskData, token) => {
-    if (!token) throw new Error("Unauthorized!");
-
+    if (!token) {
+      throw new Error("Unauthorized!");
+    }
     try {
       const response = await axios.post(`${API_TASK}/task`, taskData, {
         headers: {
@@ -34,7 +67,7 @@ const taskService = () => {
     }
   };
 
-  return { getAllTask, addTask };
+  return { getAllTask, addTask, setSocket };
 };
 
 export default taskService;

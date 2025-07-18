@@ -39,7 +39,10 @@
     padding-top: 20px;
     table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 10px;
+      overflow: hidden;
       border-radius: 10px;
 
       input {
@@ -52,7 +55,7 @@
       }
 
       thead {
-        background-color: #edf2f2;
+        background-color: var(--bg--color--table);
         th {
           padding: 12px 20px;
           text-align: left;
@@ -91,8 +94,8 @@
           font-weight: 500;
           font-size: 13px;
           line-height: 21px;
-          color: #000;
-          border-bottom: 1px solid #edf2f2;
+          color: var(--text-color);
+          border-bottom: 1px solid var(--bg--color--table);
 
           &:nth-child(1) {
             width: 68px;

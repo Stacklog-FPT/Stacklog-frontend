@@ -1,8 +1,17 @@
 $color-bg-main: #045745;
 $color-bg-light: #ffffff;
+
+.meeting__container {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
 .meeting {
   width: 100%;
-  height: auto;
+  height: 598px;
   overflow-y: auto;
   background-color: var(--bg--nav);
   border-radius: 20px;
@@ -11,14 +20,14 @@ $color-bg-light: #ffffff;
   &__title {
     width: 284px;
     height: auto;
-    background-color: $color-bg-main;
+    background-color: var(--color--div-head);
     padding: 12px 24px;
     border-top-right-radius: 16px;
     border-top-left-radius: 16px;
     border-bottom-right-radius: 16px;
     margin: 8px 24px 8px 12px;
     h2 {
-      color: $color-bg-light;
+      color: var(--text--name);
       line-height: 30px;
       font-weight: bold;
       font-size: 20px;

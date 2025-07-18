@@ -8,8 +8,6 @@ export const AuthProvider = ({ children }) => {
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
-  console.log(user)
-
   const loginSave = (userData) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));

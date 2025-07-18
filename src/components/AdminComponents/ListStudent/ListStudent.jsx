@@ -6,14 +6,12 @@ const ListStudent = () => {
   const { user } = useAuth();
   const { getUserByRole } = userApi();
   const [students, setStudents] = React.useState([]);
-  console.log(students);
   const itemsPerPage = 9;
   const totalPages = Math.ceil(students.length / itemsPerPage);
   const [currentPage, setCurrentPage] = React.useState(1);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentItems = students.slice(startIndex, endIndex);
-  console.log(currentItems);
 
   //
   const handlePreviousPage = () => {

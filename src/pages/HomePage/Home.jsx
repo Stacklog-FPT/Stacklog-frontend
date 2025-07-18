@@ -7,6 +7,7 @@ import Document from "../../components/HomePageComponents/Document/Document";
 import ListTask from "../../components/HomePageComponents/ListTask/ListTask";
 import OverallProject from "../../components/HomePageComponents/OverallProject/OverallProject";
 import { useAuth } from "../../context/AuthProvider";
+import MemberList from "../../components/HomePageComponents/MemberList/MemberList";
 const Home = () => {
   const { user } = useAuth();
   const today = new Date();
@@ -46,6 +47,7 @@ const Home = () => {
     return hour;
   };
 
+  const isLecture = user?.role === "LECTURER";
   const getCurrentSession = () => {
     let amPm = "";
     if (getCurrentHour() == 1 && getCurrentHour() <= 12) {
@@ -56,9 +58,10 @@ const Home = () => {
 
     return amPm;
   };
+
   return (
     <div className="home__container">
-      <Head /> 
+      <Head />
       <Meeting />
       <div className="d-flex align-items-center justify-content-around mt-4 gap-4">
         <MyPlan
@@ -72,6 +75,8 @@ const Home = () => {
         <Document />
       </div>
       <ListTask />
+
+      {isLecture && <MemberList />}
     </div>
   );
 };

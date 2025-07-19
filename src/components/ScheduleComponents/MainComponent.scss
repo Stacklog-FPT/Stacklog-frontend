@@ -1,0 +1,34 @@
+.main__component {
+  width: 1112px;
+  height: 898px;
+  background-color: var(--bg--nav);
+  border-radius: 20px;
+  margin-top: 20px;
+  padding: 12px 12px 0 12px;
+
+  &__container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    &__heading {
+      width: 209px;
+      height: 54px;
+      padding: 18px 35px 5px 20px;
+      background-color: var(--color--div-head);
+      border-bottom-right-radius: 20px;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      text-align: center;
+      white-space: nowrap;
+      h2 {
+        font-size: 24px;
+        font-weight: 600;
+        line-height: 21px;
+        color: var(--text--color-manage);
+      }
+    }
+  }
+}

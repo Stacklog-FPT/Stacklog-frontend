@@ -1,11 +1,14 @@
-import React from 'react'
-import './PlanPage.scss'
+import React from "react";
+import "./PlanPage.scss";
+import PlanComponent from "../../components/PlanComponents/PlanCompnent/PlanComponent";
+import RecentComponent from "../../components/PlanComponents/RecentComponent/RecentComponent";
 const PlanPage = () => {
   return (
-    <div>
-      <h1>Plan Page</h1>
+    <div className="plan__page__main">
+      <PlanComponent />
+      <RecentComponent />
     </div>
-  )
-}
+  );
+};
 
-export default PlanPage
+export default PlanPage;

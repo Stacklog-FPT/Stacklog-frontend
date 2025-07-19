@@ -1,0 +1,33 @@
+.recent__component {
+  width: 1112px;
+  height: 478px;
+  border-radius: 20px;
+  background-color: var(--bg--nav);
+  &__container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 10px 0 0 15px;
+
+    &__heading {
+      width: 117px;
+      height: 54px;
+      padding: 18px 35px 5px 20px;
+      background-color: var(--color--div-head);
+      border-bottom-right-radius: 20px;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      text-align: center;
+      white-space: nowrap;
+      h2 {
+        font-size: 24px;
+        font-weight: 600;
+        line-height: 21px;
+        color: var(--text--color-manage);
+      }
+    }
+  }
+}

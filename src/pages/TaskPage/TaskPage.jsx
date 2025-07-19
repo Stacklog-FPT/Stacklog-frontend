@@ -3,6 +3,8 @@ import TaskListComponent from "../../components/TaskListComponents/TaskListCompo
 import "./TaskPage.scss";
 import IncomingTask from "../../components/TaskListComponents/IncomingTask/IncomingTask";
 import TotalTask from "../../components/TaskListComponents/TotalTask/TotalTask";
+import UpcomingTask from "../../components/TaskListComponents/UpcomingTask/UpcomingTask";
+import TaskCompletion from "../../components/TaskListComponents/TaskCompletion/TaskCompletion";
 const TaskPage = () => {
   return (
     <div className="task__page">
@@ -11,6 +13,8 @@ const TaskPage = () => {
         <IncomingTask />
         <TotalTask />
       </div>
+      <UpcomingTask />
+      <TaskCompletion />
     </div>
   );
 };

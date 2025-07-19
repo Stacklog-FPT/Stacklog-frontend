@@ -1,11 +1,12 @@
-import React from 'react'
-import './SchedulePage.scss'
+import React from "react";
+import "./SchedulePage.scss";
+import MainComponent from "../../components/ScheduleComponents/MainComponent";
 const SchedulePage = () => {
   return (
-    <div>
-      <h1>Schedule Page</h1>
+    <div className="schedule__page">
+      <MainComponent />
     </div>
-  )
-}
+  );
+};
 
-export default SchedulePage
+export default SchedulePage;

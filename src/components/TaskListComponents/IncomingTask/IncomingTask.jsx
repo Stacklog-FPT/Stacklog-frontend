@@ -3,7 +3,9 @@ import "./IncomingTask.scss";
 const IncomingTask = () => {
   return (
     <div className="incoming__task">
-      <div className="incoming__task__container">Hello, I'm incoming task</div>
+      <div className="incoming__task__container">
+        <h2>Incomplete tasks by section</h2>
+      </div>
     </div>
   );
 };

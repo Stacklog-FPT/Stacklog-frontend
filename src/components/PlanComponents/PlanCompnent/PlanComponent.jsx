@@ -22,6 +22,9 @@ const PlanComponent = () => {
                 <th>Process</th>
               </tr>
             </thead>
+            <tbody>
+              <tr></tr>
+            </tbody>
           </table>
         </div>
       </div>

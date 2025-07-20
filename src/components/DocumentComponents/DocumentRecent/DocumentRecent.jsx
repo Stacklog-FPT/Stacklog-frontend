@@ -58,10 +58,6 @@ const DocumentRecent = () => {
     }
   };
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
   //
   return (
     <div className="document__recent">

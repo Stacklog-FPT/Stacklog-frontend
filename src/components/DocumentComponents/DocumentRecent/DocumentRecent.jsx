@@ -8,11 +8,6 @@ const DocumentRecent = () => {
       description: "I read but didn't understand anything",
     },
     {
-      _id: 1,
-      title: "Tech requirement.pdf",
-      description: "I read but didn't understand anything",
-    },
-    {
       _id: 2,
       title: "Tech requirement.pdf",
       description: "I read but didn't understand anything",
@@ -37,6 +32,11 @@ const DocumentRecent = () => {
       title: "Tech requirement.pdf",
       description: "I read but didn't understand anything",
     },
+    {
+      _id: 7,
+      title: "Tech requirement.pdf",
+      description: "I read but didn't understand anything",
+    },
   ]);
 
   const itemsPerPage = 5;
@@ -45,6 +45,22 @@ const DocumentRecent = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentItems = recentDocuments.slice(startIndex, endIndex);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   //
   return (
@@ -79,6 +95,30 @@ const DocumentRecent = () => {
             })
           ) : (
             <h2>No document recent</h2>
+          )}
+        </div>
+
+        <div className="pagination">
+          {recentDocuments.length > itemsPerPage && (
+            <div className="pagination">
+              <button
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className="pagination__button"
+              >
+                <i className="fa-solid fa-arrow-left"></i>
+              </button>
+              <span className="pagination__info">
+                {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className="pagination__button"
+              >
+                <i className="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
           )}
         </div>
       </div>

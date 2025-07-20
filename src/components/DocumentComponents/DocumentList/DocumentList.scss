@@ -22,5 +22,13 @@
         border-bottom-right-radius: 16px;
       }
     }
+
+    &__main__content{
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
   }
 }

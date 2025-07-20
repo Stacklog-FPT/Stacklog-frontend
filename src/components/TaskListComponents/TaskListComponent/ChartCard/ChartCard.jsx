@@ -45,7 +45,6 @@ const ChartCard = ({
               </Pie>
             </PieChart>
             <div className="chart__center">
-              <h2>Overall</h2>
               <p>{progress}%</p>
             </div>
           </div>

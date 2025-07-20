@@ -7,11 +7,19 @@ const PlanComponent = () => {
         <div className="plan__component__container__heading">
           <h2>Plan</h2>
         </div>
-        <div className="plan__component__container__table__list">
+        <div className="plan__component__container__main__content">
           <table>
             <thead>
               <tr>
-                <td></td>
+                <th>
+                  <input type="checkbox" />
+                </th>
+                <th>Project</th>
+                <th>Assign</th>
+                <th>Priority</th>
+                <th>Start</th>
+                <th>Deadline</th>
+                <th>Process</th>
               </tr>
             </thead>
           </table>

@@ -1,11 +1,21 @@
-import React from 'react'
-import './GradesPage.scss'
+import React from "react";
+import "./GradesPage.scss";
+import GradesComponents from "../../components/GradesComponents/GradesComponents";
+import DetailScore from "../../components/GradesComponents/DetailScore/DetailScore";
 const GradesPage = () => {
-  return (
-    <div>
-      <h1>GradesPage</h1>
-    </div>
-  )
-}
+  const [activeDetail, setActiveDetail] = React.useState(false);
 
-export default GradesPage
+  const handleActiveDetail = () => {
+    setActiveDetail(!activeDetail);
+  };
+
+  console.log(activeDetail);
+  return (
+    <div className="grades__page">
+      <GradesComponents handleActiveDetail={handleActiveDetail} />
+      {activeDetail && <DetailScore handleActiveDetail={handleActiveDetail} />}
+    </div>
+  );
+};
+
+export default GradesPage;

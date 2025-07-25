@@ -115,7 +115,7 @@ const Profile = () => {
             <p>{profileData.role}</p>
           )}
           <button onClick={toggleEdit}>
-            <i className="fa-solid fa-pen-to-square"></i>{" "}
+            <i className="fa-solid fa-pen-to-square"></i>
             {isEditing ? "Save Profile" : "Edit Profile"}
           </button>
           <button onClick={handleLogout}>
@@ -172,7 +172,8 @@ const Profile = () => {
         </div>
         {loading ? (
           <Skeleton width={200} height={30} />
-        ) : profileData.role === "STUDENT" ? (
+        ) : profileData?.role === "STUDENT" &&
+          profileData?.role === "LECTURER" ? (
           <>
             <div className="profile-popup-information-heading">
               <h3>Current Class</h3>

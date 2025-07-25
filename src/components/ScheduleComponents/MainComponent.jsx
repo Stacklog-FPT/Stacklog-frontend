@@ -1,5 +1,6 @@
 import React from "react";
 import "./MainComponent.scss";
+import Calendar from "./Calendar/Calendar";
 const MainComponent = () => {
   return (
     <div className="main__component">
@@ -7,6 +8,7 @@ const MainComponent = () => {
         <div className="main__component__container__heading">
           <h2>Team schedule</h2>
         </div>
+        <Calendar />
       </div>
     </div>
   );

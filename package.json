@@ -21,6 +21,7 @@
     "@vitejs/plugin-react": "^4.6.0",
     "axios": "^1.8.4",
     "bootstrap": "^5.3.6",
+    "date-fns": "^4.1.0",
     "globalthis": "^1.0.4",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",

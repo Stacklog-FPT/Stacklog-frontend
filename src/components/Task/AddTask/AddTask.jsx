@@ -72,8 +72,6 @@ const AddTask = (props) => {
         assigns: "" || [],
       };
 
-      console.log(payload);
-
       const response = await addTask(payload, user.token);
       if (response.data) {
         notify();
@@ -172,7 +170,7 @@ const AddTask = (props) => {
           >
             {colorPriority.map((item) => (
               <option key={item.id} value={item.content}>
-                <p>{String(item.content)}</p>
+                {item.content} 
               </option>
             ))}
           </select>

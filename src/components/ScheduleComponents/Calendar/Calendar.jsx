@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import TimeSlot from "../TimeSlot/TimeSlot";
-import { format, addDays, subDays } from "date-fns";
+import {
+  format,
+  addDays,
+  subDays,
+  startOfWeek,
+  addMonths,
+  subMonths,
+} from "date-fns";
 import "./Calendar.scss";
 
 const Calendar = () => {
-  const hours = Array.from({ length: 12 }, (_, i) => `${i + 1} AM`);
-  const today = new Date();
+  const [currentDate, setCurrentDate] = useState(new Date());
 
-  // Ngày hôm nay là ngày ở giữa, lấy 3 ngày trước và 3 ngày sau
-  const days = Array.from({ length: 7 }, (_, i) => addDays(today, i - 3));
+  const hours = Array.from({ length: 12 }, (_, i) => `${i + 1} AM`);
+  const days = Array.from({ length: 7 }, (_, i) =>
+    addDays(startOfWeek(currentDate, { weekStartsOn: 1 }), i)
+  );
 
   const scheduleData = {
     "2025-07-22": ["01", "02"],
@@ -27,16 +35,29 @@ const Calendar = () => {
 
   return (
     <div className="calendar">
+      <div className="calendar__navigation">
+        <button onClick={() => setCurrentDate(subDays(currentDate, 1))}>
+          &lt;
+        </button>
+        <button onClick={() => setCurrentDate(new Date())}>Today</button>
+        <button onClick={() => setCurrentDate(addDays(currentDate, 1))}>
+          &gt;
+        </button>
+        <span>{format(currentDate, "MMMM yyyy")}</span>
+      </div>
+
+      {/* DAY HEADERS */}
       <div className="calendar__header">
         <div className="calendar__header--empty"></div>
         {days.map((day, index) => {
-          const isToday = isSameDay(day, today);
+          const isSelectedDay = isSameDay(day, currentDate);
+
           return (
             <div className="calendar__header--day" key={index}>
               <div className="calendar__weekday">{format(day, "EEE")}</div>
               <div
                 className={`calendar__day-number ${
-                  isToday ? "calendar__day--today" : ""
+                  isSelectedDay ? "calendar__day--today" : ""
                 }`}
               >
                 {format(day, "d")}
@@ -46,6 +67,7 @@ const Calendar = () => {
         })}
       </div>
 
+      {/* TIME SLOTS */}
       <div className="calendar__body">
         {hours.map((hour, rowIdx) => (
           <div className="calendar__row" key={rowIdx}>

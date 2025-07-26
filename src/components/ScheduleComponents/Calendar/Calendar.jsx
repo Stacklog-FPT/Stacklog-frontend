@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import TimeSlot from "../TimeSlot/TimeSlot";
-import { format, addDays, subDays } from "date-fns";
+import ScheduleDetailCard from "../ScheduleDetailCard/ScheduleDetailCard";
+import { format, addDays } from "date-fns";
 import "./Calendar.scss";
 
 const Calendar = () => {
   const hours = Array.from({ length: 12 }, (_, i) => `${i + 1} AM`);
   const today = new Date();
-
-  // Ngày hôm nay là ngày ở giữa, lấy 3 ngày trước và 3 ngày sau
   const days = Array.from({ length: 7 }, (_, i) => addDays(today, i - 3));
 
   const scheduleData = {
@@ -19,6 +18,8 @@ const Calendar = () => {
     "2025-07-27": ["11", "12"],
     "2025-07-28": ["01", "02"],
   };
+
+  const [selectedSlot, setSelectedSlot] = useState(null);
 
   const isSameDay = (d1, d2) =>
     d1.getFullYear() === d2.getFullYear() &&
@@ -55,7 +56,21 @@ const Calendar = () => {
               const hourKey = String(rowIdx + 1).padStart(2, "0");
               const isActive = scheduleData[dateKey]?.includes(hourKey);
               return (
-                <div className="calendar__cell" key={colIdx}>
+                <div
+                  className="calendar__cell"
+                  key={colIdx}
+                  onClick={() => {
+                    if (isActive) {
+                      setSelectedSlot({
+                        date: dateKey,
+                        hour: hour,
+                        hourKey: hourKey,
+                        isActive,
+                      });
+                    }
+                  }}
+                  style={{ cursor: isActive ? "pointer" : "default" }}
+                >
                   <TimeSlot isActive={isActive} />
                 </div>
               );
@@ -63,6 +78,14 @@ const Calendar = () => {
           </div>
         ))}
       </div>
+      
+      {/* Hiển thị card chi tiết nếu đã chọn slot */}
+      {selectedSlot && (
+        <ScheduleDetailCard
+          slot={selectedSlot}
+          onClose={() => setSelectedSlot(null)}
+        />
+      )}
     </div>
   );
 };

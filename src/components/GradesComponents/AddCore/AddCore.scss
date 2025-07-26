@@ -2,12 +2,12 @@
   width: 548px;
   min-height: 623px;
   position: absolute;
-  top: 0%;
+  top: 5%;
   left: 35%;
   z-index: 1000;
   border-radius: 20px;
-  background-color: #fff;
-  box-shadow: rgba(0,0,0,0.19) 0px 10px 20px, rgba(0,0,0,0.23) 0px 6px 6px;
+  background-color: var(--bg--nav);
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
   padding: 20px 32px;
   display: flex;
   flex-direction: column;
@@ -21,7 +21,7 @@
     align-items: start;
     justify-content: center;
   }
-  
+
   &__header {
     width: 100%;
     height: 35px;
@@ -30,7 +30,7 @@
     align-items: start;
 
     .add_core__title {
-      color: #101828;
+      color: var(--text-color);
       width: 100%;
       height: 24px;
       font-size: 22px;
@@ -41,7 +41,7 @@
       border: none;
       font-size: 28px;
       cursor: pointer;
-      color: #222;
+      color: var(--text-color);
       margin-top: -8px;
     }
   }
@@ -49,7 +49,7 @@
   &__desc {
     width: 100%;
     height: 24px;
-    color: #667085;
+    color: var(--text--add--chart);
     font-size: 15px;
     margin-bottom: 8px;
   }
@@ -59,7 +59,7 @@
     height: 110px;
     margin-bottom: 8px;
     .add_core__section_title {
-      color: #101828;
+      color: var(--text-color);
       font-size: 18px;
       font-weight: 600;
       margin-bottom: 8px;
@@ -67,9 +67,9 @@
   }
 
   &__upload_box {
-    border: 1.5px dashed #E8E8E8;
+    border: 1.5px dashed var(--color--border-input);
     border-radius: 12px;
-    background: #FFFFFF;
+    background: var(--bg--nav);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -80,13 +80,13 @@
       margin-top: 8px;
     }
     .add_core__browse {
-      color: #03624C;
+      color: var(--bg--primary-color);
       font-weight: 600;
       cursor: pointer;
       text-decoration: underline;
     }
     .add_core__note {
-      color: #6D6D6D;
+      color: #6d6d6d;
       font-size: 13px;
       margin-top: 4px;
       margin-bottom: 4px;
@@ -97,7 +97,7 @@
     width: 100%;
     height: 17px;
     text-align: center;
-    color: #6D6D6D;
+    color: #6d6d6d;
     font-size: 15px;
     margin: 16px 0 8px 0;
     position: relative;
@@ -111,53 +111,55 @@
       content: "";
       display: block;
       position: absolute;
-      left: 0; right: 0; top: 50%;
+      left: 0;
+      right: 0;
+      top: 50%;
       border-top: 1px solid #eee;
       z-index: 0;
     }
   }
 
   .add_core__url_box {
-  display: flex;
-  align-items: center;
-  background-color: #fafafa;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  height: 56px;
-  padding: 0 16px;
-  gap: 12px;
-  margin-top: 30px;
+    display: flex;
+    align-items: center;
+    background-color: var(--bg--nav);
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    height: 56px;
+    padding: 0 16px;
+    gap: 12px;
+    margin-top: 30px;
 
-  input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    font-size: 17px;
-    color: #222;
-    outline: none;
-    &::placeholder {
-      color: #b0b0b0;
+    input {
+      flex: 1;
+      border: none;
+      background: transparent !important;
       font-size: 17px;
+      color: var(--text-color);
+      outline: none;
+      &::placeholder {
+        color: #b0b0b0;
+        font-size: 17px;
+      }
     }
-  }
 
-  .add_core__upload_btn {
-    background: #fff;
-    border: 1px solid #CECECE;
-    border-radius: 8px;
-    padding: 6px 18px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    color: #6D6D6D;
-    transition: background 0.2s, border 0.2s;
-    box-shadow: none;
-    &:hover {
-      background: #f3f4f6;
-      border: 1px solid #bdbdbd;
+    .add_core__upload_btn {
+      background: var(--bg--nav);
+      border: 1px solid #cecece;
+      border-radius: 8px;
+      padding: 6px 18px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text--add--chart);
+      transition: background 0.2s, border 0.2s;
+      box-shadow: none;
+      &:hover {
+        background: var(--bg--nav);
+        border: 1px solid #bdbdbd;
+      }
     }
   }
-}
 
   &__footer {
     display: flex;
@@ -165,7 +167,7 @@
     gap: 20px;
     margin-top: 24px;
     .add_core__cancel {
-      background: #F7FCF5;
+      background: #f7fcf5;
       border: none;
       border-radius: 8px;
       padding: 8px 24px;
@@ -187,7 +189,7 @@
       font-weight: 600;
       color: #fff;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(6,95,70,0.08);
+      box-shadow: 0 2px 8px rgba(6, 95, 70, 0.08);
       transition: background 0.2s;
       &:hover {
         background: #047857;

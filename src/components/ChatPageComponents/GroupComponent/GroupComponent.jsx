@@ -23,7 +23,7 @@ const GroupComponent = () => {
             );
           })}
         </select>
-        <div className={`group__input ${mode === "light" ? "" : "dark"}`}>
+        <div className={`group__input`}>
           <i className="fa-solid fa-magnifying-glass"></i>
           <input type="text" placeholder="Search" />
         </div>

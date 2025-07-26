@@ -5,7 +5,7 @@ $color-border-input: #e8e8e8;
 .group__container {
   width: 320px;
   max-height: 100vh;
-  background-color: #fff;
+  background-color: var(--bg--nav);
   border-left: 1px solid #c8cad4;
   overflow-y: auto;
   padding: 15px 20px;
@@ -80,7 +80,6 @@ $color-border-input: #e8e8e8;
     .group__input {
       position: relative;
       width: 100%;
-      height: 100px;
 
       input[type="text"] {
         width: 250px;
@@ -91,62 +90,17 @@ $color-border-input: #e8e8e8;
         margin-top: 0px;
         margin-bottom: 30px;
         border: 1px solid $color-border-input;
+        background-color: var(--bg--nav);
       }
 
       .fa-magnifying-glass {
         position: absolute;
-        left: 12px;
-        top: 20%;
+        left: 10px;
+        top: 20px;
         transform: translateY(-50%);
         color: #666;
         font-size: 18px;
         pointer-events: none;
-      }
-
-      // &.light {
-      //   input[type="text"] {
-      //     background-color: $color-background-white;
-      //     border: 1px solid $color-border-input;
-
-      //     &:focus {
-      //       outline: none;
-      //       border-color: $color-background-white;
-      //       background-color: $color-border-input;
-      //     }
-      //   }
-
-      //   .fa-magnifying-glass {
-      //     position: absolute;
-      //     left: 12px;
-      //     top: 50%;
-      //     transform: translateY(-50%);
-      //     color: #666;
-      //     font-size: 18px;
-      //     pointer-events: none;
-      //   }
-      // }
-
-      &.dark {
-        input[type="text"] {
-          background-color: #000000;
-          border: 1px solid #666;
-
-          &:focus {
-            outline: none;
-            border-color: #000000;
-            background-color: $color-border-input;
-          }
-        }
-
-        .fa-magnifying-glass {
-          position: absolute;
-          left: 12px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #666;
-          font-size: 18px;
-          pointer-events: none;
-        }
       }
     }
   }

@@ -1,6 +1,6 @@
 import React from "react";
 import "./GradesComponents.scss";
-const GradesComponents = ({ handleActiveDetail }) => {
+const GradesComponents = ({ handleActiveDetail, handleActivityAddCore}) => {
   const [classes, setClasses] = React.useState([
     { _id: 1, name: "SDN302c" },
     { _id: 2, name: "PMG201c" },
@@ -125,7 +125,7 @@ const GradesComponents = ({ handleActiveDetail }) => {
           <div className="grades__component__container__filter__class__icon">
             <i className="fa-solid fa-file-arrow-down"></i>
             <i className="fa-solid fa-file-arrow-up"></i>
-            <button>
+            <button onClick={handleActivityAddCore}>
               <span>Add</span>
               <i className="fa-solid fa-plus"></i>
             </button>

@@ -13,7 +13,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [profileData, setProfileData] = useState({});
-  console.log(profileData);
   const [tempImage, setTempImage] = useState("");
 
   const handleGetDetail = async () => {
@@ -128,52 +127,53 @@ const Profile = () => {
         <div className="profile-popup-information-heading">
           <h3>Information</h3>
         </div>
-        <div className="profile-popup-information-content">
-          <div className="profile-popup-information-content-element">
-            <h4>Email</h4>
-            {loading ? (
-              <Skeleton width={200} height={16} />
-            ) : (
-              <p>{profileData.email}</p>
-            )}
-          </div>
-          <div className="profile-popup-information-content-element">
-            <h4>Description</h4>
-            {loading ? (
-              <Skeleton width={200} height={16} />
-            ) : isEditing ? (
-              <input
-                type="text"
-                name="description"
-                value={profileData.description}
-                onChange={handleInputChange}
-                className="edit-input"
-              />
-            ) : (
-              <p>{profileData.description || "No description"}</p>
-            )}
-          </div>
-          <div className="profile-popup-information-content-element">
-            <h4>Work ID</h4>
-            {loading ? (
-              <Skeleton width={200} height={16} />
-            ) : (
-              <p>{profileData.work_id}</p>
-            )}
-          </div>
-          <div className="profile-popup-information-content-element">
-            <h4>Personal Score</h4>
-            {loading ? (
-              <Skeleton width={100} height={16} />
-            ) : (
-              <p>{profileData.personal_score}</p>
-            )}
+        <div className="profile-popup-information-container">
+          <div className="profile-popup-information-container-content">
+            <div className="profile-popup-information-container-content-element">
+              <h4>Email</h4>
+              {loading ? (
+                <Skeleton width={200} height={16} />
+              ) : (
+                <p>{profileData.email}</p>
+              )}
+            </div>
+            <div className="profile-popup-information-container-content-element">
+              <h4>Description</h4>
+              {loading ? (
+                <Skeleton width={200} height={16} />
+              ) : isEditing ? (
+                <input
+                  type="text"
+                  name="description"
+                  value={profileData.description}
+                  onChange={handleInputChange}
+                  className="edit-input"
+                />
+              ) : (
+                <p>{profileData.description || "No description"}</p>
+              )}
+            </div>
+            <div className="profile-popup-information-container-content-element">
+              <h4>Work ID</h4>
+              {loading ? (
+                <Skeleton width={200} height={16} />
+              ) : (
+                <p>{profileData.work_id}</p>
+              )}
+            </div>
+            <div className="profile-popup-information-container-content-element">
+              <h4>Personal Score</h4>
+              {loading ? (
+                <Skeleton width={100} height={16} />
+              ) : (
+                <p>{profileData.personal_score}</p>
+              )}
+            </div>
           </div>
         </div>
         {loading ? (
           <Skeleton width={200} height={30} />
-        ) : profileData?.role === "STUDENT" &&
-          profileData?.role === "LECTURER" ? (
+        ) : user?.role === "STUDENT" || user?.role === "LECTURER" ? (
           <>
             <div className="profile-popup-information-heading">
               <h3>Current Class</h3>

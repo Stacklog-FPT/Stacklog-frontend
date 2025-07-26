@@ -9,7 +9,6 @@ const ListLecture = () => {
   const handleGetLectures = async () => {
     const resp = await getUserByRole(user?.token, "lecture");
     if (resp) {
-      console.log(resp);
       setLectures(resp);
     }
   };

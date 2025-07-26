@@ -9,7 +9,6 @@ const GradesPage = () => {
     setActiveDetail(!activeDetail);
   };
 
-  console.log(activeDetail);
   return (
     <div className="grades__page">
       <GradesComponents handleActiveDetail={handleActiveDetail} />

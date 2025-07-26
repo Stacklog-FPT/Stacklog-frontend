@@ -1,5 +1,5 @@
 .check-task-by-all-container {
-  width: fit-content;
+  width: 100%;
   min-width: 100%;
   height: auto;
   max-height: 460px;
@@ -49,6 +49,29 @@
   flex-wrap: nowrap;
   align-items: flex-start;
   min-width: max-content;
+
+  .btn_add_status {
+    width: 260px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 50px;
+    background-color: transparent !important;
+
+    span {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 21px;
+    }
+
+    i {
+      font-size: 10px;
+    }
+  }
 }
 
 .check-task-by-all-content-member {

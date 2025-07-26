@@ -3,7 +3,9 @@ import "./Head.scss";
 import imgLeft from "../../../assets/home/image54.png";
 import taskImg from "../../../assets/home/head/task.png";
 import completeImg from "../../../assets/home/head/complete.png";
+import { useAuth } from "../../../context/AuthProvider";
 const Head = () => {
+  const { user } = useAuth();
   const today = new Date();
   const days = [
     "Sunday",
@@ -60,7 +62,7 @@ const Head = () => {
           </div>
           <div className="head-container-left-content-current-session">
             <h2 className="current-session-heading">{getCurrentSession()}!</h2>
-            <h2 className="active">Lê Văn Lu</h2>
+            <h2 className="active">{user.email}</h2>
           </div>
         </div>
       </div>

@@ -13,6 +13,7 @@ import { useDroppable } from "@dnd-kit/core";
 
 const Column = ({
   color,
+  statusId,
   status,
   tasks,
   members,
@@ -20,12 +21,21 @@ const Column = ({
   onShowComment,
   isLoading = false,
 }) => {
-  const { setNodeRef } = useDroppable({
-    id: `droppable-${status}`,
+  const { setNodeRef, isOver } = useDroppable({
+    id: `droppable-${statusId}`,
   });
+  console.log(
+    "Column droppable id:",
+    `droppable-${statusId}`,
+    "statusId:",
+    statusId
+  );
 
   return (
-    <div className="column-container" ref={setNodeRef}>
+    <div
+      className={`column-container ${isOver ? "over" : ""}`}
+      ref={setNodeRef}
+    >
       <div className="column">
         <div className="prop-status" style={{ backgroundColor: color }}>
           <div className="prop-status-left">
@@ -48,11 +58,11 @@ const Column = ({
           </div>
         </div>
         <SortableContext
-          id={status}
+          id={statusId}
           items={tasks?.map((task) => task.taskId) || []}
           strategy={verticalListSortingStrategy}
         >
-          <div className="column-task" data-status={status}>
+          <div className="column-task" data-status={statusId}>
             {isLoading ? (
               Array.from({ length: 3 }).map((_, index) => (
                 <div
@@ -70,7 +80,7 @@ const Column = ({
                   id={task?.taskId}
                   title={task?.taskTitle}
                   percent={task?.percentProgress}
-                  members={task?.assigns}
+                  members={members}
                   createdAt={task?.createdAt}
                   dueDate={task?.taskDueDate}
                   onShowComment={onShowComment}

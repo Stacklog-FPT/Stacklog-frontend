@@ -10,14 +10,30 @@ const statusApi = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-
       return response;
     } catch (e) {
       throw Error(e.message);
     }
   };
 
-  return {getAllStatus}
+  const addStatus = async (token, statusData) => {
+    try {
+      const response = await axios.post(
+        `${API_STATUS}/status-task`,
+        statusData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response;
+    } catch (e) {
+      throw Error(e.message || "Something wrong!");
+    }
+  };
+
+  return { getAllStatus, addStatus };
 };
 
 export default statusApi;

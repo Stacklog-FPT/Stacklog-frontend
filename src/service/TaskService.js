@@ -3,7 +3,7 @@ import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
 
 const API_TASK = "http://103.166.183.142:8080/api/task";
-const SOCKET_URL = "http://103.166.183.142:8080/ws/taskify";
+const SOCKET_URL = "http://103.166.183.142/ws/taskify";
 
 const taskService = () => {
   let stompClient = null;
@@ -19,10 +19,8 @@ const taskService = () => {
     stompClient.connect(
       { Authorization: `Bearer ${token}` },
       () => {
-        console.log("STOMP connected");
-        stompClient.subscribe("/topic/task", (message) => {
+        stompClient.subscribe("/topic/taskservice", (message) => {
           const data = JSON.parse(message.body);
-          console.log("Received message from /topic/task:", data);
         });
       },
       (error) => {
@@ -61,6 +59,7 @@ const taskService = () => {
           "Content-Type": "application/json",
         },
       });
+      console.log(response)
       return response;
     } catch (e) {
       throw new Error(e.message);

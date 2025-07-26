@@ -17,6 +17,7 @@ import ProtectedRoutes from "./ProtectedRoutes";
 import NotFoundPage from "../pages/404page/NotFoundPage";
 import AdminProtectedRoutes from "./AdminProtectedRoutes";
 import AdminDashBoard from "../pages/Admin/AdminDashBoard";
+import MorePage from "../pages/MorePage/MorePage";
 
 const routes = [
   {
@@ -38,6 +39,7 @@ const routes = [
           { path: "/grades", element: <GradesPage /> },
           { path: "/plan", element: <PlanPage /> },
           { path: "/user-detail", element: <Profile /> },
+          { path: "/more", element: <MorePage /> },
         ],
       },
     ],

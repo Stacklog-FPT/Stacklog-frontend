@@ -7,7 +7,6 @@ import addButton from "../../../../../assets/icon/avatar_add_button.png";
 import iconDontKnow from "../../../../../assets/icon/task/iconDontKnow.png";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
 const Task = (props) => {
   const {
     attributes,
@@ -37,7 +36,7 @@ const Task = (props) => {
 
     return `${day}/${month}/${year}`;
   };
-
+  
   return (
     <div
       ref={setNodeRef}
@@ -73,8 +72,8 @@ const Task = (props) => {
             className="task-content-members-student-list"
             data-extra-count={extraCount > 0 ? extraCount : ""}
           >
-            {visibleMembers.map((item) => (
-              <li key={item.assignTo}>
+            {visibleMembers.map((item, index) => (
+              <li key={index}>
                 <img src={item.img} alt="Student Avatar" />
               </li>
             ))}

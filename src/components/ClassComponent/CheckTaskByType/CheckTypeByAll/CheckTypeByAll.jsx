@@ -9,6 +9,8 @@ import ClassAndMember from "../../ClassAndMember/ClassAndMember";
 import { useAuth } from "../../../../context/AuthProvider";
 import taskService from "../../../../service/TaskService";
 import statusApi from "../../../../service/ColumnService";
+import GroupService from "../../../../service/GroupService";
+import AddColumn from "../../../Column/AddColumn/AddColumn";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -24,13 +26,17 @@ const CheckTypeByAll = () => {
   const [activeColumn, setActiveColumn] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
+  const [showAddColumn, setShowAddColumn] = useState(false);
   const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { getAllTask, addTask, setSocket } = taskService();
   const { getAllStatus } = statusApi();
   const [statusTasks, setStatusTasks] = useState([]);
+  console.log("statusTask: ", statusTasks);
   const [tasks, setTasks] = useState([]);
+  console.log(tasks);
   const [stompClient, setStompClient] = useState(null);
+  const { getAllGroup } = GroupService();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -40,15 +46,28 @@ const CheckTypeByAll = () => {
     })
   );
 
+  const getStatusIdByName = (statusName) => {
+    const status = statusTasks.find(
+      (item) => item.statusTaskName === statusName
+    );
+    return status?.statusTaskId || null;
+  };
+
   const handleDragOver = (event) => {
     const { over } = event;
+    console.log("handleDragOver triggered:", { over });
     if (over) {
       const overId = over.id;
+      console.log("overId:", overId);
       if (overId.startsWith("droppable-")) {
         const targetStatus = overId.replace("droppable-", "");
+        console.log("Setting activeColumn to:", targetStatus);
         setActiveColumn(targetStatus);
+      } else {
+        console.log("overId does not start with 'droppable-':", overId);
       }
     } else {
+      console.log("No over element, clearing activeColumn");
       setActiveColumn(null);
     }
   };
@@ -56,11 +75,17 @@ const CheckTypeByAll = () => {
   const handleDragEnd = useCallback(
     (event) => {
       const { active, over } = event;
-      if (!over) return;
-
+      if (!over) {
+        console.log("No over element, returning early");
+        return;
+      }
       const activeId = active.id;
       const activeTask = tasks.find((task) => task.taskId === activeId);
-      if (!activeTask) return;
+      console.log("activeId:", activeId, "activeTask:", activeTask);
+      if (!activeTask) {
+        console.error("Active task not found");
+        return;
+      }
 
       let updatedTasks = [...tasks];
       const activeIndex = tasks.findIndex((task) => task.taskId === activeId);
@@ -70,14 +95,17 @@ const CheckTypeByAll = () => {
       const isOverTask = tasks.some((task) => task.taskId === over.id);
 
       if (isOverDroppable || activeColumn) {
-        const targetStatus =
+        const targetStatusId =
           activeColumn || droppableId.replace("droppable-", "");
-        const targetTasks = tasks.filter(
-          (task) =>
-            task?.statusTask?.statusTaskName === targetStatus &&
-            task.taskId !== activeId
-        );
-        let dropIndex = over.data.current?.sortable?.index ?? 0;
+        console.log("targetStatusId:", targetStatusId);
+        const targetStatus = statusTasks.find(
+          (item) => item.statusTaskId === targetStatusId
+        )?.statusTaskName;
+        console.log("targetStatus:", targetStatus);
+        if (!targetStatusId || !targetStatus) {
+          console.error("Target status not found for ID:", targetStatusId);
+          return;
+        }
 
         updatedTasks = updatedTasks.map((task) =>
           task.taskId === activeId
@@ -85,16 +113,38 @@ const CheckTypeByAll = () => {
                 ...task,
                 statusTask: {
                   ...task.statusTask,
+                  statusTaskId: targetStatusId,
                   statusTaskName: targetStatus,
                 },
               }
             : task
         );
 
+        if (activeTask.statusTask.statusTaskId !== targetStatusId) {
+          const newTask = {
+            ...activeTask,
+            statusTask: {
+              ...activeTask.statusTask,
+              statusTaskId: targetStatusId,
+              statusTaskName: targetStatus,
+            },
+          };
+          addTask(newTask, user?.token)
+            .then(() => console.log("Task updated in backend:", newTask))
+            .catch((error) => console.error("Failed to update task:", error));
+        }
+
+        const targetTasks = tasks.filter(
+          (task) =>
+            task?.statusTask?.statusTaskId === targetStatusId &&
+            task.taskId !== activeId
+        );
+        let dropIndex = over.data.current?.sortable?.index ?? 0;
         let targetIndex = 0;
+
         if (targetTasks.length === 0) {
           const firstTaskInOtherColumn = tasks.findIndex(
-            (task) => task?.statusTask?.statusTaskName === targetStatus
+            (task) => task?.statusTask?.statusTaskId === targetStatusId
           );
           targetIndex =
             firstTaskInOtherColumn === -1
@@ -103,7 +153,7 @@ const CheckTypeByAll = () => {
         } else {
           targetIndex =
             tasks.findIndex(
-              (task) => task?.statusTask?.statusTaskName === targetStatus
+              (task) => task?.statusTask?.statusTaskId === targetStatusId
             ) + dropIndex;
         }
 
@@ -112,17 +162,23 @@ const CheckTypeByAll = () => {
           ...activeTask,
           statusTask: {
             ...activeTask.statusTask,
+            statusTaskId: targetStatusId,
             statusTaskName: targetStatus,
           },
         });
       } else if (isOverTask) {
+        console.log("Task dropped over another task");
         const overTask = tasks.find((task) => task.taskId === over.id);
-        if (!overTask) return;
+        if (!overTask) {
+          console.error("Over task not found:", over.id);
+          return;
+        }
 
         const overIndex = tasks.findIndex((task) => task.taskId === over.id);
+        const targetStatusId = overTask?.statusTask?.statusTaskId;
         const targetStatus = overTask?.statusTask?.statusTaskName;
 
-        if (activeTask?.statusTask?.statusTaskName === targetStatus) {
+        if (activeTask?.statusTask?.statusTaskId === targetStatusId) {
           updatedTasks.splice(activeIndex, 1);
           updatedTasks.splice(overIndex, 0, activeTask);
         } else {
@@ -132,6 +188,7 @@ const CheckTypeByAll = () => {
                   ...task,
                   statusTask: {
                     ...task.statusTask,
+                    statusTaskId: targetStatusId,
                     statusTaskName: targetStatus,
                   },
                 }
@@ -142,10 +199,13 @@ const CheckTypeByAll = () => {
             ...activeTask,
             statusTask: {
               ...activeTask.statusTask,
+              statusTaskId: targetStatusId,
               statusTaskName: targetStatus,
             },
           });
         }
+      } else {
+        console.log("Dropped on invalid target");
       }
       setTasks(updatedTasks);
       setActiveColumn(null);
@@ -165,6 +225,10 @@ const CheckTypeByAll = () => {
     setShowCommentTask(null);
   };
 
+  const handleCloseAddStatus = () => {
+    setShowAddColumn(false);
+  };
+
   const handleGetStatusTask = useCallback(async () => {
     try {
       const response = await getAllStatus(user.token);
@@ -175,7 +239,6 @@ const CheckTypeByAll = () => {
       console.error(e.message);
     }
   }, []);
-
   //user.token, getAllStatus
   const handleGetTasks = useCallback(async () => {
     try {
@@ -205,12 +268,24 @@ const CheckTypeByAll = () => {
     }
   }, []);
   //user.token, getAllTask
+
+  const handleGetGroupList = async () => {
+    try {
+      const response = await getAllGroup(user?.token);
+
+      if (response) {
+        setMembers(response?.users);
+      }
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  };
   useEffect(() => {
     const stompInstance = setSocket(user.token);
     setStompClient(stompInstance);
     stompInstance.onmessage = (message) => {
       const data = JSON.parse(message.body);
-      console.log("Received message from /topic/task:", data);
+
       if (data.type === "taskUpdate") {
         setTasks((prevTasks) => {
           const taskExists = prevTasks.some(
@@ -259,8 +334,8 @@ const CheckTypeByAll = () => {
       }
     };
   }, []);
+  // user.token, setSocket
 
-  //user.token, setSocket
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -288,6 +363,10 @@ const CheckTypeByAll = () => {
     };
   }, [handleGetStatusTask, handleGetTasks]);
 
+  useEffect(() => {
+    handleGetGroupList();
+  }, []);
+
   return (
     <DndContext
       sensors={sensors}
@@ -302,18 +381,25 @@ const CheckTypeByAll = () => {
             {statusTasks.map((item) => (
               <Column
                 key={item.statusTaskId}
+                statusId={item.statusTaskId}
                 status={item.statusTaskName}
                 color={item.statusTaskColor}
                 isLoading={isLoading}
                 tasks={tasks.filter(
-                  (task) =>
-                    task?.statusTask?.statusTaskName === item.statusTaskName
+                  (task) => task?.statusTask?.statusTaskId === item.statusTaskId
                 )}
                 members={members}
-                onShowAddTask={() => handleShowAddTask(item.statusTaskName)}
+                onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}
               />
             ))}
+            <button
+              className="btn_add_status"
+              onClick={() => setShowAddColumn(!showAddColumn)}
+            >
+              <i className="fa-solid fa-plus"></i>
+              <span>Add Status</span>
+            </button>
           </div>
           {showAddTask && (
             <AddTask
@@ -328,6 +414,7 @@ const CheckTypeByAll = () => {
               isClose={handleCloseComment}
             />
           )}
+          {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}
         </div>
       </div>
     </DndContext>

@@ -9,7 +9,7 @@ $color-hover: red;
   z-index: 1000;
   width: 680px;
   height: 600px;
-  background-color: #ffffff;
+  background-color: var(--bg--nav);
   border-radius: 30px;
 }
 
@@ -31,7 +31,7 @@ $color-hover: red;
     font-weight: 500;
     line-height: 30px;
     font-size: 20px;
-    color: $color-text;
+    color: var(--text-color);
   }
 
   .wrapper-title {
@@ -61,6 +61,7 @@ $color-hover: red;
       padding: 8px 8px 8px 10px;
       background-color: $color-input;
       border-radius: 8px;
+      border: none;
       font-size: 16px;
 
       &:focus {
@@ -139,7 +140,7 @@ $color-hover: red;
         background-color: $color-input;
         border-radius: 8px;
         font-size: 16px;
-
+        border: none;
         &:focus {
           outline: none;
           border: none;
@@ -360,20 +361,51 @@ $color-hover: red;
     }
   }
 
+  .assign-checkbox-list {
+    width: 200px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+    label {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px;
+      border-radius: 5px;
+
+      input[type="checkbox"] {
+        transform: scale(1.2);
+        accent-color: #0d9488;
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
   .wrapper-btn-submit {
     width: 100%;
-    text-align: center;
-    margin-top: 20px;
-    background-color: #045745;
-    color: #000;
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 21px;
-    border-radius: 20px;
-    padding: 15px 20px;
-    &:hover {
-      background-color: #000;
-      color: #f3f4f6;
+    button {
+      width: 100%;
+      text-align: center;
+      margin-top: 20px;
+      background-color: var(--bg--primary-color);
+      color: var(--text-color);
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 21px;
+      border-radius: 20px;
+      padding: 15px 20px;
+      border: none;
+      &:hover {
+        background-color: #000;
+        color: #f3f4f6;
+      }
     }
   }
 }

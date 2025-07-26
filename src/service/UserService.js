@@ -45,7 +45,7 @@ const userApi = () => {
     }
 
     try {
-      const response = await axios.get(`${API_AUTH}/profile/user/${email}`, {
+      const response = await axios.get(`${API_AUTH}profile/user/${email}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -57,21 +57,17 @@ const userApi = () => {
     }
   };
 
-  
   const getUserByRole = async (token, role) => {
     try {
       if (!token) throw new Error("Unauthorized: No token provided");
 
       if (!role) throw new Error("Invalid role or lack of the role");
 
-      const response = await axios.get(
-        `${API_AUTH}profile/user/role/${role}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_AUTH}profile/user/role/${role}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       return response;
     } catch (e) {

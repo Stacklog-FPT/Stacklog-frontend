@@ -3,7 +3,11 @@ import "./ClassAndMember.scss";
 import avatar_add_button from "../../../assets/icon/avatar_add_button.png";
 import iconFilter from "../../../assets/icon/task/iconFilter.png";
 import iconMore from "../../../assets/icon/task/iconMore.png";
+import GroupService from "../../../service/GroupService";
+import { useAuth } from "../../../context/AuthProvider";
 const ClassAndMember = () => {
+  const { user } = useAuth();
+  const { getAllGroup } = GroupService();
   const [classes, setClasses] = useState([
     { id: "class-01", name: "SDN301c" },
     { id: "class-02", name: "SWD301c" },
@@ -11,31 +15,26 @@ const ClassAndMember = () => {
     { id: "class-04", name: "EXE101c" },
   ]);
 
-  const [members, setMembers] = useState([
-    {
-      id: "student-1",
-      img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-    },
-    {
-      id: "student-2",
-      img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-    },
-    {
-      id: "student-3",
-      img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-    },
-    {
-      id: "student-4",
-      img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-    },
-    {
-      id: "student-5",
-      img: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-    },
-  ]);
+  const [memberList, setMemberList] = useState([]); 
 
-  const visibleMembers = members.slice(0, 3);
-  const extraCount = members.length - visibleMembers.length;
+  const visibleMembers = memberList.slice(0, 3);
+  const extraCount = memberList.length - visibleMembers.length;
+
+  const handleGetGroupList = async () => {
+    try {
+      const response = await getAllGroup(user?.token);
+
+      if (response) {
+        setMemberList(response?.users);
+      }
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  };
+
+  React.useEffect(() => {
+    handleGetGroupList();
+  }, []);
 
   return (
     <div className="class__and__member__container">
@@ -55,7 +54,7 @@ const ClassAndMember = () => {
             data-extra-count={extraCount > 0 ? extraCount : ""}
           >
             {visibleMembers.map((item) => (
-              <li key={item.id}>
+              <li key={item._id}>
                 <img src={item.img} alt="Student Avatar" />
               </li>
             ))}

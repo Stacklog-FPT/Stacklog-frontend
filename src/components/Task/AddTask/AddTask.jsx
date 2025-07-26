@@ -18,10 +18,10 @@ const AddTask = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [taskData, setTaskData] = useState({
     taskId: "",
-    groupId: "1",
+    groupId: "",
     taskTitle: "",
     taskDescription: "",
-    statusId: props.status,
+    statusTask: props.status,
     documentId: "",
     taskPoint: 5,
     taskParentId: 0,
@@ -29,11 +29,12 @@ const AddTask = (props) => {
     createdBy: "",
     updatedBy: "",
     priority: "",
+    assigns: "" || [],
   });
   const [colorPriority, setColorPriority] = useState([
     { id: 1, color: "#FFFAEB", content: "HIGH" },
-    { id: 2, color: "#3a9e3e", content: "NORMAL" },
-    { id: 3, color: "#6d706e", content: "CHILL" },
+    { id: 2, color: "#3a9e3e", content: "MEDIUM" },
+    { id: 3, color: "#6d706e", content: "LOW" },
   ]);
   const [selectedPriority, setSelectedPriority] = useState("HIGH");
 
@@ -57,20 +58,23 @@ const AddTask = (props) => {
     try {
       const payload = {
         taskId: "",
-        groupId: "1",
+        groupId: "group_1",
         taskTitle: taskData.taskTitle,
         taskDescription: taskData.taskDescription,
-        statusId: props.status,
+        statusTask: props.status,
         documentId: "",
-        taskPoint: 5,
+        taskPoint: 0,
         taskParentId: 0,
         dueDate: taskData.dueDate,
         createdBy: user.userName,
         updatedBy: "",
         priority: taskData.priority || "HIGH",
+        assigns: "" || [],
       };
+
+      console.log(payload);
+
       const response = await addTask(payload, user.token);
-      console.log(response)
       if (response.data) {
         notify();
       }
@@ -124,32 +128,33 @@ const AddTask = (props) => {
             <input type="text" placeholder="Create Subtask" />
           </div>
         </div>
-        {/* <div className="wrapper-assign-user">
+        <div className="wrapper-assign-user">
           <div className="wrapper-assign-user-heading">
             <img src={assignUser} alt="..." />
             <h2>Assign</h2>
           </div>
-          <div className="wrapper-assign-user-content">
-            <ul
-              className="student-list"
-              data-extra-count={extraCount > 0 ? extraCount : ""}
-            >
-              {visibleMembers.map((item) => (
-                <li key={item.id}>
-                  <img src={item.img} alt="Student Avatar" />
-                </li>
-              ))}
-              {extraCount > 0 && (
-                <li className="extra-count">
-                  <span>+{extraCount}</span>
-                </li>
-              )}
-            </ul>
-            <div className="button-add">
-              <img src={avatar_add_button} alt="add_button_icon" />
-            </div>
+          <div className="assign-checkbox-list">
+            {props.members.map((member) => (
+              <label key={member._id}>
+                <input
+                  type="checkbox"
+                  value={member._id}
+                  checked={taskData.assigns.includes(member._id)}
+                  onChange={(e) => {
+                    const { checked, value } = e.target;
+                    setTaskData((prev) => {
+                      const newAssigns = checked
+                        ? [...prev.assigns, value]
+                        : prev.assigns.filter((id) => id !== value);
+                      return { ...prev, assigns: newAssigns };
+                    });
+                  }}
+                />
+                {member.full_name || member.userName}
+              </label>
+            ))}
           </div>
-        </div> */}
+        </div>
         <div className="wrapper-priority">
           <div className="wrapper-priority-heading">
             <img src={iconPriority} alt="..." />

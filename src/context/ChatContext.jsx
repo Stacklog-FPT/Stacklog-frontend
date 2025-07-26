@@ -9,11 +9,12 @@ const ChatProvider = ({ children }) => {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedBox, setSelectedBox] = useState(null); 
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     socket.on("users", (users) => {
-      setUsers(users.filter((u) => u._id !== user_id));
+      setUsers(users.filter((u) => u._id !== user?._id));
     });
 
     socket.on("message", (message) => {
@@ -34,6 +35,8 @@ const ChatProvider = ({ children }) => {
         setMessages,
         selectedUser,
         setSelectedUser,
+        selectedBox,       
+        setSelectedBox,     
       }}
     >
       {children}

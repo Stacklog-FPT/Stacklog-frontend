@@ -173,7 +173,8 @@ const Profile = () => {
         </div>
         {loading ? (
           <Skeleton width={200} height={30} />
-        ) : user?.role === "STUDENT" || user?.role === "LECTURER" ? (
+        ) : profileData?.role === "STUDENT" ||
+          profileData?.role === "LECTURER" ? (
           <>
             <div className="profile-popup-information-heading">
               <h3>Current Class</h3>

@@ -3,7 +3,7 @@ import "./FeatureChat.scss";
 import { ChatContext } from "../../../context/ChatContext";
 
 const FeatureChat = () => {
-  const { selectedUser } = useContext(ChatContext);
+  const { selectedUser, selectedBox } = useContext(ChatContext);
   (selectedUser);
 
   return (
@@ -20,7 +20,7 @@ const FeatureChat = () => {
           }
           alt="User Avatar"
         />
-        <h2>{selectedUser?.name || "Không có tên"}</h2>
+        <h2>{selectedBox?.boxChat?.nameBox || "Không có tên"}</h2>
         <div className="feature__detail__class">
           <div className="class-selection">
             <p>Common Class</p>

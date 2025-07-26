@@ -1,12 +1,16 @@
 import React from "react";
 import "./TaskByType.scss";
-
+import { useAuth } from "../../../context/AuthProvider";
 const TaskByType = ({ activeType, setActiveType }) => {
+  const { user } = useAuth();
   const taskTypes = [
     { type: "All", icon: "fa-solid fa-globe" },
     { type: "Checklist", icon: "fa-solid fa-list" },
     { type: "By Status", icon: "fa-solid fa-chart-line" },
-    { type: "My Task", icon: "fa-solid fa-user" },
+    {
+      type: user?.role === "LECTURER" ? "Class List" : "My Task",
+      icon: "fa-solid fa-user",
+    },
   ];
 
   return (

@@ -45,9 +45,9 @@ const RecentChat = () => {
   return (
     <div className="recent__chat__container">
       <div className="recent__chat__heading">
-        <h2>recent chat</h2>
+        {/* <h2>recent chat</h2> */}
       </div>
-      <div className="recent__chat__list">
+      {/* <div className="recent__chat__list">
         {recentChat.map((item) => {
           return (
             <div
@@ -64,7 +64,7 @@ const RecentChat = () => {
             </div>
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 };

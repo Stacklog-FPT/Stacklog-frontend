@@ -812,6 +812,78 @@
       "createdAt": "2025-07-28",
       "isRead": false,
       "_id": 0.638845402035807
+    },
+    {
+      "id": "d509",
+      "title": "Thông báo môn hello tesst colun add",
+      "author": {
+        "_id": 0.952903155235146,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.9457239903910882
+    },
+    {
+      "id": "a240",
+      "title": "Thông báo môn 132",
+      "author": {
+        "_id": 0.19312103395989888,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.5167015900201132
+    },
+    {
+      "id": "6281",
+      "title": "Thông báo môn Code task-service",
+      "author": {
+        "_id": 0.21955637484230595,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.5722782352046822
+    },
+    {
+      "id": "cdde",
+      "title": "Thông báo môn Code admin-service",
+      "author": {
+        "_id": 0.8164572580317138,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.9869774433159167
+    },
+    {
+      "id": "0a75",
+      "title": "Thông báo môn Code chat-service",
+      "author": {
+        "_id": 0.2505206528093482,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.7786795557491777
+    },
+    {
+      "id": "b62b",
+      "title": "Thông báo môn Tìm hiểu các công cụ deploy",
+      "author": {
+        "_id": 0.15605025134412953,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.468574750319258
     }
   ],
   "lectures": [

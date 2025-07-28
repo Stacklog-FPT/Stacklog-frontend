@@ -29,6 +29,9 @@ const LoginPage = () => {
         };
 
         loginSave(userData);
+        if (userData.role.toLowerCase === "ADMIN") {
+          navigate("/admin");
+        }
         navigate("/");
       }
     } catch (e) {

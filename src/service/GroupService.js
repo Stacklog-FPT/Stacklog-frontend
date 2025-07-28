@@ -18,7 +18,26 @@ const GroupService = () => {
     }
   };
 
-  return { getAllGroup };
+  const getGroupByClass = async (token) => {
+    try {
+      if (!token) throw new Error("Token is missing!");
+
+      const response = await axios.get(
+        "http://103.166.183.142:8080/api/class/group",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  };
+
+  return { getAllGroup, getGroupByClass };
 };
 
 export default GroupService;

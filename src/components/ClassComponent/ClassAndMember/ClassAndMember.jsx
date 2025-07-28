@@ -7,13 +7,15 @@ import GroupService from "../../../service/GroupService";
 import { useAuth } from "../../../context/AuthProvider";
 const ClassAndMember = () => {
   const { user } = useAuth();
-  const { getAllGroup } = GroupService();
+  const { getAllGroup, getGroupByClass } = GroupService();
   const [classes, setClasses] = useState([
     { id: "class-01", name: "SDN301c" },
     { id: "class-02", name: "SWD301c" },
     { id: "class-03", name: "MMA102c" },
     { id: "class-04", name: "EXE101c" },
   ]);
+
+  const [groupList, setGroupList] = useState([]);
 
   const [memberList, setMemberList] = useState([]);
 
@@ -32,8 +34,21 @@ const ClassAndMember = () => {
     }
   };
 
+  const handleGetGroupByClass = async () => {
+    try {
+      const response = await getGroupByClass(user?.token);
+      if (response) {
+        console.log(response.data);
+        setGroupList(response.data);
+      }
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  };
+
   React.useEffect(() => {
     handleGetGroupList();
+    handleGetGroupByClass();
   }, []);
 
   return (
@@ -47,7 +62,19 @@ const ClassAndMember = () => {
               </option>
             ))}
           </select>
+          {user.role === "LECTURER" && (
+            <div className="class__and__member__content__member__class">
+              <select>
+                {groupList.map((item) => (
+                  <option key={item.groupsName} value={item.id}>
+                    {item.groupsName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
+
         <div className="class__and__member__content__member__student">
           <ul
             className="class__and__member__content__member__student__list"

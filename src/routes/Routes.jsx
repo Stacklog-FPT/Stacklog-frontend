@@ -18,6 +18,7 @@ import NotFoundPage from "../pages/404page/NotFoundPage";
 import AdminProtectedRoutes from "./AdminProtectedRoutes";
 import AdminDashBoard from "../pages/Admin/AdminDashBoard";
 import MorePage from "../pages/MorePage/MorePage";
+import LayoutAdmin from "../layouts/LayoutAdmin/LayoutAdmin";
 
 const routes = [
   {
@@ -52,7 +53,7 @@ const routes = [
     ),
     children: [
       {
-        element: <MainLayout />,
+        element: <LayoutAdmin />,
         children: [{ path: "/admin", element: <AdminDashBoard /> }],
       },
     ],

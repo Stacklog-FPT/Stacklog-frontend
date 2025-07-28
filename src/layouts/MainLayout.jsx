@@ -14,10 +14,12 @@ import GroupComponent from "../components/ChatPageComponents/GroupComponent/Grou
 import { SidebarContext } from "../context/SideBarContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ClockLoader } from "react-spinners";
-import '../styles/main.scss'
+import "../styles/main.scss";
+import { useAuth } from "../context/AuthProvider";
+import SideBarAdmin from "../components/SideBar/SideBarAdmin/SideBarAdmin";
 
 const MainLayout = () => {
+  const { user } = useAuth();
   const { isOpen, setIsOpen } = useContext(SidebarContext);
   const { isAnnouncementVisible } = useContext(AnnouncementContext);
   const { mode } = useContext(ColorModeContext);
@@ -29,7 +31,7 @@ const MainLayout = () => {
     // setIsLoading(true);
     // const timer = setTimeout(() => {
     //   setIsLoading(false);
-    // }, 3000); 
+    // }, 3000);
 
     if (location.pathname === "/chatbox") {
       setIsShowGroupChat(true);

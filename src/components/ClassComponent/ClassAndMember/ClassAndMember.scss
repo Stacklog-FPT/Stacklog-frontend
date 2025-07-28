@@ -1,5 +1,5 @@
 .class__and__member__container {
-  width: 80%;
+  width: 70%;
   .class__and__member__content__member {
     width: 100%;
     display: flex;
@@ -7,6 +7,9 @@
     justify-content: space-between;
 
     &__class {
+      display: flex;
+      align-items: center;
+      gap: 20px;
       select {
         width: 314px;
         height: auto;
@@ -18,7 +21,7 @@
         padding: 6px 10px;
         appearance: none;
         cursor: pointer;
-        background-image: url("../../../../assets/icon/arrow-down.png");
+        background-image: url("../../../assets/icon/arrow-down.png");
         background-repeat: no-repeat;
         background-position: 120px;
         background-size: 15px 15px;

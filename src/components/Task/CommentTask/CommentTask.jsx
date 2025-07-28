@@ -43,7 +43,7 @@ const CommentTask = ({ isClose, task }) => {
       const response = await getAllReview(user?.token, task.taskId);
 
       if (response && response.data) {
-        // console.log(response);
+        console.log(response.data);
         setComments(response.data);
       }
     } catch (e) {

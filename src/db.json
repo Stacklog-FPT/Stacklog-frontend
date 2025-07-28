@@ -884,6 +884,138 @@
       "createdAt": "2025-07-28",
       "isRead": false,
       "_id": 0.468574750319258
+    },
+    {
+      "id": "0937",
+      "title": "Thông báo môn Hello TestHello Test",
+      "author": {
+        "_id": 0.039324517375292745,
+        "name": "de170537",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.817079284247624
+    },
+    {
+      "id": "23ca",
+      "title": "Thông báo môn Hello TestHello Test",
+      "author": {
+        "_id": 0.8809056518286874,
+        "name": "de170537",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.9979403817435004
+    },
+    {
+      "id": "a6e3",
+      "title": "Thông báo môn 132",
+      "author": {
+        "_id": 0.8350747285256108,
+        "name": "de170537",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.347411533721268
+    },
+    {
+      "id": "81a9",
+      "title": "Thông báo môn Hello TestHello Test",
+      "author": {
+        "_id": 0.45578125195005426,
+        "name": "de170537",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.8568127371238827
+    },
+    {
+      "id": "276d",
+      "title": "Thông báo môn Hello TestHello Test",
+      "author": {
+        "_id": 0.9560441553881464,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.4066894928956519
+    },
+    {
+      "id": "96f8",
+      "title": "Thông báo môn Hello TestHello Test",
+      "author": {
+        "_id": 0.2552089817981116,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.7617545224199282
+    },
+    {
+      "id": "e8ea",
+      "title": "Thông báo môn 132",
+      "author": {
+        "_id": 0.8338203423734768,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.9879597134228697
+    },
+    {
+      "id": "8b68",
+      "title": "Thông báo môn 132",
+      "author": {
+        "_id": 0.4366648325924324,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.3141018994091205
+    },
+    {
+      "id": "f2bb",
+      "title": "Thông báo môn 132",
+      "author": {
+        "_id": 0.9438672954606415,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.9279133000263017
+    },
+    {
+      "id": "2d79",
+      "title": "Thông báo môn alo123",
+      "author": {
+        "_id": 0.8515821843286532,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.03655981930913066
+    },
+    {
+      "id": "e2c0",
+      "title": "Thông báo môn Vẽ UI/UX",
+      "author": {
+        "_id": 0.7356355331778214,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-28",
+      "isRead": false,
+      "_id": 0.32164943812929747
     }
   ],
   "lectures": [

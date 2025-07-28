@@ -1,49 +1,86 @@
-// src/components/AddScheduleForm/AddScheduleForm.jsx
-
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 import "./AddScheduleForm.scss";
+import { FaPlus, FaTrash } from "react-icons/fa";
+import GroupService from "../../../service/GroupService";
+import { useAuth } from "../../../context/AuthProvider";
+import ScheduleService from "../../../service/ScheduleService";
+const AddScheduleForms = ({ onClose }) => {
+  const { user } = useAuth();
+  const [groups, setGroups] = useState([]);
+  const { addCreateSlot } = ScheduleService();
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
 
-const AddScheduleForms = ({ slot, onClose, onAdded }) => {
-  if (!slot) return null;
+  const [scheduleData, setScheduleData] = useState({
+    slotTitle: "",
+    slotDescription: "",
+    slotStarTime: "",
+    groupId: "",
+    userIdAssigns: [],
+  });
 
-  const { date, hour } = slot;
-  const [startHour, setStartHour] = useState(hour || "");
+  const { getGroupByClass } = GroupService();
+
+  const handleGetGroups = async () => {
+    try {
+      const response = await getGroupByClass(user.token);
+      if (response) {
+        setGroups(response.data);
+      }
+    } catch (e) {
+      console.error("Lỗi khi lấy nhóm:", e.message);
+    }
+  };
+
+  useEffect(() => {
+    handleGetGroups();
+  }, []);
+
+  const handleSelectGroup = (e) => {
+    const groupId = e.target.value;
+    const group = groups.find((g) => g.groupsId === groupId);
+    setSelectedGroup(group);
+  };
+
+  const handleRemoveSelectedGroup = () => {
+    setSelectedGroup(null);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setScheduleData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!date || !startHour) return alert("Vui lòng điền đầy đủ thông tin!");
+
+    if (!selectedGroup || !date || !time) {
+      alert("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+
+    const fullDateTime = new Date(`${date}T${time}:00`).toISOString();
+
+    const payload = {
+      ...scheduleData,
+      slotStarTime: fullDateTime,
+      groupId: selectedGroup.groupsId,
+      userIdAssigns: selectedGroup.groupStudents.map((s) => s.userId),
+    };
 
     try {
-      const formattedHour = startHour.padStart(2, "0");
-
-      const res = await axios.get("http://localhost:3000/schedules");
-      const schedules = res.data;
-
-      const found = schedules.find((item) => item[date]);
-
-      if (found) {
-        const updatedHours = found[date] || [];
-        if (!updatedHours.includes(formattedHour)) {
-          updatedHours.push(formattedHour);
-        }
-
-        await axios.patch(`http://localhost:3000/schedules/${found.id}`, {
-          [date]: updatedHours,
-        });
-      } else {
-        await axios.post("http://localhost:3000/schedules", {
-          [date]: [formattedHour],
-        });
+      const res = await addCreateSlot(user.token, payload);
+      if (res.status === 201 || res.status === 200) {
+        alert("Tạo lịch thành công!");
+        onClose();
       }
-
-      alert("Thêm lịch thành công!");
-      setStartHour("");
-      if (onAdded) onAdded();
-      onClose();
-    } catch (error) {
-      console.error(error);
-      alert("Thêm lịch thất bại!");
+    } catch (err) {
+      console.error("Lỗi khi tạo lịch:", err.message);
+      alert("Tạo lịch thất bại!");
     }
   };
 
@@ -53,20 +90,95 @@ const AddScheduleForms = ({ slot, onClose, onAdded }) => {
         <button className="close-btn" onClick={onClose}>
           &times;
         </button>
+
         <form className="add-schedule-form" onSubmit={handleSubmit}>
-          <h3>Thêm Lịch Mới</h3>
-          <p>
-            <strong>Ngày:</strong> {date}
-          </p>
-          <p>
-            <strong>Giờ bắt đầu:</strong> {hour}:00
-          </p>
+          <h3>Add new slot</h3>
 
-          <input type="hidden" value={date} readOnly />
+          {/* Group Selection */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <select
+              value={selectedGroup?.groupsId || ""}
+              onChange={handleSelectGroup}
+              required
+            >
+              <option value="">-- Choose Group --</option>
+              {groups.map((group) => (
+                <option key={group.groupsId} value={group.groupsId}>
+                  {group.groupsName}
+                </option>
+              ))}
+            </select>
+            {selectedGroup && (
+              <button
+                type="button"
+                onClick={handleRemoveSelectedGroup}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "red",
+                }}
+              >
+                <FaTrash />
+              </button>
+            )}
+          </div>
 
-          <input type="hidden" value={startHour} readOnly />
+          {/* Title */}
+          <div className="form-group">
+            <label htmlFor="slotTitle">📌 Title:</label>
+            <input
+              type="text"
+              id="slotTitle"
+              name="slotTitle"
+              value={scheduleData.slotTitle}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
 
-          <button type="submit">Thêm Lịch</button>
+          {/* Description */}
+          <div className="form-group">
+            <label htmlFor="slotDescription">📝 Description:</label>
+            <textarea
+              id="slotDescription"
+              name="slotDescription"
+              rows="2"
+              value={scheduleData.slotDescription}
+              onChange={handleInputChange}
+              required
+            ></textarea>
+          </div>
+
+          {/* Date */}
+          <div className="form-group">
+            <label htmlFor="date">📅 Date:</label>
+            <input
+              type="date"
+              id="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* Time */}
+          <div className="form-group">
+            <label htmlFor="time">🕒 Start Time:</label>
+            <input
+              type="time"
+              id="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* Submit */}
+          <button type="submit">
+            <FaPlus />
+            <span>Add</span>
+          </button>
         </form>
       </div>
     </div>

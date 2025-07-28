@@ -1,94 +1,80 @@
 .calendar {
   width: 100%;
-  height: 765px;
-  overflow-y: auto;
-  overflow-x: auto;
-  font-family: sans-serif;
-  &__navigation {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: 12px;
-    margin: 20px 0;
-    padding-left: 25px;
+  max-width: 1600px;
+  height: 500px;
+  margin: 0 auto;
+  // padding: 20px;
+  background-color: var(--bg--nav);
+  margin-top: 10px;
+}
 
-    button {
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1px solid #ccc;
-      background-color: white;
-      cursor: pointer;
-      font-size: 14px;
+.sx__calendar {
+  width: 100% !important;
+  max-height: 800px;
+  background-color: var(--bg--nav);
+  --sx-color-primary: #045745;
+  --sx-color-primary-hover: #034a38;
+  --sx-color-primary-light: #067a5c;
+  --sx-color-event-bg: #045745;
+  --sx-color-event-text: #ffffff;
+}
 
-      &:hover {
-        background-color: #f2f2f2;
-      }
-    }
-
-    span {
-      margin-top: 5px;
-      margin-left: 20px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-  }
-
-  &__header {
-    display: grid;
-    grid-template-columns: 100px repeat(7, 1fr);
-    background: var(--bg-nav);
-
-    &--empty {
-      background: var(--bg-nav);
-    }
-
-    &--day {
-      padding: 12px;
-      text-align: center;
-      font-weight: 600;
-    }
-
-    .calendar__weekday {
-      font-size: 14px;
-      color: #888;
-    }
-
-    .calendar__day-number {
-      font-size: 18px;
-      font-weight: bold;
-      padding: 4px 8px;
-      border-radius: 6px;
-      display: inline-block;
-      margin-top: 4px;
-    }
-
-    .calendar__day--today {
-      background-color: var(--bg--primary-color);
-      color: var(--text-color);
-    }
-  }
-
-  &__body {
-    display: flex;
-    flex-direction: column;
-  }
-
-  &__row {
-    display: grid;
-    grid-template-columns: 100px repeat(7, 1fr);
-    min-height: 70px;
-  }
-
-  &__time {
-    padding: 12px 8px;
-    font-size: 14px;
+.sx__calendar-header {
+  background-color: var(--bg--nav) !important;
+  color: var(--text-color) !important;
+  button {
+    background-color: var(--bg--nav);
+    color: var(--text-color);
     font-weight: 500;
   }
 
-  &__cell {
-    padding: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  &-content {
+    color: var(--text-color);
+    background-color: var(--bg--nav);
   }
+}
+
+.sx__calendar-wrapper button,
+.sx__date-picker-wrapper button,
+.sx__date-picker-popup button {
+  background-color: var(--bg--nav);
+  color: var(--text-color);
+  outline: 0;
+  border: none;
+  cursor: pointer;
+  i {
+    color: var(--text-color);
+  }
+}
+
+.sx__today-button {
+  button {
+    color: var(--text-color);
+  }
+}
+
+.sx__event {
+  background-color: var(--bg--nav) !important;
+  color: var(--sx-color-event-text) !important;
+  border-color: var(--sx-color-primary) !important;
+}
+
+.sx__week-grid__date-axis {
+  background-color: var(--bg--nav);
+  color: var(--text-color);
+}
+
+.sx__week-grid {
+  background-color: var(--bg--nav);
+  color: var(--text-color);
+}
+
+.sx__time-grid-event {
+  background-color: var(--bg--nav) !important;
+  color: var(--text-color) !important;
+}
+
+.sx__month-grid-event {
+  background-color: var(--sx-color-event-bg) !important;
+  color: var(--sx-color-event-text) !important;
 }

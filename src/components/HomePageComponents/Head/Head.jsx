@@ -62,7 +62,7 @@ const Head = () => {
           </div>
           <div className="head-container-left-content-current-session">
             <h2 className="current-session-heading">{getCurrentSession()}!</h2>
-            <h2 className="active">{user.email}</h2>
+            <h2 className="active">{user.username}</h2>
           </div>
         </div>
       </div>

@@ -1,36 +1,39 @@
-import React, { useContext, useState, useEffect } from "react";
-import avatar from "../../../assets/ava-chat.png";
+import React, { useContext, useEffect, useState } from "react";
+import avatar from "../../../assets/logo-login.png";
 import "./GroupChat.scss";
 import { useAuth } from "../../../context/AuthProvider";
 import { ChatContext } from "../../../context/ChatContext";
-import ChatBoxApi from "../../../service/ChatService";
 
 const GroupChat = () => {
   const { setSelectedUser, setSelectedBox } = useContext(ChatContext);
   const [groupChatDetails, setGroupChatDetails] = useState([]);
   const { user } = useAuth();
 
-  // Lấy danh sách user và tin nhắn của tất cả box chat
-  const fetchAllBoxChatUsers = async () => {
-    try {
-      const api = ChatBoxApi();
-      const data = await api.getAllBoxChatUserDetails(user.token);
-      setGroupChatDetails(data); // [{ boxChat, users, messages }]
-    } catch (error) {
-      console.error("Failed to fetch group chat users:", error);
-    }
-  };
-
   useEffect(() => {
-    if (user?.token) {
-      fetchAllBoxChatUsers();
-    }
+    const stackLog = {
+      boxChat: {
+        boxChatId: "1",
+        nameBox: "StackLog",
+        avaBox: avatar,
+      },
+      users: user?.token
+        ? [
+            {
+              boxChatUserId: `u_${user.token.slice(-4)}`,
+              id: user.token,
+              name: "User",
+            },
+          ]
+        : [],
+      messages: [],
+    };
+    setGroupChatDetails([stackLog]);
   }, [user]);
 
-  // Truyền cả user và box chat vào context
   const handleUserClick = (user, boxDetail) => {
     setSelectedUser(user);
     setSelectedBox(boxDetail);
+    console.log("Selected box:", boxDetail);
   };
 
   return (
@@ -40,20 +43,23 @@ const GroupChat = () => {
         <i className="fa-solid fa-arrow-down"></i>
       </div>
       <div className="group__chat__list">
-        {groupChatDetails.map((boxDetail) =>
-          boxDetail.users.map((item) => (
+        {groupChatDetails.length === 0 ? (
+          <p>Đang tải StackLog...</p>
+        ) : (
+          groupChatDetails.map((boxDetail) => (
             <div
-              key={item.boxChatUserId}
+              key={boxDetail.boxChat.boxChatId}
               className="group__chat__card"
-              onClick={() => handleUserClick(item, boxDetail)}
+              onClick={() => handleUserClick(null, boxDetail)}
             >
               <img src={boxDetail.boxChat?.avaBox || avatar} alt="avatar" />
               <div className="group__chat__card__content">
                 <h2>{boxDetail.boxChat?.nameBox}</h2>
                 <p>
                   {boxDetail.messages && boxDetail.messages.length > 0
-                    ? boxDetail.messages[boxDetail.messages.length - 1].chatMessageContent
-                    : ""}
+                    ? boxDetail.messages[boxDetail.messages.length - 1]
+                        .chatMessageContent
+                    : "StackLog is ready to chat!"}
                 </p>
               </div>
             </div>

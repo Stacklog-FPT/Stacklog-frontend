@@ -1,7 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import "./CheckTypeByAll.scss";
 import Column from "./Column/Column";
-import { DndContext, rectIntersection, closestCorners } from "@dnd-kit/core";
+import Task from "./Task/Task";
+import {
+  DndContext,
+  rectIntersection,
+  closestCorners,
+  DragOverlay,
+} from "@dnd-kit/core";
 import { useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import AddTask from "../../../Task/AddTask/AddTask";
 import CommentTask from "../../../Task/CommentTask/CommentTask";
@@ -11,6 +17,7 @@ import taskService from "../../../../service/TaskService";
 import statusApi from "../../../../service/ColumnService";
 import GroupService from "../../../../service/GroupService";
 import AddColumn from "../../../Column/AddColumn/AddColumn";
+import axios from "axios";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -24,6 +31,7 @@ const customCollisionDetection = (args) => {
 const CheckTypeByAll = () => {
   const { user } = useAuth();
   const [activeColumn, setActiveColumn] = useState(null);
+  const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
   const [showAddColumn, setShowAddColumn] = useState(false);
@@ -32,58 +40,50 @@ const CheckTypeByAll = () => {
   const { getAllTask, addTask, setSocket } = taskService();
   const { getAllStatus } = statusApi();
   const [statusTasks, setStatusTasks] = useState([]);
-  console.log("statusTask: ", statusTasks);
   const [tasks, setTasks] = useState([]);
-  console.log(tasks);
   const [stompClient, setStompClient] = useState(null);
   const { getAllGroup } = GroupService();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 5,
       },
     })
   );
 
-  const getStatusIdByName = (statusName) => {
-    const status = statusTasks.find(
-      (item) => item.statusTaskName === statusName
-    );
-    return status?.statusTaskId || null;
+  const handleDragStart = (event) => {
+    const { active } = event;
+    const activeTask = tasks.find((task) => task.taskId === active.id);
+    setActiveTask(activeTask);
   };
 
   const handleDragOver = (event) => {
     const { over } = event;
-    console.log("handleDragOver triggered:", { over });
     if (over) {
       const overId = over.id;
-      console.log("overId:", overId);
+
       if (overId.startsWith("droppable-")) {
         const targetStatus = overId.replace("droppable-", "");
-        console.log("Setting activeColumn to:", targetStatus);
         setActiveColumn(targetStatus);
-      } else {
-        console.log("overId does not start with 'droppable-':", overId);
       }
     } else {
-      console.log("No over element, clearing activeColumn");
       setActiveColumn(null);
     }
   };
 
   const handleDragEnd = useCallback(
-    (event) => {
+    async (event) => {
       const { active, over } = event;
+      setActiveTask(null);
       if (!over) {
-        console.log("No over element, returning early");
+        setActiveColumn(null);
         return;
       }
       const activeId = active.id;
       const activeTask = tasks.find((task) => task.taskId === activeId);
-      console.log("activeId:", activeId, "activeTask:", activeTask);
       if (!activeTask) {
-        console.error("Active task not found");
+        setActiveColumn(null);
         return;
       }
 
@@ -94,71 +94,87 @@ const CheckTypeByAll = () => {
       const isOverDroppable = droppableId.startsWith("droppable-");
       const isOverTask = tasks.some((task) => task.taskId === over.id);
 
-      if (isOverDroppable || activeColumn) {
-        const targetStatusId =
-          activeColumn || droppableId.replace("droppable-", "");
-        console.log("targetStatusId:", targetStatusId);
-        const targetStatus = statusTasks.find(
+      let targetStatusId;
+      let targetStatus;
+
+      if (isOverDroppable) {
+        targetStatusId = droppableId.replace("droppable-", "");
+        targetStatus = statusTasks.find(
           (item) => item.statusTaskId === targetStatusId
         )?.statusTaskName;
-        console.log("targetStatus:", targetStatus);
-        if (!targetStatusId || !targetStatus) {
-          console.error("Target status not found for ID:", targetStatusId);
+      } else if (isOverTask) {
+        const overTask = tasks.find((task) => task.taskId === over.id);
+        if (!overTask) {
+          setActiveColumn(null);
           return;
         }
+        targetStatusId = overTask?.statusTask?.statusTaskId;
+        targetStatus = overTask?.statusTask?.statusTaskName;
+      } else {
+        setActiveColumn(null);
+        return;
+      }
 
-        updatedTasks = updatedTasks.map((task) =>
-          task.taskId === activeId
-            ? {
-                ...task,
-                statusTask: {
-                  ...task.statusTask,
-                  statusTaskId: targetStatusId,
-                  statusTaskName: targetStatus,
-                },
-              }
-            : task
-        );
+      if (!targetStatusId || !targetStatus) {
+        setActiveColumn(null);
+        return;
+      }
 
-        if (activeTask.statusTask.statusTaskId !== targetStatusId) {
-          const newTask = {
-            ...activeTask,
-            statusTask: {
-              ...activeTask.statusTask,
-              statusTaskId: targetStatusId,
-              statusTaskName: targetStatus,
+      updatedTasks = updatedTasks.map((task) =>
+        task.taskId === activeId
+          ? {
+              ...task,
+              statusTask: {
+                ...task.statusTask,
+                statusTaskId: targetStatusId,
+                statusTaskName: targetStatus,
+              },
+            }
+          : task
+      );
+
+      if (activeTask.statusTask.statusTaskId !== targetStatusId) {
+        const newTask = {
+          ...activeTask,
+          statusTask: {
+            ...activeTask.statusTask,
+            statusTaskId: targetStatusId,
+            statusTaskName: targetStatus,
+          },
+          listUserAssign: [
+            "6801ccf3b8b39cd0e4d38877",
+            "68768017c89a12a7e51ddebd",
+          ],
+        };
+        try {
+          await addTask(newTask, user?.token);
+          await axios.post("http://localhost:3000/notifications", {
+            id: Math.random().toString(16).slice(2, 6),
+            title: `Thông báo môn ${newTask.taskTitle}`,
+            author: {
+              _id: Math.random(),
+              name: user.username || "Unknown",
+              avatar:
+                user.avatar ||
+                "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
             },
-          };
-          addTask(newTask, user?.token)
-            .then(() => console.log("Task updated in backend:", newTask))
-            .catch((error) => console.error("Failed to update task:", error));
+            createdAt: new Date().toISOString().split("T")[0],
+            isRead: false,
+            _id: Math.random(),
+          });
+        } catch (error) {
+          console.error("Failed to update task or send notification:", error);
         }
+      }
 
+      if (isOverDroppable) {
         const targetTasks = tasks.filter(
           (task) =>
             task?.statusTask?.statusTaskId === targetStatusId &&
             task.taskId !== activeId
         );
-        let dropIndex = over.data.current?.sortable?.index ?? 0;
-        let targetIndex = 0;
-
-        if (targetTasks.length === 0) {
-          const firstTaskInOtherColumn = tasks.findIndex(
-            (task) => task?.statusTask?.statusTaskId === targetStatusId
-          );
-          targetIndex =
-            firstTaskInOtherColumn === -1
-              ? tasks.length
-              : firstTaskInOtherColumn;
-        } else {
-          targetIndex =
-            tasks.findIndex(
-              (task) => task?.statusTask?.statusTaskId === targetStatusId
-            ) + dropIndex;
-        }
-
         updatedTasks.splice(activeIndex, 1);
-        updatedTasks.splice(targetIndex, 0, {
+        updatedTasks.push({
           ...activeTask,
           statusTask: {
             ...activeTask.statusTask,
@@ -167,33 +183,12 @@ const CheckTypeByAll = () => {
           },
         });
       } else if (isOverTask) {
-        console.log("Task dropped over another task");
         const overTask = tasks.find((task) => task.taskId === over.id);
-        if (!overTask) {
-          console.error("Over task not found:", over.id);
-          return;
-        }
-
         const overIndex = tasks.findIndex((task) => task.taskId === over.id);
-        const targetStatusId = overTask?.statusTask?.statusTaskId;
-        const targetStatus = overTask?.statusTask?.statusTaskName;
-
         if (activeTask?.statusTask?.statusTaskId === targetStatusId) {
           updatedTasks.splice(activeIndex, 1);
           updatedTasks.splice(overIndex, 0, activeTask);
         } else {
-          updatedTasks = updatedTasks.map((task) =>
-            task.taskId === activeId
-              ? {
-                  ...task,
-                  statusTask: {
-                    ...task.statusTask,
-                    statusTaskId: targetStatusId,
-                    statusTaskName: targetStatus,
-                  },
-                }
-              : task
-          );
           updatedTasks.splice(activeIndex, 1);
           updatedTasks.splice(overIndex, 0, {
             ...activeTask,
@@ -204,21 +199,20 @@ const CheckTypeByAll = () => {
             },
           });
         }
-      } else {
-        console.log("Dropped on invalid target");
       }
+
       setTasks(updatedTasks);
       setActiveColumn(null);
     },
-    [tasks, activeColumn]
+    [tasks, activeColumn, statusTasks, addTask, user]
   );
 
   const handleShowAddTask = (status) => {
     setShowAddTask(status);
   };
 
-  const handleShowComment = (taskId) => {
-    setShowCommentTask(taskId);
+  const handleShowComment = (task) => {
+    setShowCommentTask(task);
   };
 
   const handleCloseComment = () => {
@@ -239,7 +233,7 @@ const CheckTypeByAll = () => {
       console.error(e.message);
     }
   }, []);
-  //user.token, getAllStatus
+
   const handleGetTasks = useCallback(async () => {
     try {
       const response = await getAllTask(user.token);
@@ -254,25 +248,15 @@ const CheckTypeByAll = () => {
           },
         }));
         setTasks(normalizedTasks);
-        // const uniqueMembers = [
-        //   ...new Map(
-        //     normalizedTasks
-        //       .flatMap((task) => task.assigns)
-        //       .map((member) => [member.assignTo, member])
-        //   ).values(),
-        // ];
-        // setMembers(uniqueMembers);
       }
     } catch (e) {
       console.error(e.message);
     }
   }, []);
-  //user.token, getAllTask
 
   const handleGetGroupList = async () => {
     try {
       const response = await getAllGroup(user?.token);
-
       if (response) {
         setMembers(response?.users);
       }
@@ -280,12 +264,12 @@ const CheckTypeByAll = () => {
       throw new Error(e.message);
     }
   };
+
   useEffect(() => {
     const stompInstance = setSocket(user.token);
     setStompClient(stompInstance);
     stompInstance.onmessage = (message) => {
       const data = JSON.parse(message.body);
-
       if (data.type === "taskUpdate") {
         setTasks((prevTasks) => {
           const taskExists = prevTasks.some(
@@ -327,14 +311,12 @@ const CheckTypeByAll = () => {
         );
       }
     };
-
     return () => {
       if (stompInstance && stompInstance.connected) {
         stompInstance.disconnect();
       }
     };
   }, []);
-  // user.token, setSocket
 
   useEffect(() => {
     const fetchData = async () => {
@@ -347,17 +329,13 @@ const CheckTypeByAll = () => {
         setIsLoading(false);
       }
     };
-
     fetchData();
-
     const handleEscape = (e) => {
       if (e.key === "Escape") {
         setShowAddTask(null);
       }
     };
-
     document.addEventListener("keydown", handleEscape);
-
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
@@ -371,6 +349,7 @@ const CheckTypeByAll = () => {
     <DndContext
       sensors={sensors}
       collisionDetection={customCollisionDetection}
+      onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
@@ -410,13 +389,27 @@ const CheckTypeByAll = () => {
           )}
           {showCommentTask && (
             <CommentTask
-              taskId={showCommentTask}
+              task={showCommentTask}
               isClose={handleCloseComment}
             />
           )}
           {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}
         </div>
       </div>
+      <DragOverlay dropAnimation={null}>
+        {activeTask ? (
+          <Task
+            id={activeTask.taskId}
+            title={activeTask.taskTitle}
+            percent={activeTask.percentProgress}
+            members={members}
+            createdAt={activeTask.createdAt}
+            dueDate={activeTask.taskDueDate}
+            onShowComment={handleShowComment}
+            isDraggingOverlay
+          />
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 };

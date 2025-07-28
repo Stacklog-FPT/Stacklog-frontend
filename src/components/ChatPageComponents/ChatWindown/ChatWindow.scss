@@ -2,10 +2,12 @@ $color-i: #045745;
 $color-border-input: #b5b5b5;
 
 .chat__page__container {
+  display: flex;
+  flex-direction: column;
   width: 684px;
   height: 650px;
   margin-bottom: 25px;
-  background-color: var(--bg--nav);
+  background-color: #fff;
   border-radius: 20px;
   border: 1px solid #e8e8e8;
 
@@ -71,12 +73,14 @@ $color-border-input: #b5b5b5;
 
   .chat__content {
     width: 100%;
-    height: 420px;
+    // height: 420px;
     padding: 0 32px 32px 32px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    // justify-content: flex-end;
     overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
   }
 
   .chat__footer {
@@ -137,12 +141,14 @@ $color-border-input: #b5b5b5;
 
 .chat__content--scroll {
   width: 100%;
-  height: 420px;
+  // height: 420px;
   padding: 0 32px 32px 32px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  // justify-content: flex-end;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .chat__message__row {

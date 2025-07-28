@@ -106,6 +106,106 @@
             }
           }
         }
+        tbody {
+          width: 100%;
+          height: 450px;
+          vertical-align: top;
+          td {
+            padding: 12px 20px;
+            text-align: left;
+            font-weight: 500;
+            font-size: 13px;
+            line-height: 21px;
+            color: #000;
+            border-bottom: 1px solid #edf2f2;
+
+            &:nth-child(1) {
+              width: 68px;
+              text-align: center;
+            }
+            &:nth-child(2) {
+              width: 454px;
+            }
+            &:nth-child(3) {
+              width: 200px;
+            }
+            &:nth-child(4) {
+              width: 93px;
+            }
+            &:nth-child(5) {
+              width: 145px;
+            }
+            &:nth-child(6) {
+              width: 127px;
+            }
+
+            &.text-center {
+              text-align: center;
+              padding: 20px;
+              font-size: 16px;
+              color: #666;
+            }
+
+            p {
+              font-weight: 500;
+              font-size: 14px;
+              line-height: 21px;
+              color: #545454;
+              margin: 0;
+            }
+
+            ul {
+              display: flex;
+              align-items: center;
+              list-style: none;
+              padding-left: 10px;
+              margin: 0;
+
+              li {
+                position: relative;
+                margin-left: -10px;
+
+                &:nth-child(n + 4):not(.extra-count) {
+                  display: none;
+                }
+
+                img {
+                  width: 30px;
+                  height: 30px;
+                  border-radius: 50%;
+                  border: 2px solid #fff;
+                  object-fit: cover;
+                }
+              }
+            }
+
+            .text-note {
+              color: #667085;
+              font-weight: 400;
+              font-size: 13px;
+              line-height: 20px;
+            }
+          }
+          .name__ava {
+            display: flex;
+            align-items: center;
+            gap: 21px;
+
+            img {
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              object-fit: cover;
+            }
+
+            p {
+              font-weight: 500;
+              font-size: 14px;
+              color: #545454;
+              margin: 0;
+            }
+          }
+        }
       }
     }
   }

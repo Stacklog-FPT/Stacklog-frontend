@@ -15,7 +15,7 @@ const ClassAndMember = () => {
     { id: "class-04", name: "EXE101c" },
   ]);
 
-  const [memberList, setMemberList] = useState([]); 
+  const [memberList, setMemberList] = useState([]);
 
   const visibleMembers = memberList.slice(0, 3);
   const extraCount = memberList.length - visibleMembers.length;
@@ -55,7 +55,12 @@ const ClassAndMember = () => {
           >
             {visibleMembers.map((item) => (
               <li key={item._id}>
-                <img src={item.img} alt="Student Avatar" />
+                <img
+                  src={
+                    "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                  }
+                  alt="Student Avatar"
+                />
               </li>
             ))}
             {extraCount > 0 && (

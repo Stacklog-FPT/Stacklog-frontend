@@ -8,6 +8,7 @@ import trackTime from "../../../assets/task/icon-track-time.png";
 import { useAuth } from "../../../context/AuthProvider";
 import taskService from "../../../service/TaskService";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const AddTask = (props) => {
   const visibleMembers = props.members.slice(0, 3);
@@ -69,12 +70,29 @@ const AddTask = (props) => {
         createdBy: user.userName,
         updatedBy: "",
         priority: taskData.priority || "HIGH",
-        assigns: "" || [],
+        listUserAssign: [
+          "6801ccf3b8b39cd0e4d38877",
+          "68768017c89a12a7e51ddebd",
+        ],
       };
 
       const response = await addTask(payload, user.token);
       if (response.data) {
         notify();
+        await axios.post("http://localhost:3000/notifications", {
+          id: Math.random().toString(16).slice(2, 6),
+          title: `Thông báo môn ${taskData.taskTitle}`,
+          author: {
+            _id: Math.random(),
+            name: user.username || "Unknown",
+            avatar:
+              user.avatar ||
+              "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+          },
+          createdAt: new Date().toISOString().split("T")[0],
+          isRead: false,
+          _id: Math.random(),
+        });
       }
       props.onCancel();
     } catch (e) {
@@ -170,7 +188,7 @@ const AddTask = (props) => {
           >
             {colorPriority.map((item) => (
               <option key={item.id} value={item.content}>
-                {item.content} 
+                {item.content}
               </option>
             ))}
           </select>

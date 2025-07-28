@@ -65,5 +65,88 @@
         }
       }
     }
+
+    &__body {
+      width: 100%;
+      padding-top: 20px;
+      padding-left: 20px;
+
+      table {
+        width: 99%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 10px;
+        overflow: hidden;
+        border-radius: 10px;
+
+        thead {
+          background-color: var(--bg--color--table);
+
+          th {
+            padding: 12px 20px;
+            text-align: left;
+            font-weight: 500;
+            font-size: 13px;
+            line-height: 21px;
+            color: var(--text-color);
+
+            width: calc(100% / 3);
+          }
+        }
+
+        tbody {
+          background-color: #fff;
+
+          tr {
+            border-bottom: 1px solid #e0e0e0;
+
+            &:hover {
+              background-color: #f9f9f9;
+            }
+          }
+
+          td {
+            padding: 12px 20px;
+            font-size: 14px;
+            color: #333;
+            width: calc(100% / 3);
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+      gap: 10px;
+
+      button {
+        background-color: #f0f0f0;
+        color: #333;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s ease;
+
+        &:hover:not(.active) {
+          background-color: #ddd;
+        }
+
+        &:disabled {
+          background-color: #e0e0e0;
+          color: #aaa;
+          cursor: not-allowed;
+        }
+
+        &.active {
+          background-color: var(--bg--primary-color);
+          color: #fff;
+          font-weight: bold;
+        }
+      }
+    }
   }
 }

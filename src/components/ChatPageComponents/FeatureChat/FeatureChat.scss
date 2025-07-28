@@ -18,7 +18,7 @@ $color-heading: #667085;
     justify-content: space-between;
     padding: 20px;
     border-radius: 20px;
-    background-color: var(--bg--nav);
+    background-color: #fff;
 
     h2 {
       font-weight: 700;
@@ -42,7 +42,7 @@ $color-heading: #667085;
     align-items: center;
     justify-content: flex-start;
     gap: 20px;
-    background-color: var(--bg--nav);
+    background-color: #fff;
     padding: 20px;
     border-radius: 20px;
 
@@ -56,7 +56,7 @@ $color-heading: #667085;
       font-weight: 700;
       font-size: 14px;
       line-height: 21px;
-      color: var(--text-color);
+      color: #101828;
     }
   }
 
@@ -87,6 +87,57 @@ $color-heading: #667085;
 
       p {
         margin: 0;
+      }
+
+      .team-members {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 180px; /* Adjusted to fit within container */
+        // overflow-y: auto;
+        width: 100%;
+        padding: 8px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+
+        .team-member {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 4px 8px;
+          border-radius: 6px;
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: #e0e0e0; /* Highlight on hover */
+          }
+
+          img {
+            width: 30px; /* Slightly smaller for compact list */
+            height: 30px;
+            border-radius: 50%; /* Consistent circular shape */
+            object-fit: cover; /* Proper scaling */
+            background-color: #f0f0f0; /* Placeholder for loading */
+            border: 1px solid #e0e0e0; /* Subtle border */
+          }
+
+          span {
+            font-size: 12px;
+            font-weight: 500;
+            color: #101828;
+            flex: 1; /* Ensure name takes available space */
+          }
+        }
+
+        p {
+          font-size: 12px;
+          color: #8a8a8a;
+          text-align: center;
+          margin: 0;
+          padding: 8px;
+        }
       }
     }
   }

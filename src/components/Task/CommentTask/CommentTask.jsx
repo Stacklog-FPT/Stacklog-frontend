@@ -9,7 +9,7 @@ import sendIcon from "../../../assets/commentIcon/send.png";
 import ReviewService from "../../../service/ReviewService";
 import { useAuth } from "../../../context/AuthProvider";
 
-const CommentTask = ({ taskId, isClose }) => {
+const CommentTask = ({ isClose, task }) => {
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -33,14 +33,17 @@ const CommentTask = ({ taskId, isClose }) => {
       createAt: "March 20",
     },
   ]);
+  const [newComment, setNewComment] = useState("");
+  console.log(task);
   const { user } = useAuth();
-  const { getAllReview } = ReviewService();
+  const { getAllReview, createReview } = ReviewService();
 
   const handleGetCommentTask = async () => {
     try {
-      const response = await getAllReview(user?.token, taskId);
-      console.log("Comments from API:", response.data);
+      const response = await getAllReview(user?.token, task.taskId);
+
       if (response && response.data) {
+        // console.log(response);
         setComments(response.data);
       }
     } catch (e) {
@@ -48,14 +51,29 @@ const CommentTask = ({ taskId, isClose }) => {
     }
   };
 
-  useEffect(() => {
-    handleGetCommentTask();
-  }, [taskId, user?.token]);
-
-  const handleSendComment = () => {
-    // Giả định hàm gửi comment (cần triển khai API)
+  const handleSendComment = async () => {
+    if (!newComment.trim()) return;
+    try {
+      const payload = {
+        reviewContent: newComment,
+        task: task,
+      };
+      console.log(payload);
+      const response = await createReview(user?.token, payload);
+      if (response) {
+        setNewComment("");
+        handleGetCommentTask();
+        // console.log(response);
+      }
+    } catch (e) {
+      throw new Error(e.message);
+    }
     console.log("Send comment clicked");
   };
+
+  useEffect(() => {
+    handleGetCommentTask();
+  }, [task, user?.token]);
 
   return (
     <div className="comment__task__container">
@@ -65,18 +83,18 @@ const CommentTask = ({ taskId, isClose }) => {
       </div>
       <div className="comment__task__body">
         {comments.length > 0 ? (
-          comments.map((item) => (
-            <div className="comment__task__card" key={item.id}>
-              <div className="comment__task__card__header">
+          comments.map((item, index) => (
+            <div className="comment__task__card" key={index}>
+              {/* <div className="comment__task__card__header">
                 <div className="infor__user">
                   <img src={item.avatar} alt="User avatar" />
                   <p className="infor__user__name">{item.name}</p>
                   <p className="infor__user__create">{item.createAt}</p>
                 </div>
                 <img src={iconMore} alt="More options" />
-              </div>
+              </div> */}
               <div className="comment__task__card__content">
-                <p>{item.content}</p>
+                <p>{item.reviewContent}</p>
               </div>
             </div>
           ))
@@ -87,7 +105,11 @@ const CommentTask = ({ taskId, isClose }) => {
       <div className="comment__task__footer">
         <img src={avatar} alt="Current user avatar" />
         <div className="comment__task__create__content">
-          <textarea placeholder="Enter comment"></textarea>
+          <textarea
+            placeholder="Enter comment"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          ></textarea>
           <div className="wrapper_icon_comment">
             <div className="wrapper_icon_features">
               <img src={smileIcon} alt="Smile icon" />

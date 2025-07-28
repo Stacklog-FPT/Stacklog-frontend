@@ -8,6 +8,7 @@
   padding: 12px;
   border-radius: 8px;
   z-index: 2;
+  transition: background-color 0.2s ease, border 0.2s ease;
 }
 
 .column-container.over {
@@ -46,32 +47,26 @@
   justify-content: space-between;
   padding: 8px 20px;
   border-radius: 25px;
+  transition: background-color 0.2s ease;
+}
 
-  &-left {
+.prop-status-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &-text {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 5px;
 
-    &-text {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-
-      img {
-        width: 10px;
-        height: 10px;
-      }
-
-      span {
-        line-height: 24px;
-        font-size: 16px;
-        font-weight: bold;
-        color: var(--text-color);
-      }
+    img {
+      width: 10px;
+      height: 10px;
     }
 
-    .prop-status-text-total-task {
+    span {
       line-height: 24px;
       font-size: 16px;
       font-weight: bold;
@@ -79,12 +74,19 @@
     }
   }
 
-  &-right {
-    img {
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-    }
+  .prop-status-text-total-task {
+    line-height: 24px;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-color);
+  }
+}
+
+.prop-status-right {
+  img {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
   }
 }
 

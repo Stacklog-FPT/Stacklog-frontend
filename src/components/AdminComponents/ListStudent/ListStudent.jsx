@@ -1,43 +1,62 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./ListStudent.scss";
 import { useAuth } from "../../../context/AuthProvider";
-import userApi from "../../../service/UserService";
+import axios from "axios";
+
 const ListStudent = () => {
   const { user } = useAuth();
-  const { getUserByRole } = userApi();
-  const [students, setStudents] = React.useState([]);
-  const itemsPerPage = 9;
+  const [students, setStudents] = useState([]);
+  const [isBan, setIsBan] = useState({});
+  const itemsPerPage = 6;
+  const [currentPage, setCurrentPage] = useState(1);
+
   const totalPages = Math.ceil(students.length / itemsPerPage);
-  const [currentPage, setCurrentPage] = React.useState(1);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentItems = students.slice(startIndex, endIndex);
 
-  //
   const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
   const handleGetStudents = async () => {
     try {
-      const response = await getUserByRole(user.token, "student");
-      if (response) {
-        setStudents(response?.data?.users);
+      const response = await axios.get("http://localhost:3000/classes");
+
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        const subjects = response.data[0]?.subjects || [];
+        const allMembers = Array.from(
+          new Map(
+            subjects
+              .flatMap((subject) => subject.members || [])
+              .map((student) => [student.id, student])
+          ).values()
+        );
+
+        const initialBanStatus = allMembers.reduce((acc, student) => {
+          acc[student.id] = false;
+          return acc;
+        }, {});
+        setStudents(allMembers);
+        setIsBan(initialBanStatus);
       }
     } catch (e) {
-      console.error(e.message);
+      console.error("Error fetching students:", e.message);
     }
   };
 
-  React.useEffect(() => {
+  const handleToggleBan = (studentId) => {
+    setIsBan((prev) => ({
+      ...prev,
+      [studentId]: !prev[studentId],
+    }));
+  };
+
+  useEffect(() => {
     handleGetStudents();
   }, []);
 
@@ -48,13 +67,13 @@ const ListStudent = () => {
           <div className="list__student__heading__title">
             <h2>Manage Student</h2>
           </div>
-
           <div className="list__student__heading__feature">
             <i className="fa-solid fa-filter"></i>
             <i className="fa-solid fa-plus"></i>
             <i className="fa-solid fa-trash"></i>
           </div>
         </div>
+
         <div className="list__student__table">
           <table>
             <thead>
@@ -69,40 +88,48 @@ const ListStudent = () => {
             </thead>
             <tbody>
               {currentItems.length > 0 ? (
-                currentItems.map((item) => {
-                  return (
-                    <tr key={item.id} className="list__task__table__item">
-                      <td>
-                        <input type="checkbox" />
-                      </td>
-                      <td>
-                        <div className="name__ava">
-                          {item?.avatar_link ? (
-                            <img src={item?.avatar_link} />
-                          ) : (
-                            <img src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" />
-                          )}
-
-                          <p>{item.full_name}</p>
-                        </div>
-                      </td>
-                      <td className="text-note">{item.email}</td>
-                      <td>
-                        <span></span>
-                      </td>
-                    </tr>
-                  );
-                })
+                currentItems.map((item) => (
+                  <tr key={item.id}>
+                    <td>
+                      <input type="checkbox" />
+                    </td>
+                    <td>
+                      <div className="name__ava">
+                        <img
+                          src={
+                            item.avatar_link ||
+                            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                          }
+                          alt="avatar"
+                        />
+                        <p>{item.name}</p>
+                      </div>
+                    </td>
+                    <td className="text-note">{item.email}</td>
+                    <td>
+                      <button
+                        onClick={() => handleToggleBan(item.id)}
+                        className={`status-button ${
+                          isBan[item.id] ? "banned" : "active"
+                        }`}
+                        title={isBan[item.id] ? "Unban student" : "Ban student"}
+                      >
+                        {isBan[item.id] ? "✗ Banned" : "✓ Active"}
+                      </button>
+                    </td>
+                  </tr>
+                ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="text-center">
-                    Student will coming soon, don't worry
+                  <td colSpan="4" className="text-center">
+                    Students will be coming soon, don't worry.
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
+
         {students.length > itemsPerPage && (
           <div className="pagination">
             <button

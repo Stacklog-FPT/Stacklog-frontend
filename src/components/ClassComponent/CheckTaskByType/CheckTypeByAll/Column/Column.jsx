@@ -24,12 +24,6 @@ const Column = ({
   const { setNodeRef, isOver } = useDroppable({
     id: `droppable-${statusId}`,
   });
-  console.log(
-    "Column droppable id:",
-    `droppable-${statusId}`,
-    "statusId:",
-    statusId
-  );
 
   return (
     <div
@@ -84,6 +78,7 @@ const Column = ({
                   createdAt={task?.createdAt}
                   dueDate={task?.taskDueDate}
                   onShowComment={onShowComment}
+                  task={task}
                 />
               ))
             ) : (
@@ -100,4 +95,4 @@ const Column = ({
   );
 };
 
-export default Column;
+export default React.memo(Column);

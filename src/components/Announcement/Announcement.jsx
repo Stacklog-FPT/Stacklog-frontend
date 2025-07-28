@@ -1,97 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./Announcement.scss";
 import Card from "./Card/Card";
-
+import axios from "axios";
 
 const Announcement = () => {
-  const [announcements, setAnnouncements] = useState([
-    {
-      _id: 1,
-      title: "Deadline môn SDN",
-      author: {
-        _id: 1,
-        name: "HoaiNt",
-        avatar:
-          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-      },
-      createdAt: "2025-05-12",
-      isRead: false,
-    },
-    {
-      _id: 2,
-      title: "Deadline môn MMA",
-      author: {
-        _id: 1,
-        name: "NamNV",
-        avatar:
-          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-      },
-      createdAt: "2025-05-05",
-      isRead: true,
-    },
-    {
-      _id: 3,
-      title: "Deadline môn EXE",
-      author: {
-        _id: 1,
-        name: "KhuyNV",
-        avatar:
-          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-      },
-      createdAt: "2025-05-02",
-      isRead: true,
-    },
-    {
-      _id: 4,
-      title: "Deadline môn EXE",
-      author: {
-        _id: 1,
-        name: "KhuyNV",
-        avatar:
-          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-      },
-      createdAt: "2025-05-02",
-      isRead: true,
-    },
-    {
-      _id: 5,
-      title: "Deadline môn EXE",
-      author: {
-        _id: 1,
-        name: "KhuyNV",
-        avatar:
-          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-      },
-      createdAt: "2025-05-02",
-      isRead: true,
-    },
-    {
-      _id: 6,
-      title: "Deadline môn EXE",
-      author: {
-        _id: 1,
-        name: "KhuyNV",
-        avatar:
-          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-      },
-      createdAt: "2025-05-02",
-      isRead: true,
-    },
-    {
-      _id: 7,
-      title: "Deadline môn EXE",
-      author: {
-        _id: 1,
-        name: "KhuyNV",
-        avatar:
-          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-      },
-      createdAt: "2025-05-02",
-      isRead: true,
-    },
-  ]);
+  const [announcements, setAnnouncements] = useState([]);
+  const sortedAnnouncements = [...announcements].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
 
   const [activeTab, setActiveTab] = useState("all");
+
+  const handleGetNoti = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/notifications");
+      if (response) {
+        setAnnouncements(response.data);
+      }
+    } catch (e) {
+      return new Error(e.message);
+    }
+  };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -102,8 +31,14 @@ const Announcement = () => {
       ? announcements.filter((item) => !item.isRead)
       : announcements;
 
-  const displayedAnnouncements = filteredAnnouncements.slice(0, 5);
+  useEffect(() => {
+    handleGetNoti();
+    const interval = setInterval(() => {
+      handleGetNoti(); // Cập nhật mỗi 30 giây
+    }, 30000); // 30000 ms = 30 giây
 
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div className="announcement-container">
       <div className="main-announcement">
@@ -126,8 +61,8 @@ const Announcement = () => {
           </p>
         </div>
         <div className="main-announcement-list">
-          {displayedAnnouncements.length > 0 ? (
-            displayedAnnouncements.map((item) => (
+          {sortedAnnouncements.length > 0 ? (
+            sortedAnnouncements.map((item) => (
               <Card
                 key={item._id}
                 avatar={item.author.avatar}

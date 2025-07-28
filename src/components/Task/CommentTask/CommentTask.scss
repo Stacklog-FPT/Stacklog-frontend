@@ -6,7 +6,7 @@
   justify-content: center;
   gap: 10px;
   position: absolute;
-  top: 20%;
+  top: 10%;
   left: 40%;
   z-index: 10002;
 
@@ -39,6 +39,7 @@
 
   .comment__task__body {
     width: 100%;
+    height: 400px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;

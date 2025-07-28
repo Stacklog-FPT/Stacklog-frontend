@@ -2,51 +2,25 @@ import React from "react";
 import "./PlanComponent.scss";
 import avatarImg from "../../../assets/ava-chat.png";
 import { FaFlag, FaEllipsisV } from "react-icons/fa";
-
-const data = [
-  {
-    project: "Intelligent Flow...",
-    assign: [avatarImg, avatarImg, avatarImg, avatarImg, avatarImg],
-    priority: { label: "Urgent", color: "#FF5B5B" },
-    start: "Jan 4, 2022",
-    deadline: "Jan 4, 2022",
-    process: { label: "In process", color: "#2563EB", percent: 10 },
-  },
-  {
-    project: "Seamless Cloud...",
-    assign: [avatarImg, avatarImg, avatarImg, avatarImg, avatarImg],
-    priority: { label: "High", color: "#FF9900" },
-    start: "Jan 4, 2022",
-    deadline: "Jan 4, 2022",
-    process: { label: "Upcoming", color: "#22C55E", percent: 0 },
-  },
-  {
-    project: "AI-Powered Pr...",
-    assign: [avatarImg, avatarImg, avatarImg, avatarImg],
-    priority: { label: "Medium", color: "#6366F1" },
-    start: "Jan 4, 2022",
-    deadline: "Jan 4, 2022",
-    process: { label: "Completed", color: "#6366F1", percent: 100 },
-  },
-  {
-    project: "Next-Gen Scal...",
-    assign: [avatarImg, avatarImg, avatarImg, avatarImg],
-    priority: { label: "Low", color: "#14B8A6" },
-    start: "Jan 4, 2022",
-    deadline: "Jan 4, 2022",
-    process: { label: "Over due", color: "#FF9900", percent: 80 },
-  },
-  {
-    project: "Advanced Mac...",
-    assign: [avatarImg, avatarImg, avatarImg, avatarImg],
-    priority: { label: "Trivial", color: "#A855F7" },
-    start: "Jan 4, 2022",
-    deadline: "Jan 4, 2022",
-    process: { label: "In process", color: "#2563EB", percent: 30 },
-  },
-];
+import axios from "axios";
 
 const PlanComponent = () => {
+  const [planList, setPlanList] = React.useState([]);
+
+  const handleGetPlanList = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/plans");
+      if (response) {
+        setPlanList(response.data);
+      }
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  };
+
+  React.useEffect(() => {
+    handleGetPlanList();
+  }, []);
   return (
     <div className="plan__component">
       <div className="plan__component__container">
@@ -71,7 +45,7 @@ const PlanComponent = () => {
               </tr>
             </thead>
             <tbody>
-              {data.map((item, index) => (
+              {planList.map((item, index) => (
                 <tr key={index}>
                   <td className="checkbox">
                     <input type="checkbox" />
@@ -138,7 +112,10 @@ const PlanComponent = () => {
                     </div>
                   </td>
                   <td>
-                    <FaEllipsisV className="ellipsis-icon" style={{width: '100%'}} />
+                    <FaEllipsisV
+                      className="ellipsis-icon"
+                      style={{ width: "100%" }}
+                    />
                   </td>
                 </tr>
               ))}

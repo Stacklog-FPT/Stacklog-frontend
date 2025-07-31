@@ -85,7 +85,7 @@ const ClassList = () => {
 
   const handleDeleteStudent = async (memberId) => {
     try {
-      // Lấy toàn bộ data từ classes (giả sử chỉ có 1 phần tử nên lấy [0])
+     
       const res = await axios.get("http://localhost:3000/classes");
       const currentClass = res.data[0];
 

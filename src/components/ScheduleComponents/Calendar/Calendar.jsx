@@ -17,31 +17,26 @@ const Calendar = () => {
   const { getScheduleByUser } = ScheduleService();
   const { user } = useAuth();
 
-  const calendar = useCalendarApp({
-    views: [createViewWeek(), createViewMonthGrid()],
-    events,
-    selectedDate: format(currentDate, "yyyy-MM-dd"), 
-    defaultView: "month",
-    plugins: [createEventModalPlugin(), createDragAndDropPlugin()],
-  });
-
   const formatDateTime = (date) => {
     try {
       const d = new Date(date);
       if (isNaN(d.getTime())) {
         throw new Error("Invalid date");
       }
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
-      const hh = String(d.getHours()).padStart(2, "0");
-      const min = String(d.getMinutes()).padStart(2, "0");
-      return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+      return format(d, "yyyy-MM-dd HH:mm");
     } catch (error) {
       console.error("Error formatting date:", date, error);
       return null;
     }
   };
+
+  const calendar = useCalendarApp({
+    views: [createViewWeek(), createViewMonthGrid()],
+    events: [], // Initialize with empty array
+    selectedDate: format(currentDate, "yyyy-MM-dd"),
+    defaultView: "month",
+    plugins: [createEventModalPlugin(), createDragAndDropPlugin()],
+  });
 
   const handleGetSchedule = async () => {
     if (!user?.token) {
@@ -51,10 +46,9 @@ const Calendar = () => {
 
     setIsLoading(true);
     try {
-      console.log("Calendar:", calendar);
       const response = await getScheduleByUser(user.token);
+      console.log("API Response:", response.data);
       if (response && Array.isArray(response.data)) {
-        console.log(response.data);
         const formattedEvents = response.data
           .map((event) => {
             const start = new Date(event.slotStarTime);
@@ -86,7 +80,7 @@ const Calendar = () => {
           );
           const earliestDate = new Date(sorted[0].start);
           if (!isNaN(earliestDate.getTime())) {
-            setCurrentDate(earliestDate); 
+            setCurrentDate(earliestDate);
           } else {
             console.error("Invalid earliest date:", sorted[0].start);
           }
@@ -99,8 +93,19 @@ const Calendar = () => {
     }
   };
 
+  // Update calendar events and date when events change
+  useEffect(() => {
+    if (calendar && calendar.events && events.length > 0) {
+      console.log("Calendar Methods:", Object.keys(calendar));
+      calendar.events.set(events);
+      console.log("Calendar Events After Update:", calendar.events.getAll());
+    }
+  }, [events, calendar]);
+
+  // Fetch schedules on mount
   useEffect(() => {
     if (user?.token) {
+      console.log("Calendar Initialized:", calendar);
       handleGetSchedule();
     }
   }, [user]);

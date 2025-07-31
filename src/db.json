@@ -1088,6 +1088,78 @@
       "createdAt": "2025-07-31",
       "isRead": false,
       "_id": 0.8375384362546735
+    },
+    {
+      "id": "c192",
+      "title": "Thông báo môn Thiết kế DB notification",
+      "author": {
+        "_id": 0.2974086249183624,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.6676727716629001
+    },
+    {
+      "id": "b0b5",
+      "title": "Thông báo môn Vẽ UI/UX",
+      "author": {
+        "_id": 0.8941863583966421,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.8410192146289177
+    },
+    {
+      "id": "8077",
+      "title": "Thông báo môn Thiết kế DB notification",
+      "author": {
+        "_id": 0.04942921681411194,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.7547437315346536
+    },
+    {
+      "id": "5b09",
+      "title": "Thông báo môn Thiết kế DB notification",
+      "author": {
+        "_id": 0.4906108266000575,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.7251724746122117
+    },
+    {
+      "id": "617c",
+      "title": "Thông báo môn Thiết kế UI ",
+      "author": {
+        "_id": 0.2726349300215021,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.7981731783987999
+    },
+    {
+      "id": "e49d",
+      "title": "Thông báo môn Vẽ UI/UX",
+      "author": {
+        "_id": 0.8388469212045682,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.9415868237420676
     }
   ],
   "lectures": [

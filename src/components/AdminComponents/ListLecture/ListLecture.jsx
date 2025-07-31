@@ -24,7 +24,10 @@ const ListLecture = () => {
 
   const handleGetLectures = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/lectures");
+      const response = await axios.get(
+        "http://103.166.183.142:8080/api/profile/user/role/lecturer"
+      );
+      console.log(response);
       if (response) {
         setLectures(response.data);
       }
@@ -46,8 +49,8 @@ const ListLecture = () => {
   };
 
   const handleClose = () => {
-    setIsShowAdd(false)
-  }
+    setIsShowAdd(false);
+  };
   React.useEffect(() => {
     handleGetLectures();
   }, []);
@@ -117,7 +120,7 @@ const ListLecture = () => {
           </table>
         </div>
       </div>
-      {isShowAdd && <FormAddLecture onClose={handleClose}/>}
+      {isShowAdd && <FormAddLecture onClose={handleClose} />}
     </div>
   );
 };

@@ -1,24 +1,30 @@
 import React, { useState } from "react";
 import "./FormAddLecture.scss";
-import LectureService from "../../../service/LectureService";
+import LectureService from "../../../service/LectureStudentService";
 import { useAuth } from "../../../context/AuthProvider";
 
 const FormAddLecture = ({ onClose }) => {
-  const { addLecture } = LectureService();
+  const { createUser } = LectureService();
   const { user } = useAuth();
-  console.log(user);
   const [formData, setFormData] = useState({
     full_name: "",
     work_id: "",
     email: "",
     avatar_link: "",
     description: "",
-    role: "LECTURER",
+    role: "",
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, files } = e.target;
+    if (name === "avatar_link" && files && files[0]) {
+      setFormData((prev) => ({
+        ...prev,
+        avatar_link: files[0].name,
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -32,7 +38,7 @@ const FormAddLecture = ({ onClose }) => {
         description: formData.description,
         role: formData.role,
       };
-      const response = await addLecture(user.token, payload);
+      const response = await createUser(user.token, payload);
 
       if (response) {
         console.log(response);
@@ -46,8 +52,17 @@ const FormAddLecture = ({ onClose }) => {
   return (
     <div className="add-user-overlay">
       <div className="add-user-popup">
-        <h2>Add Lecture</h2>
+        <h2>Add User</h2>
         <form onSubmit={handleSubmit}>
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            required
+          >
+            <option value="LECTURER">Lecturer</option>
+            <option value="STUDENT">Student</option>
+          </select>
           <input
             type="text"
             name="full_name"
@@ -59,7 +74,9 @@ const FormAddLecture = ({ onClose }) => {
           <input
             type="text"
             name="work_id"
-            placeholder="Lecture ID"
+            placeholder={
+              formData.role === "STUDENT" ? "Student ID" : "Lecture ID"
+            }
             value={formData.work_id}
             onChange={handleChange}
             required
@@ -76,7 +93,6 @@ const FormAddLecture = ({ onClose }) => {
             type="file"
             name="avatar_link"
             placeholder="Image URL"
-            value={formData.avatar_link}
             onChange={handleChange}
           />
           <textarea

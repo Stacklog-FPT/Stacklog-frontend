@@ -11,7 +11,6 @@ import ChatPage from "../pages/ChatPage/ChatPage";
 import GradesPage from "../pages/GradesPage/GradesPage";
 import PlanPage from "../pages/PlanPage/PlanPage";
 import Profile from "../pages/Profile/Profile";
-import MainLayoutWithProvider from "../layouts/MainLayout";
 import { AuthProvider } from "../context/AuthProvider";
 import ProtectedRoutes from "./ProtectedRoutes";
 import NotFoundPage from "../pages/404page/NotFoundPage";
@@ -32,8 +31,8 @@ const routes = [
         element: <MainLayout />,
         children: [
           { path: "/", element: <Home /> },
-          { path: "/class", element: <ClassPage /> },
-          { path: "/tasks", element: <TaskPage /> },
+          { path: "/tasks", element: <ClassPage /> }, // Task
+          { path: "/class", element: <TaskPage /> }, // Class
           { path: "/schedule", element: <SchedulePage /> },
           { path: "/documents", element: <DocumentPage /> },
           { path: "/chatbox", element: <ChatPage /> },

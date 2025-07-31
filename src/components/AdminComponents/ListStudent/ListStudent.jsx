@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./ListStudent.scss";
 import { useAuth } from "../../../context/AuthProvider";
 import axios from "axios";
+import LectureService from "../../../service/LectureStudentService";
+import FormAddLecture from "../FormAddLecture/FormAddLecture";
 
 const ListStudent = () => {
   const { user } = useAuth();
@@ -9,11 +11,13 @@ const ListStudent = () => {
   const [isBan, setIsBan] = useState({});
   const itemsPerPage = 6;
   const [currentPage, setCurrentPage] = useState(1);
+  const [isShowAdd, setIsShowAdd] = useState(false);
 
   const totalPages = Math.ceil(students.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentItems = students.slice(startIndex, endIndex);
+  const { adminGetUserByRole, createUser } = LectureService();
 
   const handlePreviousPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -23,25 +27,21 @@ const ListStudent = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
+  const handleClose = () => {
+    setIsShowAdd(false);
+    handleGetStudents();
+  };
+
   const handleGetStudents = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/classes");
-
-      if (Array.isArray(response.data) && response.data.length > 0) {
-        const subjects = response.data[0]?.subjects || [];
-        const allMembers = Array.from(
-          new Map(
-            subjects
-              .flatMap((subject) => subject.members || [])
-              .map((student) => [student.id, student])
-          ).values()
-        );
-
-        const initialBanStatus = allMembers.reduce((acc, student) => {
-          acc[student.id] = false;
+      const response = await adminGetUserByRole(user?.token, "student");
+      if (Array.isArray(response.users) && response.users.length > 0) {
+        const allStudents = response.users;
+        const initialBanStatus = allStudents.reduce((acc, student) => {
+          acc[student._id] = false;
           return acc;
         }, {});
-        setStudents(allMembers);
+        setStudents(allStudents);
         setIsBan(initialBanStatus);
       }
     } catch (e) {
@@ -69,7 +69,11 @@ const ListStudent = () => {
           </div>
           <div className="list__student__heading__feature">
             <i className="fa-solid fa-filter"></i>
-            <i className="fa-solid fa-plus"></i>
+            <i
+              className="fa-solid fa-plus"
+              onClick={() => setIsShowAdd(true)}
+              style={{ cursor: "pointer" }}
+            ></i>
             <i className="fa-solid fa-trash"></i>
           </div>
         </div>
@@ -89,7 +93,7 @@ const ListStudent = () => {
             <tbody>
               {currentItems.length > 0 ? (
                 currentItems.map((item) => (
-                  <tr key={item.id}>
+                  <tr key={item._id}>
                     <td>
                       <input type="checkbox" />
                     </td>
@@ -102,19 +106,21 @@ const ListStudent = () => {
                           }
                           alt="avatar"
                         />
-                        <p>{item.name}</p>
+                        <p>{item.full_name}</p>
                       </div>
                     </td>
                     <td className="text-note">{item.email}</td>
                     <td>
                       <button
-                        onClick={() => handleToggleBan(item.id)}
+                        onClick={() => handleToggleBan(item._id)}
                         className={`status-button ${
-                          isBan[item.id] ? "banned" : "active"
+                          isBan[item._id] ? "banned" : "active"
                         }`}
-                        title={isBan[item.id] ? "Unban student" : "Ban student"}
+                        title={
+                          isBan[item._id] ? "Unban student" : "Ban student"
+                        }
                       >
-                        {isBan[item.id] ? "✗ Banned" : "✓ Active"}
+                        {isBan[item._id] ? "✗ Banned" : "✓ Active"}
                       </button>
                     </td>
                   </tr>
@@ -152,6 +158,7 @@ const ListStudent = () => {
           </div>
         )}
       </div>
+      {isShowAdd && <FormAddLecture onClose={handleClose} />}
     </div>
   );
 };

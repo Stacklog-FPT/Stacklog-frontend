@@ -1160,6 +1160,102 @@
       "createdAt": "2025-07-31",
       "isRead": false,
       "_id": 0.9415868237420676
+    },
+    {
+      "id": "e3d8",
+      "title": "Thông báo môn Vẽ UI/UX",
+      "author": {
+        "_id": 0.2637615148818102,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.013223366462033814
+    },
+    {
+      "id": "4b7a",
+      "title": "Thông báo môn Vẽ UI/UX",
+      "author": {
+        "_id": 0.40211713017121453,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.5637646605492985
+    },
+    {
+      "id": "56ce",
+      "title": "Thông báo môn Vẽ UI/UX",
+      "author": {
+        "_id": 0.45544840799783237,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.4696146670876781
+    },
+    {
+      "id": "cc97",
+      "title": "Thông báo môn Vẽ UI/UX",
+      "author": {
+        "_id": 0.1894459784624245,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.818057200647158
+    },
+    {
+      "id": "9e9b",
+      "title": "Thông báo môn Vẽ UI/UX",
+      "author": {
+        "_id": 0.35241796285921567,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.25166768059503575
+    },
+    {
+      "id": "86f4",
+      "title": "Thông báo môn 132",
+      "author": {
+        "_id": 0.8999292012243625,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.6151757230578181
+    },
+    {
+      "id": "ee9c",
+      "title": "Thông báo môn Vẽ UI/UX",
+      "author": {
+        "_id": 0.19451843649911094,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.22756491838445736
+    },
+    {
+      "id": "ed49",
+      "title": "Thông báo môn 132",
+      "author": {
+        "_id": 0.39414884688959284,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.08184273418062893
     }
   ],
   "lectures": [

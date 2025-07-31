@@ -28,6 +28,7 @@ const Task = ({ isDraggingOverlay, ...props }) => {
   const { user } = useAuth();
   const [showSubTask, setShowSubTask] = useState(false);
   const { addTask } = taskService();
+  const [isAddSubTask, setIsAddSubTask] = useState(false);
 
   const style = {
     transform: isDraggingOverlay
@@ -91,7 +92,7 @@ const Task = ({ isDraggingOverlay, ...props }) => {
           "6801ccf3b8b39cd0e4d38877",
           "68768017c89a12a7e51ddebd",
         ],
-        subtasks: task.subtasks, // Include subtasks
+        subtasks: task?.subtasks,
       };
       const response = await addTask(payload, user?.token);
       if (response) {
@@ -135,7 +136,11 @@ const Task = ({ isDraggingOverlay, ...props }) => {
                 }}
                 onClick={() => handleEditPriority(props.task)}
               />
-              <FaPlus size={12} style={{ cursor: "pointer" }} />
+              <FaPlus
+                size={12}
+                style={{ cursor: "pointer" }}
+                onClick={() => props.onShowAddSubTask(props.task)}
+              />
               <FaTrashAlt size={12} style={{ cursor: "pointer" }} />
             </div>
           </div>

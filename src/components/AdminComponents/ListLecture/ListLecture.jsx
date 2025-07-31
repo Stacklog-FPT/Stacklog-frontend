@@ -4,6 +4,7 @@ import { useAuth } from "../../../context/AuthProvider";
 import userApi from "../../../service/UserService";
 import axios from "axios";
 import FormAddLecture from "../FormAddLecture/FormAddLecture";
+import LectureService from "../../../service/LectureStudentService";
 const ListLecture = () => {
   const [lectures, setLectures] = React.useState([]);
   const { user } = useAuth();
@@ -15,6 +16,7 @@ const ListLecture = () => {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = lectures.slice(startIndex, endIndex);
   const [isShowAdd, setIsShowAdd] = useState(false);
+  const { adminGetUserByRole, createUser } = LectureService();
   // const handleGetLectures = async () => {
   //   const resp = await getUserByRole(user?.token, "lecture");
   //   if (resp) {
@@ -24,15 +26,10 @@ const ListLecture = () => {
 
   const handleGetLectures = async () => {
     try {
-      const response = await axios.get(
-        "http://103.166.183.142:8080/api/profile/user/role/lecturer"
-      );
-      console.log(response);
-      if (response) {
-        setLectures(response.data);
-      }
-    } catch (e) {
-      throw new Error(e.message);
+      const response = await adminGetUserByRole(user?.token, "lecturer");
+      setLectures(response.users);
+    } catch (error) {
+      throw new Error(error.message);
     }
   };
 
@@ -87,7 +84,7 @@ const ListLecture = () => {
               {currentItems.length > 0 ? (
                 currentItems.map((item) => {
                   return (
-                    <tr key={item.id} className="list__task__table__item">
+                    <tr key={item._id} className="list__task__table__item">
                       <td>
                         <input type="checkbox" />
                       </td>
@@ -98,13 +95,12 @@ const ListLecture = () => {
                           ) : (
                             <img src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" />
                           )}
-
-                          <p>{item.name}</p>
+                          <p>{item.full_name}</p>
                         </div>
                       </td>
                       <td className="text-note">{item.email}</td>
                       <td>
-                        <span></span>
+                        <span>{item.isActive ? "Active" : "Inactive"}</span>
                       </td>
                     </tr>
                   );
@@ -112,7 +108,7 @@ const ListLecture = () => {
               ) : (
                 <tr>
                   <td colSpan="6" className="text-center">
-                    Student will coming soon, don't worry
+                    Lecture will coming soon, don't worry
                   </td>
                 </tr>
               )}

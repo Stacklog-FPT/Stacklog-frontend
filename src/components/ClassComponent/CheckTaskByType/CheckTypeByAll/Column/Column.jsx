@@ -19,6 +19,7 @@ const Column = ({
   members,
   onShowAddTask,
   onShowComment,
+  onShowAddSubTask,
   commentsLen,
   isLoading = false,
 }) => {
@@ -79,6 +80,7 @@ const Column = ({
                   createdAt={task?.createdAt}
                   dueDate={task?.taskDueDate}
                   onShowComment={onShowComment}
+                  onShowAddSubTask={onShowAddSubTask}
                   task={task}
                   commentsLen={commentsLen}
                 />

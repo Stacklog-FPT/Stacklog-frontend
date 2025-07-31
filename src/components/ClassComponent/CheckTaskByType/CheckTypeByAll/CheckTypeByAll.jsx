@@ -19,6 +19,7 @@ import GroupService from "../../../../service/GroupService";
 import AddColumn from "../../../Column/AddColumn/AddColumn";
 import axios from "axios";
 import ReviewService from "../../../../service/ReviewService";
+import AddSubTask from "../../../Task/AddSubTask/AddSubTask";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -47,6 +48,8 @@ const CheckTypeByAll = () => {
   const { getAllGroup } = GroupService();
   const { getAllReview } = ReviewService();
   const [comments, setComments] = useState([]);
+  const [isAddSubTask, setIsAddSubTask] = useState(false);
+  const [showAddSubTask, setShowAddSubTask] = useState(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -149,6 +152,7 @@ const CheckTypeByAll = () => {
             "68768017c89a12a7e51ddebd",
           ],
         };
+        console.log(newTask);
         try {
           await addTask(newTask, user?.token);
           await axios.post("http://localhost:3000/notifications", {
@@ -211,7 +215,6 @@ const CheckTypeByAll = () => {
   );
 
   const handleFilterByPriority = () => {
-    console.log("alo?");
     if (isSortedByPriority) {
       handleGetTasks();
       setIsSortedByPriority(false);
@@ -300,6 +303,14 @@ const CheckTypeByAll = () => {
     }
   };
 
+  const handleChooseTask = async (task) => {
+    setShowAddSubTask(task);
+    console.log(task);
+  };
+
+  const handleCloseAddSubtask = async () => {
+    setShowAddSubTask(null);
+  };
   useEffect(() => {
     const stompInstance = setSocket(user.token);
     setStompClient(stompInstance);
@@ -406,6 +417,7 @@ const CheckTypeByAll = () => {
                 commentsLen={comments}
                 onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}
+                onShowAddSubTask={handleChooseTask}
               />
             ))}
             <button
@@ -416,7 +428,7 @@ const CheckTypeByAll = () => {
               <span>Add Status</span>
             </button>
           </div>
-          {showAddTask && (
+          {isAddSubTask && (
             <AddTask
               status={showAddTask}
               onCancel={() => setShowAddTask(null)}
@@ -432,6 +444,9 @@ const CheckTypeByAll = () => {
             />
           )}
           {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}
+          {showAddSubTask && (
+            <AddSubTask isClose={handleCloseAddSubtask} task={showAddSubTask} />
+          )}
         </div>
       </div>
       <DragOverlay dropAnimation={null}>
@@ -444,6 +459,7 @@ const CheckTypeByAll = () => {
             createdAt={activeTask.createdAt}
             dueDate={activeTask.taskDueDate}
             onShowComment={handleShowComment}
+            onShowAddSubTask={handleChooseTask}
             isDraggingOverlay
           />
         ) : null}

@@ -1,0 +1,40 @@
+.task__list {
+  width: 100%;
+  margin-top: 20px;
+  &__container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 20px;
+  }
+
+  .add__task {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--text--add--chart);
+    padding-left: 10px;
+    cursor: pointer;
+    i {
+      font-size: 13px;
+    }
+    span {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 21px;
+      letter-spacing: 1px;
+    }
+  }
+
+  .task__list__contents {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+  }
+}

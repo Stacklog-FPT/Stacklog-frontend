@@ -1,0 +1,75 @@
+.card__document__container {
+  width: 522px;
+  padding: 5px 5px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 40px;
+  border-bottom: 1px solid #edf2f2;
+  .card__document__heading {
+    // width: 100%;
+    .wrapper__input__title__document {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      input {
+        width: 14px;
+        height: 14px;
+      }
+      i {
+        padding: 10px 10px;
+        color: #03624c;
+        background-color: #edf2f2;
+        border-radius: 20px;
+      }
+
+      .name_title_document {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+
+        span:nth-child(1) {
+          width: 100px;
+          height: 15px;
+          font-weight: 700;
+          font-size: 14px;
+          line-height: 21px;
+          color: #545454;
+        }
+
+        span:nth-child(2) {
+          font-weight: 400;
+          font-size: 13px;
+          line-height: 21px;
+          color: #667085;
+        }
+      }
+    }
+  }
+  .owner__avatar {
+    padding-left: 10px;
+    img {
+      width: 32px;
+      height: 32px;
+      border-radius: 20px;
+    }
+  }
+
+  .time_updated {
+    span {
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 20px;
+      color: #667085;
+    }
+  }
+
+  .download_icon {
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}

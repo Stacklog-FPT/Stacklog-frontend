@@ -1,0 +1,225 @@
+$color-heading: #667085;
+
+.feature__chat__container {
+  width: 240px;
+  height: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+  margin-top: 20px;
+
+  .feature__dropdown {
+    width: 100%;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .feature__dropdown__heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      cursor: pointer;
+      border-radius: 20px;
+
+      h2 {
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 21px;
+        color: $color-heading;
+        text-transform: uppercase;
+        margin: 0;
+      }
+
+      i {
+        font-size: 10px;
+        color: #000;
+        transition: transform 0.3s ease;
+      }
+
+      &:hover {
+        background-color: #f9f9f9;
+      }
+    }
+
+    .feature__menu {
+      padding: 0 15px 15px 15px;
+      animation: slideDown 0.3s ease-out;
+
+      .feature__menu__item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 8px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: #f5f5f5;
+        }
+
+        i {
+          font-size: 16px;
+          color: #374151;
+          width: 20px;
+          text-align: center;
+        }
+
+        span {
+          font-size: 14px;
+          font-weight: 500;
+          color: #374151;
+          flex: 1;
+        }
+
+        &:last-child {
+          i,
+          span {
+            color: #ef4444;
+          }
+        }
+      }
+    }
+  }
+
+  .feature__chat__user {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 20px;
+
+    img {
+      width: 56px;
+      height: 56px;
+      border-radius: 100px;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 21px;
+      color: #101828;
+    }
+  }
+
+  .feature__detail__class {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+
+    .class-selection,
+    .team-selection {
+      width: 200px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #8a8a8a;
+      border-radius: 10px;
+
+      &:hover {
+        color: #000;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .team-members {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        border-radius: 8px;
+
+        .team-member {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          border-radius: 6px;
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: #e0e0e0;
+          }
+
+          .team-member-avatar {
+            position: relative;
+            width: 40px;
+            height: 40px;
+
+            img {
+              width: 32px;
+              height: 32px;
+              border-radius: 50%;
+              object-fit: cover;
+              background-color: #f0f0f0;
+              border: 1px solid #e0e0e0;
+            }
+
+            .status-indicator {
+              position: absolute;
+              bottom: -2px;
+              right: -2px;
+              width: 12px;
+              height: 12px;
+              background-color: #10b981;
+              border: 2px solid #fff;
+              border-radius: 50%;
+            }
+          }
+
+          .team-member-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+
+            .team-member-name {
+              font-size: 14px;
+              font-weight: 600;
+              color: #101828;
+              line-height: 1.2;
+            }
+
+            .team-member-since {
+              font-size: 12px;
+              font-weight: 400;
+              color: #6b7280;
+              line-height: 1.2;
+            }
+          }
+        }
+
+        p {
+          font-size: 12px;
+          color: #8a8a8a;
+          text-align: center;
+          margin: 0;
+          padding: 8px;
+        }
+      }
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

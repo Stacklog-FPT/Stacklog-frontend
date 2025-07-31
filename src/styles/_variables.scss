@@ -1,0 +1,13 @@
+// Base color
+:root {
+  $color-white: #ffffff;
+  $color-gray: #667085;
+  $color-black: #101828;
+  .padding {
+    &_padding_button {
+      padding: 10px 16px;
+    }
+  }
+}
+
+// Padding Base

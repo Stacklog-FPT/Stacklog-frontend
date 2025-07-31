@@ -1,0 +1,59 @@
+.card-container {
+  width: 100%;
+  height: auto;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  position: relative;
+  padding: 7px;
+  border-radius: 20px;
+  transition: all 0.5s ease;
+
+  .avatar-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+  }
+
+  .dot-red {
+    padding: 5px;
+    background-color: red;
+    border-radius: 20px;
+  }
+
+  &:hover {
+    background-color: #e4e3e3;
+    color: #282727;
+  }
+}
+
+.avatar {
+  img {
+    width: 56px;
+    height: 56px;
+    border-radius: 100px;
+  }
+  i {
+    position: absolute;
+    top: 65px;
+    left: 45px;
+    padding: 5px;
+    background: linear-gradient(to bottom, #bbb7b7, #000000);
+    color: #f1f1f1;
+    border-radius: 100%;
+  }
+}
+
+.announcement-content {
+  &-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  &-time {
+    font-size: 13px;
+    font-weight: 500;
+  }
+}

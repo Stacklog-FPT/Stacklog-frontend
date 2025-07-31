@@ -1,0 +1,31 @@
+$color-html: #edf2f2;
+$color-primary: #045745;
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+    overflow-y: auto;
+    max-height: 100vh;
+    background-color: var(--bg-color);
+    .main-content-area {
+      margin-top: 20px;
+      // min-height: calc(100% - 20px);
+      overflow: inherit;
+    }
+  }
+}
+
+.announcement-place {
+  z-index: 10000;
+  position: absolute;
+  right: 45px;
+  top: 100px;
+}
+
+

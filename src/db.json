@@ -1016,6 +1016,78 @@
       "createdAt": "2025-07-28",
       "isRead": false,
       "_id": 0.32164943812929747
+    },
+    {
+      "id": "e84b",
+      "title": "Thông báo môn Hello TestHello Test",
+      "author": {
+        "_id": 0.13427167994601652,
+        "name": "de170537",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-30",
+      "isRead": false,
+      "_id": 0.9850340142143436
+    },
+    {
+      "id": "c6c6",
+      "title": "Thông báo môn Thiết kế UI ",
+      "author": {
+        "_id": 0.4685403923752026,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.5382116106270519
+    },
+    {
+      "id": "5985",
+      "title": "Thông báo môn Thiết kế DB notification",
+      "author": {
+        "_id": 0.547758071484002,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.6434460212561326
+    },
+    {
+      "id": "22a7",
+      "title": "Thông báo môn Vẽ UI/UX",
+      "author": {
+        "_id": 0.45291631717871994,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.5114481242994681
+    },
+    {
+      "id": "badd",
+      "title": "Thông báo môn Thiết kế DB notification",
+      "author": {
+        "_id": 0.6766411090552086,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.6676696227106583
+    },
+    {
+      "id": "a354",
+      "title": "Thông báo môn Thiết kế DB notification",
+      "author": {
+        "_id": 0.8332712745762061,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.8375384362546735
     }
   ],
   "lectures": [

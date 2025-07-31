@@ -54,7 +54,10 @@ const routes = [
     children: [
       {
         element: <LayoutAdmin />,
-        children: [{ path: "/admin", element: <AdminDashBoard /> }],
+        children: [
+          { path: "/admin", element: <AdminDashBoard /> },
+          { path: "/user-detail", element: <Profile /> },
+        ],
       },
     ],
   },

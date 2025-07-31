@@ -18,6 +18,7 @@ import statusApi from "../../../../service/ColumnService";
 import GroupService from "../../../../service/GroupService";
 import AddColumn from "../../../Column/AddColumn/AddColumn";
 import axios from "axios";
+import ReviewService from "../../../../service/ReviewService";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -42,7 +43,10 @@ const CheckTypeByAll = () => {
   const [statusTasks, setStatusTasks] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [stompClient, setStompClient] = useState(null);
+  const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const { getAllGroup } = GroupService();
+  const { getAllReview } = ReviewService();
+  const [comments, setComments] = useState([]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -62,7 +66,6 @@ const CheckTypeByAll = () => {
     const { over } = event;
     if (over) {
       const overId = over.id;
-
       if (overId.startsWith("droppable-")) {
         const targetStatus = overId.replace("droppable-", "");
         setActiveColumn(targetStatus);
@@ -207,6 +210,26 @@ const CheckTypeByAll = () => {
     [tasks, activeColumn, statusTasks, addTask, user]
   );
 
+  const handleFilterByPriority = () => {
+    console.log("alo?");
+    if (isSortedByPriority) {
+      handleGetTasks();
+      setIsSortedByPriority(false);
+    } else {
+      const priorityOrder = { HIGH: 1, MEDIUM: 2, LOW: 3 };
+      const sortedTasks = [...tasks].sort((a, b) => {
+        const priorityA = priorityOrder[a.priority] || 4;
+        const priorityB = priorityOrder[b.priority] || 4;
+        return priorityA - priorityB;
+      });
+      if (sortedTasks) {
+        console.log(sortedTasks);
+        setTasks(sortedTasks);
+        setIsSortedByPriority(true);
+      }
+    }
+  };
+
   const handleShowAddTask = (status) => {
     setShowAddTask(status);
   };
@@ -262,6 +285,18 @@ const CheckTypeByAll = () => {
       }
     } catch (e) {
       throw new Error(e.message);
+    }
+  };
+
+  const handleGetCommentTask = async (taskId) => {
+    try {
+      const response = await getAllReview(user?.token, taskId);
+      if (response && response.data) {
+        console.log(response.data);
+        setComments(response.data);
+      }
+    } catch (e) {
+      console.error("Error fetching comments:", e.message);
     }
   };
 
@@ -355,7 +390,7 @@ const CheckTypeByAll = () => {
     >
       <div className="check-task-by-all-container">
         <div className="check-task-by-all-content">
-          <ClassAndMember />
+          <ClassAndMember onFilterByPriority={handleFilterByPriority} />
           <div className="task-column-container">
             {statusTasks.map((item) => (
               <Column
@@ -368,6 +403,7 @@ const CheckTypeByAll = () => {
                   (task) => task?.statusTask?.statusTaskId === item.statusTaskId
                 )}
                 members={members}
+                commentsLen={comments}
                 onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}
               />
@@ -391,6 +427,8 @@ const CheckTypeByAll = () => {
             <CommentTask
               task={showCommentTask}
               isClose={handleCloseComment}
+              comments={comments}
+              onGetComments={handleGetCommentTask}
             />
           )}
           {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}

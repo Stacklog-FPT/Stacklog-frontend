@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useAuth } from "./AuthProvider";
@@ -5,12 +7,21 @@ import { useAuth } from "./AuthProvider";
 export const ChatContext = createContext();
 
 const socket = io("");
+
 const ChatProvider = ({ children }) => {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedBox, setSelectedBox] = useState(null); 
+  const [selectedBox, setSelectedBox] = useState(null);
   const [messages, setMessages] = useState([]);
+
+  const [isFeatureChatOpen, setIsFeatureChatOpen] = useState(false);
+
+  const toggleFeatureChat = () => {
+    setIsFeatureChatOpen((prev) => {
+      return !prev;
+    });
+  };
 
   useEffect(() => {
     socket.on("users", (users) => {
@@ -25,7 +36,8 @@ const ChatProvider = ({ children }) => {
       socket.off("users");
       socket.off("message");
     };
-  }, []);
+  }, [user?._id]);
+
   return (
     <ChatContext.Provider
       value={{
@@ -35,8 +47,11 @@ const ChatProvider = ({ children }) => {
         setMessages,
         selectedUser,
         setSelectedUser,
-        selectedBox,       
-        setSelectedBox,     
+        selectedBox,
+        setSelectedBox,
+        isFeatureChatOpen,
+        setIsFeatureChatOpen,
+        toggleFeatureChat,
       }}
     >
       {children}

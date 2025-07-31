@@ -38,10 +38,6 @@ const GroupChat = () => {
 
   return (
     <div className="group__chat__container">
-      <div className="group__chat__heading">
-        <h2>Group chat</h2>
-        <i className="fa-solid fa-arrow-down"></i>
-      </div>
       <div className="group__chat__list">
         {groupChatDetails.length === 0 ? (
           <p>Đang tải StackLog...</p>

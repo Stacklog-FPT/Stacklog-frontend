@@ -8,7 +8,7 @@ const AdminDashBoard = () => {
   return (
     <div className="admin__dashboard">
       <NavbarList listByRole={listByRole} setListByRole={setListByRole} />
-      {listByRole === "Lecture" && <ListLecture />}
+      {listByRole === "Lecture" && <ListLecture  />}
       {listByRole === "Student" && <ListStudent />}
     </div>
   );

@@ -19,6 +19,7 @@ const Column = ({
   members,
   onShowAddTask,
   onShowComment,
+  commentsLen,
   isLoading = false,
 }) => {
   const { setNodeRef, isOver } = useDroppable({
@@ -79,6 +80,7 @@ const Column = ({
                   dueDate={task?.taskDueDate}
                   onShowComment={onShowComment}
                   task={task}
+                  commentsLen={commentsLen}
                 />
               ))
             ) : (

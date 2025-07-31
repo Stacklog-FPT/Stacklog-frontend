@@ -29,8 +29,10 @@ const LoginPage = () => {
         };
 
         loginSave(userData);
-        if (userData.role.toLowerCase === "ADMIN") {
+        if (userData.role === "ADMIN") {
+          console.log("cc");
           navigate("/admin");
+          return;
         }
         navigate("/");
       }

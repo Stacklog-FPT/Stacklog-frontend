@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ListLecture.scss";
 import { useAuth } from "../../../context/AuthProvider";
 import userApi from "../../../service/UserService";
 import axios from "axios";
+import FormAddLecture from "../FormAddLecture/FormAddLecture";
 const ListLecture = () => {
   const [lectures, setLectures] = React.useState([]);
   const { user } = useAuth();
@@ -13,6 +14,7 @@ const ListLecture = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentItems = lectures.slice(startIndex, endIndex);
+  const [isShowAdd, setIsShowAdd] = useState(false);
   // const handleGetLectures = async () => {
   //   const resp = await getUserByRole(user?.token, "lecture");
   //   if (resp) {
@@ -42,6 +44,10 @@ const ListLecture = () => {
       setCurrentPage(currentPage + 1);
     }
   };
+
+  const handleClose = () => {
+    setIsShowAdd(false)
+  }
   React.useEffect(() => {
     handleGetLectures();
   }, []);
@@ -55,7 +61,10 @@ const ListLecture = () => {
 
           <div className="list__lecture__heading__feature">
             <i className="fa-solid fa-filter"></i>
-            <i className="fa-solid fa-plus"></i>
+            <i
+              className="fa-solid fa-plus"
+              onClick={() => setIsShowAdd(!isShowAdd)}
+            ></i>
             <i className="fa-solid fa-trash"></i>
           </div>
         </div>
@@ -108,6 +117,7 @@ const ListLecture = () => {
           </table>
         </div>
       </div>
+      {isShowAdd && <FormAddLecture onClose={handleClose}/>}
     </div>
   );
 };

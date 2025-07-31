@@ -29,7 +29,6 @@ const Task = ({ isDraggingOverlay, ...props }) => {
   const [showSubTask, setShowSubTask] = useState(false);
   const { addTask } = taskService();
   const [isAddSubTask, setIsAddSubTask] = useState(false);
-
   const style = {
     transform: isDraggingOverlay
       ? "scale(1.03)"
@@ -107,6 +106,30 @@ const Task = ({ isDraggingOverlay, ...props }) => {
     setShowSubTask(!showSubTask);
   };
 
+  const calculateRemainingPercent = (createdAt, dueDate) => {
+    const now = new Date();
+    const start = new Date(createdAt);
+    const end = new Date(dueDate);
+
+    if (isNaN(start) || isNaN(end) || end <= start) return 0;
+
+    const totalDuration = end - start;
+    const remainingDuration = end - now;
+
+    const percent = (remainingDuration / totalDuration) * 100;
+
+    return Math.max(0, Math.min(100, Math.round(percent)));
+  };
+
+  const getColorByPercent = (percent) => {
+    if (percent >= 70) return "#4caf50";
+    if (percent >= 40) return "#ff9800";
+    return "#f44336";
+  };
+
+  const percent = calculateRemainingPercent(props.createdAt, props.dueDate);
+  const progressColor = getColorByPercent(percent);
+
   return (
     <>
       <div
@@ -120,7 +143,7 @@ const Task = ({ isDraggingOverlay, ...props }) => {
       >
         <div className="task-content">
           <div className="task-content-head">
-            <span title={props.title}>
+            <span>
               {props.title?.length > 10
                 ? `${props.title.slice(0, 10)}...`
                 : props.title || <Skeleton />}
@@ -147,10 +170,11 @@ const Task = ({ isDraggingOverlay, ...props }) => {
           <div className="task-content-percent">
             <div
               className="task-content-percent-line"
-              style={{ width: `${props.percent}%` }}
+              style={{ width: `${percent}%`, backgroundColor: progressColor }}
             ></div>
-            <span>{props.percent}%</span>
+            <span>{percent}%</span>
           </div>
+
           <div className="task-content-deadline">
             <span>{formatDate(props.createdAt) || <Skeleton />}</span>
             <img src={iconDeadLine} alt="this is icon deadline" />

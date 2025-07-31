@@ -60,7 +60,7 @@ const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
             data-extra-count={extraCount > 0 ? extraCount : ""}
           >
             {visibleMembers.map((item) => (
-              <li key={item?.id || Math.random()}>
+              <li key={item.id}>
                 <img src={item.img} alt="Student Avatar" />
               </li>
             ))}

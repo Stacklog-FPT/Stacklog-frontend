@@ -50,7 +50,7 @@
       line-height: 21px;
       font-size: 14px;
       font-weight: bold;
-      color: #344054;
+      color: var(--text--color--task--heading);
     }
 
     &-icon {
@@ -83,14 +83,14 @@
       line-height: 21px;
       font-weight: 500;
       font-size: 14px;
-      color: #344054;
+      color: var(--text--color--task--heading);
       padding-right: 8px;
     }
 
     &-line {
       flex-grow: 1;
       height: 4px;
-      background: linear-gradient(to right, #000101, #156854);
+      // background: linear-gradient(to right, #000101, #156854);
       border-radius: 2px;
       transition: width 0.3s ease;
     }
@@ -146,12 +146,12 @@
     span {
       font-size: 14px;
       font-weight: 500;
-      color: #344054;
+      color: var(--text--color--task--heading);
     }
 
     img {
-      width: 16px;
-      height: 16px;
+      width: 8px;
+      height: 8px;
     }
   }
 
@@ -182,7 +182,7 @@
         span {
           font-size: 14px;
           font-weight: 500;
-          color: #344054;
+          color: var(--text--color--task--heading);
         }
       }
     }

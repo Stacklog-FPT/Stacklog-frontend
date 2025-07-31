@@ -13,7 +13,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   const { mode } = useContext(ColorModeContext);
   const dashBoardItems = [
     { name: "Home", path: "/", icon: "fa-solid fa-house" },
-    { name: "Task", path: "/task", icon: "fa-solid fa-list-check" },
+    { name: "Task", path: "/tasks", icon: "fa-solid fa-list-check" },
     { name: "Class", path: "/class", icon: "fa-solid fa-users" },
     { name: "Schedule", path: "/schedule", icon: "fa-solid fa-calendar-days" },
     { name: "Documents", path: "/documents", icon: "fa-solid fa-folder-plus" },

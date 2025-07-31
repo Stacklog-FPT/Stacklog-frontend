@@ -1256,6 +1256,18 @@
       "createdAt": "2025-07-31",
       "isRead": false,
       "_id": 0.08184273418062893
+    },
+    {
+      "id": "6b17",
+      "title": "Thông báo môn Vẽ UI/UX",
+      "author": {
+        "_id": 0.664010211644006,
+        "name": "de170537",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-07-31",
+      "isRead": false,
+      "_id": 0.8186076970220297
     }
   ],
   "lectures": [

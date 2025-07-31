@@ -1,0 +1,227 @@
+.task-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  padding: 12px 20px;
+  background-color: var(--bg-nav);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-left: 5px solid var(--color--border-task);
+  background-image: url("../../../../../assets/icon/task/bg-task.png");
+  background-size: cover, 20% 50%;
+  background-position: bottom, right;
+  background-repeat: no-repeat, no-repeat;
+  z-index: 1;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-container.dragging {
+  opacity: 0.4;
+  box-shadow: none;
+  cursor: grabbing;
+}
+
+.task-container.overlay {
+  opacity: 0.9;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transform: scale(1.03) translate(-10%, -10%);
+  z-index: 1000;
+  cursor: grabbing;
+  position: fixed;
+  pointer-events: none;
+  width: 260px;
+  border: 3px solid #156854;
+  border-radius: 20px;
+}
+
+.task-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    span {
+      line-height: 21px;
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--text--color--task--heading);
+    }
+
+    &-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+
+      i {
+        font-size: 12px;
+        cursor: pointer;
+        transition: font-size 0.2s ease, color 0.2s ease;
+      }
+
+      i:hover {
+        font-size: 14px;
+        color: #156854;
+      }
+    }
+  }
+
+  &-percent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+
+    span {
+      line-height: 21px;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--text--color--task--heading);
+      padding-right: 8px;
+    }
+
+    &-line {
+      flex-grow: 1;
+      height: 4px;
+      // background: linear-gradient(to right, #000101, #156854);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+  }
+
+  &-members {
+    padding-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+
+    ul {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      padding-left: 10px;
+      margin: 0;
+    }
+
+    li {
+      position: relative;
+      margin-left: -10px;
+
+      &:nth-child(n + 4):not(.extra-count) {
+        display: none;
+      }
+
+      img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        object-fit: cover;
+      }
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      border: none;
+      border-radius: 20px;
+      background-color: transparent;
+      cursor: pointer;
+    }
+  }
+
+  &-deadline {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 5px 0;
+
+    span {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text--color--task--heading);
+    }
+
+    img {
+      width: 8px;
+      height: 8px;
+    }
+  }
+
+  &-contact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &-left {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 25px;
+
+      &-element {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+
+        i,
+        img {
+          cursor: pointer;
+          font-size: 14px;
+          color: #344054;
+        }
+
+        span {
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--text--color--task--heading);
+        }
+      }
+    }
+
+    &-right {
+    }
+  }
+}
+
+.extra-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: #333;
+  font-size: 14px;
+  font-weight: bold;
+  border: 2px solid #fff;
+  margin-left: -10px;
+  z-index: 1;
+}
+
+.task-content-subtask {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  .subtask-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  h2 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+  }
+}

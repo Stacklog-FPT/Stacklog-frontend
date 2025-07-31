@@ -1,0 +1,73 @@
+[
+  {
+    "boxChat": {
+      "boxChatId": "1",
+      "nameBox": "StackLog",
+      "avaBox": "./src/assets/ava-chat.png"
+    },
+    "users": [
+      {
+        "boxChatUserId": "u_0159",
+        "id": "de170159",
+        "name": "Nhat",
+        "avatar": "https://sites.temple.edu/listen/files/2015/10/qian-headshot-3x4-225x300.jpg"
+      },
+      {
+        "boxChatUserId": "u_u.vn",
+        "id": "vietnbqde170053@fpt.edu.vn",
+        "name": "Viet",
+        "avatar": "https://www.photonics.com/images/Web/Articles/2022/6/9/2022_Teddi_Laurin_Scholarship_Yao_Fan.jpg"
+      },
+      {
+        "boxChatUserId": "u_0481",
+        "id": "de170481",
+        "name": "Long",
+        "avatar": "https://v9d5g3j5.delivery.rocketcdn.me/information-technology-support-programs/wp-content/uploads/sites/81/2024/09/Jonathan-Li-3x4-1-500x666.jpg.webp"
+      },
+      {
+        "boxChatUserId": "u_0537",
+        "id": "de170537",
+        "name": "Thành",
+        "avatar": "https://sites.temple.edu/listen/files/2015/10/qian-headshot-3x4-225x300.jpg"
+      }
+    ],
+    "messages": [
+      {
+        "chatMessageId": "0.5692648374024386",
+        "chatMessageContent": "alo",
+        "createdBy": "de170537",
+        "createdAt": "2025-07-26T22:32:13.264Z"
+      },
+      {
+        "chatMessageId": "0.7766304879485205",
+        "chatMessageContent": "E",
+        "createdBy": "de170159",
+        "createdAt": "2025-07-28T01:54:06.293Z"
+      },
+      {
+        "chatMessageId": "0.15068440859615362",
+        "chatMessageContent": "cc?",
+        "createdBy": "de170537",
+        "createdAt": "2025-07-28T01:54:36.638Z"
+      },
+      {
+        "chatMessageId": "0.40849765839767693",
+        "chatMessageContent": "?",
+        "createdBy": "de170159",
+        "createdAt": "2025-07-28T01:54:42.950Z"
+      },
+      {
+        "chatMessageId": "0.018029140214762984",
+        "chatMessageContent": "????",
+        "createdBy": "de170537",
+        "createdAt": "2025-07-28T01:54:52.419Z"
+      },
+      {
+        "chatMessageId": "0.45664339891921846",
+        "chatMessageContent": "Cc slz",
+        "createdBy": "de170159",
+        "createdAt": "2025-07-31T07:31:21.277Z"
+      }
+    ]
+  }
+]

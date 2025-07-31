@@ -1,42 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthProvider";
-import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
-
-let stompClient = null;
-
-// export const connect = (onMessageReceived) => {
-//   const socket = new SockJS("http://103.166.183.142:8080/ws/taskify/ws");
-//   stompClient = new Client({
-//     webSocketFactory: () => socket,
-//     onConnect: () => {
-//       console.log("WebSocket connected");
-//       stompClient.subscribe("/topic/taskify", (message) => {
-//         onMessageReceived(message.body);
-//       });
-//     },
-//     debug: (str) => {
-//       console.log(str);
-//     },
-//     onStompError: (frame) => {
-//       console.error("Broker error: ", frame);
-//     },
-//   });
-
-//   stompClient.activate();
-// };
-
-export const disconnect = () => {
-  if (stompClient) stompClient.deactivate();
-};
-const MorePage = () => {
-  const { user } = useAuth();
-
-  useEffect(() => {
-    connect("...");
-  }, []);
-
-  return <div>cc</div>;
+import React from "react";
+import TaskListComponent from "../../components/TaskListComponents/TaskListComponent/TaskListComponent";
+import "./MorePage.scss";
+import IncomingTask from "../../components/TaskListComponents/IncomingTask/IncomingTask";
+import TotalTask from "../../components/TaskListComponents/TotalTask/TotalTask";
+import UpcomingTask from "../../components/TaskListComponents/UpcomingTask/UpcomingTask";
+import TaskCompletion from "../../components/TaskListComponents/TaskCompletion/TaskCompletion";
+const TaskPage = () => {
+  return (
+    <div className="task__page">
+      <TaskListComponent />
+      <div className="incoming__total">
+        <IncomingTask />
+        <TotalTask />
+      </div>
+      <UpcomingTask />
+      <TaskCompletion />
+    </div>
+  );
 };
 
-export default MorePage;
+export default TaskPage;

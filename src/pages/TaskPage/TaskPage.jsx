@@ -1,22 +1,34 @@
 import React from "react";
-import TaskListComponent from "../../components/TaskListComponents/TaskListComponent/TaskListComponent";
+import ClassList from "../../components/ClassListComponent/ClassList";
+import AddClass from "../../components/ClassListComponent/AddClass/AddClass";
+import Detailstudent from "../../components/ClassListComponent/Detailstudent/Detailstudent";
 import "./TaskPage.scss";
-import IncomingTask from "../../components/TaskListComponents/IncomingTask/IncomingTask";
-import TotalTask from "../../components/TaskListComponents/TotalTask/TotalTask";
-import UpcomingTask from "../../components/TaskListComponents/UpcomingTask/UpcomingTask";
-import TaskCompletion from "../../components/TaskListComponents/TaskCompletion/TaskCompletion";
+
 const TaskPage = () => {
+  const [activeDetailStudent, setActiveDetailStudent] = React.useState(false);
+  const [activityAddClass, setActivityAddClass] = React.useState(false);
+
+  const handleActiveDetailStudent = () => {
+    setActiveDetailStudent(!activeDetailStudent);
+  };
+
+  const handleActivityAddClass = () => {
+    setActivityAddClass(!activityAddClass);
+  };
+
   return (
-    <div className="task__page">
-      <TaskListComponent />
-      <div className="incoming__total">
-        <IncomingTask />
-        <TotalTask />
-      </div>
-      <UpcomingTask />
-      <TaskCompletion />
+    <div>
+      <ClassList
+        handleActivityAddClass={handleActivityAddClass}
+        handleActiveDetailStudent={handleActiveDetailStudent}
+      />
+      {activityAddClass && (
+        <AddClass handleActivityAddClass={handleActivityAddClass} />
+      )}
+      {activeDetailStudent && (
+        <Detailstudent handleActiveDetailStudent={handleActiveDetailStudent} />
+      )}
     </div>
   );
 };
-
 export default TaskPage;

@@ -211,9 +211,9 @@ const Task = ({ isDraggingOverlay, ...props }) => {
               <div className="task-content-contact-left-element">
                 <i
                   className="fa-solid fa-comment"
-                  onClick={() => props.onShowComment(props.task)}
+                  onClick={() => props.onShowComment(props.task?.taskId)}
                 ></i>
-                <span>{props.commentsLen || 0}</span>
+                <span>{props.commentLength}</span>
               </div>
               <div
                 className="task-content-contact-left-element"

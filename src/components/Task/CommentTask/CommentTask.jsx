@@ -9,21 +9,34 @@ import sendIcon from "../../../assets/commentIcon/send.png";
 import ReviewService from "../../../service/ReviewService";
 import { useAuth } from "../../../context/AuthProvider";
 
-const CommentTask = ({ task, isClose, comments, onGetComments }) => {
+const CommentTask = ({ task, isClose, handleGetCommentLength }) => {
   const [newComment, setNewComment] = useState("");
   const { user } = useAuth();
   const { getAllReview, createReview } = ReviewService();
+  const [comments, setComments] = useState([]);
+
+  const handleGetCommentTask = async () => {
+    try {
+      const response = await getAllReview(user?.token, task);
+      if (response && response.data) {
+        setComments(response.data);
+        handleGetCommentLength(comments.length)
+      }
+    } catch (e) {
+      console.error("Error fetching comments:", e.message);
+    }
+  };
 
   const handleSendComment = async () => {
     if (!newComment.trim()) return;
     try {
       const payload = {
         reviewContent: newComment,
-        task: task,
+        taskId: task,
       };
       console.log(payload);
       const response = await createReview(user?.token, payload);
-      console.log(response)
+      console.log(response);
       if (response) {
         setNewComment("");
         handleGetCommentTask();
@@ -36,9 +49,8 @@ const CommentTask = ({ task, isClose, comments, onGetComments }) => {
   };
 
   useEffect(() => {
-    if (task?.taskId) {
-      console.log(task?.taskId);
-      onGetComments(task.taskId);
+    if (task) {
+      handleGetCommentTask();
     }
   }, [task]);
 
@@ -61,7 +73,13 @@ const CommentTask = ({ task, isClose, comments, onGetComments }) => {
                   <img src={iconMore} alt="More options" />
                 </div> */}
               <div className="comment__task__card__content">
-                <p>{item.reviewContent}</p>
+                {typeof item.reviewContent === "string" ? (
+                  <p>{item.reviewContent}</p>
+                ) : (
+                  <p style={{ fontStyle: "italic", color: "#888" }}>
+                    No content
+                  </p>
+                )}
               </div>
             </div>
           ))
@@ -69,6 +87,7 @@ const CommentTask = ({ task, isClose, comments, onGetComments }) => {
           <h2>No Comment for this task!</h2>
         )}
       </div>
+
       <div className="comment__task__footer">
         <img src={avatar} alt="Current user avatar" />
         <div className="comment__task__create__content">

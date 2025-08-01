@@ -47,7 +47,7 @@ const CheckTypeByAll = () => {
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const { getAllGroup } = GroupService();
   const { getAllReview } = ReviewService();
-  const [comments, setComments] = useState([]);
+  const [commentLength, setCommetLength] = useState(0);
   const [isAddSubTask, setIsAddSubTask] = useState(false);
   const [showAddSubTask, setShowAddSubTask] = useState(null);
 
@@ -154,7 +154,7 @@ const CheckTypeByAll = () => {
         };
         console.log(newTask);
         try {
-          await addTask(newTask, user?.token);
+          const response = await addTask(newTask, user?.token);
           await axios.post("http://localhost:3000/notifications", {
             id: Math.random().toString(16).slice(2, 6),
             title: `Thông báo môn ${newTask.taskTitle}`,
@@ -291,21 +291,8 @@ const CheckTypeByAll = () => {
     }
   };
 
-  const handleGetCommentTask = async (taskId) => {
-    try {
-      const response = await getAllReview(user?.token, taskId);
-      if (response && response.data) {
-        console.log(response.data);
-        setComments(response.data);
-      }
-    } catch (e) {
-      console.error("Error fetching comments:", e.message);
-    }
-  };
-
   const handleChooseTask = async (task) => {
     setShowAddSubTask(task);
-    console.log(task);
   };
 
   const handleCloseAddSubtask = async () => {
@@ -414,7 +401,6 @@ const CheckTypeByAll = () => {
                   (task) => task?.statusTask?.statusTaskId === item.statusTaskId
                 )}
                 members={members}
-                commentsLen={comments}
                 onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}
                 onShowAddSubTask={handleChooseTask}
@@ -439,8 +425,7 @@ const CheckTypeByAll = () => {
             <CommentTask
               task={showCommentTask}
               isClose={handleCloseComment}
-              comments={comments}
-              onGetComments={handleGetCommentTask}
+              handleGetCommentLength={handleGetCommentLength}
             />
           )}
           {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}

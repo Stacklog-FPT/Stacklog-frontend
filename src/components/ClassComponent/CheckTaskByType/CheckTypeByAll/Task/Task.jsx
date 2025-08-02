@@ -10,11 +10,11 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaTrashAlt, FaPlus } from "react-icons/fa";
 import taskService from "../../../../../service/TaskService";
 import { useAuth } from "../../../../../context/AuthProvider";
 import SubTask from "./SubTask/SubTask";
-import { FaPlus } from "react-icons/fa";
+import ReviewService from "../../../../../service/ReviewService";
 
 const Task = ({ isDraggingOverlay, ...props }) => {
   const {
@@ -29,6 +29,9 @@ const Task = ({ isDraggingOverlay, ...props }) => {
   const [showSubTask, setShowSubTask] = useState(false);
   const { addTask } = taskService();
   const [isAddSubTask, setIsAddSubTask] = useState(false);
+  const { getAllReview } = ReviewService();
+  const [commentLength, setCommentLength] = useState(0);
+
   const style = {
     transform: isDraggingOverlay
       ? "scale(1.03)"
@@ -43,6 +46,23 @@ const Task = ({ isDraggingOverlay, ...props }) => {
     cursor: isDraggingOverlay ? "grabbing" : isDragging ? "grabbing" : "grab",
     width: isDraggingOverlay ? "260px" : undefined,
   };
+
+  const fetchCommentLength = async (taskId) => {
+    try {
+      const response = await getAllReview(user.token, taskId);
+      if (response) {
+        setCommentLength(response.data.length);
+      }
+    } catch (e) {
+      console.error("Error fetching comment length:", e.message);
+      setCommentLength(0);
+    }
+  };
+  useEffect(() => {
+    if (props.task?.taskId) {
+      fetchCommentLength(props.task.taskId);
+    }
+  }, [props.task?.taskId]);
 
   const visibleMembers = props?.members?.slice(0, 3);
   const extraCount = props?.members?.length - visibleMembers?.length;
@@ -98,7 +118,7 @@ const Task = ({ isDraggingOverlay, ...props }) => {
         console.log("Updated task:", response);
       }
     } catch (e) {
-      throw new Error(e.message);
+      console.error("Error updating priority:", e.message);
     }
   };
 
@@ -211,9 +231,9 @@ const Task = ({ isDraggingOverlay, ...props }) => {
               <div className="task-content-contact-left-element">
                 <i
                   className="fa-solid fa-comment"
-                  onClick={() => props.onShowComment(props.task)}
+                  onClick={() => props.onShowComment(props.task?.taskId)}
                 ></i>
-                <span>{props.commentsLen || 0}</span>
+                <span>{commentLength}</span>
               </div>
               <div
                 className="task-content-contact-left-element"

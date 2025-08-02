@@ -5,7 +5,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import Skeleton from "react-loading-skeleton";
 import { CSS } from "@dnd-kit/utilities";
 
-const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
+const Task = ({ ...props }) => {
   const {
     attributes,
     listeners,
@@ -13,7 +13,7 @@ const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ id: props.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -34,8 +34,8 @@ const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
     return `${day}/${month}/${year}`;
   };
 
-  const visibleMembers = members?.slice(0, 3) || [];
-  const extraCount = members?.length - visibleMembers.length;
+  const visibleMembers = props.members?.slice(0, 3) || [];
+  const extraCount = props.members?.length - visibleMembers.length;
   return (
     <tr
       ref={setNodeRef}
@@ -49,7 +49,7 @@ const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
           <img src={adjustIcon} alt="Adjust Icon" />
           <div className="task_list_head_content">
             <p>.</p>
-            <h2>{title || <Skeleton />}</h2>
+            <h2>{props.title || <Skeleton />}</h2>
           </div>
         </div>
       </td>
@@ -59,9 +59,12 @@ const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
             className="task-content-members-student-list"
             data-extra-count={extraCount > 0 ? extraCount : ""}
           >
-            {visibleMembers.map((item) => (
-              <li key={item.id}>
-                <img src={item.img} alt="Student Avatar" />
+            {visibleMembers.map((item, index) => (
+              <li key={index}>
+                <img
+                  src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                  alt="Student Avatar"
+                />
               </li>
             ))}
             {extraCount > 0 && (
@@ -74,15 +77,15 @@ const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
       </td>
       <td>
         <div className="task_list_due_date">
-          <h2>{handleFormatDate(dueDate) || "No due date"}</h2>
+          <h2>{handleFormatDate(props.dueDate) || "No due date"}</h2>
         </div>
       </td>
       <td>
         <div className="task_list_priority">
-          <h2>{priority || "No priority"}</h2>
+          <h2>{props.priority || "No priority"}</h2>
         </div>
       </td>
-      <td>
+      {/* <td>
         <div className="task_list_action">
           <img
             src={adjustIcon}
@@ -90,7 +93,7 @@ const Task = ({ id, title, members, dueDate, priority, onShowComment }) => {
             onClick={() => onShowComment?.(id)}
           />
         </div>
-      </td>
+      </td> */}
     </tr>
   );
 };

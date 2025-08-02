@@ -89,6 +89,7 @@ const Column = ({
                       percent={task?.percentProgress}
                       members={task?.assigns}
                       createdAt={task?.createdAt}
+                      priority={task?.priority}
                       dueDate={task?.taskDueDate}
                       onShowComment={onShowComment}
                     />

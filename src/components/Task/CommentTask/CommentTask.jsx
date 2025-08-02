@@ -9,7 +9,7 @@ import sendIcon from "../../../assets/commentIcon/send.png";
 import ReviewService from "../../../service/ReviewService";
 import { useAuth } from "../../../context/AuthProvider";
 
-const CommentTask = ({ task, isClose, handleGetCommentLength }) => {
+const CommentTask = ({ task, isClose }) => {
   const [newComment, setNewComment] = useState("");
   const { user } = useAuth();
   const { getAllReview, createReview } = ReviewService();
@@ -20,7 +20,6 @@ const CommentTask = ({ task, isClose, handleGetCommentLength }) => {
       const response = await getAllReview(user?.token, task);
       if (response && response.data) {
         setComments(response.data);
-        handleGetCommentLength(comments.length)
       }
     } catch (e) {
       console.error("Error fetching comments:", e.message);

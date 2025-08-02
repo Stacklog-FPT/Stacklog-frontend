@@ -35,4 +35,27 @@
   .check__task__by__list__column {
     width: 100%;
   }
+
+  .btn_add_status {
+    width: 260px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 50px;
+    background-color: transparent !important;
+
+    span {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 21px;
+    }
+
+    i {
+      font-size: 10px;
+    }
+  }
 }

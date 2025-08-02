@@ -30,6 +30,8 @@ const AddColumn = ({ isClose }) => {
       };
 
       const response = await addStatus(user?.token, payload);
+
+      console.log(response)
     } catch (e) {
       return e.message;
     }

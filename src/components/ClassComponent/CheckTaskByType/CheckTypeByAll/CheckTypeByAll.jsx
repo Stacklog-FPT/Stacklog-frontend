@@ -377,6 +377,7 @@ const CheckTypeByAll = () => {
   useEffect(() => {
     handleGetGroupList();
   }, []);
+  useEffect(() => {}, [])
 
   return (
     <DndContext
@@ -425,7 +426,6 @@ const CheckTypeByAll = () => {
             <CommentTask
               task={showCommentTask}
               isClose={handleCloseComment}
-              handleGetCommentLength={handleGetCommentLength}
             />
           )}
           {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}

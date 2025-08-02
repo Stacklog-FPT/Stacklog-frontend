@@ -30,7 +30,6 @@
       font-size: 14px;
       line-height: 21px;
       color: #000;
-      padding-bottom: 20px;
     }
 
     p {
@@ -96,21 +95,9 @@
     color: #000;
   }
 
-  .task_list_action {
-    width: 100%;
+  .task_list_action img {
+    width: 20px;
     height: 20px;
     cursor: pointer;
-
-    .icon {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 12px;
-      color: var(--text-color);
-      &:hover {
-        transform: scaleY(1);
-      }
-    }
   }
 }

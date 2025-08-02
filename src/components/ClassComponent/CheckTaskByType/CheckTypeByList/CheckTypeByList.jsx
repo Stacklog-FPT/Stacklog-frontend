@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "./CheckTypeByList.scss";
 import Column from "./Column/Column";
+import Task from "./Task/Task";
 import ClassAndMember from "../../ClassAndMember/ClassAndMember";
 import {
   DndContext,
@@ -11,15 +12,14 @@ import {
 import { useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import AddTask from "../../../Task/AddTask/AddTask";
 import CommentTask from "../../../Task/CommentTask/CommentTask";
-import AddColumn from "../../../Column/AddColumn/AddColumn";
-import AddSubTask from "../../../Task/AddSubTask/AddSubTask";
 import taskService from "../../../../service/TaskService";
+import { useAuth } from "../../../../context/AuthProvider";
 import statusApi from "../../../../service/ColumnService";
 import GroupService from "../../../../service/GroupService";
-import ReviewService from "../../../../service/ReviewService";
-import { useAuth } from "../../../../context/AuthProvider";
+import AddColumn from "../../../Column/AddColumn/AddColumn";
 import axios from "axios";
-import Task from "./Task/Task";
+import ReviewService from "../../../../service/ReviewService";
+import AddSubTask from "../../../Task/AddSubTask/AddSubTask";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -32,120 +32,32 @@ const customCollisionDetection = (args) => {
 
 const CheckTypeByList = () => {
   const { user } = useAuth();
-  const { getAllTask, addTask } = taskService();
+  const { getAllTask, addTask, setSocket } = taskService();
   const { getAllStatus } = statusApi();
   const { getAllGroup } = GroupService();
   const { getAllReview } = ReviewService();
-  const [statusTasks, setStatusTasks] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [members, setMembers] = useState([]);
+  
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
   const [showAddColumn, setShowAddColumn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [statuses, setStatuses] = useState([]);
+  const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
-  const [comments, setComments] = useState([]);
+  const [commentLength, setCommetLength] = useState(0);
   const [showAddSubTask, setShowAddSubTask] = useState(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5, // Khớp với CheckTypeByAll
+        distance: 8,
       },
     })
   );
-
-  const calculateProgress = (createdAt, dueDate) => {
-    if (!createdAt || !dueDate) return 0;
-
-    const created = new Date(createdAt);
-    const due = new Date(dueDate);
-    const now = new Date();
-
-    if (isNaN(created) || isNaN(due)) return 0;
-    if (now >= due) return 100;
-    if (now <= created) return 0;
-
-    const totalTime = due.getTime() - created.getTime();
-    const elapsedTime = now.getTime() - created.getTime();
-    const percent = (elapsedTime / totalTime) * 100;
-
-    return Math.min(Math.max(Math.round(percent), 0), 100);
-  };
-
-  const handleGetTasks = useCallback(async () => {
-    try {
-      const response = await getAllTask(user?.token);
-      if (response) {
-        const normalizedTasks = response.data.map((task) => ({
-          ...task,
-          statusTask: {
-            ...task.statusTask,
-            statusTaskName: task.statusTask.statusTaskName
-              .toLowerCase()
-              .replace(/\b\w/g, (c) => c.toUpperCase()),
-          },
-          percentProgress: calculateProgress(task.createdAt, task.taskDueDate),
-        }));
-        setTasks(normalizedTasks);
-      }
-    } catch (e) {
-      console.error("Failed to fetch tasks:", e.message);
-    }
-  }, [user?.token, getAllTask]);
-
-  const handleGetStatusTask = useCallback(async () => {
-    try {
-      const response = await getAllStatus(user?.token);
-      if (response) {
-        setStatusTasks(response.data);
-      }
-    } catch (e) {
-      console.error("Error fetching statuses:", e.message);
-    }
-  }, [user?.token, getAllStatus]);
-
-  const handleGetGroupList = useCallback(async () => {
-    try {
-      const response = await getAllGroup(user?.token);
-      if (response) {
-        setMembers(response?.users || []);
-      }
-    } catch (e) {
-      console.error("Error fetching group list:", e.message);
-    }
-  }, [user?.token, getAllGroup]);
-
-  const handleGetCommentTask = useCallback(async (taskId) => {
-    try {
-      const response = await getAllReview(user?.token, taskId);
-      if (response && response.data) {
-        setComments(response.data);
-      }
-    } catch (e) {
-      console.error("Error fetching comments:", e.message);
-    }
-  }, [user?.token, getAllReview]);
-
-  const handleFilterByPriority = useCallback(() => {
-    setIsSortedByPriority((prev) => {
-      if (prev) {
-        handleGetTasks();
-        return false;
-      } else {
-        const priorityOrder = { HIGH: 1, MEDIUM: 2, LOW: 3 };
-        const sortedTasks = [...tasks].sort((a, b) => {
-          const priorityA = priorityOrder[a.priority] || 4;
-          const priorityB = priorityOrder[b.priority] || 4;
-          return priorityA - priorityB;
-        });
-        setTasks(sortedTasks);
-        return true;
-      }
-    });
-  }, [tasks, handleGetTasks]);
 
   const handleDragStart = (event) => {
     const { active } = event;
@@ -174,12 +86,16 @@ const CheckTypeByList = () => {
         setActiveColumn(null);
         return;
       }
+
       const activeId = active.id;
       const activeTask = tasks.find((task) => task.taskId === activeId);
       if (!activeTask) {
         setActiveColumn(null);
         return;
       }
+
+      let updatedTasks = [...tasks];
+      const activeIndex = tasks.findIndex((task) => task.taskId === activeId);
 
       const droppableId = over.id;
       const isOverDroppable = droppableId.startsWith("droppable-");
@@ -190,7 +106,7 @@ const CheckTypeByList = () => {
 
       if (isOverDroppable) {
         targetStatusId = droppableId.replace("droppable-", "");
-        targetStatus = statusTasks.find(
+        targetStatus = statuses.find(
           (item) => item.statusTaskId === targetStatusId
         )?.statusTaskName;
       } else if (isOverTask) {
@@ -211,6 +127,19 @@ const CheckTypeByList = () => {
         return;
       }
 
+      updatedTasks = updatedTasks.map((task) =>
+        task.taskId === activeId
+          ? {
+              ...task,
+              statusTask: {
+                ...task.statusTask,
+                statusTaskId: targetStatusId,
+                statusTaskName: targetStatus,
+              },
+            }
+          : task
+      );
+
       if (activeTask.statusTask.statusTaskId !== targetStatusId) {
         const newTask = {
           ...activeTask,
@@ -225,39 +154,84 @@ const CheckTypeByList = () => {
           ],
         };
         try {
-          await addTask(newTask, user?.token);
+          const response = await addTask(newTask, user?.token);
           await axios.post("http://localhost:3000/notifications", {
             id: Math.random().toString(16).slice(2, 6),
             title: `Thông báo môn ${newTask.taskTitle}`,
             author: {
               _id: Math.random(),
-              name: user?.username || "Unknown",
+              name: user.username || "Unknown",
               avatar:
-                user?.avatar ||
+                user.avatar ||
                 "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
             },
             createdAt: new Date().toISOString().split("T")[0],
             isRead: false,
             _id: Math.random(),
           });
-          await handleGetTasks();
         } catch (error) {
           console.error("Failed to update task or send notification:", error);
         }
+      }
+
+      if (isOverDroppable) {
+        const targetTasks = tasks.filter(
+          (task) =>
+            task?.statusTask?.statusTaskId === targetStatusId &&
+            task.taskId !== activeId
+        );
+        updatedTasks.splice(activeIndex, 1);
+        updatedTasks.push({
+          ...activeTask,
+          statusTask: {
+            ...activeTask.statusTask,
+            statusTaskId: targetStatusId,
+            statusTaskName: targetStatus,
+          },
+        });
       } else if (isOverTask) {
         const overTask = tasks.find((task) => task.taskId === over.id);
         const overIndex = tasks.findIndex((task) => task.taskId === over.id);
-        const activeIndex = tasks.findIndex((task) => task.taskId === activeId);
-        const updatedTasks = [...tasks];
-        updatedTasks.splice(activeIndex, 1);
-        updatedTasks.splice(overIndex, 0, activeTask);
-        setTasks(updatedTasks);
+        if (activeTask?.statusTask?.statusTaskId === targetStatusId) {
+          updatedTasks.splice(activeIndex, 1);
+          updatedTasks.splice(overIndex, 0, activeTask);
+        } else {
+          updatedTasks.splice(activeIndex, 1);
+          updatedTasks.splice(overIndex, 0, {
+            ...activeTask,
+            statusTask: {
+              ...activeTask.statusTask,
+              statusTaskId: targetStatusId,
+              statusTaskName: targetStatus,
+            },
+          });
+        }
       }
 
+      setTasks(updatedTasks);
       setActiveColumn(null);
     },
-    [tasks, statusTasks, addTask, user?.token, handleGetTasks]
+    [tasks, activeColumn, statuses, addTask, user]
   );
+
+  const handleFilterByPriority = () => {
+    if (isSortedByPriority) {
+      handleGetTasks();
+      setIsSortedByPriority(false);
+    } else {
+      const priorityOrder = { HIGH: 1, MEDIUM: 2, LOW: 3 };
+      const sortedTasks = [...tasks].sort((a, b) => {
+        const priorityA = priorityOrder[a.priority] || 4;
+        const priorityB = priorityOrder[b.priority] || 4;
+        return priorityA - priorityB;
+      });
+      if (sortedTasks) {
+        console.log(sortedTasks);
+        setTasks(sortedTasks);
+        setIsSortedByPriority(true);
+      }
+    }
+  };
 
   const handleShowAddTask = (status) => {
     setShowAddTask(status);
@@ -275,13 +249,118 @@ const CheckTypeByList = () => {
     setShowAddColumn(false);
   };
 
-  const handleChooseTask = (task) => {
+  const handleChooseTask = async (task) => {
     setShowAddSubTask(task);
   };
 
-  const handleCloseAddSubtask = () => {
+  const handleCloseAddSubtask = async () => {
     setShowAddSubTask(null);
   };
+
+  const handleGetStatusTask = useCallback(async () => {
+    try {
+      const response = await getAllStatus(user.token);
+      if (response) {
+        setStatuses(response.data);
+      }
+    } catch (e) {
+      console.error(e.message);
+    }
+  }, [user.token]);
+
+  const handleGetTasks = useCallback(async () => {
+    try {
+      const response = await getAllTask(user.token);
+      if (response) {
+        const normalizedTasks = response.data.map((task) => ({
+          ...task,
+          statusTask: {
+            ...task.statusTask,
+            statusTaskName: task.statusTask.statusTaskName
+              .toLowerCase()
+              .replace(/\b\w/g, (c) => c.toUpperCase()),
+          },
+        }));
+        setTasks(normalizedTasks);
+        const uniqueMembers = [
+          ...new Map(
+            normalizedTasks
+              .flatMap((task) => task.assigns || [])
+              .map((member) => [member.assignTo, member])
+          ).values(),
+        ];
+        setMembers(uniqueMembers);
+        console.log("Tasks:", normalizedTasks);
+        console.log("Members:", uniqueMembers);
+      }
+    } catch (e) {
+      console.error("Failed to fetch tasks:", e.message);
+    }
+  }, [user.token]);
+
+  const handleGetGroupList = async () => {
+    try {
+      const response = await getAllGroup(user?.token);
+      if (response) {
+        setMembers(response?.users);
+      }
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  };
+
+  useEffect(() => {
+    const stompInstance = setSocket(user.token);
+    setStompClient(stompInstance);
+    stompInstance.onmessage = (message) => {
+      const data = JSON.parse(message.body);
+      if (data.type === "taskUpdate") {
+        setTasks((prevTasks) => {
+          const taskExists = prevTasks.some(
+            (task) => task.taskId === data.taskId
+          );
+          if (taskExists) {
+            return prevTasks.map((task) =>
+              task.taskId === data.taskId
+                ? {
+                    ...task,
+                    ...data,
+                    statusTask: {
+                      ...task.statusTask,
+                      statusTaskName: data.statusTask.statusTaskName
+                        .toLowerCase()
+                        .replace(/\b\w/g, (c) => c.toUpperCase()),
+                    },
+                  }
+                : task
+            );
+          } else {
+            return [
+              ...prevTasks,
+              {
+                ...data,
+                statusTask: {
+                  ...data.statusTask,
+                  statusTaskName: data.statusTask.statusTaskName
+                    .toLowerCase()
+                    .replace(/\b\w/g, (c) => c.toUpperCase()),
+                },
+              },
+            ];
+          }
+        });
+      } else if (data.type === "taskDelete") {
+        setTasks((prevTasks) =>
+          prevTasks.filter((task) => task.taskId !== data.taskId)
+        );
+      }
+    };
+    return () => {
+      if (stompInstance && stompInstance.connected) {
+        stompInstance.disconnect();
+      }
+    };
+  }, [user.token]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -294,6 +373,7 @@ const CheckTypeByList = () => {
         setIsLoading(false);
       }
     };
+
     fetchData();
 
     const handleEscape = (e) => {
@@ -302,6 +382,7 @@ const CheckTypeByList = () => {
       }
     };
     document.addEventListener("keydown", handleEscape);
+
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
@@ -309,7 +390,7 @@ const CheckTypeByList = () => {
 
   useEffect(() => {
     handleGetGroupList();
-  }, [handleGetGroupList]);
+  }, [user.token]);
 
   return (
     <DndContext
@@ -319,55 +400,47 @@ const CheckTypeByList = () => {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="check-task-by-all-container">
-        <div className="check-task-by-all-content">
-          <ClassAndMember onFilterByPriority={handleFilterByPriority} />
-          <div className="task-column-container">
-            {statusTasks.map((item) => (
-              <Column
-                key={item.statusTaskId}
-                statusId={item.statusTaskId}
-                status={item.statusTaskName}
-                color={item.statusTaskColor}
-                isLoading={isLoading}
-                tasks={tasks.filter(
-                  (task) => task?.statusTask?.statusTaskId === item.statusTaskId
-                )}
-                members={members}
-                commentsLen={comments}
-                onShowAddTask={() => handleShowAddTask(item)}
-                onShowComment={handleShowComment}
-                onShowAddSubTask={handleChooseTask}
-              />
-            ))}
-            <button
-              className="btn_add_status"
-              onClick={() => setShowAddColumn(!showAddColumn)}
-            >
-              <i className="fa-solid fa-plus"></i>
-              <span>Add Status</span>
-            </button>
-          </div>
-          {showAddTask && (
-            <AddTask
-              status={showAddTask}
-              onCancel={() => setShowAddTask(null)}
+      <div className="check__task__by__list__container">
+        <ClassAndMember onFilterByPriority={handleFilterByPriority} />
+        <div className="check__task__by__list__column">
+          {statuses.map((item) => (
+            <Column
+              key={item.statusTaskId}
+              statusId={item.statusTaskId}
+              status={item.statusTaskName}
+              color={item.statusTaskColor}
+              isLoading={isLoading}
+              tasks={tasks.filter(
+                (task) => task?.statusTask?.statusTaskId === item.statusTaskId
+              )}
               members={members}
+              onShowAddTask={() => handleShowAddTask(item)}
+              onShowComment={handleShowComment}
+              onShowAddSubTask={handleChooseTask}
             />
-          )}
-          {showCommentTask && (
-            <CommentTask
-              task={showCommentTask}
-              isClose={handleCloseComment}
-              comments={comments}
-              onGetComments={handleGetCommentTask}
-            />
-          )}
-          {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}
-          {showAddSubTask && (
-            <AddSubTask isClose={handleCloseAddSubtask} task={showAddSubTask} />
-          )}
+          ))}
+          <button
+            className="btn_add_status"
+            onClick={() => setShowAddColumn(!showAddColumn)}
+          >
+            <i className="fa-solid fa-plus"></i>
+            <span>Add Status</span>
+          </button>
         </div>
+        {showAddTask && (
+          <AddTask
+            status={showAddTask}
+            onCancel={() => setShowAddTask(null)}
+            members={members}
+          />
+        )}
+        {showCommentTask && (
+          <CommentTask task={showCommentTask} isClose={handleCloseComment} />
+        )}
+        {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}
+        {showAddSubTask && (
+          <AddSubTask isClose={handleCloseAddSubtask} task={showAddSubTask} />
+        )}
       </div>
       <DragOverlay dropAnimation={null}>
         {activeTask ? (
@@ -378,11 +451,8 @@ const CheckTypeByList = () => {
             members={members}
             createdAt={activeTask.createdAt}
             dueDate={activeTask.taskDueDate}
-            priority={activeTask.priority}
             onShowComment={handleShowComment}
             onShowAddSubTask={handleChooseTask}
-            task={activeTask}
-            commentsLen={comments}
             isDraggingOverlay
           />
         ) : null}
@@ -391,4 +461,4 @@ const CheckTypeByList = () => {
   );
 };
 
-export default React.memo(CheckTypeByList);
+export default CheckTypeByList;

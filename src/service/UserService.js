@@ -75,6 +75,20 @@ const userApi = () => {
     }
   };
 
+  const getUserById = async (token, id) => {
+    if (!token) throw new Error("Unauthorized: No token provided");
+    if (!id) throw new Error("Invalid user ID");
+    try {
+      const response = await axios.get(`${API_AUTH}profile/user/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Luôn trả về object user
+      return response.data.user;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+
   return {
     login,
     logout,
@@ -83,6 +97,7 @@ const userApi = () => {
     data,
     getUserByEmail,
     getUserByRole,
+    getUserById,
   };
 };
 

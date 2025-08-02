@@ -5,14 +5,11 @@ const ClassService = () => {
   const getMembersInClass = async (token) => {
     try {
       if (!token) throw new Error("Token is missing");
-
       const response = await axios.get(`${CLASS_URI}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      return response;
+      // Luôn trả về mảng
+      return Array.isArray(response.data) ? response.data : response.data.data || [];
     } catch (e) {
       throw new Error(e.message);
     }

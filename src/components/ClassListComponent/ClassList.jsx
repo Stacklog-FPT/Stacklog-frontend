@@ -3,80 +3,93 @@ import "./ClassList.scss";
 import { useAuth } from "../../context/AuthProvider";
 import ClassService from "../../service/ClassService";
 import userApi from "../../service/UserService";
+import Detailstudent from "./Detailstudent/Detailstudent";
 
-const ClassList = ({ handleActivityAddClass, handleActiveDetailStudent }) => {
+const ClassList = ({ handleActivityAddClass }) => {
   const { user } = useAuth();
   const [classes, setClasses] = useState([]);
-  const [area, setArea] = useState([]);
+  const [selectedClass, setSelectedClass] = useState("");
+  const [groups, setGroups] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState("all");
   const [students, setStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showDetail, setShowDetail] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
   const itemsPerPage = 5;
 
-  // GỌI HOOK Ở ĐÂY, KHÔNG GỌI TRONG fetchData
   const { getUserById } = userApi();
 
   useEffect(() => {
-    if (!user || !user.token) {
-      console.warn("No user or token!");
-      return;
-    }
+    if (!user || !user.token) return;
     const fetchData = async () => {
       try {
         const classService = ClassService();
         const data = await classService.getMembersInClass(user.token);
-
-        // Lấy tất cả userId của học sinh trong các group
-        let userIds = [];
-        let classList = [];
-        let areaList = [];
-        data.forEach((classItem) => {
-          classList.push({
-            _id: classItem.classesId,
-            name: classItem.classesName,
-          });
-          areaList.push({
-            _id: classItem.classesId,
-            name: classItem.groups?.[0]?.groupsName || "",
-          });
-          classItem.groups.forEach((group) => {
-            group.groupStudents.forEach((student) => {
-              userIds.push(student.userId);
-            });
-          });
-        });
-        setClasses(classList);
-        setArea(areaList);
-
-        // Loại bỏ userId trùng lặp
-        userIds = [...new Set(userIds)];
-
-        // Lấy thông tin từng user
-        const studentInfos = await Promise.all(
-          userIds.map(async (id) => {
-            try {
-              const u = await getUserById(user.token, id);
-              return {
-                _id: u._id,
-                name: u.full_name,
-                email: u.email,
-                id: u.work_id,
-                avatar: u.avatar_link,
-              };
-            } catch (e) {
-              return null;
-            }
-          })
-        );
-        setStudents(studentInfos.filter(Boolean));
+        setClasses(data);
+        if (data.length > 0) {
+          setSelectedClass(data[0].classesId);
+          setGroups(data[0].groups);
+        }
       } catch (err) {
-        console.error("API error:", err);
-        setStudents([]);
+        setClasses([]);
+        setGroups([]);
       }
     };
-
     fetchData();
     // eslint-disable-next-line
   }, [user]);
+
+  useEffect(() => {
+    if (!selectedClass) return;
+    const foundClass = classes.find((c) => c.classesId === selectedClass);
+    setGroups(foundClass ? foundClass.groups : []);
+    setSelectedGroup("all");
+  }, [selectedClass, classes]);
+
+  useEffect(() => {
+    if (!selectedClass) return;
+    const foundClass = classes.find((c) => c.classesId === selectedClass);
+    let userIds = [];
+    if (foundClass) {
+      if (selectedGroup === "all") {
+        foundClass.groups.forEach((group) => {
+          group.groupStudents.forEach((student) => {
+            userIds.push(student.userId);
+          });
+        });
+      } else {
+        const group = foundClass.groups.find(
+          (g) => g.groupsId === selectedGroup
+        );
+        if (group) {
+          userIds = group.groupStudents.map((s) => s.userId);
+        }
+      }
+    }
+    userIds = [...new Set(userIds)];
+    const fetchStudents = async () => {
+      const studentInfos = await Promise.all(
+        userIds.map(async (id) => {
+          try {
+            const u = await getUserById(user.token, id);
+            return {
+              _id: u._id,
+              name: u.full_name,
+              email: u.email,
+              id: u.work_id,
+              avatar: u.avatar_link,
+              // Nếu muốn truyền thêm classCode, subjectCode thì lấy thêm ở đây
+            };
+          } catch {
+            return null;
+          }
+        })
+      );
+      setStudents(studentInfos.filter(Boolean));
+    };
+    fetchStudents();
+    // eslint-disable-next-line
+  }, [selectedClass, selectedGroup, classes, user]);
 
   const totalPages = Math.ceil(students.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -91,19 +104,56 @@ const ClassList = ({ handleActivityAddClass, handleActiveDetailStudent }) => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
+  const handleClassChange = (e) => {
+    setSelectedClass(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleGroupChange = (e) => {
+    setSelectedGroup(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleShowDetail = (student) => {
+    // Tìm tất cả các lớp mà student này thuộc về
+    const studentClasses = classes.filter((cls) =>
+      cls.groups.some((group) =>
+        group.groupStudents.some((stu) => stu.userId === student._id)
+      )
+    );
+    // Lấy danh sách tên lớp
+    const classNames = studentClasses.map((cls) => cls.classesName);
+
+    setSelectedStudent({
+      ...student,
+      classNames, // truyền mảng tên lớp
+    });
+    setShowDetail(true);
+  };
+
+  const handleCloseDetail = () => {
+    setShowDetail(false);
+    setSelectedStudent(null);
+  };
+
   return (
     <div className="grades__component">
       <div className="grades__component__container">
         <div className="grades__component__container__filter__class">
           <div className="grades__component__container__filter__class__feature">
-            <select>
-              {classes.map((item) => (
-                <option key={item._id}>{item.name}</option>
+            <select value={selectedClass} onChange={handleClassChange}>
+              {classes.map((cls) => (
+                <option key={cls.classesId} value={cls.classesId}>
+                  {cls.classesName}
+                </option>
               ))}
             </select>
-            <select>
-              {area.map((item) => (
-                <option key={item._id}>{item.name}</option>
+            <select value={selectedGroup} onChange={handleGroupChange}>
+              <option value="all">Tất cả nhóm</option>
+              {groups.map((group) => (
+                <option key={group.groupsId} value={group.groupsId}>
+                  {group.groupsName}
+                </option>
               ))}
             </select>
           </div>
@@ -130,7 +180,7 @@ const ClassList = ({ handleActivityAddClass, handleActiveDetailStudent }) => {
             <tbody>
               {currentItems.length > 0 ? (
                 currentItems.map((item, index) => (
-                  <tr key={item._id}>
+                  <tr key={item._id || index}>
                     <td>
                       <p style={{ paddingTop: "15px" }}>
                         {startIndex + index + 1}
@@ -149,7 +199,7 @@ const ClassList = ({ handleActivityAddClass, handleActiveDetailStudent }) => {
                       <p>{item.id}</p>
                     </td>
                     <td>
-                      <span onClick={handleActiveDetailStudent}>Detail</span>
+                      <span onClick={() => handleShowDetail(item)}>Detail</span>
                     </td>
                   </tr>
                 ))
@@ -187,7 +237,14 @@ const ClassList = ({ handleActivityAddClass, handleActiveDetailStudent }) => {
           )}
         </div>
       </div>
+      {showDetail && selectedStudent && (
+        <Detailstudent
+          student={selectedStudent}
+          handleActiveDetailStudent={handleCloseDetail}
+        />
+      )}
     </div>
   );
 };
+
 export default ClassList;

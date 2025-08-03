@@ -1,0 +1,100 @@
+.detail__student {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__popup {
+    position: relative;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    width: 350px;
+    max-width: 95vw;
+    padding: 32px 28px 24px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.2s;
+  }
+
+  &__close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    font-size: 28px;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.2s;
+    &:hover {
+      color: #045745;
+    }
+  }
+
+  &__avatar img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 12px;
+    border: 2px solid var(--bg--primary-color, #045745);
+    background: #f3f3f3;
+  }
+
+  &__name {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+    color: #222;
+    text-align: center;
+  }
+  &__id,
+  &__email {
+    font-size: 14px;
+    color: #5c5959;
+    margin: 0 0 2px 0;
+    text-align: center;
+  }
+
+  &__codes {
+    width: 100%;
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    &__block {
+      h4 {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--bg--primary-color, #045745);
+        margin-bottom: 4px;
+      }
+      ul {
+        padding-left: 18px;
+        margin: 0;
+        li {
+          font-size: 13px;
+          color: var(--text-color, #222);
+          margin-bottom: 2px;
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,10 @@
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.5s ease-in;
+}
+
+.form-login-container {
+  background-color: var(--bg--color--login);
+  color: var(--text-color);
+}

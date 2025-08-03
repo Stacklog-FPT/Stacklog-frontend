@@ -1,0 +1,101 @@
+.class__and__member__container {
+  width: 70%;
+  .class__and__member__content__member {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &__class {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      select {
+        width: 314px;
+        height: auto;
+        background: none;
+        border: none;
+        font-size: 16px;
+        font-weight: bold;
+        color: var(--text--color--task--heading);
+        padding: 6px 10px;
+        appearance: none;
+        cursor: pointer;
+        background-image: url("../../../assets/icon/arrow-down.png");
+        background-repeat: no-repeat;
+        background-position: 120px;
+        background-size: 15px 15px;
+
+        &::-ms-expand {
+          display: none;
+        }
+
+        &:hover {
+          color: #000;
+        }
+      }
+
+      position: relative;
+    }
+
+    &__student {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      width: 164px;
+      height: auto;
+
+      ul {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        padding-left: 10px;
+        margin: 0;
+
+        li {
+          position: relative;
+          margin-left: -10px;
+          &:nth-child(n + 4):not(.extra-count) {
+            display: none;
+          }
+
+          img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            object-fit: cover;
+          }
+        }
+      }
+    }
+
+    &__button-add {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      margin-left: 5px;
+      img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  .extra-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    color: #333;
+    font-size: 14px;
+    font-weight: bold;
+    border: 2px solid #fff;
+    margin-left: -10px;
+    z-index: 1;
+  }
+}

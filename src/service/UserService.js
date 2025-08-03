@@ -82,7 +82,6 @@ const userApi = () => {
       const response = await axios.get(`${API_AUTH}profile/user/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      // Luôn trả về object user
       return response.data.user;
     } catch (error) {
       throw new Error(error.message);

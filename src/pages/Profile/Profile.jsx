@@ -5,10 +5,13 @@ import { useAuth } from "../../context/AuthProvider";
 import { Link } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import decodeToken from "../../service/DecodeJwt";
 
 const Profile = () => {
   const { user, logoutAuth } = useAuth();
-  const { logout, getUserByEmail } = userApi();
+  const { logout, getUserById } = userApi();
+  const userData = decodeToken(user?.token);
+  console.log(userData);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,9 +22,10 @@ const Profile = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await getUserByEmail(user.token, user.email);
+      const response = await getUserById(user.token, userData?.id);
       if (response) {
-        setProfileData(response.user);
+        console.log(response);
+        setProfileData(response);
         setTempImage(response.avatar_link || "avatar/default.png");
       }
     } catch (e) {
@@ -90,7 +94,7 @@ const Profile = () => {
           </label>
         ) : (
           <img
-            src={profileData.avatar_link || "avatar/default.png"}
+            src={profileData?.avatar_link || "avatar/default.png"}
             alt="Avatar"
           />
         )}
@@ -101,17 +105,17 @@ const Profile = () => {
             <input
               type="text"
               name="full_name"
-              value={profileData.full_name}
+              value={profileData?.full_name}
               onChange={handleInputChange}
               className="edit-input"
             />
           ) : (
-            <h2>{profileData.full_name || "Unknown User"}</h2>
+            <h2>{profileData?.full_name || "Unknown User"}</h2>
           )}
           {loading ? (
             <Skeleton width={100} height={16} />
           ) : (
-            <p>{profileData.role}</p>
+            <p>{profileData?.role}</p>
           )}
           <button onClick={toggleEdit}>
             <i className="fa-solid fa-pen-to-square"></i>
@@ -134,7 +138,7 @@ const Profile = () => {
               {loading ? (
                 <Skeleton width={200} height={16} />
               ) : (
-                <p>{profileData.email}</p>
+                <p>{profileData?.email}</p>
               )}
             </div>
             <div className="profile-popup-information-container-content-element">
@@ -145,12 +149,12 @@ const Profile = () => {
                 <input
                   type="text"
                   name="description"
-                  value={profileData.description}
+                  value={profileData?.description}
                   onChange={handleInputChange}
                   className="edit-input"
                 />
               ) : (
-                <p>{profileData.description || "No description"}</p>
+                <p>{profileData?.description || "No description"}</p>
               )}
             </div>
             <div className="profile-popup-information-container-content-element">
@@ -158,7 +162,7 @@ const Profile = () => {
               {loading ? (
                 <Skeleton width={200} height={16} />
               ) : (
-                <p>{profileData.work_id}</p>
+                <p>{profileData?.work_id}</p>
               )}
             </div>
             <div className="profile-popup-information-container-content-element">
@@ -166,7 +170,7 @@ const Profile = () => {
               {loading ? (
                 <Skeleton width={100} height={16} />
               ) : (
-                <p>{profileData.personal_score}</p>
+                <p>{profileData?.personal_score}</p>
               )}
             </div>
           </div>

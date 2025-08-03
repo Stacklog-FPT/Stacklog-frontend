@@ -46,6 +46,7 @@ const CheckTypeByList = () => {
   const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const [group, setGroup] = useState("");
+  const [memberTask, setMemberTask] = useState([]);
   const { getAllGroup } = GroupService();
   const { getAllReview } = ReviewService();
   const [commentLength, setCommetLength] = useState(0);
@@ -254,29 +255,23 @@ const CheckTypeByList = () => {
     setShowAddSubTask(task);
   };
 
-  const handleCloseAddSubtask = async () => {
-    setShowAddSubTask(null);
-  };
-
-  const getCurrentGroup = async (group) => {
-    setGroup(group);
-  };
-
-  const handleGetStatusTask = useCallback(async () => {
+  const handleGetStatusTask = useCallback(async (groupId) => {
     try {
-      const response = await getAllStatus(user.token);
+      setStatusTasks([]);
+      const response = await getAllStatus(user.token, groupId);
       if (response) {
-        statusTasks(response.data);
+        setStatusTasks(response.data);
       }
     } catch (e) {
       console.error(e.message);
     }
-  }, [user.token]);
+  }, []);
 
-  const handleGetTasks = useCallback(async () => {
+  const handleGetTasks = useCallback(async (groupId) => {
     try {
-      const response = await getAllTask(user.token);
+      const response = await getAllTask(user.token, groupId);
       if (response) {
+        console.log(response.data);
         const normalizedTasks = response.data.map((task) => ({
           ...task,
           statusTask: {
@@ -287,32 +282,11 @@ const CheckTypeByList = () => {
           },
         }));
         setTasks(normalizedTasks);
-        const uniqueMembers = [
-          ...new Map(
-            normalizedTasks
-              .flatMap((task) => task.assigns || [])
-              .map((member) => [member.assignTo, member])
-          ).values(),
-        ];
-        setMembers(uniqueMembers);
-        console.log("Tasks:", normalizedTasks);
-        console.log("Members:", uniqueMembers);
       }
     } catch (e) {
-      console.error("Failed to fetch tasks:", e.message);
+      console.error(e.message);
     }
-  }, [user.token]);
-
-  const handleGetGroupList = async () => {
-    try {
-      const response = await getAllGroup(user?.token);
-      if (response) {
-        setMembers(response?.users);
-      }
-    } catch (e) {
-      throw new Error(e.message);
-    }
-  };
+  }, []);
 
   useEffect(() => {
     const stompInstance = setSocket(user.token);
@@ -371,7 +345,7 @@ const CheckTypeByList = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        await Promise.all([handleGetStatusTask(), handleGetTasks()]);
+        await Promise.all([handleGetStatusTask(group), handleGetTasks(group)]);
       } catch (e) {
         console.error("Error fetching data:", e.message);
       } finally {
@@ -393,10 +367,6 @@ const CheckTypeByList = () => {
     };
   }, [handleGetStatusTask, handleGetTasks]);
 
-  useEffect(() => {
-    handleGetGroupList();
-  }, [user.token]);
-
   return (
     <DndContext
       sensors={sensors}
@@ -408,7 +378,8 @@ const CheckTypeByList = () => {
       <div className="check__task__by__list__container">
         <ClassAndMember
           onFilterByPriority={handleFilterByPriority}
-          getCurrentGroup={getCurrentGroup}
+          setGroup={setGroup}
+          setMemberTask={setMemberTask}
         />
         <div className="check__task__by__list__column">
           {statusTasks.map((item) => (

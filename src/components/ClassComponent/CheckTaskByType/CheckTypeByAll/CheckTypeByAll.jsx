@@ -261,9 +261,9 @@ const CheckTypeByAll = () => {
 
   const handleGetTasks = useCallback(async (groupId) => {
     try {
-      setTasks([]);
       const response = await getAllTask(user.token, groupId);
       if (response) {
+        console.log(response.data);
         const normalizedTasks = response.data.map((task) => ({
           ...task,
           statusTask: {
@@ -279,17 +279,6 @@ const CheckTypeByAll = () => {
       console.error(e.message);
     }
   }, []);
-
-  const handleGetGroupList = async () => {
-    try {
-      const response = await getAllGroup(user?.token);
-      if (response) {
-        setMembers(response?.users);
-      }
-    } catch (e) {
-      throw new Error(e.message);
-    }
-  };
 
   const handleChooseTask = async (task) => {
     setShowAddSubTask(task);
@@ -375,10 +364,6 @@ const CheckTypeByAll = () => {
     };
   }, [handleGetStatusTask, handleGetTasks, group]);
 
-  useEffect(() => {
-    handleGetGroupList();
-  }, []);
-
   return (
     <DndContext
       sensors={sensors}
@@ -456,9 +441,6 @@ const CheckTypeByAll = () => {
             id={activeTask.taskId}
             title={activeTask.taskTitle}
             percent={activeTask.percentProgress}
-            members={memberTask}
-            createdAt={activeTask.createdAt}
-            dueDate={activeTask.taskDueDate}
             onShowComment={handleShowComment}
             onShowAddSubTask={handleChooseTask}
             isDraggingOverlay

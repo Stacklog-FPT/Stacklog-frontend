@@ -42,8 +42,8 @@ const CheckTypeByAll = () => {
   const { getAllTask, addTask, setSocket } = taskService();
   const { getAllStatus } = statusApi();
   const [statusTasks, setStatusTasks] = useState([]);
+  console.log(statusTasks);
   const [tasks, setTasks] = useState([]);
-  console.log(tasks);
   const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const { getAllGroup } = GroupService();

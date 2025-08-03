@@ -17,8 +17,8 @@ const ClassAndMember = ({ onFilterByPriority }) => {
   ]);
   const [groupList, setGroupList] = useState([]);
   const [memberList, setMemberList] = useState([]);
-  const visibleMembers = memberList.slice(0, 3);
-  const extraCount = memberList.length - visibleMembers.length;
+  const visibleMembers = memberList?.slice(0, 3);
+  const extraCount = memberList?.length - visibleMembers?.length;
 
   const handleGetGroupList = async () => {
     try {
@@ -62,7 +62,7 @@ const ClassAndMember = ({ onFilterByPriority }) => {
           {user.role === "LECTURER" && (
             <div className="class__and__member__content__member__class">
               <select>
-                {groupList.map((item) => (
+                {groupList?.map((item) => (
                   <option key={item.groupsName} value={item.id}>
                     {item.groupsName}
                   </option>
@@ -76,7 +76,7 @@ const ClassAndMember = ({ onFilterByPriority }) => {
             className="class__and__member__content__member__student__list"
             data-extra-count={extraCount > 0 ? extraCount : ""}
           >
-            {visibleMembers.map((item) => (
+            {visibleMembers?.map((item) => (
               <li key={item._id}>
                 <img
                   src={

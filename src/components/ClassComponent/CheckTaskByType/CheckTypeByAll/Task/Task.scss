@@ -79,20 +79,26 @@
     gap: 10px;
     width: 100%;
 
+    &-container {
+      flex-grow: 1;
+      height: 4px;
+      background-color: #e0e0e0; 
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    &-line {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
     span {
       line-height: 21px;
       font-weight: 500;
       font-size: 14px;
       color: var(--text--color--task--heading);
       padding-right: 8px;
-    }
-
-    &-line {
-      flex-grow: 1;
-      height: 4px;
-      // background: linear-gradient(to right, #000101, #156854);
-      border-radius: 2px;
-      transition: width 0.3s ease;
     }
   }
 

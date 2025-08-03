@@ -36,6 +36,29 @@ const Task = ({ ...props }) => {
 
   const visibleMembers = props.members?.slice(0, 3) || [];
   const extraCount = props.members?.length - visibleMembers.length;
+
+  const getColorByPercent = (percent) => {
+    if (percent >= 70) return "#4caf50";
+    if (percent >= 40) return "#ff9800";
+    return "#f44336";
+  };
+  const calculateRemainingPercent = (createdAt, dueDate) => {
+    const now = new Date();
+    const start = new Date(createdAt);
+    const end = new Date(dueDate);
+
+    if (isNaN(start) || isNaN(end) || end <= start) return 0;
+
+    const totalDuration = end - start;
+    const remainingDuration = end - now;
+
+    const percent = (remainingDuration / totalDuration) * 100;
+
+    return Math.max(0, Math.min(100, Math.round(percent)));
+  };
+
+  const percent = calculateRemainingPercent(props.createdAt, props.dueDate);
+  const progressColor = getColorByPercent(percent);
   return (
     <tr
       ref={setNodeRef}
@@ -48,7 +71,7 @@ const Task = ({ ...props }) => {
         <div className="task_list_head">
           <img src={adjustIcon} alt="Adjust Icon" />
           <div className="task_list_head_content">
-            <p>.</p>
+            {/* <p>.</p> */}
             <h2>{props.title || <Skeleton />}</h2>
           </div>
         </div>
@@ -83,6 +106,17 @@ const Task = ({ ...props }) => {
       <td>
         <div className="task_list_priority">
           <h2>{props.priority || "No priority"}</h2>
+        </div>
+      </td>
+      <td>
+        <div className="task-content-percent">
+          <div className="task-content-percent-container">
+            <div
+              className="task-content-percent-line"
+              style={{ width: `${percent}%`, backgroundColor: progressColor }}
+            ></div>
+          </div>
+          <span>{percent}%</span>
         </div>
       </td>
       {/* <td>

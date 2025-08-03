@@ -147,7 +147,7 @@ const Task = ({ isDraggingOverlay, ...props }) => {
     return "#f44336";
   };
 
-  const percent = calculateRemainingPercent(props.createdAt, props.dueDate);
+  const percent = calculateRemainingPercent(props.createdAt, props.taskDueDate);
   const progressColor = getColorByPercent(percent);
 
   return (
@@ -188,10 +188,12 @@ const Task = ({ isDraggingOverlay, ...props }) => {
             </div>
           </div>
           <div className="task-content-percent">
-            <div
-              className="task-content-percent-line"
-              style={{ width: `${percent}%`, backgroundColor: progressColor }}
-            ></div>
+            <div className="task-content-percent-container">
+              <div
+                className="task-content-percent-line"
+                style={{ width: `${percent}%`, backgroundColor: progressColor }}
+              ></div>
+            </div>
             <span>{percent}%</span>
           </div>
 

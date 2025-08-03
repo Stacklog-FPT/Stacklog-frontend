@@ -17,20 +17,19 @@ const AddTask = (props) => {
   const notify = () => toast.success("Add task is successfully");
   const { addTask } = taskService();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  console.log(props.status.statusTaskId);
   const [taskData, setTaskData] = useState({
     taskId: "",
-    groupId: "",
     taskTitle: "",
     taskDescription: "",
-    statusTask: props.status,
+    groupId: "group-1",
     documentId: "",
     taskPoint: 5,
-    taskParentId: 0,
-    dueDate: "",
-    createdBy: "",
-    updatedBy: "",
+    taskDueDate: "",
     priority: "",
-    assigns: "" || [],
+    statusTaskId: props.status.statusTaskId,
+    listUserAssign: ["6801ccf3b8b39cd0e4d38877", "68768017c89a12a7e51ddebd"],
+    parentTaskId: "",
   });
   const [colorPriority, setColorPriority] = useState([
     { id: 1, color: "#FFFAEB", content: "HIGH" },
@@ -62,7 +61,7 @@ const AddTask = (props) => {
         groupId: "group_1",
         taskTitle: taskData.taskTitle,
         taskDescription: taskData.taskDescription,
-        statusTask: props.status,
+        statusTaskId: taskData.statusTaskId,
         documentId: "",
         taskPoint: 0,
         taskParentId: 0,
@@ -155,14 +154,14 @@ const AddTask = (props) => {
                 <input
                   type="checkbox"
                   value={member._id}
-                  checked={taskData.assigns.includes(member._id)}
+                  checked={taskData.listUserAssign.includes(member._id)}
                   onChange={(e) => {
                     const { checked, value } = e.target;
                     setTaskData((prev) => {
                       const newAssigns = checked
-                        ? [...prev.assigns, value]
-                        : prev.assigns.filter((id) => id !== value);
-                      return { ...prev, assigns: newAssigns };
+                        ? [...prev.listUserAssign, value]
+                        : prev.listUserAssign.filter((id) => id !== value);
+                      return { ...prev, listUserAssign: newAssigns };
                     });
                   }}
                 />
@@ -205,9 +204,9 @@ const AddTask = (props) => {
             <div className="date-input-container">
               <input
                 type="date"
-                name="dueDate"
+                name="taskDueDate"
                 className="date-input"
-                value={taskData.dueDate}
+                value={taskData.taskDueDate}
                 onChange={handleInputChange}
               />
             </div>

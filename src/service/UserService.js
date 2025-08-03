@@ -50,7 +50,7 @@ const userApi = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      
       return response.data;
     } catch (error) {
       throw new Error(error.message);

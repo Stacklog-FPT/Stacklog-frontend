@@ -22,10 +22,13 @@ const Task = ({ ...props }) => {
   };
 
   const handleFormatDate = (date) => {
-    if (!date) return "";
+    if (!date) return "No due date";
 
     const dateObj = new Date(date);
-    if (isNaN(dateObj)) return "";
+    if (isNaN(dateObj)) {
+      console.error(`Invalid date format for ${date}`);
+      return "Invalid date";
+    }
 
     const day = String(dateObj.getDate()).padStart(2, "0");
     const month = String(dateObj.getMonth() + 1).padStart(2, "0");
@@ -38,32 +41,60 @@ const Task = ({ ...props }) => {
   const extraCount = props.members?.length - visibleMembers.length;
 
   const getColorByPercent = (percent) => {
-    if (percent >= 70) return "#4caf50";
-    if (percent >= 40) return "#ff9800";
-    return "#f44336";
+    if (percent >= 70) return "#4caf50"; // Xanh lá
+    if (percent >= 40) return "#ff9800"; // Cam
+    return "#f44336"; // Đỏ
   };
+
   const calculateRemainingPercent = (createdAt, dueDate) => {
-    console.log("createAt: ", createdAt, "dueDate: ", dueDate);
-    const now = new Date();
+    console.log("createdAt:", createdAt, "dueDate:", dueDate);
+
+    if (!createdAt || !dueDate) {
+      console.warn("Missing createdAt or dueDate");
+      return 0;
+    }
+
     const start = new Date(createdAt);
     const end = new Date(dueDate);
+    const now = new Date();
 
-    if (isNaN(start) || isNaN(end) || end <= start) return 0;
+    if (isNaN(start) || isNaN(end)) {
+      console.error("Invalid date format:", { createdAt, dueDate });
+      return 0;
+    }
+
+     if (start == null || end == null) {
+      console.error("Invalid date format is null:", { createdAt, dueDate });
+      return 0;
+    }
+
+    if (start == undefined || end == undefined) {
+      console.error("Invalid date format is undefined:", { createdAt, dueDate });
+      return 0;
+    }
+
+    if (end <= start) {
+      console.warn("dueDate is earlier than createdAt");
+      return 0;
+    }
+
+    if (now > end) {
+      console.warn("dueDate has passed");
+      return 0;
+    }
 
     const totalDuration = end - start;
     const remainingDuration = end - now;
 
     const percent = (remainingDuration / totalDuration) * 100;
 
-    return Math.max(0, Math.min(100, Math.round(percent)));
+    const finalPercent = Math.max(0, Math.min(100, Math.round(percent)));
+    return finalPercent;
   };
 
-  const percent = calculateRemainingPercent(
-    props?.task?.createdAt,
-    props?.task?.taskDueDate
-  );
-  console.log(percent);
+  const percent = calculateRemainingPercent(props.createdAt, props.dueDate);
   const progressColor = getColorByPercent(percent);
+
   return (
     <tr
       ref={setNodeRef}
@@ -76,7 +107,6 @@ const Task = ({ ...props }) => {
         <div className="task_list_head">
           <img src={adjustIcon} alt="Adjust Icon" />
           <div className="task_list_head_content">
-            {/* <p>.</p> */}
             <h2>{props.title || <Skeleton />}</h2>
           </div>
         </div>
@@ -90,8 +120,15 @@ const Task = ({ ...props }) => {
             {visibleMembers.map((item, index) => (
               <li key={index}>
                 <img
-                  src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-                  alt="Student Avatar"
+                  src={
+                    item.avatar ||
+                    "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                  }
+                  alt={`${item.name || item.userName || "Student"} Avatar`}
+                  onError={(e) =>
+                    (e.target.src =
+                      "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                  }
                 />
               </li>
             ))}
@@ -105,7 +142,7 @@ const Task = ({ ...props }) => {
       </td>
       <td>
         <div className="task_list_due_date">
-          <h2>{handleFormatDate(props.dueDate) || "No due date"}</h2>
+          <h2>{handleFormatDate(props.dueDate)}</h2>
         </div>
       </td>
       <td>
@@ -124,15 +161,6 @@ const Task = ({ ...props }) => {
           <span>{percent}%</span>
         </div>
       </td>
-      {/* <td>
-        <div className="task_list_action">
-          <img
-            src={adjustIcon}
-            alt="Action Icon"
-            onClick={() => onShowComment?.(id)}
-          />
-        </div>
-      </td> */}
     </tr>
   );
 };

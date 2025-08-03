@@ -157,9 +157,9 @@ const Task = ({ isDraggingOverlay, ...props }) => {
         style={style}
         {...(isDraggingOverlay ? {} : attributes)}
         {...(isDraggingOverlay ? {} : listeners)}
-        className={`task-container ${isDragging ? "dragging" : ""} ${
-          isDraggingOverlay ? "overlay" : ""
-        }`}
+        className={`task-container${
+          isDraggingOverlay ? " isDraggingOverlay" : ""
+        }${isDragging && !isDraggingOverlay ? " dragging" : ""}`}
       >
         <div className="task-content">
           <div className="task-content-head">

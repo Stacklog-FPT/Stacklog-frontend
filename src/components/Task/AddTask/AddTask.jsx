@@ -9,28 +9,30 @@ import { useAuth } from "../../../context/AuthProvider";
 import taskService from "../../../service/TaskService";
 import { toast } from "react-toastify";
 import axios from "axios";
+import decodeToken from "../../../service/DecodeJwt";
 
 const AddTask = (props) => {
-  const visibleMembers = props.members.slice(0, 3);
-  const extraCount = props.members.length - visibleMembers.length;
   const { user } = useAuth();
+  const userData = decodeToken(user?.token);
   const notify = () => toast.success("Add task is successfully");
   const { addTask } = taskService();
+  const visibleMembers = props.members.slice(0, 3);
+  const extraCount = props.members.length - visibleMembers.length;
   const [isSubmitting, setIsSubmitting] = useState(false);
-  console.log(props.status.statusTaskId);
   const [taskData, setTaskData] = useState({
     taskId: "",
     taskTitle: "",
     taskDescription: "",
-    groupId: "group-1",
+    groupId: props.group || "",
     documentId: "",
     taskPoint: 5,
     taskDueDate: "",
     priority: "",
     statusTaskId: props.status.statusTaskId,
-    listUserAssign: ["6801ccf3b8b39cd0e4d38877", "68768017c89a12a7e51ddebd"],
+    assignTo: [],
     parentTaskId: "",
   });
+
   const [colorPriority, setColorPriority] = useState([
     { id: 1, color: "#FFFAEB", content: "HIGH" },
     { id: 2, color: "#3a9e3e", content: "MEDIUM" },
@@ -47,6 +49,23 @@ const AddTask = (props) => {
     setTaskData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleAssignChange = (e) => {
+    const { checked, value } = e.target;
+    setTaskData((prev) => {
+      const newAssigns = checked
+        ? [...prev.assignTo, value]
+        : prev.assignTo.filter((id) => id !== value);
+      return { ...prev, assignTo: newAssigns };
+    });
+  };
+
+  const handleRemoveAssign = (userId) => {
+    setTaskData((prev) => ({
+      ...prev,
+      assignTo: prev.assignTo.filter((id) => id !== userId),
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!taskData.taskTitle.trim()) {
@@ -56,34 +75,42 @@ const AddTask = (props) => {
 
     setIsSubmitting(true);
     try {
+      // Lấy thời gian thực
+      const now = new Date();
+      const currentTime = now.toTimeString().split(" ")[0]; // Lấy HH:mm:ss (ví dụ: 09:21:00)
+      // Kết hợp ngày từ input với thời gian thực
+      let formattedDueDate = taskData.taskDueDate
+        ? `${taskData.taskDueDate}T${currentTime}`
+        : now.toISOString().split(".")[0]; // Nếu không chọn ngày, dùng ngày hiện tại
+
       const payload = {
         taskId: "",
-        groupId: "group_1",
+        groupId: props.group || "",
         taskTitle: taskData.taskTitle,
         taskDescription: taskData.taskDescription,
         statusTaskId: taskData.statusTaskId,
         documentId: "",
         taskPoint: 0,
         taskParentId: 0,
-        dueDate: taskData.dueDate,
-        createdBy: user.userName,
+        taskDueDate: formattedDueDate,
+        createdBy: user?.userName || userData?.username || "Unknown",
         updatedBy: "",
         priority: taskData.priority || "HIGH",
-        listUserAssign: [
-          "6801ccf3b8b39cd0e4d38877",
-          "68768017c89a12a7e51ddebd",
-        ],
+        listUserAssign: taskData.assignTo,
       };
+
+      console.log("Payload sent to server:", payload);
 
       const response = await addTask(payload, user.token);
       if (response.data) {
+        console.log("Response from server:", response.data);
         notify();
         await axios.post("http://localhost:3000/notifications", {
           id: Math.random().toString(16).slice(2, 6),
           title: `Thông báo môn ${taskData.taskTitle}`,
           author: {
             _id: Math.random(),
-            name: user.username || "Unknown",
+            name: user.username || userData?.username || "Unknown",
             avatar:
               user.avatar ||
               "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
@@ -97,10 +124,15 @@ const AddTask = (props) => {
     } catch (e) {
       console.error(
         "Failed to add task:",
-        e.response ? e.response.data : e.message
+        e.response ? e.response.data : e.message,
+        e.response ? e.response.status : ""
+      );
+      alert(
+        `Failed to add task: ${
+          e.response?.data?.message || e.message || "Unknown error"
+        }`
       );
       props.onCancel();
-      alert("Failed to add task. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -148,24 +180,43 @@ const AddTask = (props) => {
             <img src={assignUser} alt="..." />
             <h2>Assign</h2>
           </div>
+          <div className="wrapper-assign-user-content">
+            <ul>
+              {taskData.assignTo.map((userId) => {
+                const member = props.members.find((m) => m._id === userId);
+                return member ? (
+                  <li key={userId} className="assigned-user">
+                    <img
+                      src={member.avatar}
+                      alt={`${member.name || member.userName}'s Avatar`}
+                      title={member.name || member.userName}
+                      onError={(e) =>
+                        (e.target.src =
+                          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                      }
+                    />
+                    <i
+                      className="fa-solid fa-xmark remove-user"
+                      onClick={() => handleRemoveAssign(userId)}
+                    ></i>
+                  </li>
+                ) : null;
+              })}
+            </ul>
+            <div className="button-add">
+              <img src={avatar_add_button} alt="add_button_icon" />
+            </div>
+          </div>
           <div className="assign-checkbox-list">
             {props.members.map((member) => (
               <label key={member._id}>
                 <input
                   type="checkbox"
                   value={member._id}
-                  checked={taskData.listUserAssign.includes(member._id)}
-                  onChange={(e) => {
-                    const { checked, value } = e.target;
-                    setTaskData((prev) => {
-                      const newAssigns = checked
-                        ? [...prev.listUserAssign, value]
-                        : prev.listUserAssign.filter((id) => id !== value);
-                      return { ...prev, listUserAssign: newAssigns };
-                    });
-                  }}
+                  checked={taskData.assignTo.includes(member._id)}
+                  onChange={handleAssignChange}
                 />
-                {member.full_name || member.userName}
+                {member.name || member.userName}
               </label>
             ))}
           </div>

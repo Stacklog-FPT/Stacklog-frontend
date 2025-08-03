@@ -37,15 +37,15 @@ const CheckTypeByAll = () => {
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
   const [showAddColumn, setShowAddColumn] = useState(false);
-  const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { getAllTask, addTask, setSocket } = taskService();
   const { getAllStatus } = statusApi();
   const [statusTasks, setStatusTasks] = useState([]);
-  console.log(statusTasks);
   const [tasks, setTasks] = useState([]);
+  const [memberTask, setMemberTask] = useState([]);
   const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
+  const [group, setGroup] = useState("");
   const { getAllGroup } = GroupService();
   const { getAllReview } = ReviewService();
   const [commentLength, setCommetLength] = useState(0);
@@ -246,9 +246,10 @@ const CheckTypeByAll = () => {
     setShowAddColumn(false);
   };
 
-  const handleGetStatusTask = useCallback(async () => {
+  const handleGetStatusTask = useCallback(async (groupId) => {
     try {
-      const response = await getAllStatus(user.token);
+      setStatusTasks([]);
+      const response = await getAllStatus(user.token, groupId);
       if (response) {
         setStatusTasks(response.data);
       }
@@ -257,9 +258,10 @@ const CheckTypeByAll = () => {
     }
   }, []);
 
-  const handleGetTasks = useCallback(async () => {
+  const handleGetTasks = useCallback(async (groupId) => {
     try {
-      const response = await getAllTask(user.token);
+      setTasks([]);
+      const response = await getAllTask(user.token, groupId);
       if (response) {
         const normalizedTasks = response.data.map((task) => ({
           ...task,
@@ -295,6 +297,7 @@ const CheckTypeByAll = () => {
   const handleCloseAddSubtask = async () => {
     setShowAddSubTask(null);
   };
+
   useEffect(() => {
     const stompInstance = setSocket(user.token);
     setStompClient(stompInstance);
@@ -352,7 +355,7 @@ const CheckTypeByAll = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        await Promise.all([handleGetStatusTask(), handleGetTasks()]);
+        await Promise.all([handleGetStatusTask(group), handleGetTasks(group)]);
       } catch (e) {
         console.error("Error fetching data:", e.message);
       } finally {
@@ -369,12 +372,11 @@ const CheckTypeByAll = () => {
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [handleGetStatusTask, handleGetTasks]);
+  }, [handleGetStatusTask, handleGetTasks, group]);
 
   useEffect(() => {
     handleGetGroupList();
   }, []);
-  useEffect(() => {}, []);
 
   return (
     <DndContext
@@ -386,7 +388,11 @@ const CheckTypeByAll = () => {
     >
       <div className="check-task-by-all-container">
         <div className="check-task-by-all-content">
-          <ClassAndMember onFilterByPriority={handleFilterByPriority} />
+          <ClassAndMember
+            onFilterByPriority={handleFilterByPriority}
+            setGroup={setGroup}
+            setMemberTask={setMemberTask}
+          />
           <div className="task-column-container">
             {statusTasks.map((item) => (
               <Column
@@ -398,7 +404,7 @@ const CheckTypeByAll = () => {
                 tasks={tasks.filter(
                   (task) => task?.statusTask?.statusTaskId === item.statusTaskId
                 )}
-                members={members}
+                members={memberTask}
                 onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}
                 onShowAddSubTask={handleChooseTask}
@@ -416,13 +422,16 @@ const CheckTypeByAll = () => {
             <AddTask
               status={showAddTask}
               onCancel={() => setShowAddTask(null)}
-              members={members}
+              group={group}
+              members={memberTask}
             />
           )}
           {showCommentTask && (
             <CommentTask task={showCommentTask} isClose={handleCloseComment} />
           )}
-          {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}
+          {showAddColumn && (
+            <AddColumn isClose={handleCloseAddStatus} group={group} />
+          )}
           {showAddSubTask && (
             <AddSubTask isClose={handleCloseAddSubtask} task={showAddSubTask} />
           )}
@@ -434,7 +443,7 @@ const CheckTypeByAll = () => {
             id={activeTask.taskId}
             title={activeTask.taskTitle}
             percent={activeTask.percentProgress}
-            members={members}
+            members={memberTask}
             createdAt={activeTask.createdAt}
             dueDate={activeTask.taskDueDate}
             onShowComment={handleShowComment}

@@ -32,23 +32,24 @@ const customCollisionDetection = (args) => {
 
 const CheckTypeByList = () => {
   const { user } = useAuth();
-  const { getAllTask, addTask, setSocket } = taskService();
-  const { getAllStatus } = statusApi();
-  const { getAllGroup } = GroupService();
-  const { getAllReview } = ReviewService();
-  const [tasks, setTasks] = useState([]);
-  const [members, setMembers] = useState([]);
-  
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
   const [showAddColumn, setShowAddColumn] = useState(false);
+  const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [statuses, setStatuses] = useState([]);
+  const { getAllTask, addTask, setSocket } = taskService();
+  const { getAllStatus } = statusApi();
+  const [statusTasks, setStatusTasks] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
+  const [group, setGroup] = useState("");
+  const { getAllGroup } = GroupService();
+  const { getAllReview } = ReviewService();
   const [commentLength, setCommetLength] = useState(0);
+  const [isAddSubTask, setIsAddSubTask] = useState(false);
   const [showAddSubTask, setShowAddSubTask] = useState(null);
 
   const sensors = useSensors(
@@ -106,7 +107,7 @@ const CheckTypeByList = () => {
 
       if (isOverDroppable) {
         targetStatusId = droppableId.replace("droppable-", "");
-        targetStatus = statuses.find(
+        targetStatus = statusTasks.find(
           (item) => item.statusTaskId === targetStatusId
         )?.statusTaskName;
       } else if (isOverTask) {
@@ -211,7 +212,7 @@ const CheckTypeByList = () => {
       setTasks(updatedTasks);
       setActiveColumn(null);
     },
-    [tasks, activeColumn, statuses, addTask, user]
+    [tasks, activeColumn, statusTasks, addTask, user]
   );
 
   const handleFilterByPriority = () => {
@@ -257,11 +258,15 @@ const CheckTypeByList = () => {
     setShowAddSubTask(null);
   };
 
+  const getCurrentGroup = async (group) => {
+    setGroup(group);
+  };
+
   const handleGetStatusTask = useCallback(async () => {
     try {
       const response = await getAllStatus(user.token);
       if (response) {
-        setStatuses(response.data);
+        statusTasks(response.data);
       }
     } catch (e) {
       console.error(e.message);
@@ -401,9 +406,12 @@ const CheckTypeByList = () => {
       onDragEnd={handleDragEnd}
     >
       <div className="check__task__by__list__container">
-        <ClassAndMember onFilterByPriority={handleFilterByPriority} />
+        <ClassAndMember
+          onFilterByPriority={handleFilterByPriority}
+          getCurrentGroup={getCurrentGroup}
+        />
         <div className="check__task__by__list__column">
-          {statuses.map((item) => (
+          {statusTasks.map((item) => (
             <Column
               key={item.statusTaskId}
               statusId={item.statusTaskId}

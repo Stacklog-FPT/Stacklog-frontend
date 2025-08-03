@@ -31,12 +31,14 @@ const taskService = () => {
     return stompClient;
   };
 
-  const getAllTask = async (token) => {
+  const getAllTask = async (token, groupId) => {
     if (!token) {
       throw new Error("Unauthorized!");
     }
+
+    console.log('From service: ', groupId)
     try {
-      const response = await axios.get(`${API_TASK}/task/group_1`, {
+      const response = await axios.get(`${API_TASK}/task/${groupId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -59,7 +61,7 @@ const taskService = () => {
           "Content-Type": "application/json",
         },
       });
-      console.log(response)
+      console.log(response);
       return response;
     } catch (e) {
       throw new Error(e.message);

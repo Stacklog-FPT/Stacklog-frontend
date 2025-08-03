@@ -25,6 +25,7 @@ const Column = ({
   const { setNodeRef, isOver } = useDroppable({
     id: `droppable-${statusId}`,
   });
+  console.log(tasks)
 
   return (
     <div
@@ -75,7 +76,7 @@ const Column = ({
                   id={task?.taskId}
                   title={task?.taskTitle}
                   percent={task?.percentProgress}
-                  members={members}
+                  members={task?.assigns}
                   createdAt={task?.createdAt}
                   dueDate={task?.taskDueDate}
                   onShowComment={onShowComment}

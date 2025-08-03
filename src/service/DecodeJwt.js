@@ -3,14 +3,11 @@ const decodeToken = (token) => {
     if (!token) {
       throw new Error("No token provided");
     }
-
-    // Tách phần payload từ token
     const base64Url = token.split(".")[1];
     if (!base64Url) {
       throw new Error("Invalid token format");
     }
 
-    // Decode base64
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const jsonPayload = decodeURIComponent(
       atob(base64)

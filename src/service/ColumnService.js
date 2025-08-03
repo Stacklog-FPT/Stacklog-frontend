@@ -3,9 +3,9 @@ import axios from "axios";
 const API_STATUS = "http://103.166.183.142:8080/api/task";
 
 const statusApi = () => {
-  const getAllStatus = async (token) => {
+  const getAllStatus = async (token, groupId) => {
     try {
-      const response = await axios.get(`${API_STATUS}/status-task/group_1`, {
+      const response = await axios.get(`${API_STATUS}/status-task/${groupId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -24,6 +24,7 @@ const statusApi = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );

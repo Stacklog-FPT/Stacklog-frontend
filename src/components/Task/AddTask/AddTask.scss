@@ -164,9 +164,8 @@ $color-hover: red;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    gap: 5px;
-    width: 164px;
-    height: auto;
+    gap: 10px;
+
     &-heading {
       display: flex;
       align-items: center;
@@ -176,7 +175,6 @@ $color-hover: red;
         font-weight: 500;
         font-size: 15px;
         line-height: 21px;
-        padding-top: 10px;
       }
 
       img {
@@ -184,24 +182,22 @@ $color-hover: red;
         height: 15px;
       }
     }
+
     &-content {
       display: flex;
       align-items: center;
-      width: 164px;
+      gap: 10px;
 
       ul {
         display: flex;
         align-items: center;
         list-style: none;
-        padding-left: 10px;
+        padding: 0;
         margin: 0;
 
-        li {
+        li.assigned-user {
           position: relative;
-          margin-left: -10px;
-          &:nth-child(n + 4):not(.extra-count) {
-            display: none;
-          }
+          margin-right: 5px;
 
           img {
             width: 30px;
@@ -210,15 +206,59 @@ $color-hover: red;
             border: 2px solid #fff;
             object-fit: cover;
           }
+
+          .remove-user {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: $color-hover;
+            color: #fff;
+            font-size: 12px;
+            padding: 2px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+          }
+
+          &:hover .remove-user {
+            display: block;
+          }
         }
       }
 
-      &.button-add {
-        padding-left: 5px;
+      .button-add {
         img {
           width: 24px;
           height: 24px;
+          cursor: pointer;
         }
+      }
+    }
+  }
+
+  .assign-checkbox-list {
+    width: 200px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+    label {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px;
+      border-radius: 5px;
+
+      input[type="checkbox"] {
+        transform: scale(1.2);
+        accent-color: #0d9488;
+      }
+
+      &:hover {
+        cursor: pointer;
       }
     }
   }
@@ -232,7 +272,6 @@ $color-hover: red;
         font-weight: 500;
         font-size: 15px;
         line-height: 21px;
-        padding-top: 10px;
       }
 
       img {
@@ -277,7 +316,7 @@ $color-hover: red;
 
         .date-input {
           width: 100%;
-          padding: 10px 12px 10px 12px;
+          padding: 10px 12px;
           border: 1px solid #d1d5db;
           border-radius: 6px;
           font-size: 15px;
@@ -313,16 +352,6 @@ $color-hover: red;
             color: #6b7280;
           }
         }
-
-        .date-icon {
-          position: absolute;
-          right: 10px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #6b7280;
-          font-size: 16px;
-          pointer-events: none;
-        }
       }
     }
   }
@@ -341,7 +370,6 @@ $color-hover: red;
         font-weight: 500;
         font-size: 15px;
         line-height: 21px;
-        padding-top: 10px;
       }
 
       img {
@@ -357,33 +385,11 @@ $color-hover: red;
       justify-content: space-around;
 
       input[type="text"] {
-      }
-    }
-  }
-
-  .assign-checkbox-list {
-    width: 200px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-
-    label {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 8px;
-      border-radius: 5px;
-
-      input[type="checkbox"] {
-        transform: scale(1.2);
-        accent-color: #0d9488;
-      }
-
-      &:hover {
-        cursor: pointer;
+        width: 30%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        font-size: 15px;
       }
     }
   }

@@ -3,13 +3,13 @@ import "./AddColumn.scss";
 import statusApi from "../../../service/ColumnService";
 import { useAuth } from "../../../context/AuthProvider";
 
-const AddColumn = ({ isClose }) => {
+const AddColumn = ({ isClose, group }) => {
   const { user } = useAuth();
   const [color, setColor] = useState("#3498db");
   const [columnData, setColumnData] = useState({
     statusTaskName: "",
     statusTaskColor: "" || color,
-    groupId: "group_1",
+    groupId: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { addStatus } = statusApi();
@@ -26,7 +26,7 @@ const AddColumn = ({ isClose }) => {
       const payload = {
         statusTaskName: columnData.statusTaskName,
         statusTaskColor: columnData.statusTaskColor || color,
-        groupId: "group_1",
+        groupId: group,
       };
 
       const response = await addStatus(user?.token, payload);

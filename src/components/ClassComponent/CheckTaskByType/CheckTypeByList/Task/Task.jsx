@@ -43,6 +43,7 @@ const Task = ({ ...props }) => {
     return "#f44336";
   };
   const calculateRemainingPercent = (createdAt, dueDate) => {
+    console.log("createAt: ", createdAt, "dueDate: ", dueDate);
     const now = new Date();
     const start = new Date(createdAt);
     const end = new Date(dueDate);
@@ -57,7 +58,11 @@ const Task = ({ ...props }) => {
     return Math.max(0, Math.min(100, Math.round(percent)));
   };
 
-  const percent = calculateRemainingPercent(props.createdAt, props.dueDate);
+  const percent = calculateRemainingPercent(
+    props?.task?.createdAt,
+    props?.task?.taskDueDate
+  );
+  console.log(percent);
   const progressColor = getColorByPercent(percent);
   return (
     <tr

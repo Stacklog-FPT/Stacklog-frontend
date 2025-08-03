@@ -36,7 +36,6 @@ const ClassList = ({ handleActivityAddClass }) => {
       }
     };
     fetchData();
-    // eslint-disable-next-line
   }, [user]);
 
   useEffect(() => {
@@ -78,7 +77,6 @@ const ClassList = ({ handleActivityAddClass }) => {
               email: u.email,
               id: u.work_id,
               avatar: u.avatar_link,
-              // Nếu muốn truyền thêm classCode, subjectCode thì lấy thêm ở đây
             };
           } catch {
             return null;
@@ -142,6 +140,7 @@ const ClassList = ({ handleActivityAddClass }) => {
         <div className="grades__component__container__filter__class">
           <div className="grades__component__container__filter__class__feature">
             <select value={selectedClass} onChange={handleClassChange}>
+              <option>-- Choose Class --</option>
               {classes.map((cls) => (
                 <option key={cls.classesId} value={cls.classesId}>
                   {cls.classesName}

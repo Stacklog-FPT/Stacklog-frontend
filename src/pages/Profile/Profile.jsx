@@ -11,7 +11,6 @@ const Profile = () => {
   const { user, logoutAuth } = useAuth();
   const { logout, getUserById } = userApi();
   const userData = decodeToken(user?.token);
-  console.log(userData);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

@@ -440,6 +440,7 @@ const CheckTypeByAll = () => {
           <Task
             id={activeTask.taskId}
             title={activeTask.taskTitle}
+            members={memberTask}
             percent={activeTask.percentProgress}
             onShowComment={handleShowComment}
             onShowAddSubTask={handleChooseTask}

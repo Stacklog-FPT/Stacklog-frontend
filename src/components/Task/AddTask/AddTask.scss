@@ -23,10 +23,10 @@ $color-hover: red;
   gap: 5px;
   scroll-behavior: smooth;
   overflow-y: scroll;
-
   & > * {
     flex-shrink: 0;
   }
+
   .text-heading {
     font-weight: 500;
     line-height: 30px;
@@ -39,7 +39,6 @@ $color-hover: red;
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     i {
       color: $color-text;
       font-size: 18px;
@@ -47,7 +46,6 @@ $color-hover: red;
       border-radius: 100px;
       cursor: pointer;
     }
-
     i:hover {
       background-color: $color-hover;
       color: $color-input;
@@ -63,13 +61,11 @@ $color-hover: red;
       border-radius: 8px;
       border: none;
       font-size: 16px;
-
       &:focus {
         outline: none;
         border: none;
       }
     }
-
     margin-bottom: 10px;
   }
 
@@ -93,14 +89,12 @@ $color-hover: red;
       border: none;
       resize: none;
       vertical-align: top;
-
       &::placeholder {
         color: $color-text;
         opacity: 0.6;
         vertical-align: top;
         line-height: normal;
       }
-
       &:focus {
         outline: none;
         border: none;
@@ -118,7 +112,6 @@ $color-hover: red;
         width: 16px;
         height: 16px;
       }
-
       h2 {
         font-weight: 500;
         font-size: 15px;
@@ -126,13 +119,11 @@ $color-hover: red;
         padding-bottom: 3px;
       }
     }
-
     .wrapper-input {
       display: flex;
       gap: 5px;
       align-items: center;
       position: relative;
-
       input[type="text"] {
         width: 640px;
         height: 37px;
@@ -146,7 +137,6 @@ $color-hover: red;
           border: none;
         }
       }
-
       .fa-plus {
         position: absolute;
         left: 12px;
@@ -164,8 +154,7 @@ $color-hover: red;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    gap: 10px;
-
+    gap: 12px;
     &-heading {
       display: flex;
       align-items: center;
@@ -176,94 +165,171 @@ $color-hover: red;
         font-size: 15px;
         line-height: 21px;
       }
-
       img {
         width: 15px;
         height: 15px;
       }
     }
-
-    &-content {
+    .assigned-users-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .assigned-user-card {
       display: flex;
       align-items: center;
-      gap: 10px;
-
-      ul {
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #e8f5e8 0%, #f0f9f0 100%);
+      border: 1px solid #c3e6c3;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .user-info {
         display: flex;
         align-items: center;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-
-        li.assigned-user {
+        gap: 12px;
+        .avatar-container {
           position: relative;
-          margin-right: 5px;
-
-          img {
-            width: 30px;
-            height: 30px;
+          .user-avatar {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            border: 2px solid #fff;
+            border: 2px solid #4ade80;
             object-fit: cover;
           }
-
-          .remove-user {
+          .check-icon {
             position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: $color-hover;
-            color: #fff;
-            font-size: 12px;
-            padding: 2px;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            background: #22c55e;
             border-radius: 50%;
-            cursor: pointer;
-            display: none;
-          }
-
-          &:hover .remove-user {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            i {
+              color: white;
+              font-size: 10px;
+            }
           }
         }
+        .user-name {
+          font-weight: 600;
+          font-size: 14px;
+          color: #166534;
+        }
       }
-
-      .button-add {
-        img {
-          width: 24px;
-          height: 24px;
-          cursor: pointer;
+      .remove-user-btn {
+        background: none;
+        border: none;
+        color: #dc2626;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &:hover {
+          background-color: #fee2e2;
+          transform: scale(1.1);
+        }
+        i {
+          font-size: 12px;
         }
       }
     }
-  }
-
-  .assign-checkbox-list {
-    width: 200px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-
-    label {
+    .add-member-section {
       width: 100%;
+    }
+    .add-member-btn {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 6px 8px;
-      border-radius: 5px;
-
-      input[type="checkbox"] {
-        transform: scale(1.2);
-        accent-color: #0d9488;
-      }
-
+      gap: 8px;
+      padding: 10px 16px;
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      font-size: 14px;
+      font-weight: 500;
+      color: #64748b;
       &:hover {
+        background: #f1f5f9;
+        border-color: #94a3b8;
+        color: #475569;
+      }
+      img {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    .assign-dropdown {
+      width: 100%;
+      position: relative;
+    }
+    .assign-checkbox-list {
+      width: 100%;
+      max-width: none;
+      padding: 8px;
+      border-radius: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      background: white;
+      border: 1px solid #e2e8f0;
+      .member-option {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
         cursor: pointer;
+        transition: all 0.2s ease;
+        &:hover {
+          background-color: #f8fafc;
+        }
+        input[type="checkbox"] {
+          transform: scale(1.2);
+          accent-color: #22c55e;
+        }
+        .member-info {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex: 1;
+          .member-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #e2e8f0;
+            object-fit: cover;
+          }
+          .member-name {
+            font-weight: 500;
+            font-size: 14px;
+            color: #374151;
+          }
+        }
       }
     }
   }
 
   .wrapper-priority {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     &-heading {
       display: flex;
       align-items: center;
@@ -272,25 +338,78 @@ $color-hover: red;
         font-weight: 500;
         font-size: 15px;
         line-height: 21px;
+        color: #1f2937;
       }
-
       img {
         width: 15px;
         height: 15px;
       }
     }
-
-    select {
-      padding: 10px 25px;
-      border: none;
-      border-radius: 10px;
-      color: #000;
-      &:focus {
-        border: none;
+    .priority-selector {
+      position: relative;
+      width: 200px;
+      .priority-toggle {
+        width: 100%;
+        padding: 10px 16px;
+        border-radius: 12px;
+        border: 2px solid;
+        background-color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1f2937;
+        transition: all 0.2s ease;
+        &:hover {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .priority-dot {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+        }
+        i {
+          margin-left: auto;
+          font-size: 12px;
+          color: #64748b;
+        }
       }
-
-      &:hover {
-        border: none;
+      .priority-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        margin-top: 4px;
+        .priority-option {
+          padding: 10px 16px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 500;
+          color: #374151;
+          transition: all 0.2s ease;
+          &:hover {
+            background-color: #f8fafc;
+          }
+          &.selected {
+            background-color: #e6f3ff;
+            font-weight: 600;
+          }
+          .priority-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+          }
+        }
       }
     }
   }
@@ -313,7 +432,6 @@ $color-hover: red;
         display: flex;
         align-items: center;
         width: 250px;
-
         .date-input {
           width: 100%;
           padding: 10px 12px;
@@ -329,22 +447,18 @@ $color-hover: red;
           outline: none;
           text-align: left;
           letter-spacing: 0.5px;
-
           &::placeholder {
             color: #9ca3af;
             letter-spacing: 1px;
             font-weight: 400;
           }
-
           &:focus {
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
           }
-
           &:hover {
             border-color: #9ca3af;
           }
-
           &:disabled {
             background-color: #f3f4f6;
             border-color: #e5e7eb;
@@ -371,19 +485,16 @@ $color-hover: red;
         font-size: 15px;
         line-height: 21px;
       }
-
       img {
         width: 15px;
         height: 15px;
       }
     }
-
     &-input {
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: space-around;
-
       input[type="text"] {
         width: 30%;
         padding: 10px;

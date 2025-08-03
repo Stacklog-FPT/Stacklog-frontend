@@ -7,6 +7,7 @@ import {
   rectIntersection,
   closestCorners,
   DragOverlay,
+  defaultDropAnimationSideEffects,
 } from "@dnd-kit/core";
 import { useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import AddTask from "../../../Task/AddTask/AddTask";
@@ -437,7 +438,19 @@ const CheckTypeByAll = () => {
           )}
         </div>
       </div>
-      <DragOverlay dropAnimation={null}>
+      <DragOverlay
+        dropAnimation={{
+          duration: 250,
+          easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",
+          sideEffects: defaultDropAnimationSideEffects({
+            styles: {
+              active: {
+                opacity: "1", 
+              },
+            },
+          }),
+        }}
+      >
         {activeTask ? (
           <Task
             id={activeTask.taskId}

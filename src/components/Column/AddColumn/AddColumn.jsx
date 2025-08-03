@@ -31,7 +31,7 @@ const AddColumn = ({ isClose, group }) => {
 
       const response = await addStatus(user?.token, payload);
 
-      console.log(response)
+      console.log(response);
     } catch (e) {
       return e.message;
     }
@@ -60,6 +60,7 @@ const AddColumn = ({ isClose, group }) => {
             <input
               id="color-picker"
               type="color"
+              name="statusTaskColor"
               value={columnData.statusTaskColor}
               onChange={handleInputChange}
             />

@@ -117,3 +117,11 @@
     cursor: pointer;
   }
 }
+
+
+.no-tasks {
+  color: var(--text--color--gray);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: end;
+}

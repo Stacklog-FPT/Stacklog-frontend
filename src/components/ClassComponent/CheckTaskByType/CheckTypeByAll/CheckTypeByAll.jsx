@@ -43,6 +43,7 @@ const CheckTypeByAll = () => {
   const { getAllStatus } = statusApi();
   const [statusTasks, setStatusTasks] = useState([]);
   const [tasks, setTasks] = useState([]);
+  console.log(tasks);
   const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const { getAllGroup } = GroupService();
@@ -142,11 +143,7 @@ const CheckTypeByAll = () => {
       if (activeTask.statusTask.statusTaskId !== targetStatusId) {
         const newTask = {
           ...activeTask,
-          statusTask: {
-            ...activeTask.statusTask,
-            statusTaskId: targetStatusId,
-            statusTaskName: targetStatus,
-          },
+          statusTaskId: targetStatusId,
           listUserAssign: [
             "6801ccf3b8b39cd0e4d38877",
             "68768017c89a12a7e51ddebd",
@@ -377,7 +374,7 @@ const CheckTypeByAll = () => {
   useEffect(() => {
     handleGetGroupList();
   }, []);
-  useEffect(() => {}, [])
+  useEffect(() => {}, []);
 
   return (
     <DndContext
@@ -415,7 +412,7 @@ const CheckTypeByAll = () => {
               <span>Add Status</span>
             </button>
           </div>
-          {isAddSubTask && (
+          {showAddTask && (
             <AddTask
               status={showAddTask}
               onCancel={() => setShowAddTask(null)}
@@ -423,10 +420,7 @@ const CheckTypeByAll = () => {
             />
           )}
           {showCommentTask && (
-            <CommentTask
-              task={showCommentTask}
-              isClose={handleCloseComment}
-            />
+            <CommentTask task={showCommentTask} isClose={handleCloseComment} />
           )}
           {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}
           {showAddSubTask && (

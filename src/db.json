@@ -1268,6 +1268,66 @@
       "createdAt": "2025-07-31",
       "isRead": false,
       "_id": 0.8186076970220297
+    },
+    {
+      "id": "e2e9",
+      "title": "Thông báo môn Vẽ UI/UX",
+      "author": {
+        "_id": 0.8674950553790338,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-02",
+      "isRead": false,
+      "_id": 0.5993203695703111
+    },
+    {
+      "id": "6639",
+      "title": "Thông báo môn Test Task Post",
+      "author": {
+        "_id": 0.36895637032615136,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-02",
+      "isRead": false,
+      "_id": 0.9770341824419131
+    },
+    {
+      "id": "acd1",
+      "title": "Thông báo môn Test 2",
+      "author": {
+        "_id": 0.17275552678783979,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-02",
+      "isRead": false,
+      "_id": 0.7426376635950727
+    },
+    {
+      "id": "68fe",
+      "title": "Thông báo môn Test 2",
+      "author": {
+        "_id": 0.3145427331626204,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-02",
+      "isRead": false,
+      "_id": 0.19732499633543787
+    },
+    {
+      "id": "4c26",
+      "title": "Thông báo môn Test Task Post",
+      "author": {
+        "_id": 0.1728132286952444,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-02",
+      "isRead": false,
+      "_id": 0.671020245115433
     }
   ],
   "lectures": [

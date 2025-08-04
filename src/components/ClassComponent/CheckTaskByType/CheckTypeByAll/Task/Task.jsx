@@ -107,16 +107,10 @@ const Task = ({ isDraggingOverlay, ...props }) => {
           statusTaskColor: task.statusTask.statusTaskColor,
           groupId: task.statusTask.groupId,
         },
-        listUserAssign: [
-          "6801ccf3b8b39cd0e4d38877",
-          "68768017c89a12a7e51ddebd",
-        ],
+        listUserAssign: task?.assigns,
         subtasks: task?.subtasks,
       };
       const response = await addTask(payload, user?.token);
-      if (response) {
-        console.log("Updated task:", response);
-      }
     } catch (e) {
       console.error("Error updating priority:", e.message);
     }

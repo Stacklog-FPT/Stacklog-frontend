@@ -41,14 +41,12 @@ const Task = ({ ...props }) => {
   const extraCount = props.members?.length - visibleMembers.length;
 
   const getColorByPercent = (percent) => {
-    if (percent >= 70) return "#4caf50"; // Xanh lá
-    if (percent >= 40) return "#ff9800"; // Cam
-    return "#f44336"; // Đỏ
+    if (percent >= 70) return "#4caf50"; 
+    if (percent >= 40) return "#ff9800"; 
+    return "#f44336"; 
   };
 
   const calculateRemainingPercent = (createdAt, dueDate) => {
-    console.log("createdAt:", createdAt, "dueDate:", dueDate);
-
     if (!createdAt || !dueDate) {
       console.warn("Missing createdAt or dueDate");
       return 0;

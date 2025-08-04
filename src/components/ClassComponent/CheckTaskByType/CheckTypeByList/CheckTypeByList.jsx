@@ -88,7 +88,6 @@ const CheckTypeByList = () => {
         setActiveColumn(null);
         return;
       }
-
       const activeId = active.id;
       const activeTask = tasks.find((task) => task.taskId === activeId);
       if (!activeTask) {
@@ -145,16 +144,12 @@ const CheckTypeByList = () => {
       if (activeTask.statusTask.statusTaskId !== targetStatusId) {
         const newTask = {
           ...activeTask,
-          statusTask: {
-            ...activeTask.statusTask,
-            statusTaskId: targetStatusId,
-            statusTaskName: targetStatus,
-          },
-          listUserAssign: [
-            "6801ccf3b8b39cd0e4d38877",
-            "68768017c89a12a7e51ddebd",
-          ],
+          statusTaskId: targetStatusId,
+          listUserAssign: Array.isArray(activeTask.assigns)
+            ? activeTask.assigns.map((user) => user.assignTo).filter(Boolean)
+            : [],
         };
+        console.log(newTask);
         try {
           const response = await addTask(newTask, user?.token);
           await axios.post("http://localhost:3000/notifications", {
@@ -255,38 +250,49 @@ const CheckTypeByList = () => {
     setShowAddSubTask(task);
   };
 
-  const handleGetStatusTask = useCallback(async (groupId) => {
-    try {
-      setStatusTasks([]);
-      const response = await getAllStatus(user.token, groupId);
-      if (response) {
-        setStatusTasks(response.data);
+  const handleGetStatusTask = useCallback(
+    async (groupId) => {
+      try {
+        setStatusTasks([]);
+        const response = await getAllStatus(user.token, groupId);
+        console.log("Status API response:", response);
+        if (response && response.data) {
+          setStatusTasks(response.data);
+        } else {
+          console.warn("No status data returned");
+        }
+      } catch (e) {
+        console.error("Error fetching status:", e);
       }
-    } catch (e) {
-      console.error(e.message);
-    }
-  }, []);
+    },
+    [user.token]
+  );
 
-  const handleGetTasks = useCallback(async (groupId) => {
-    try {
-      const response = await getAllTask(user.token, groupId);
-      if (response) {
-        console.log(response.data);
-        const normalizedTasks = response.data.map((task) => ({
-          ...task,
-          statusTask: {
-            ...task.statusTask,
-            statusTaskName: task.statusTask.statusTaskName
-              .toLowerCase()
-              .replace(/\b\w/g, (c) => c.toUpperCase()),
-          },
-        }));
-        setTasks(normalizedTasks);
+  const handleGetTasks = useCallback(
+    async (groupId) => {
+      try {
+        const response = await getAllTask(user.token, groupId);
+        console.log("Tasks API response:", response);
+        if (response && response.data) {
+          const normalizedTasks = response.data.map((task) => ({
+            ...task,
+            statusTask: {
+              ...task.statusTask,
+              statusTaskName: task.statusTask.statusTaskName
+                .toLowerCase()
+                .replace(/\b\w/g, (c) => c.toUpperCase()),
+            },
+          }));
+          setTasks(normalizedTasks);
+        } else {
+          console.warn("No tasks data returned");
+        }
+      } catch (e) {
+        console.error("Error fetching tasks:", e);
       }
-    } catch (e) {
-      console.error(e.message);
-    }
-  }, []);
+    },
+    [user.token]
+  );
 
   useEffect(() => {
     const stompInstance = setSocket(user.token);
@@ -352,20 +358,17 @@ const CheckTypeByList = () => {
         setIsLoading(false);
       }
     };
-
     fetchData();
-
     const handleEscape = (e) => {
       if (e.key === "Escape") {
         setShowAddTask(null);
       }
     };
     document.addEventListener("keydown", handleEscape);
-
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [handleGetStatusTask, handleGetTasks]);
+  }, [handleGetStatusTask, handleGetTasks, group]);
 
   return (
     <DndContext
@@ -417,9 +420,9 @@ const CheckTypeByList = () => {
           <CommentTask task={showCommentTask} isClose={handleCloseComment} />
         )}
         {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}
-        {showAddSubTask && (
+        {/* {showAddSubTask && (
           <AddSubTask isClose={handleCloseAddSubtask} task={showAddSubTask} />
-        )}
+        )} */}
       </div>
       <DragOverlay dropAnimation={null}>
         {activeTask ? (

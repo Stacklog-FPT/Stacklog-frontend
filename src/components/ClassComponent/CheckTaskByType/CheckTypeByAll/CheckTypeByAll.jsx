@@ -145,10 +145,9 @@ const CheckTypeByAll = () => {
         const newTask = {
           ...activeTask,
           statusTaskId: targetStatusId,
-          listUserAssign: [
-            "6801ccf3b8b39cd0e4d38877",
-            "68768017c89a12a7e51ddebd",
-          ],
+          listUserAssign: Array.isArray(activeTask.assigns)
+            ? activeTask.assigns.map((user) => user.assignTo).filter(Boolean)
+            : [],
         };
         console.log(newTask);
         try {
@@ -224,7 +223,6 @@ const CheckTypeByAll = () => {
         return priorityA - priorityB;
       });
       if (sortedTasks) {
-        console.log(sortedTasks);
         setTasks(sortedTasks);
         setIsSortedByPriority(true);
       }
@@ -263,7 +261,6 @@ const CheckTypeByAll = () => {
     try {
       const response = await getAllTask(user.token, groupId);
       if (response) {
-        console.log(response.data);
         const normalizedTasks = response.data.map((task) => ({
           ...task,
           statusTask: {
@@ -430,7 +427,7 @@ const CheckTypeByAll = () => {
           sideEffects: defaultDropAnimationSideEffects({
             styles: {
               active: {
-                opacity: "1", 
+                opacity: "1",
               },
             },
           }),

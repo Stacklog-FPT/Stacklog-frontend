@@ -97,7 +97,7 @@ const Column = ({
                 ) : (
                   <tr>
                     <td colSpan="6">
-                      <h2>No task for today!</h2>
+                      <h2 className="task-empty">No task for today!</h2>
                     </td>
                   </tr>
                 )}

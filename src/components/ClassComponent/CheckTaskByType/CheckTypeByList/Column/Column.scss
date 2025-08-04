@@ -56,6 +56,13 @@ $-color-text-add: #545454;
         border-bottom: 1px solid #595858;
         padding-bottom: 10px;
       }
+
+      .task-empty{
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text--color--gray);
+        padding-top: 20px;
+      }
     }
   }
 }

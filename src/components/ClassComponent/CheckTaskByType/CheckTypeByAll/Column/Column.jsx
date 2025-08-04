@@ -25,7 +25,6 @@ const Column = ({
   const { setNodeRef, isOver } = useDroppable({
     id: `droppable-${statusId}`,
   });
-  console.log(tasks)
 
   return (
     <div

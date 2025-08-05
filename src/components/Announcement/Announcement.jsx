@@ -1,26 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./Announcement.scss";
 import Card from "./Card/Card";
-import axios from "axios";
+import { useNotifications } from "../../context/NotificationContext";
 
 const Announcement = () => {
-  const [announcements, setAnnouncements] = useState([]);
-  const sortedAnnouncements = [...announcements].sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  );
-
+  const { notifications } = useNotifications();
   const [activeTab, setActiveTab] = useState("all");
-
-  const handleGetNoti = async () => {
-    try {
-      const response = await axios.get("http://localhost:3000/notifications");
-      if (response) {
-        setAnnouncements(response.data);
-      }
-    } catch (e) {
-      return new Error(e.message);
-    }
+  const userMap = {
+    "688e110fe4acb643f2bbc47b": "John Doe",
   };
+
+  const sortedAnnouncements = [...notifications]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .map((item) => ({
+      ...item,
+      author: {
+        ...item.author,
+        name: userMap[item.author.name] || "Unknown User",
+      },
+    }));
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -28,17 +26,11 @@ const Announcement = () => {
 
   const filteredAnnouncements =
     activeTab === "unread"
-      ? announcements.filter((item) => !item.isRead)
-      : announcements;
+      ? sortedAnnouncements.filter((item) => !item.isRead)
+      : sortedAnnouncements;
 
-  useEffect(() => {
-    handleGetNoti();
-    const interval = setInterval(() => {
-      handleGetNoti(); // Cập nhật mỗi 30 giây
-    }, 30000); // 30000 ms = 30 giây
+  console.log("Filtered Announcements:", filteredAnnouncements);
 
-    return () => clearInterval(interval);
-  }, []);
   return (
     <div className="announcement-container">
       <div className="main-announcement">
@@ -61,8 +53,8 @@ const Announcement = () => {
           </p>
         </div>
         <div className="main-announcement-list">
-          {sortedAnnouncements.length > 0 ? (
-            sortedAnnouncements.map((item) => (
+          {filteredAnnouncements.length > 0 ? (
+            filteredAnnouncements.map((item) => (
               <Card
                 key={item._id}
                 avatar={item.author.avatar}

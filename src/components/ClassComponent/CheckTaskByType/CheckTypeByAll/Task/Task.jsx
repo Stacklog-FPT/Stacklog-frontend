@@ -141,7 +141,7 @@ const Task = ({ isDraggingOverlay, ...props }) => {
     return "#f44336";
   };
 
-  const percent = calculateRemainingPercent(props.createdAt, props.taskDueDate);
+  const percent = calculateRemainingPercent(props.createdAt, props.dueDate);
   const progressColor = getColorByPercent(percent);
 
   return (
@@ -256,13 +256,13 @@ const Task = ({ isDraggingOverlay, ...props }) => {
               <div className="subtask-list">
                 {props.task.subtasks.map((item) => (
                   <SubTask
-                    key={`${props.task.taskId}-subtask-${item.subtaskId}`}
-                    id={`${props.task.taskId}-subtask-${item.subtaskId}`}
+                    key={`${props.task.taskId}-subtask-${item.taskId}`}
+                    id={`${props.task.taskId}-subtask-${item.taskId}`}
                     title={item.taskTitle}
                     priority={item.priority}
                     percent={item.percent}
                     createdAt={item.createdAt}
-                    dueDate={item.dueDate}
+                    dueDate={item.taskDueDate}
                     members={item.assigns}
                     taskId={props.task.taskId}
                     subtask={item}

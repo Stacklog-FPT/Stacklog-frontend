@@ -12,7 +12,6 @@ const SubTask = ({
   id,
   title,
   priority,
-  percent,
   createdAt,
   dueDate,
   members,
@@ -28,7 +27,6 @@ const SubTask = ({
     transition,
     isDragging,
   } = useSortable({ id });
-
   const style = {
     transform: CSS.Transform.toString(transform),
     transition: transition || "transform 0.2s ease, opacity 0.2s ease",
@@ -48,7 +46,33 @@ const SubTask = ({
     const year = dateObj.getFullYear();
     return `${day}/${month}/${year}`;
   };
-  
+
+  const calculateRemainingPercent = (createdAt, dueDate) => {
+    const now = new Date();
+    const start = new Date(createdAt);
+    const end = new Date(dueDate);
+
+    if (isNaN(start) || isNaN(end) || end <= start) return 0;
+
+    const totalDuration = end - start;
+    const remainingDuration = end - now;
+
+    const percent = (remainingDuration / totalDuration) * 100;
+
+    return Math.max(0, Math.min(100, Math.round(percent)));
+  };
+
+  const getColorByPercent = (percent) => {
+    if (percent >= 70) return "#4caf50";
+    if (percent >= 40) return "#ff9800";
+    return "#f44336";
+  };
+
+  const percentSubTask = calculateRemainingPercent(
+    formatDate(createdAt),
+    formatDate(dueDate)
+  );
+  const progressColor = getColorByPercent(percentSubTask);
 
   return (
     <div
@@ -81,14 +105,22 @@ const SubTask = ({
         </div>
         <div className="subtask-content-percent">
           <div
-            className="subtask-content-percent-line"
-            style={{ width: `${percent}%` }}
+            className="task-content-percent-line"
+            style={{
+              width: `${percentSubTask}%`,
+              backgroundColor: progressColor,
+              height: "5px",
+            }}
           ></div>
-          <span>{percent}%</span>
+          <span>{percentSubTask}%</span>
         </div>
         <div className="subtask-content-deadline">
           <span>{formatDate(createdAt) || <Skeleton />}</span>
-          <img src={iconDeadLine} alt="deadline icon" />
+          <img
+            src={iconDeadLine}
+            alt="deadline icon"
+            style={{ width: "5px", height: "5px" }}
+          />
           <span>{formatDate(dueDate) || <Skeleton />}</span>
         </div>
         <div className="subtask-content-members">

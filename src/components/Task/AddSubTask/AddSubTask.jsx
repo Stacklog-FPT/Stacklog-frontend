@@ -1,93 +1,170 @@
 import React, { useState } from "react";
 import "./AddSubTask.scss";
+import avatar_add_button from "../../../assets/icon/avatar_add_button.png";
 import assignUser from "../../../assets/task/assign-user.png";
-import iconSubTask from "../../../assets/task/icon-subtask.png";
 import iconPriority from "../../../assets/task/icon-priority.png";
+import iconSubTask from "../../../assets/task/icon-subtask.png";
 import trackTime from "../../../assets/task/icon-track-time.png";
-import taskService from "../../../service/TaskService";
 import { useAuth } from "../../../context/AuthProvider";
-const AddSubTask = ({ isClose, task }) => {
-  const [subTaskData, setSubTaskData] = useState({
+import taskService from "../../../service/TaskService";
+import { toast } from "react-toastify";
+import axios from "axios";
+import decodeToken from "../../../service/DecodeJwt";
+
+const AddSubTask = ({ isClose, task, members }) => {
+  console.log(task);
+  const { user } = useAuth();
+  const userData = decodeToken(user?.token);
+  const notify = () => toast.success("Add task is successfully");
+  const notifyFailure = () => toast.error("Add task is failure");
+  const { addTask } = taskService();
+  const visibleMembers = task.assigns.slice(0, 3);
+  const extraCount = task.assigns.length - visibleMembers.length;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAssignDropdown, setShowAssignDropdown] = useState(false);
+  const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
+
+  const [taskData, setTaskData] = useState({
     taskId: "",
-    groupId: "",
     taskTitle: "",
     taskDescription: "",
+    groupId: "",
     documentId: "",
-    taskPoint: 0,
-    taskParentId: 0,
-    dueDate: "",
-    createdBy: "",
-    updatedBy: "",
+    taskPoint: 5,
+    taskDueDate: "",
     priority: "",
-    statusTask: {
-      createdBy: "",
-      createdAt: "",
-      updateBy: "",
-      updateAt: "",
-      statusTaskId: "",
-      statusTaskName: "",
-      statusTaskColor: "",
-      groupId: "",
-    },
+    statusTaskId: "",
     listUserAssign: [],
+    parentTaskId: "",
   });
-  const { user } = useAuth();
-  const { addTask } = taskService();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setSubTaskData((prev) => ({ ...prev, [name]: value }));
-  };
+
   const [colorPriority, setColorPriority] = useState([
-    { id: 1, color: "#FFFAEB", content: "HIGH" },
-    { id: 2, color: "#3a9e3e", content: "MEDIUM" },
-    { id: 3, color: "#6d706e", content: "LOW" },
+    { id: 1, color: "#FF6B6B", content: "HIGH", borderColor: "#DC2626" },
+    { id: 2, color: "#FFD60A", content: "MEDIUM", borderColor: "#D97706" },
+    { id: 3, color: "#22C55E", content: "LOW", borderColor: "#15803D" },
   ]);
   const [selectedPriority, setSelectedPriority] = useState("HIGH");
   const selectedColor =
     colorPriority.find((item) => item.content === selectedPriority)?.color ||
     "#FFFFFF";
+  const selectedBorderColor =
+    colorPriority.find((item) => item.content === selectedPriority)
+      ?.borderColor || "#000000";
 
-  const handleSubmitSubTask = async () => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setTaskData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAssignChange = (e) => {
+    const { checked, value } = e.target;
+    setTaskData((prev) => {
+      const newAssigns = checked
+        ? [...prev.listUserAssign, value]
+        : prev.listUserAssign.filter((id) => id !== value);
+      return { ...prev, listUserAssign: newAssigns };
+    });
+  };
+
+  const handleRemoveAssign = (userId) => {
+    setTaskData((prev) => ({
+      ...prev,
+      listUserAssign: prev.listUserAssign.filter((id) => id !== userId),
+    }));
+  };
+
+  const handlePrioritySelect = (priority) => {
+    setSelectedPriority(priority);
+    setTaskData((prev) => ({ ...prev, priority }));
+    setShowPriorityDropdown(false);
+  };
+
+  const validateForm = () => {
+    if (!taskData.taskTitle.trim()) {
+      toast.error("Task title is required!");
+      return false;
+    }
+
+    if (!taskData.taskDescription.trim()) {
+      toast.error("Task description is required!");
+      return false;
+    }
+
+    if (taskData.taskDueDate) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const dueDate = new Date(taskData.taskDueDate);
+      if (dueDate < today) {
+        toast.error("Due date must be today or in the future!");
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
+      const now = new Date();
+      const currentTime = now.toTimeString().split(" ")[0];
+      let formattedDueDate = taskData.taskDueDate
+        ? `${taskData.taskDueDate}T${currentTime}`
+        : now.toISOString().split(".")[0];
       const payload = {
-        taskId: subTaskData.taskId,
-        groupId: "group_1",
-        taskTitle: subTaskData.taskTitle,
-        taskDescription: subTaskData.taskDescription,
+        taskId: "",
+        taskTitle: taskData.taskTitle,
+        taskDescription: taskData.taskDescription,
+        groupId: task.groupId,
         documentId: "",
-        taskPoint: 0,
-        taskParentId: 0,
-        dueDate: "",
-        createdBy: "",
-        updatedBy: "",
-        priority: subTaskData.priority,
-        statusTask: {
-          createdBy: task.statusTask.createdBy,
-          createdAt: task.statusTask.createdAt,
-          updateBy: task.statusTask.updateBy,
-          updateAt: task.statusTask.updateAt,
-          statusTaskId: task.statusTask.statusTaskId,
-          statusTaskName: task.statusTask.statusTaskName,
-          statusTaskColor: task.statusTask.statusTaskColor,
-          groupId: task.statusTask.groupId,
-        },
-        listUserAssign: [
-          "6801ccf3b8b39cd0e4d38877",
-          "68768017c89a12a7e51ddebd",
-        ],
+        taskPoint: 5,
+        taskDueDate: formattedDueDate,
+        priority: taskData.priority,
+        statusTaskId: task.statusTask.statusTaskId,
+        listUserAssign: taskData.listUserAssign,
+        parentTaskId: task.taskId,
       };
-      const response = await addTask(payload, user?.token);
-      if (response) {
-        console.log(response);
+      console.log("Payload sent to server:", payload);
+      const response = await addTask(payload, user.token);
+      if (response.data) {
+        console.log("Response from server:", response.data);
+        notify();
+        await axios.post("http://localhost:3000/notifications", {
+          id: Math.random().toString(16).slice(2, 6),
+          title: `Thông báo môn ${taskData.taskTitle}`,
+          author: {
+            _id: Math.random(),
+            name: user.username || userData?.username || "Unknown",
+            avatar:
+              user.avatar ||
+              "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+          },
+          createdAt: new Date().toISOString().split("T")[0],
+          isRead: false,
+          _id: Math.random(),
+        });
+        isClose();
       }
     } catch (e) {
-      throw new Error(e.message);
+      console.error(
+        "Failed to add task:",
+        e.response ? e.response.data : e.message,
+        e.response ? e.response.status : ""
+      );
+      notifyFailure();
+      isClose();
+    } finally {
+      setIsSubmitting(false);
     }
   };
   return (
-    <div className="add__subtask">
-      <form className="add__subtask__container" onSubmit={handleSubmitSubTask}>
+    <div className="add-task">
+      <form className="add-task-container" onSubmit={handleSubmit}>
         <div className="wrapper-title">
           <h2 className="text-heading">Title</h2>
           <i className="fa-solid fa-xmark" onClick={isClose}></i>
@@ -97,7 +174,7 @@ const AddSubTask = ({ isClose, task }) => {
             type="text"
             name="taskTitle"
             placeholder="Enter task title..."
-            value={subTaskData.setSubTaskData}
+            value={taskData.taskTitle}
             onChange={handleInputChange}
             required
           />
@@ -107,7 +184,7 @@ const AddSubTask = ({ isClose, task }) => {
           <textarea
             placeholder="Enter a description..."
             name="taskDescription"
-            value={subTaskData.setSubTaskData}
+            value={taskData.taskDescription}
             onChange={handleInputChange}
             required
           />
@@ -117,49 +194,138 @@ const AddSubTask = ({ isClose, task }) => {
             <img src={assignUser} alt="..." />
             <h2>Assign</h2>
           </div>
-          <div className="assign-checkbox-list">
-            {task.assigns.map((member) => (
-              <label key={member._id}>
-                <input
-                  type="checkbox"
-                  value={member._id}
-                  checked={subTaskData.listUserAssign.includes(member._id)}
-                  onChange={(e) => {
-                    const { checked, value } = e.target;
-                    setSubTaskData((prev) => {
-                      const newAssigns = checked
-                        ? [...prev.listUserAssign, value]
-                        : prev.listUserAssign.filter((id) => id !== value);
-                      return { ...prev, listUserAssign: newAssigns };
-                    });
-                  }}
-                />
-                {member.full_name || member.userName}
-              </label>
-            ))}
+
+          <div className="assigned-users-list">
+            {taskData.listUserAssign.map((userId) => {
+              const member = members.find(
+                (m) => String(m._id) === String(userId)
+              );
+              return member ? (
+                <div key={userId} className="assigned-user-card">
+                  <div className="user-info">
+                    <div className="avatar-container">
+                      <img
+                        src={member.avatar}
+                        alt={`${member.name || member.userName}'s Avatar`}
+                        className="user-avatar"
+                        onError={(e) =>
+                          (e.target.src =
+                            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                        }
+                      />
+                      <div className="check-icon">
+                        <i className="fa-solid fa-check"></i>
+                      </div>
+                    </div>
+                    <span className="user-name">
+                      {member.name || member.userName}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="remove-user-btn"
+                    onClick={() => handleRemoveAssign(userId)}
+                  >
+                    <i className="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+              ) : null;
+            })}
           </div>
+
+          <div className="add-member-section">
+            <button
+              type="button"
+              className="add-member-btn"
+              onClick={() => setShowAssignDropdown(!showAssignDropdown)}
+            >
+              <img
+                src={avatar_add_button || "/placeholder.svg"}
+                alt="add_button_icon"
+              />
+              <span>Add Member</span>
+            </button>
+          </div>
+          {showAssignDropdown && (
+            <div className="assign-dropdown">
+              <div className="assign-checkbox-list">
+                {members.map((member) => (
+                  <label key={member._id} className="member-option">
+                    <input
+                      type="checkbox"
+                      value={member._id}
+                      checked={taskData.listUserAssign.includes(member._id)}
+                      onChange={handleAssignChange}
+                    />
+                    <div className="member-info" key={member._id}>
+                      <img
+                        src={
+                          member.avatar ||
+                          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                        }
+                        alt={member.name || member.userName}
+                        className="member-avatar"
+                        onError={(e) =>
+                          (e.target.src =
+                            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                        }
+                      />
+                      <span className="member-name">
+                        {member.name || member.userName}
+                      </span>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         <div className="wrapper-priority">
           <div className="wrapper-priority-heading">
-            <img src={iconPriority} alt="..." />
+            <img src={iconPriority || "/placeholder.svg"} alt="..." />
             <h2>Priority</h2>
           </div>
-          <select
-            name="priority"
-            className="priority_status"
-            value={selectedPriority}
-            onChange={(e) => {
-              setSelectedPriority(e.target.value);
-              setSubTaskData((prev) => ({ ...prev, priority: e.target.value }));
-            }}
-            style={{ backgroundColor: selectedColor }}
-          >
-            {colorPriority.map((item) => (
-              <option key={item.id} value={item.content}>
-                {item.content}
-              </option>
-            ))}
-          </select>
+          <div className="priority-selector">
+            <button
+              type="button"
+              className="priority-toggle"
+              style={{
+                backgroundColor: selectedColor,
+                borderColor: selectedBorderColor,
+              }}
+              onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
+            >
+              <span
+                className="priority-dot"
+                style={{ backgroundColor: selectedBorderColor }}
+              ></span>
+              <span>{selectedPriority}</span>
+              <i
+                className={`fa-solid ${
+                  showPriorityDropdown ? "fa-chevron-up" : "fa-chevron-down"
+                }`}
+              ></i>
+            </button>
+            {showPriorityDropdown && (
+              <div className="priority-dropdown">
+                {colorPriority.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`priority-option ${
+                      selectedPriority === item.content ? "selected" : ""
+                    }`}
+                    onClick={() => handlePrioritySelect(item.content)}
+                  >
+                    <span
+                      className="priority-dot"
+                      style={{ backgroundColor: item.borderColor }}
+                    ></span>
+                    <span>{item.content}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <div className="wrapper-start-end-time">
           <div className="wrapper_input_time">
@@ -173,9 +339,9 @@ const AddSubTask = ({ isClose, task }) => {
             <div className="date-input-container">
               <input
                 type="date"
-                name="dueDate"
+                name="taskDueDate"
                 className="date-input"
-                value={subTaskData.setSubTaskData}
+                value={taskData.taskDueDate}
                 onChange={handleInputChange}
               />
             </div>
@@ -183,7 +349,7 @@ const AddSubTask = ({ isClose, task }) => {
         </div>
         <div className="wrapper-track-time">
           <div className="wrapper-track-time-heading">
-            <img src={trackTime} alt="...icon" />
+            <img src={trackTime || "/placeholder.svg"} alt="...icon" />
             <h2>Track time</h2>
           </div>
           <div className="wrapper-track-time-input">

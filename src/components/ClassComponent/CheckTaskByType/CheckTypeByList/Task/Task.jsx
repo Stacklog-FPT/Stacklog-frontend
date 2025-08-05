@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./Task.scss";
 import adjustIcon from "../../../../../assets/icon/checkTaskByList/adjust.png";
-import { useSortable } from "@dnd-kit/sortable";
+import {
+  useSortable,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import Skeleton from "react-loading-skeleton";
 import { CSS } from "@dnd-kit/utilities";
 import { TbSubtask } from "react-icons/tb";
@@ -31,6 +35,7 @@ const Task = ({ ...props }) => {
   const [showSubTask, setShowSubTask] = useState(false);
   const [commentLength, setCommentLength] = useState(0);
   const { getAllReview } = ReviewService();
+
   const handleToggleSubTask = () => {
     setShowSubTask(!showSubTask);
   };
@@ -46,6 +51,7 @@ const Task = ({ ...props }) => {
       setCommentLength(0);
     }
   };
+
   useEffect(() => {
     if (props.task?.taskId) {
       fetchCommentLength(props.task.taskId);
@@ -202,29 +208,47 @@ const Task = ({ ...props }) => {
               />
               <span>{commentLength}</span>
             </div>
-
             <div className="subtask_length">
               <TbSubtask size={14} onClick={handleToggleSubTask} />
-              <span>{props.task.subtasks.length}</span>
+              <span>{props.task?.subtasks?.length}</span>
             </div>
           </div>
         </td>
       </tr>
-      {showSubTask &&
-        props.task?.subtasks?.map((sub) => (
-          <Subtask
-            key={sub.taskId}
-            title={sub.taskTitle}
-            priority={sub.priority}
-            percent={sub.percentProgress}
-            createdAt={sub.createdAt}
-            dueDate={sub.taskDueDate}
-            members={sub.assigns}
-            handleToggleSubTask={handleToggleSubTask}
-          />
-        ))}
+      {showSubTask && (
+        <SortableContext
+          items={
+            props.task?.subtasks?.map(
+              (subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`
+            ) || []
+          }
+          strategy={verticalListSortingStrategy}
+        >
+          {props.task?.subtasks?.length > 0 ? (
+            props.task.subtasks.map((sub) => (
+              <Subtask
+                key={`${props.task.taskId}-subtask-${sub.taskId}`}
+                id={`${props.task.taskId}-subtask-${sub.taskId}`}
+                title={sub.taskTitle}
+                priority={sub.priority}
+                percent={sub.percentProgress}
+                createdAt={sub.createdAt}
+                dueDate={sub.taskDueDate}
+                members={sub.assigns}
+                handleToggleSubTask={handleToggleSubTask}
+              />
+            ))
+          ) : (
+            <tr>
+              <td colSpan={5}>
+                <h2>No available subtasks</h2>
+              </td>
+            </tr>
+          )}
+        </SortableContext>
+      )}
     </>
   );
 };
 
-export default Task;
+export default React.memo(Task);

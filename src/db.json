@@ -1364,6 +1364,18 @@
       "createdAt": "2025-08-05",
       "isRead": false,
       "_id": 0.6438189995305803
+    },
+    {
+      "id": "068c",
+      "title": "Thông báo môn Hù hú",
+      "author": {
+        "_id": 0.8815612176481606,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-05",
+      "isRead": false,
+      "_id": 0.3340028164098494
     }
   ],
   "lectures": [

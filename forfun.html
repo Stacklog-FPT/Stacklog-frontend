@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>STOMP WebSocket Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+  </head>
+
+  <body>
+    <h2>🔌 WebSocket Test (no SockJS)</h2>
+    <div
+      id="output"
+      style="font-family: monospace; background: #f0f0f0; padding: 10px"
+    ></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+
+    <script>
+      const socket = new WebSocket(
+        "ws://103.166.183.142:8080/api/notification/ws"
+      );
+      const stompClient = Stomp.over(socket);
+
+      stompClient.connect({}, function (frame) {
+        console.log("✅ Connected", frame);
+
+        stompClient.subscribe("/topic/notification", function (message) {
+          console.log("🔔 Message:", message.body);
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,20 +1,34 @@
-// Subtask.jsx
 import React from "react";
 import Skeleton from "react-loading-skeleton";
 import adjustIcon from "../../../../../../assets/icon/checkTaskByList/adjust.png";
 import "./Subtask.scss";
-import { TbSubtask } from "react-icons/tb";
-import { FaComment } from "react-icons/fa";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const Subtask = ({
+  id,
   title,
   priority,
   percent,
   createdAt,
   dueDate,
   members = [],
-  handleToggleSubTask,
 }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
   const visibleMembers = members?.slice(0, 3) || [];
   const extraCount = members?.length - visibleMembers.length;
 
@@ -33,30 +47,16 @@ const Subtask = ({
     return "#f44336";
   };
 
-  const calculateRemainingPercent = (createdAt, dueDate) => {
-    const now = new Date();
-    const start = new Date(createdAt);
-    const end = new Date(dueDate);
-
-    if (isNaN(start) || isNaN(end) || end <= start) return 0;
-
-    const totalDuration = end - start;
-    const remainingDuration = end - now;
-
-    const percent = (remainingDuration / totalDuration) * 100;
-
-    return Math.max(0, Math.min(100, Math.round(percent)));
-  };
-
-  const percentSubTask = calculateRemainingPercent(
-    formatDate(createdAt),
-    formatDate(dueDate)
-  );
-
-  const progressColor = getColorByPercent(percentSubTask);
+  const progressColor = getColorByPercent(percent);
 
   return (
-    <tr className="subtask_row">
+    <tr
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="subtask_row"
+    >
       <td className="subtask-cell">
         <div className="task_list_head">
           <img src={adjustIcon} alt="Adjust Icon" />
@@ -103,13 +103,9 @@ const Subtask = ({
           <h2>{priority}</h2>
         </div>
       </td>
-      <td>
-        <div className="feature">
-          <FaComment size={14} />
-        </div>
-      </td>
+      <td></td>
     </tr>
   );
 };
 
-export default Subtask;
+export default React.memo(Subtask);

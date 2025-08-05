@@ -192,11 +192,14 @@ $color-heading: #667085;
               line-height: 1.2;
             }
 
-            .team-member-since {
+            .team-member-email {
+              max-width: 120px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
               font-size: 12px;
-              font-weight: 400;
-              color: #6b7280;
-              line-height: 1.2;
+              color: #aaa;
+              word-break: break-all;
             }
           }
         }
@@ -222,4 +225,138 @@ $color-heading: #667085;
     opacity: 1;
     transform: translateY(0);
   }
+}
+.add-people-btn {
+  margin: 12px 0 18px 0;
+  padding: 7px 18px;
+  background: linear-gradient(90deg, #10b981 0%, #22d3ee 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
+  transition: background 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &:hover {
+    background: #059669;
+    color: #fff;
+    transform: translateY(-2px) scale(1.04);
+  }
+}
+
+.add-people-modal {
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: none;
+
+  .add-people-modal-content {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    padding: 10px;
+    min-width: 320px;
+    min-height: 120px;
+    position: relative;
+    z-index: 1002;
+    max-height: 70vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .add-people-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 17px;
+    color: #101828;
+    margin-bottom: 12px;
+  }
+
+  .close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 26px;
+    color: #888;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.2s;
+    margin-left: 12px;
+    &:hover {
+      color: #ef4444;
+    }
+  }
+
+  .add-people-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .add-people-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .add-people-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #e0e0e0;
+    background: #fff;
+  }
+
+  .add-people-name {
+    flex: 1;
+    font-weight: 500;
+    color: #222;
+    font-size: 15px;
+  }
+}
+
+.add-people-modal-backdrop {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.btn-create-add{
+  margin: 12px 0 18px 0;
+  padding: 7px 18px;
+  background: linear-gradient(90deg, #10b981 0%, #22d3ee 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  gap: 6px;
+
+ 
 }

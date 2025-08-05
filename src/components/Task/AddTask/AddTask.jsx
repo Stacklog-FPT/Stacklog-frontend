@@ -15,6 +15,7 @@ const AddTask = (props) => {
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
   const notify = () => toast.success("Add task is successfully");
+  const notifyFailure = () => toast.error("Add task is failure");
   const { addTask } = taskService();
   const visibleMembers = props.members.slice(0, 3);
   const extraCount = props.members.length - visibleMembers.length;
@@ -40,8 +41,12 @@ const AddTask = (props) => {
     { id: 3, color: "#22C55E", content: "LOW", borderColor: "#15803D" },
   ]);
   const [selectedPriority, setSelectedPriority] = useState("HIGH");
-  const selectedColor = colorPriority.find((item) => item.content === selectedPriority)?.color || "#FFFFFF";
-  const selectedBorderColor = colorPriority.find((item) => item.content === selectedPriority)?.borderColor || "#000000";
+  const selectedColor =
+    colorPriority.find((item) => item.content === selectedPriority)?.color ||
+    "#FFFFFF";
+  const selectedBorderColor =
+    colorPriority.find((item) => item.content === selectedPriority)
+      ?.borderColor || "#000000";
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -71,12 +76,37 @@ const AddTask = (props) => {
     setShowPriorityDropdown(false);
   };
 
+  const validateForm = () => {
+    if (!taskData.taskTitle.trim()) {
+      toast.error("Task title is required!");
+      return false;
+    }
+
+    if (!taskData.taskDescription.trim()) {
+      toast.error("Task description is required!");
+      return false;
+    }
+
+    if (taskData.taskDueDate) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const dueDate = new Date(taskData.taskDueDate);
+      if (dueDate < today) {
+        toast.error("Due date must be today or in the future!");
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!taskData.taskTitle.trim()) {
-      alert("Task title is required!");
+
+    if (!validateForm()) {
       return;
     }
+
     setIsSubmitting(true);
     try {
       const now = new Date();
@@ -126,11 +156,7 @@ const AddTask = (props) => {
         e.response ? e.response.data : e.message,
         e.response ? e.response.status : ""
       );
-      alert(
-        `Failed to add task: ${
-          e.response?.data?.message || e.message || "Unknown error"
-        }`
-      );
+      notifyFailure();
       props.onCancel();
     } finally {
       setIsSubmitting(false);
@@ -270,22 +296,37 @@ const AddTask = (props) => {
             <button
               type="button"
               className="priority-toggle"
-              style={{ backgroundColor: selectedColor, borderColor: selectedBorderColor }}
+              style={{
+                backgroundColor: selectedColor,
+                borderColor: selectedBorderColor,
+              }}
               onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
             >
-              <span className="priority-dot" style={{ backgroundColor: selectedBorderColor }}></span>
+              <span
+                className="priority-dot"
+                style={{ backgroundColor: selectedBorderColor }}
+              ></span>
               <span>{selectedPriority}</span>
-              <i className={`fa-solid ${showPriorityDropdown ? "fa-chevron-up" : "fa-chevron-down"}`}></i>
+              <i
+                className={`fa-solid ${
+                  showPriorityDropdown ? "fa-chevron-up" : "fa-chevron-down"
+                }`}
+              ></i>
             </button>
             {showPriorityDropdown && (
               <div className="priority-dropdown">
                 {colorPriority.map((item) => (
                   <div
                     key={item.id}
-                    className={`priority-option ${selectedPriority === item.content ? "selected" : ""}`}
+                    className={`priority-option ${
+                      selectedPriority === item.content ? "selected" : ""
+                    }`}
                     onClick={() => handlePrioritySelect(item.content)}
                   >
-                    <span className="priority-dot" style={{ backgroundColor: item.borderColor }}></span>
+                    <span
+                      className="priority-dot"
+                      style={{ backgroundColor: item.borderColor }}
+                    ></span>
                     <span>{item.content}</span>
                   </div>
                 ))}

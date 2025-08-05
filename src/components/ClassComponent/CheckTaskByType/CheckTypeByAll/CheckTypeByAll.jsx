@@ -416,7 +416,11 @@ const CheckTypeByAll = () => {
             <AddColumn isClose={handleCloseAddStatus} group={group} />
           )}
           {showAddSubTask && (
-            <AddSubTask isClose={handleCloseAddSubtask} task={showAddSubTask} />
+            <AddSubTask
+              isClose={handleCloseAddSubtask}
+              task={showAddSubTask}
+              members={memberTask}
+            />
           )}
         </div>
       </div>

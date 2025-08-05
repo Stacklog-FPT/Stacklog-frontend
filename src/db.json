@@ -1328,6 +1328,42 @@
       "createdAt": "2025-08-02",
       "isRead": false,
       "_id": 0.671020245115433
+    },
+    {
+      "id": "cdb8",
+      "title": "Thông báo môn UI/UX đẹp",
+      "author": {
+        "_id": 0.4170725843208756,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-05",
+      "isRead": false,
+      "_id": 0.15686149119031034
+    },
+    {
+      "id": "0b2f",
+      "title": "Thông báo môn Thiết kế DB notification subtask",
+      "author": {
+        "_id": 0.05660218514864912,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-05",
+      "isRead": false,
+      "_id": 0.21160295022443554
+    },
+    {
+      "id": "a4a0",
+      "title": "Thông báo môn Hello Test Subtask",
+      "author": {
+        "_id": 0.20975396407781766,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-05",
+      "isRead": false,
+      "_id": 0.6438189995305803
     }
   ],
   "lectures": [

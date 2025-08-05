@@ -31,7 +31,13 @@ const AddColumn = ({ isClose, group }) => {
 
       const response = await addStatus(user?.token, payload);
 
-      console.log(response);
+      setColumnData({
+        statusTaskName: "",
+        statusTaskColor: color,
+        groupId: "",
+      });
+      setIsSubmitting(false);
+      if (isClose) isClose();
     } catch (e) {
       return e.message;
     }

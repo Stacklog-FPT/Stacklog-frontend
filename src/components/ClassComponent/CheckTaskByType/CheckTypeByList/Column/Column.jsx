@@ -18,6 +18,7 @@ const Column = ({
   onShowAddTask,
   onShowComment,
   isLoading = false,
+  onShowAddSubTask,
 }) => {
   const [showAdd, setShowAdd] = useState(null);
   const { setNodeRef } = useDroppable({
@@ -44,7 +45,7 @@ const Column = ({
                 <tr>
                   <th>Name</th>
                   <th>Assign</th>
-                  <th>Due Date</th>
+                  <th>Percent</th>
                   <th>Priority</th>
                   <th>Action</th>
                   <th>
@@ -92,6 +93,8 @@ const Column = ({
                       priority={task?.priority}
                       dueDate={task?.taskDueDate}
                       onShowComment={onShowComment}
+                      task={task}
+                      onShowAddSubTask={onShowAddSubTask}
                     />
                   ))
                 ) : (

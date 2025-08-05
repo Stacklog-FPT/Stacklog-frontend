@@ -9,6 +9,14 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { FaTrashAlt, FaPlus } from "react-icons/fa";
 import taskService from "../../../../../service/TaskService";
@@ -31,6 +39,29 @@ const Task = ({ isDraggingOverlay, ...props }) => {
   const [isAddSubTask, setIsAddSubTask] = useState(false);
   const { getAllReview } = ReviewService();
   const [commentLength, setCommentLength] = useState(0);
+
+  const [subtasks, setSubtasks] = useState(props.task.subtasks || []);
+
+  useEffect(() => {
+    setSubtasks(props.task.subtasks || []);
+  }, [props.task.subtasks]);
+
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  const handleSubtaskDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = subtasks.findIndex(
+      (item) => `${props.task.taskId}-subtask-${item.taskId}` === active.id
+    );
+    const newIndex = subtasks.findIndex(
+      (item) => `${props.task.taskId}-subtask-${item.taskId}` === over.id
+    );
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const newSubtasks = arrayMove(subtasks, oldIndex, newIndex);
+      setSubtasks(newSubtasks);
+    }
+  };
 
   const style = {
     transform: isDraggingOverlay
@@ -246,31 +277,37 @@ const Task = ({ isDraggingOverlay, ...props }) => {
       </div>
       <div className="task-content-subtask">
         {showSubTask &&
-          (props.task.subtasks?.length > 0 ? (
-            <SortableContext
-              items={props.task?.subtasks.map(
-                (subtask) => `${props.task.taskId}-subtask-${subtask.subtaskId}`
-              )}
-              strategy={verticalListSortingStrategy}
+          (subtasks.length > 0 ? (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleSubtaskDragEnd}
             >
-              <div className="subtask-list">
-                {props.task.subtasks.map((item) => (
-                  <SubTask
-                    key={`${props.task.taskId}-subtask-${item.taskId}`}
-                    id={`${props.task.taskId}-subtask-${item.taskId}`}
-                    title={item.taskTitle}
-                    priority={item.priority}
-                    percent={item.percent}
-                    createdAt={item.createdAt}
-                    dueDate={item.taskDueDate}
-                    members={item.assigns}
-                    taskId={props.task.taskId}
-                    subtask={item}
-                    reviews={item.reviews}
-                  />
-                ))}
-              </div>
-            </SortableContext>
+              <SortableContext
+                items={subtasks.map(
+                  (subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`
+                )}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="subtask-list">
+                  {subtasks.map((item) => (
+                    <SubTask
+                      key={`${props.task.taskId}-subtask-${item.taskId}`}
+                      id={`${props.task.taskId}-subtask-${item.taskId}`}
+                      title={item.taskTitle}
+                      priority={item.priority}
+                      percent={item.percent}
+                      createdAt={item.createdAt}
+                      dueDate={item.taskDueDate}
+                      members={item.assigns}
+                      taskId={props.task.taskId}
+                      subtask={item}
+                      reviews={item.reviews}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
           ) : (
             <h2>No available subtasks</h2>
           ))}

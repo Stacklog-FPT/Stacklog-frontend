@@ -6,6 +6,14 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 import Skeleton from "react-loading-skeleton";
 import { CSS } from "@dnd-kit/utilities";
 import { TbSubtask } from "react-icons/tb";
@@ -16,7 +24,6 @@ import ReviewService from "../../../../../service/ReviewService";
 import { useAuth } from "../../../../../context/AuthProvider";
 
 const Task = ({ ...props }) => {
-  console.log(props.task);
   const {
     attributes,
     listeners,
@@ -36,6 +43,32 @@ const Task = ({ ...props }) => {
   const [commentLength, setCommentLength] = useState(0);
   const { getAllReview } = ReviewService();
 
+  // State quản lý thứ tự subtask để kéo thả
+  const [subtasks, setSubtasks] = useState(props.task?.subtasks || []);
+  useEffect(() => {
+    setSubtasks(props.task?.subtasks || []);
+  }, [props.task?.subtasks]);
+
+  // Dnd-kit sensors
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  // Xử lý kéo thả subtask
+  const handleSubtaskDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = subtasks.findIndex(
+      (item) => `${props.task.taskId}-subtask-${item.taskId}` === active.id
+    );
+    const newIndex = subtasks.findIndex(
+      (item) => `${props.task.taskId}-subtask-${item.taskId}` === over.id
+    );
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const newSubtasks = arrayMove(subtasks, oldIndex, newIndex);
+      setSubtasks(newSubtasks);
+      // TODO: Gọi API cập nhật thứ tự nếu muốn lưu lên server
+    }
+  };
+
   const handleToggleSubTask = () => {
     setShowSubTask(!showSubTask);
   };
@@ -47,7 +80,6 @@ const Task = ({ ...props }) => {
         setCommentLength(response.data.length);
       }
     } catch (e) {
-      console.error("Error fetching comment length:", e.message);
       setCommentLength(0);
     }
   };
@@ -60,17 +92,11 @@ const Task = ({ ...props }) => {
 
   const handleFormatDate = (date) => {
     if (!date) return "No due date";
-
     const dateObj = new Date(date);
-    if (isNaN(dateObj)) {
-      console.error(`Invalid date format for ${date}`);
-      return "Invalid date";
-    }
-
+    if (isNaN(dateObj)) return "Invalid date";
     const day = String(dateObj.getDate()).padStart(2, "0");
     const month = String(dateObj.getMonth() + 1).padStart(2, "0");
     const year = dateObj.getFullYear();
-
     return `${day}/${month}/${year}`;
   };
 
@@ -84,50 +110,15 @@ const Task = ({ ...props }) => {
   };
 
   const calculateRemainingPercent = (createdAt, dueDate) => {
-    if (!createdAt || !dueDate) {
-      console.warn("Missing createdAt or dueDate");
-      return 0;
-    }
-
+    if (!createdAt || !dueDate) return 0;
     const start = new Date(createdAt);
     const end = new Date(dueDate);
     const now = new Date();
-
-    if (isNaN(start) || isNaN(end)) {
-      console.error("Invalid date format:", { createdAt, dueDate });
-      return 0;
-    }
-
-    if (start == null || end == null) {
-      console.error("Invalid date format is null:", { createdAt, dueDate });
-      return 0;
-    }
-
-    if (start == undefined || end == undefined) {
-      console.error("Invalid date format is undefined:", {
-        createdAt,
-        dueDate,
-      });
-      return 0;
-    }
-
-    if (end <= start) {
-      console.warn("dueDate is earlier than createdAt");
-      return 0;
-    }
-
-    if (now > end) {
-      console.warn("dueDate has passed");
-      return 0;
-    }
-
+    if (isNaN(start) || isNaN(end) || end <= start || now > end) return 0;
     const totalDuration = end - start;
     const remainingDuration = end - now;
-
     const percent = (remainingDuration / totalDuration) * 100;
-
-    const finalPercent = Math.max(0, Math.min(100, Math.round(percent)));
-    return finalPercent;
+    return Math.max(0, Math.min(100, Math.round(percent)));
   };
 
   const percent = calculateRemainingPercent(props.createdAt, props.dueDate);
@@ -210,42 +201,48 @@ const Task = ({ ...props }) => {
             </div>
             <div className="subtask_length">
               <TbSubtask size={14} onClick={handleToggleSubTask} />
-              <span>{props.task?.subtasks?.length}</span>
+              <span>{subtasks.length}</span>
             </div>
           </div>
         </td>
       </tr>
       {showSubTask && (
-        <SortableContext
-          items={
-            props.task?.subtasks?.map(
-              (subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`
-            ) || []
-          }
-          strategy={verticalListSortingStrategy}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleSubtaskDragEnd}
         >
-          {props.task?.subtasks?.length > 0 ? (
-            props.task.subtasks.map((sub) => (
-              <Subtask
-                key={`${props.task.taskId}-subtask-${sub.taskId}`}
-                id={`${props.task.taskId}-subtask-${sub.taskId}`}
-                title={sub.taskTitle}
-                priority={sub.priority}
-                percent={sub.percentProgress}
-                createdAt={sub.createdAt}
-                dueDate={sub.taskDueDate}
-                members={sub.assigns}
-                handleToggleSubTask={handleToggleSubTask}
-              />
-            ))
-          ) : (
-            <tr>
-              <td colSpan={5}>
-                <h2>No available subtasks</h2>
-              </td>
-            </tr>
-          )}
-        </SortableContext>
+          <SortableContext
+            items={
+              subtasks.map(
+                (subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`
+              ) || []
+            }
+            strategy={verticalListSortingStrategy}
+          >
+            {subtasks.length > 0 ? (
+              subtasks.map((sub) => (
+                <Subtask
+                  key={`${props.task.taskId}-subtask-${sub.taskId}`}
+                  id={`${props.task.taskId}-subtask-${sub.taskId}`}
+                  title={sub.taskTitle}
+                  priority={sub.priority}
+                  percent={sub.percentProgress}
+                  createdAt={sub.createdAt}
+                  dueDate={sub.taskDueDate}
+                  members={sub.assigns}
+                  handleToggleSubTask={handleToggleSubTask}
+                />
+              ))
+            ) : (
+              <tr>
+                <td colSpan={5}>
+                  <h2>No available subtasks</h2>
+                </td>
+              </tr>
+            )}
+          </SortableContext>
+        </DndContext>
       )}
     </>
   );

@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthProvider";
 import ClassService from "../../service/ClassService";
 import userApi from "../../service/UserService";
 import Detailstudent from "./Detailstudent/Detailstudent";
+const { getClassesByRole } = ClassService();
 
 const ClassList = ({ handleActivityAddClass }) => {
   const { user } = useAuth();
@@ -23,8 +24,9 @@ const ClassList = ({ handleActivityAddClass }) => {
     if (!user || !user.token) return;
     const fetchData = async () => {
       try {
-        const classService = ClassService();
-        const data = await classService.getMembersInClass(user.token);
+        const data = await getClassesByRole(user.token, user.role);
+        console.log("user.role", user.role);
+        console.log("data", data);
         setClasses(data);
         if (data.length > 0) {
           setSelectedClass(data[0].classesId);

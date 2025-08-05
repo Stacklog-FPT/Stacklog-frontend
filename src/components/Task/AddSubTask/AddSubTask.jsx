@@ -12,7 +12,6 @@ import axios from "axios";
 import decodeToken from "../../../service/DecodeJwt";
 
 const AddSubTask = ({ isClose, task, members }) => {
-  console.log(task);
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
   const notify = () => toast.success("Add task is successfully");

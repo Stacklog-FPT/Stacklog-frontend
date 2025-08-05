@@ -36,6 +36,7 @@ const CheckTypeByList = () => {
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
+  console.log(showCommentTask)
   const [showAddColumn, setShowAddColumn] = useState(false);
   const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +50,6 @@ const CheckTypeByList = () => {
   const [memberTask, setMemberTask] = useState([]);
   const { getAllGroup } = GroupService();
   const { getAllReview } = ReviewService();
-  const [commentLength, setCommetLength] = useState(0);
   const [isAddSubTask, setIsAddSubTask] = useState(false);
   const [showAddSubTask, setShowAddSubTask] = useState(null);
 
@@ -294,6 +294,10 @@ const CheckTypeByList = () => {
     [user.token]
   );
 
+  const handleCloseAddSubtask = async () => {
+    setShowAddSubTask(null);
+  };
+
   useEffect(() => {
     const stompInstance = setSocket(user.token);
     setStompClient(stompInstance);
@@ -420,9 +424,9 @@ const CheckTypeByList = () => {
           <CommentTask task={showCommentTask} isClose={handleCloseComment} />
         )}
         {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}
-        {/* {showAddSubTask && (
+        {showAddSubTask && (
           <AddSubTask isClose={handleCloseAddSubtask} task={showAddSubTask} />
-        )} */}
+        )}
       </div>
       <DragOverlay dropAnimation={null}>
         {activeTask ? (

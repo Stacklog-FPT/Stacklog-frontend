@@ -49,8 +49,6 @@ const CheckTypeByAll = () => {
   const [group, setGroup] = useState("");
   const { getAllGroup } = GroupService();
   const { getAllReview } = ReviewService();
-  const [commentLength, setCommetLength] = useState(0);
-  const [isAddSubTask, setIsAddSubTask] = useState(false);
   const [showAddSubTask, setShowAddSubTask] = useState(null);
 
   const sensors = useSensors(

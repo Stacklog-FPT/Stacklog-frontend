@@ -72,6 +72,7 @@ const SubTask = ({
     formatDate(createdAt),
     formatDate(dueDate)
   );
+  
   const progressColor = getColorByPercent(percentSubTask);
 
   return (

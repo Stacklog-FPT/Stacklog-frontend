@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import "./LoginPage.scss";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import userApi from "../../service/UserService";
 import logo from "../../assets/logo-login.png";
@@ -14,6 +14,9 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassWord] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const redirect = searchParams.get("redirect") || "/";
   const handleGoogleSuccess = (credentialResponse) => {};
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -34,7 +37,7 @@ const LoginPage = () => {
           navigate("/admin");
           return;
         }
-        navigate("/");
+        navigate(redirect);
       }
     } catch (e) {
       console.error("Login Failed", e || e.message);

@@ -1,11 +1,276 @@
 .task__page {
-    width: 100%;
+  width: 100%;
 
-    .incoming__total {
-        width: 100%;
+  .incoming__total {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+}
+.popup-create-class {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+
+  .popup-content {
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px 32px;
+    min-width: 340px;
+    height: 700px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    h3 {
+      margin-bottom: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #3498db;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1.5px solid #d1d5db;
+      font-size: 16px;
+      margin-bottom: 12px;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s;
+      &:focus {
+        border-color: #3498db;
+      }
+    }
+
+    label {
+      font-weight: 600;
+      color: #217dbb;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    // Leader select
+    select {
+      background: #f7fafd;
+      font-size: 15px;
+      margin-bottom: 16px;
+    }
+
+    // Thành viên nhóm
+    .group-members-list {
+      max-height: 180px;
+      overflow-y: auto;
+      margin-bottom: 14px;
+      padding: 6px 0;
+      border-radius: 8px;
+      background: #f7fafd;
+      border: 1px solid #e1e8ed;
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.05);
+
+      .member-checkbox-row {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 20px;
+        gap: 10px;
+        padding: 8px 16px;
+        border-bottom: 1px solid #f0f4f8;
+        &:last-child {
+          border-bottom: none;
+        }
+        label {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-weight: 500;
+          color: #333;
+          margin-bottom: 0;
+          width: 100%;
+        }
+        input[type="checkbox"] {
+          accent-color: #3498db;
+          width: 18px;
+          height: 18px;
+          margin-right: 8px;
+        }
+        .member-name {
+          color: #217dbb;
+          font-weight: 600;
+        }
+        .member-email {
+          color: #888;
+          font-size: 13px;
+          margin-left: 4px;
+        }
+      }
     }
+
+    .popup-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      margin-top: 10px;
+
+      .btn-confirm {
+        background: #3498db;
+        color: #fff;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 16px;
+        box-shadow: 0 2px 8px rgba(52, 152, 219, 0.08);
+        transition: background 0.2s;
+        &:hover {
+          background: #217dbb;
+        }
+        &:disabled {
+          background: #b2bec3;
+          cursor: not-allowed;
+        }
+      }
+      .btn-cancel {
+        background: #eee;
+        color: #333;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 16px;
+        &:hover {
+          background: #ddd;
+        }
+      }
+    }
+  }
+}
+
+// Nút tạo group/class
+.btn-create-class {
+  background: #3498db;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-left: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s;
+  &:hover {
+    background: #217dbb;
+  }
+}
+
+// Nút tạo link invite
+.btn-gen-link {
+  background: #f39c12;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-left: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s;
+  &:hover {
+    background: #e67e22;
+  }
+}
+
+// Table danh sách sinh viên
+.grades__component__container__table__list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(52, 152, 219, 0.08);
+
+  th,
+  td {
+    padding: 12px 10px;
+    text-align: left;
+    font-size: 15px;
+    border-bottom: 1px solid #f0f4f8;
+  }
+  th {
+    background: #f7fafd;
+    color: #3498db;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+  .name__ava {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #e1e8ed;
+    }
+    p {
+      margin: 0;
+      font-weight: 500;
+      color: #217dbb;
+    }
+  }
+}
+
+// Pagination
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin: 18px 0 0 0;
+
+  .pagination__button {
+    background: #3498db;
+    color: #fff;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+    &:hover {
+      background: #217dbb;
+    }
+    &:disabled {
+      background: #b2bec3;
+      cursor: not-allowed;
+    }
+  }
+  .pagination__info {
+    font-size: 15px;
+    color: #217dbb;
+    font-weight: 600;
+  }
 }

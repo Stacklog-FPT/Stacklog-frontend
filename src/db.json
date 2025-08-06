@@ -1508,6 +1508,90 @@
       "createdAt": "2025-08-05",
       "isRead": false,
       "_id": 0.2319575024637055
+    },
+    {
+      "id": "f008",
+      "title": "Thông báo môn Hello Test",
+      "author": {
+        "_id": 0.6115470629110479,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-06",
+      "isRead": false,
+      "_id": 0.32565990083099683
+    },
+    {
+      "id": "6588",
+      "title": "Thông báo môn 123",
+      "author": {
+        "_id": 0.43674537289786686,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-06",
+      "isRead": false,
+      "_id": 0.21828046331924544
+    },
+    {
+      "id": "4e30",
+      "title": "Thông báo môn 123",
+      "author": {
+        "_id": 0.4614647794429505,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-06",
+      "isRead": false,
+      "_id": 0.46421793790861576
+    },
+    {
+      "id": "eeef",
+      "title": "Thông báo môn 123",
+      "author": {
+        "_id": 0.08903153331255131,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-06",
+      "isRead": false,
+      "_id": 0.3416354280498468
+    },
+    {
+      "id": "eb5b",
+      "title": "Thông báo môn Hello Test",
+      "author": {
+        "_id": 0.27332671441127343,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-06",
+      "isRead": false,
+      "_id": 0.3026628363155054
+    },
+    {
+      "id": "ef61",
+      "title": "Thông báo môn Hello Test",
+      "author": {
+        "_id": 0.01811345234752393,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-06",
+      "isRead": false,
+      "_id": 0.9236115253061671
+    },
+    {
+      "id": "ffd1",
+      "title": "Thông báo môn Hello Test",
+      "author": {
+        "_id": 0.995365326424794,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-06",
+      "isRead": false,
+      "_id": 0.20311942091007495
     }
   ],
   "lectures": [

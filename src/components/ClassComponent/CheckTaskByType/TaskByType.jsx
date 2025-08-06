@@ -6,11 +6,11 @@ const TaskByType = ({ activeType, setActiveType }) => {
   const taskTypes = [
     { type: "All", icon: "fa-solid fa-globe" },
     { type: "Checklist", icon: "fa-solid fa-list" },
-    { type: "By Status", icon: "fa-solid fa-chart-line" },
-    {
-      type: user?.role === "LECTURER" ? "Class List" : "My Task",
-      icon: "fa-solid fa-user",
-    },
+    // { type: "By Status", icon: "fa-solid fa-chart-line" },
+    // {
+    //   type: user?.role === "LECTURER" ? "Class List" : "My Task",
+    //   icon: "fa-solid fa-user",
+    // },
   ];
 
   return (

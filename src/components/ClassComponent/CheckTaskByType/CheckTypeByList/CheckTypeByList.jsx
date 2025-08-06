@@ -36,7 +36,6 @@ const CheckTypeByList = () => {
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
-  console.log(showCommentTask)
   const [showAddColumn, setShowAddColumn] = useState(false);
   const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

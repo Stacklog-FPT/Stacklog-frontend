@@ -33,13 +33,12 @@ const CommentTask = ({ task, isClose }) => {
         reviewContent: newComment,
         taskId: task,
       };
-      console.log(payload);
+
       const response = await createReview(user?.token, payload);
-      console.log(response);
+
       if (response) {
         setNewComment("");
         handleGetCommentTask();
-        console.log(response);
       }
     } catch (e) {
       throw new Error(e.message);

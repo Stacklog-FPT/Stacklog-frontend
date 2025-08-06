@@ -5,6 +5,7 @@ const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
+  console.log(notifications)
   const stompClientRef = useRef(null);
 
   useEffect(() => {

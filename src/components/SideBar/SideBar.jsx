@@ -16,11 +16,11 @@ const SideBar = ({ isOpen, setIsOpen }) => {
     { name: "Task", path: "/tasks", icon: "fa-solid fa-list-check" },
     { name: "Class", path: "/class", icon: "fa-solid fa-users" },
     { name: "Schedule", path: "/schedule", icon: "fa-solid fa-calendar-days" },
-    { name: "Documents", path: "/documents", icon: "fa-solid fa-folder-plus" },
+    // { name: "Documents", path: "/documents", icon: "fa-solid fa-folder-plus" },
     { name: "Chat", path: "/chatbox", icon: "fa-solid fa-comment" },
-    { name: "Grades", path: "/grades", icon: "fa-solid fa-user-graduate" },
-    { name: "Plan", path: "/plan", icon: "fas fa-tasks" },
-    { name: "More", path: "/more", icon: "fas fa-info-circle" },
+    // { name: "Grades", path: "/grades", icon: "fa-solid fa-user-graduate" },
+    // { name: "Plan", path: "/plan", icon: "fas fa-tasks" },
+    // { name: "More", path: "/more", icon: "fas fa-info-circle" },
   ];
 
   const toggleSidebar = () => {

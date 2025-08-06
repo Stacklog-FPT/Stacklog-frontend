@@ -29,7 +29,7 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
       setIsLoading(true);
       try {
         const classService = ClassService();
-        const data = await classService.getMembersInClass(user.token);
+        const data = await classService.getClassesByRole(user.token, user.role);
         setClasses(data);
         if (data.length > 0) {
           setSelectedClass(data[0].classesId);

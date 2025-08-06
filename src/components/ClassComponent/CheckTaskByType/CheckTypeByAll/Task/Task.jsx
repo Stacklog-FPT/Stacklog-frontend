@@ -89,11 +89,12 @@ const Task = ({ isDraggingOverlay, ...props }) => {
       setCommentLength(0);
     }
   };
+
   useEffect(() => {
     if (props.task?.taskId) {
       fetchCommentLength(props.task.taskId);
     }
-  }, [props.task?.taskId]);
+  }, [commentLength]);
 
   const visibleMembers = props?.members?.slice(0, 3);
   const extraCount = props?.members?.length - visibleMembers?.length;

@@ -40,11 +40,11 @@ const Task = ({ isDraggingOverlay, ...props }) => {
   const { getAllReview } = ReviewService();
   const [commentLength, setCommentLength] = useState(0);
 
-  const [subtasks, setSubtasks] = useState(props.task.subtasks || []);
+  const [subtasks, setSubtasks] = useState(props.task?.subtasks || []);
 
   useEffect(() => {
-    setSubtasks(props.task.subtasks || []);
-  }, [props.task.subtasks]);
+    setSubtasks(props.task?.subtasks || []);
+  }, [props.task?.subtasks]);
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -277,7 +277,7 @@ const Task = ({ isDraggingOverlay, ...props }) => {
       </div>
       <div className="task-content-subtask">
         {showSubTask &&
-          (subtasks.length > 0 ? (
+          (subtasks?.length > 0 ? (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}

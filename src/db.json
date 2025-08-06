@@ -1496,6 +1496,18 @@
       "createdAt": "2025-08-05",
       "isRead": false,
       "_id": 0.6432132081551426
+    },
+    {
+      "id": "f0af",
+      "title": "Thông báo môn Tét Des UI",
+      "author": {
+        "_id": 0.2670362003910022,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-05",
+      "isRead": false,
+      "_id": 0.2319575024637055
     }
   ],
   "lectures": [

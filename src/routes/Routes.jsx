@@ -18,6 +18,7 @@ import AdminProtectedRoutes from "./AdminProtectedRoutes";
 import AdminDashBoard from "../pages/Admin/AdminDashBoard";
 import MorePage from "../pages/MorePage/MorePage";
 import LayoutAdmin from "../layouts/LayoutAdmin/LayoutAdmin";
+import JoinClass from "../pages/JoinClass/JoinClass";
 
 const routes = [
   {
@@ -68,7 +69,14 @@ const routes = [
       </AuthProvider>
     ),
   },
-
+  {
+    path: "/join-class/:inviteCode",
+    element: (
+      <AuthProvider>
+        <JoinClass />
+      </AuthProvider>
+    ),
+  },
   {
     path: "/404",
     element: <NotFoundPage />,

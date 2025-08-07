@@ -5,6 +5,7 @@ import iconDeadLine from "../../../../../assets/icon/task/iconDeadLine.png";
 import addButton from "../../../../../assets/icon/avatar_add_button.png";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import axios from "axios";
 import { FaPen } from "react-icons/fa";
 import iconDontKnow from "../../../../../assets/icon/task/iconDontKnow.png";
 import {
@@ -119,28 +120,31 @@ const Task = ({
   };
 
   const handleEditPriority = async (task) => {
+    let flag = false;
     try {
       const payload = {
         taskId: task.taskId,
         taskTitle: task.taskTitle,
         taskDescription: task.taskDescription,
-        groupId: task.groupId,
+        groupId: task.groupsId,
         documentId: task.documentId,
         taskPoint: 5,
         taskStartTime: task.taskStartTime,
         taskDueDate: task.taskDueDate,
         priority: "HIGH",
         statusTaskId: task.statusTask.statusTaskId,
-        listUserAssign: task.assigns,
+        listUserAssign: task.assigns.assignTo,
         parentTaskId: "",
       };
-      console.log(payload);
 
       const response = await addTask(payload, user?.token);
-      console.log(response);
-      toast.success("Priority is update!");
+      if(response.status === 500) {
+        flag = true
+      }
+      // toast.success("Priority is update!");
     } catch (e) {
-      toast.error("Something is wrong!");
+      handleDeleteReRender(flag)
+      // toast.error("Something is wrong!");
       console.error("Error updating priority:", e.message);
     }
   };
@@ -181,16 +185,15 @@ const Task = ({
         return;
       }
 
-      const formattedStartTime = `${editedStartTime}T${currentTime}`;
-      const formattedDueDate = `${editedDueDate}T${currentTime}`;
+      const formattedStartTime = `${
+        editedStartTime || props.task?.taskStartTime?.slice(0, 10)
+      }T${currentTime}`;
+      const formattedDueDate = `${
+        editedDueDate || props.task?.taskDueDate?.slice(0, 10)
+      }T${currentTime}`;
 
       const startTime = new Date(formattedStartTime);
       const dueDate = new Date(formattedDueDate);
-
-      if (isNaN(startTime) || isNaN(dueDate)) {
-        toast.error("Invalid start time or due date format!");
-        return;
-      }
 
       if (startTime >= dueDate) {
         toast.error("Start time must be earlier than due date!");
@@ -208,24 +211,21 @@ const Task = ({
         taskDueDate: formattedDueDate,
         priority: task.priority,
         statusTaskId: task.statusTask.statusTaskId,
-        listUserAssign: task.assigns,
+        listUserAssign: task.assigns.assignTo,
         parentTaskId: "",
       };
-
       const response = await addTask(payload, user.token);
       if (response.status === 200) {
         flag = true;
         setIsEditing(false);
         handleDeleteReRender(flag);
-        toast.success("Update task is successfully!");
       }
     } catch (e) {
-      toast.error(`Update task failed: ${e.message}`);
       throw new Error(e.message);
     }
   };
 
-  const handleDeleteTask = async (taskId) => {
+  const handleDeleteTask = async (taskId, task) => {
     let flag = false;
 
     const result = await Swal.fire({
@@ -246,6 +246,21 @@ const Task = ({
           flag = true;
           setShowSubTask(false);
           handleDeleteReRender(flag);
+
+          await axios.post("http://localhost:3000/notifications", {
+            id: Math.random().toString(16).slice(2, 6),
+            title: `Delete task ${task.taskTitle} by ${user.username}`,
+            author: {
+              _id: Math.random(),
+              name: user.username || "Unknown",
+              avatar:
+                user.avatar ||
+                "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+            },
+            createdAt: new Date().toISOString().split("T")[0],
+            isRead: false,
+            _id: Math.random(),
+          });
         }
 
         Swal.fire("Deleted!", "Task was removed successfully.", "success");
@@ -301,7 +316,9 @@ const Task = ({
                 <FaPen
                   size={14}
                   style={{ cursor: "pointer" }}
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => {
+                    setIsEditing(true);
+                  }}
                 />
               )}
               <i
@@ -320,7 +337,7 @@ const Task = ({
               <FaTrashAlt
                 size={12}
                 style={{ cursor: "pointer" }}
-                onClick={() => handleDeleteTask(props.task.taskId)}
+                onClick={() => handleDeleteTask(props.task.taskId, props.task)}
               />
             </div>
           </div>

@@ -120,85 +120,7 @@
       ]
     }
   ],
-  "schedules": [
-    {
-      "id": "2b84",
-      "2025-07-22": [
-        "01"
-      ],
-      "2025-07-23": [
-        3,
-        4
-      ]
-    },
-    {
-      "id": "89c0",
-      "2025-07-24": [
-        "01",
-        "02",
-        "03"
-      ],
-      "2025-07-25": [
-        "03",
-        "04"
-      ]
-    },
-    {
-      "id": "08db",
-      "2025-08-01": [
-        "01",
-        "02"
-      ],
-      "2025-08-04": [
-        "03",
-        "04"
-      ]
-    },
-    {
-      "id": "35c3",
-      "2025-07-23": [
-        "01"
-      ]
-    },
-    {
-      "id": "270e",
-      "2025-08-02": [
-        "02"
-      ]
-    },
-    {
-      "id": "8f85",
-      "2025-07-27": [
-        "02",
-        "01"
-      ]
-    },
-    {
-      "id": "fb95",
-      "2025-07-21": [
-        "01"
-      ]
-    },
-    {
-      "id": "3b26",
-      "2025-07-28": [
-        "01",
-        "02"
-      ]
-    },
-    {
-      "id": "66f6",
-      "2025-07-30": [
-        "01"
-      ]
-    },
-    {
-      "id": "b8c7",
-      "2025-07-26": [
-        "05"
-      ]
-    }
-  ],
+  "schedules": [],
   "plans": [
     {
       "project": "Intelligent Flow",
@@ -310,2249 +232,268 @@
   ],
   "notifications": [
     {
-      "_id": 7,
-      "title": "Thông báo môn Hello notifi",
+      "id": "a040",
+      "title": "Delete task undefined by hoaintt40",
       "author": {
-        "_id": 1,
-        "name": "Unknown",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-26",
-      "isRead": false,
-      "id": "12ab"
-    },
-    {
-      "_id": 8,
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.7153913120871842,
-        "name": "Unknown",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-26",
-      "isRead": false,
-      "id": "13ab"
-    },
-    {
-      "id": "e9b0",
-      "title": "Thông báo môn alo123",
-      "author": {
-        "_id": 0.051945197622622286,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-26",
-      "isRead": false,
-      "_id": 0.2840157357458858
-    },
-    {
-      "id": "b068",
-      "title": "Thông báo môn hello tesst colun add",
-      "author": {
-        "_id": 0.21961801212756615,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-26",
-      "isRead": false,
-      "_id": 0.22624500921641733
-    },
-    {
-      "id": "f2b3",
-      "title": "Thông báo môn 123",
-      "author": {
-        "_id": 0.3354294677766836,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-26",
-      "isRead": false,
-      "_id": 0.19054062276463823
-    },
-    {
-      "id": "504f",
-      "title": "Thông báo môn 123",
-      "author": {
-        "_id": 0.5660411086097729,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-26",
-      "isRead": false,
-      "_id": 0.3547100547757913
-    },
-    {
-      "id": "3bf7",
-      "title": "Thông báo môn Thiết kế DB",
-      "author": {
-        "_id": 0.9119602760804698,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-26",
-      "isRead": false,
-      "_id": 0.7758573387384524
-    },
-    {
-      "id": "6b27",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.47675720561718216,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-26",
-      "isRead": false,
-      "_id": 0.21663464902402363
-    },
-    {
-      "id": "6f4b",
-      "title": "Thông báo môn 123",
-      "author": {
-        "_id": 0.23672028668130274,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-26",
-      "isRead": false,
-      "_id": 0.39320197304665805
-    },
-    {
-      "id": "6fa8",
-      "title": "Thông báo môn hello tesst colun add",
-      "author": {
-        "_id": 0.6515211709166867,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-26",
-      "isRead": false,
-      "_id": 0.6286407008521352
-    },
-    {
-      "id": "aa76",
-      "title": "Thông báo môn Thiết kế DB",
-      "author": {
-        "_id": 0.6014925097071098,
-        "name": "de170537",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-26",
-      "isRead": false,
-      "_id": 0.4954741361331494
-    },
-    {
-      "id": "07e7",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.45515508379511527,
-        "name": "de170537",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-26",
-      "isRead": false,
-      "_id": 0.38161672038248184
-    },
-    {
-      "id": "1323",
-      "title": "Thông báo môn Code task-service",
-      "author": {
-        "_id": 0.9854522726382017,
-        "name": "de170537",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-27",
-      "isRead": false,
-      "_id": 0.20533154716664226
-    },
-    {
-      "id": "c66e",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.41129813343590516,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.13797528131914438
-    },
-    {
-      "id": "fd0c",
-      "title": "Thông báo môn 123",
-      "author": {
-        "_id": 0.5164533642063095,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.4147279351336508
-    },
-    {
-      "id": "168a",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.1903129351693107,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.975624069543863
-    },
-    {
-      "id": "cd63",
-      "title": "Thông báo môn Xử lý các trang common",
-      "author": {
-        "_id": 0.9700660412576203,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.28797376945470554
-    },
-    {
-      "id": "aa40",
-      "title": "Thông báo môn Code auth-service",
-      "author": {
-        "_id": 0.2737094670318433,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.16521832631084177
-    },
-    {
-      "id": "13e9",
-      "title": "Thông báo môn Tìm hiểu các công cụ deploy",
-      "author": {
-        "_id": 0.4655586980466997,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.7327337112861617
-    },
-    {
-      "id": "638c",
-      "title": "Thông báo môn Tìm hiểu các công cụ deploy",
-      "author": {
-        "_id": 0.6671888170912443,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.4483374038366198
-    },
-    {
-      "id": "7cb3",
-      "title": "Thông báo môn Code admin-service",
-      "author": {
-        "_id": 0.5287153069888144,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.9583340951936596
-    },
-    {
-      "id": "7ec6",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.145047991899673,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.07065859900080396
-    },
-    {
-      "id": "3477",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.4291789628051417,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.9230968607462732
-    },
-    {
-      "id": "be6e",
-      "title": "Thông báo môn 123",
-      "author": {
-        "_id": 0.8798367850366428,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.3729274273700238
-    },
-    {
-      "id": "3432",
-      "title": "Thông báo môn Tìm hiểu các công cụ deploy",
-      "author": {
-        "_id": 0.12535356063838388,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.04509295508254585
-    },
-    {
-      "id": "44c7",
-      "title": "Thông báo môn Code chat-service",
-      "author": {
-        "_id": 0.2572057872189296,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.25440195400581134
-    },
-    {
-      "id": "a454",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.37440413653292537,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.6761753962297103
-    },
-    {
-      "id": "05d5",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.5654869362579148,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.47462212135448023
-    },
-    {
-      "id": "a5e4",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.38269177494825923,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.044129348972019034
-    },
-    {
-      "id": "c872",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.3443814402336527,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.07253474127043025
-    },
-    {
-      "id": "60b9",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.11448219764526135,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.21050051230925826
-    },
-    {
-      "id": "5ae5",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.4881920422402932,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.8792029354022214
-    },
-    {
-      "id": "0657",
-      "title": "Thông báo môn hello tesst colun add",
-      "author": {
-        "_id": 0.8524032636888971,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.8049851741876874
-    },
-    {
-      "id": "b38a",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.1721927158874499,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.2185432503116439
-    },
-    {
-      "id": "88b7",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.7055286097517768,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.38106159756647084
-    },
-    {
-      "id": "11f0",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.641234878393796,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.11851652502240528
-    },
-    {
-      "id": "87c3",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.2671303248123389,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.0730801602272263
-    },
-    {
-      "id": "e751",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.8685480450440688,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.22916627099464104
-    },
-    {
-      "id": "de22",
-      "title": "Thông báo môn Cấu hình toàn hệ thống",
-      "author": {
-        "_id": 0.783301850807322,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.7238214835089001
-    },
-    {
-      "id": "fb22",
-      "title": "Thông báo môn Code chat-service",
-      "author": {
-        "_id": 0.8422838656212703,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.24530828857895637
-    },
-    {
-      "id": "9470",
-      "title": "Thông báo môn Cấu hình toàn hệ thống",
-      "author": {
-        "_id": 0.616401817389088,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.34217946144965206
-    },
-    {
-      "id": "b832",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.741227473625671,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.638845402035807
-    },
-    {
-      "id": "d509",
-      "title": "Thông báo môn hello tesst colun add",
-      "author": {
-        "_id": 0.952903155235146,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.9457239903910882
-    },
-    {
-      "id": "a240",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.19312103395989888,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.5167015900201132
-    },
-    {
-      "id": "6281",
-      "title": "Thông báo môn Code task-service",
-      "author": {
-        "_id": 0.21955637484230595,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.5722782352046822
-    },
-    {
-      "id": "cdde",
-      "title": "Thông báo môn Code admin-service",
-      "author": {
-        "_id": 0.8164572580317138,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.9869774433159167
-    },
-    {
-      "id": "0a75",
-      "title": "Thông báo môn Code chat-service",
-      "author": {
-        "_id": 0.2505206528093482,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.7786795557491777
-    },
-    {
-      "id": "b62b",
-      "title": "Thông báo môn Tìm hiểu các công cụ deploy",
-      "author": {
-        "_id": 0.15605025134412953,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.468574750319258
-    },
-    {
-      "id": "0937",
-      "title": "Thông báo môn Hello TestHello Test",
-      "author": {
-        "_id": 0.039324517375292745,
-        "name": "de170537",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.817079284247624
-    },
-    {
-      "id": "23ca",
-      "title": "Thông báo môn Hello TestHello Test",
-      "author": {
-        "_id": 0.8809056518286874,
-        "name": "de170537",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.9979403817435004
-    },
-    {
-      "id": "a6e3",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.8350747285256108,
-        "name": "de170537",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.347411533721268
-    },
-    {
-      "id": "81a9",
-      "title": "Thông báo môn Hello TestHello Test",
-      "author": {
-        "_id": 0.45578125195005426,
-        "name": "de170537",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.8568127371238827
-    },
-    {
-      "id": "276d",
-      "title": "Thông báo môn Hello TestHello Test",
-      "author": {
-        "_id": 0.9560441553881464,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.4066894928956519
-    },
-    {
-      "id": "96f8",
-      "title": "Thông báo môn Hello TestHello Test",
-      "author": {
-        "_id": 0.2552089817981116,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.7617545224199282
-    },
-    {
-      "id": "e8ea",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.8338203423734768,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.9879597134228697
-    },
-    {
-      "id": "8b68",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.4366648325924324,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.3141018994091205
-    },
-    {
-      "id": "f2bb",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.9438672954606415,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.9279133000263017
-    },
-    {
-      "id": "2d79",
-      "title": "Thông báo môn alo123",
-      "author": {
-        "_id": 0.8515821843286532,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.03655981930913066
-    },
-    {
-      "id": "e2c0",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.7356355331778214,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-28",
-      "isRead": false,
-      "_id": 0.32164943812929747
-    },
-    {
-      "id": "e84b",
-      "title": "Thông báo môn Hello TestHello Test",
-      "author": {
-        "_id": 0.13427167994601652,
-        "name": "de170537",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-30",
-      "isRead": false,
-      "_id": 0.9850340142143436
-    },
-    {
-      "id": "c6c6",
-      "title": "Thông báo môn Thiết kế UI ",
-      "author": {
-        "_id": 0.4685403923752026,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.5382116106270519
-    },
-    {
-      "id": "5985",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.547758071484002,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.6434460212561326
-    },
-    {
-      "id": "22a7",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.45291631717871994,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.5114481242994681
-    },
-    {
-      "id": "badd",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.6766411090552086,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.6676696227106583
-    },
-    {
-      "id": "a354",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.8332712745762061,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.8375384362546735
-    },
-    {
-      "id": "c192",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.2974086249183624,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.6676727716629001
-    },
-    {
-      "id": "b0b5",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.8941863583966421,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.8410192146289177
-    },
-    {
-      "id": "8077",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.04942921681411194,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.7547437315346536
-    },
-    {
-      "id": "5b09",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.4906108266000575,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.7251724746122117
-    },
-    {
-      "id": "617c",
-      "title": "Thông báo môn Thiết kế UI ",
-      "author": {
-        "_id": 0.2726349300215021,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.7981731783987999
-    },
-    {
-      "id": "e49d",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.8388469212045682,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.9415868237420676
-    },
-    {
-      "id": "e3d8",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.2637615148818102,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.013223366462033814
-    },
-    {
-      "id": "4b7a",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.40211713017121453,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.5637646605492985
-    },
-    {
-      "id": "56ce",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.45544840799783237,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.4696146670876781
-    },
-    {
-      "id": "cc97",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.1894459784624245,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.818057200647158
-    },
-    {
-      "id": "9e9b",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.35241796285921567,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.25166768059503575
-    },
-    {
-      "id": "86f4",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.8999292012243625,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.6151757230578181
-    },
-    {
-      "id": "ee9c",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.19451843649911094,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.22756491838445736
-    },
-    {
-      "id": "ed49",
-      "title": "Thông báo môn 132",
-      "author": {
-        "_id": 0.39414884688959284,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.08184273418062893
-    },
-    {
-      "id": "6b17",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.664010211644006,
-        "name": "de170537",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-07-31",
-      "isRead": false,
-      "_id": 0.8186076970220297
-    },
-    {
-      "id": "e2e9",
-      "title": "Thông báo môn Vẽ UI/UX",
-      "author": {
-        "_id": 0.8674950553790338,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-02",
-      "isRead": false,
-      "_id": 0.5993203695703111
-    },
-    {
-      "id": "6639",
-      "title": "Thông báo môn Test Task Post",
-      "author": {
-        "_id": 0.36895637032615136,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-02",
-      "isRead": false,
-      "_id": 0.9770341824419131
-    },
-    {
-      "id": "acd1",
-      "title": "Thông báo môn Test 2",
-      "author": {
-        "_id": 0.17275552678783979,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-02",
-      "isRead": false,
-      "_id": 0.7426376635950727
-    },
-    {
-      "id": "68fe",
-      "title": "Thông báo môn Test 2",
-      "author": {
-        "_id": 0.3145427331626204,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-02",
-      "isRead": false,
-      "_id": 0.19732499633543787
-    },
-    {
-      "id": "4c26",
-      "title": "Thông báo môn Test Task Post",
-      "author": {
-        "_id": 0.1728132286952444,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-02",
-      "isRead": false,
-      "_id": 0.671020245115433
-    },
-    {
-      "id": "cdb8",
-      "title": "Thông báo môn UI/UX đẹp",
-      "author": {
-        "_id": 0.4170725843208756,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.15686149119031034
-    },
-    {
-      "id": "0b2f",
-      "title": "Thông báo môn Thiết kế DB notification subtask",
-      "author": {
-        "_id": 0.05660218514864912,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.21160295022443554
-    },
-    {
-      "id": "a4a0",
-      "title": "Thông báo môn Hello Test Subtask",
-      "author": {
-        "_id": 0.20975396407781766,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.6438189995305803
-    },
-    {
-      "id": "068c",
-      "title": "Thông báo môn Hù hú",
-      "author": {
-        "_id": 0.8815612176481606,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.3340028164098494
-    },
-    {
-      "id": "e9c5",
-      "title": "Thông báo môn Hú hù",
-      "author": {
-        "_id": 0.793801053088423,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.9664853613803064
-    },
-    {
-      "id": "144b",
-      "title": "Thông báo môn Hú hù",
-      "author": {
-        "_id": 0.12432568131160704,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.7358449362084633
-    },
-    {
-      "id": "48d0",
-      "title": "Thông báo môn Tét",
-      "author": {
-        "_id": 0.6011629985049672,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.3183934095851654
-    },
-    {
-      "id": "8369",
-      "title": "Thông báo môn Hú hù",
-      "author": {
-        "_id": 0.33602119396250796,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.23756824887355754
-    },
-    {
-      "id": "c1d6",
-      "title": "Thông báo môn Tét",
-      "author": {
-        "_id": 0.7284258222629015,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.7871312732711319
-    },
-    {
-      "id": "2a77",
-      "title": "Thông báo môn Tét",
-      "author": {
-        "_id": 0.5247374813649054,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.8666164213655834
-    },
-    {
-      "id": "3d6c",
-      "title": "Thông báo môn Tét",
-      "author": {
-        "_id": 0.2556399571089265,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.22068253363866253
-    },
-    {
-      "id": "94ce",
-      "title": "Thông báo môn Hù hú",
-      "author": {
-        "_id": 0.36741788666851827,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.6401738417981468
-    },
-    {
-      "id": "5503",
-      "title": "Thông báo môn Tét Des UI",
-      "author": {
-        "_id": 0.7853018706911925,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.19279392683705554
-    },
-    {
-      "id": "c93e",
-      "title": "Thông báo môn Tét",
-      "author": {
-        "_id": 0.10607099296387512,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.6432132081551426
-    },
-    {
-      "id": "f0af",
-      "title": "Thông báo môn Tét Des UI",
-      "author": {
-        "_id": 0.2670362003910022,
-        "name": "de170159",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-05",
-      "isRead": false,
-      "_id": 0.2319575024637055
-    },
-    {
-      "id": "f008",
-      "title": "Thông báo môn Hello Test",
-      "author": {
-        "_id": 0.6115470629110479,
+        "_id": 0.0574156181905503,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
-      "createdAt": "2025-08-06",
+      "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.32565990083099683
+      "_id": 0.7875212912484204
     },
     {
-      "id": "6588",
-      "title": "Thông báo môn 123",
+      "id": "7c49",
+      "title": "Announce add task 123 by hoaintt40",
       "author": {
-        "_id": 0.43674537289786686,
+        "_id": 0.8302632106689228,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
-      "createdAt": "2025-08-06",
+      "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.21828046331924544
+      "_id": 0.12974888549539443
     },
     {
-      "id": "4e30",
-      "title": "Thông báo môn 123",
+      "id": "b437",
+      "title": "Delete task 123 by hoaintt40",
       "author": {
-        "_id": 0.4614647794429505,
+        "_id": 0.511976273319806,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
-      "createdAt": "2025-08-06",
+      "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.46421793790861576
+      "_id": 0.5214451189860616
     },
     {
-      "id": "eeef",
-      "title": "Thông báo môn 123",
+      "id": "1697",
+      "title": "Announce add task 321 by hoaintt40",
       "author": {
-        "_id": 0.08903153331255131,
+        "_id": 0.4179515858593842,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
-      "createdAt": "2025-08-06",
+      "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.3416354280498468
+      "_id": 0.02418440317189663
     },
     {
-      "id": "eb5b",
-      "title": "Thông báo môn Hello Test",
+      "id": "fe8c",
+      "title": "Comment by hoaintt40 on undefined",
       "author": {
-        "_id": 0.27332671441127343,
+        "_id": 0.5245906569730865,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-07",
+      "isRead": false,
+      "_id": 0.9056925322448349
+    },
+    {
+      "id": "fd87",
+      "title": "Announce add task Thiết kế DB notification by hoaintt40",
+      "author": {
+        "_id": 0.890119711117044,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-07",
+      "isRead": false,
+      "_id": 0.61239534738141
+    },
+    {
+      "id": "0802",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.93692888846334,
         "name": "de170481",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
-      "createdAt": "2025-08-06",
+      "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.3026628363155054
+      "_id": 0.3632954037029611
     },
     {
-      "id": "ef61",
-      "title": "Thông báo môn Hello Test",
+      "id": "6b00",
+      "title": "Comment by de170481",
       "author": {
-        "_id": 0.01811345234752393,
+        "_id": 0.9726649773131084,
         "name": "de170481",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
-      "createdAt": "2025-08-06",
+      "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.9236115253061671
+      "_id": 0.48692428258025444
     },
     {
-      "id": "ffd1",
-      "title": "Thông báo môn Hello Test",
+      "id": "5c23",
+      "title": "Comment by de170481",
       "author": {
-        "_id": 0.995365326424794,
+        "_id": 0.06684494992203238,
         "name": "de170481",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
-      "createdAt": "2025-08-06",
+      "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.20311942091007495
+      "_id": 0.7191638895979393
     },
     {
-      "id": "45fe",
-      "title": "Thông báo môn Hello Test",
+      "id": "a4ab",
+      "title": "Announce add task Thiết kế DB notification by hoaintt40",
       "author": {
-        "_id": 0.8671899802140624,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.8323657880156174
-    },
-    {
-      "id": "c2e2",
-      "title": "Thông báo môn Hello Test",
-      "author": {
-        "_id": 0.8771853140061808,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.9190275413722848
-    },
-    {
-      "id": "8382",
-      "title": "Thông báo môn Hello Test",
-      "author": {
-        "_id": 0.30801262246409455,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.5884265135840204
-    },
-    {
-      "id": "138c",
-      "title": "Thông báo môn sub",
-      "author": {
-        "_id": 0.37018690907388385,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.18798941253068757
-    },
-    {
-      "id": "9bdc",
-      "title": "Thông báo môn Hello Test",
-      "author": {
-        "_id": 0.4826985505831102,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.30848594694984777
-    },
-    {
-      "id": "d0f4",
-      "title": "Thông báo môn sub",
-      "author": {
-        "_id": 0.05223506686985946,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.15228080531364407
-    },
-    {
-      "id": "90e6",
-      "title": "Thông báo môn sub",
-      "author": {
-        "_id": 0.1840374484361187,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.6853134709156355
-    },
-    {
-      "id": "b64d",
-      "title": "Thông báo môn Hello Test",
-      "author": {
-        "_id": 0.263157176113205,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.865724940180299
-    },
-    {
-      "id": "49e9",
-      "title": "Thông báo môn sub",
-      "author": {
-        "_id": 0.7279929199747184,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.8768029304963593
-    },
-    {
-      "id": "c48c",
-      "title": "Thông báo môn Hello",
-      "author": {
-        "_id": 0.6001293196899254,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.32144881011599513
-    },
-    {
-      "id": "fcf2",
-      "title": "Thông báo môn Hello 2",
-      "author": {
-        "_id": 0.7828810928916667,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.5662796070969488
-    },
-    {
-      "id": "3383",
-      "title": "Thông báo môn subtask",
-      "author": {
-        "_id": 0.9975454606004175,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.5100543863638869
-    },
-    {
-      "id": "2d94",
-      "title": "Thông báo môn Hello",
-      "author": {
-        "_id": 0.6216709228999838,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.4046702185470863
-    },
-    {
-      "id": "ab6c",
-      "title": "Thông báo môn Hello 2",
-      "author": {
-        "_id": 0.20275128699709077,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.2689432931709008
-    },
-    {
-      "id": "e12c",
-      "title": "Thông báo môn Hello",
-      "author": {
-        "_id": 0.5948583266567441,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.26300242272684615
-    },
-    {
-      "id": "622e",
-      "title": "Thông báo môn subtask",
-      "author": {
-        "_id": 0.5943674427314557,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.45367688598755374
-    },
-    {
-      "id": "8003",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.5874982964852007,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-06",
-      "isRead": false,
-      "_id": 0.27121893458268354
-    },
-    {
-      "id": "eee5",
-      "title": "Thông báo môn Hello test task",
-      "author": {
-        "_id": 0.4543859881315573,
+        "_id": 0.947375269523226,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
       "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.5527396310192364
+      "_id": 0.3423258073433819
     },
     {
-      "id": "2f01",
-      "title": "Thông báo môn Test",
+      "id": "eade",
+      "title": "Announcement for Hihi change to status",
       "author": {
-        "_id": 0.9654558146483068,
+        "_id": 0.6211801787854585,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
       "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.1939028396928103
+      "_id": 0.20359852992267202
     },
     {
-      "id": "ad20",
-      "title": "Thông báo môn Test",
+      "id": "6183",
+      "title": "Announcement for Hihi change to status",
       "author": {
-        "_id": 0.40557619479209883,
+        "_id": 0.9828084549878588,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
       "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.2836518895035308
+      "_id": 0.8607542841940174
     },
     {
-      "id": "127d",
-      "title": "Thông báo môn Hello 2",
+      "id": "14c7",
+      "title": "Announcement for Test change to status",
       "author": {
-        "_id": 0.5928442936645067,
+        "_id": 0.5297739873683599,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
       "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.5754803525845296
+      "_id": 0.5007472128651451
     },
     {
-      "id": "028a",
-      "title": "Thông báo môn Thiết kế DB notification",
+      "id": "67dc",
+      "title": "Comment by hoaintt40",
       "author": {
-        "_id": 0.049349557886363526,
+        "_id": 0.920810057957962,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
       "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.5597837573833672
+      "_id": 0.6131464320089807
     },
     {
-      "id": "607d",
-      "title": "Thông báo môn subtask for hello test",
+      "id": "bade",
+      "title": "Comment by de170159",
       "author": {
-        "_id": 0.6775639529949509,
+        "_id": 0.3550863938812592,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-07",
+      "isRead": false,
+      "_id": 0.6778629187916397
+    },
+    {
+      "id": "68bd",
+      "title": "Thông báo môn Hihi subtask",
+      "author": {
+        "_id": 0.38222033859605364,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-07",
+      "isRead": false,
+      "_id": 0.7917021232574402
+    },
+    {
+      "id": "8643",
+      "title": "Delete task Test by de170159",
+      "author": {
+        "_id": 0.6217169542048113,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-07",
+      "isRead": false,
+      "_id": 0.35728362301144323
+    },
+    {
+      "id": "e8e3",
+      "title": "Announce add task Thiết kế DB notification by hoaintt40",
+      "author": {
+        "_id": 0.921913668301433,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
       "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.20204508243639674
+      "_id": 0.8446767166560808
     },
     {
-      "id": "d7a3",
-      "title": "Thông báo môn test",
+      "id": "2c57",
+      "title": "Announcement for Thiết kế DB notification change to status",
       "author": {
-        "_id": 0.34144624259035505,
+        "_id": 0.5125542132760305,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
       "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.760992200162445
+      "_id": 0.14435583892453852
     },
     {
-      "id": "96a6",
-      "title": "Thông báo môn subtask 9:00",
+      "id": "f07f",
+      "title": "Announce add task Test by hoaintt40",
       "author": {
-        "_id": 0.7125669980963807,
+        "_id": 0.8064739784691874,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
       "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.5404156048682097
+      "_id": 0.013598488716027868
     },
     {
-      "id": "f967",
-      "title": "Thông báo môn subtask 9:01",
+      "id": "e2c6",
+      "title": "Announcement for Hihi change to status",
       "author": {
-        "_id": 0.5773777183606784,
+        "_id": 0.20746292239950315,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
       "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.4444135555202299
+      "_id": 0.9871632062944398
     },
     {
-      "id": "3189",
-      "title": "Thông báo môn Hello Test",
+      "id": "ecd2",
+      "title": "Announce add task Thiết kế DB notification by hoaintt40",
       "author": {
-        "_id": 0.6210867569746031,
+        "_id": 0.551826964173371,
         "name": "hoaintt40",
         "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
       },
       "createdAt": "2025-08-07",
       "isRead": false,
-      "_id": 0.1617237953764208
-    },
-    {
-      "id": "9a7f",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.7018924487941678,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.7344814044596181
-    },
-    {
-      "id": "706c",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.597710536651035,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.8697737715092058
-    },
-    {
-      "id": "1ec6",
-      "title": "Thông báo môn Thiết kế UI/UX",
-      "author": {
-        "_id": 0.17578189418208867,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.8616032522780656
-    },
-    {
-      "id": "d3c4",
-      "title": "Thông báo môn Thiết kế UI/UX",
-      "author": {
-        "_id": 0.494971074764756,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.13852078375300092
-    },
-    {
-      "id": "5fe7",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.6859340458334833,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.8163541706788205
-    },
-    {
-      "id": "9ae4",
-      "title": "Thông báo môn Thiết kế UI/UX",
-      "author": {
-        "_id": 0.49992551928716567,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.19435773271599
-    },
-    {
-      "id": "7187",
-      "title": "Thông báo môn Code Front - End login",
-      "author": {
-        "_id": 0.8085106236030083,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.7983651697231521
-    },
-    {
-      "id": "ad5f",
-      "title": "Thông báo môn UI/UX đẹp",
-      "author": {
-        "_id": 0.3211260850433264,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.6109754308172509
-    },
-    {
-      "id": "f9f1",
-      "title": "Thông báo môn UI/UX đẹp",
-      "author": {
-        "_id": 0.5471853916240992,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.950500074174319
-    },
-    {
-      "id": "6afe",
-      "title": "Thông báo môn SubTask test",
-      "author": {
-        "_id": 0.8059569995977576,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.3974303906160428
-    },
-    {
-      "id": "4598",
-      "title": "Thông báo môn Hello Test",
-      "author": {
-        "_id": 0.994770858378245,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.15940410830067575
-    },
-    {
-      "id": "e85d",
-      "title": "Thông báo môn subtask for hello test",
-      "author": {
-        "_id": 0.1932482566703959,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.9879985031600222
-    },
-    {
-      "id": "9c3d",
-      "title": "Thông báo môn Subtask 16:02",
-      "author": {
-        "_id": 0.6288730216405428,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.7304206519565225
-    },
-    {
-      "id": "8582",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.48917690397692637,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.11447738388745576
-    },
-    {
-      "id": "fd99",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.9017853180329606,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.2944870368247863
-    },
-    {
-      "id": "6618",
-      "title": "Thông báo môn test",
-      "author": {
-        "_id": 0.6090159250806996,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.19888339149916934
-    },
-    {
-      "id": "ca38",
-      "title": "Thông báo môn Hello Test",
-      "author": {
-        "_id": 0.641748649306448,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.841779556619031
-    },
-    {
-      "id": "ca62",
-      "title": "Thông báo môn Hello Test",
-      "author": {
-        "_id": 0.8974675748129934,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.7973855601218364
-    },
-    {
-      "id": "7218",
-      "title": "Thông báo môn Hello Test",
-      "author": {
-        "_id": 0.8049718765571603,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.836628963310537
-    },
-    {
-      "id": "709a",
-      "title": "Thông báo môn 123",
-      "author": {
-        "_id": 0.786127974783309,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.9209821607816273
-    },
-    {
-      "id": "b42a",
-      "title": "Thông báo môn 1233",
-      "author": {
-        "_id": 0.5983957447695961,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.32090622151097736
-    },
-    {
-      "id": "613f",
-      "title": "Thông báo môn 123",
-      "author": {
-        "_id": 0.3625561497829144,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.7097108998582204
-    },
-    {
-      "id": "ffe1",
-      "title": "Thông báo môn 321",
-      "author": {
-        "_id": 0.9870181670132242,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.9939620481903018
-    },
-    {
-      "id": "637b",
-      "title": "Thông báo môn 431",
-      "author": {
-        "_id": 0.39076392763430223,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.5431591926580779
-    },
-    {
-      "id": "da5e",
-      "title": "Thông báo môn 431",
-      "author": {
-        "_id": 0.9530301518054045,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.42939928373761815
-    },
-    {
-      "id": "02b0",
-      "title": "Thông báo môn 321",
-      "author": {
-        "_id": 0.20202737010404848,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.520596349752558
-    },
-    {
-      "id": "0838",
-      "title": "Thông báo môn 321",
-      "author": {
-        "_id": 0.8429003514850877,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.9600441652384566
-    },
-    {
-      "id": "7b6c",
-      "title": "Thông báo môn 321",
-      "author": {
-        "_id": 0.7922679934601594,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.2996470914434415
-    },
-    {
-      "id": "ee09",
-      "title": "Thông báo môn 123",
-      "author": {
-        "_id": 0.6071049590784044,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.8812509276821212
-    },
-    {
-      "id": "dd88",
-      "title": "Thông báo môn 432",
-      "author": {
-        "_id": 0.004573790520095322,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.5089869941286204
-    },
-    {
-      "id": "f706",
-      "title": "Thông báo môn 321",
-      "author": {
-        "_id": 0.3753293791464175,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.37790143102222784
-    },
-    {
-      "id": "4ce1",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.170778310272363,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.8959031710404712
-    },
-    {
-      "id": "b393",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.24319874014331289,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.4500203127482697
-    },
-    {
-      "id": "9f9d",
-      "title": "Thông báo môn 321",
-      "author": {
-        "_id": 0.07607474095889077,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.3276153650262569
-    },
-    {
-      "id": "7f67",
-      "title": "Thông báo môn 321",
-      "author": {
-        "_id": 0.9529510652413645,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.7465311528929696
-    },
-    {
-      "id": "c0a5",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.8097552266307614,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.8338693206042791
-    },
-    {
-      "id": "a4ef",
-      "title": "Thông báo môn 321",
-      "author": {
-        "_id": 0.45349450375848344,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.9694211673275003
-    },
-    {
-      "id": "0779",
-      "title": "Thông báo môn Hello Test",
-      "author": {
-        "_id": 0.4941186620914574,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.5130367252598718
-    },
-    {
-      "id": "4e72",
-      "title": "Thông báo môn Hello subtask",
-      "author": {
-        "_id": 0.16782829086188478,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.13837960730693677
-    },
-    {
-      "id": "5dfa",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.21953031011605428,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.7120321782100849
-    },
-    {
-      "id": "13a9",
-      "title": "Thông báo môn UI/UX đẹp",
-      "author": {
-        "_id": 0.5581853538731536,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.9675946733784091
-    },
-    {
-      "id": "eadf",
-      "title": "Thông báo môn End User Testing",
-      "author": {
-        "_id": 0.7394304024125794,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.3074897644756026
-    },
-    {
-      "id": "f93a",
-      "title": "Thông báo môn Thiết kế DB",
-      "author": {
-        "_id": 0.3826422075712431,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.7776582687411066
-    },
-    {
-      "id": "3248",
-      "title": "Thông báo môn Thiết kế",
-      "author": {
-        "_id": 0.24619356555414307,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.47855573510745764
-    },
-    {
-      "id": "dd35",
-      "title": "Thông báo môn End User Testing",
-      "author": {
-        "_id": 0.09253816702406104,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.3678895927355018
-    },
-    {
-      "id": "fafc",
-      "title": "Thông báo môn Thiết kế",
-      "author": {
-        "_id": 0.21488135349718795,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.047426671653266084
-    },
-    {
-      "id": "1ecb",
-      "title": "Thông báo môn Thiết kế DB",
-      "author": {
-        "_id": 0.03812169107821217,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.1495017042843878
-    },
-    {
-      "id": "9a06",
-      "title": "Thông báo môn Subtask",
-      "author": {
-        "_id": 0.3609792260509027,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.16969012335085076
-    },
-    {
-      "id": "9417",
-      "title": "Thông báo môn Thiết kế DB notification",
-      "author": {
-        "_id": 0.9324615616563596,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.32307400186030555
-    },
-    {
-      "id": "5e55",
-      "title": "Thông báo môn Thiết kế",
-      "author": {
-        "_id": 0.40034336897914524,
-        "name": "hoaintt40",
-        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      },
-      "createdAt": "2025-08-07",
-      "isRead": false,
-      "_id": 0.09537495684970432
-    }
-  ],
-  "lectures": [
-    {
-      "id": "1",
-      "avatar": "https://randomuser.me/api/portraits/men/11.jpg",
-      "name": "Dr. Ethan Brooks",
-      "email": "ethan.brooks@example.com",
-      "status": "Full time"
-    },
-    {
-      "id": "2",
-      "avatar": "https://randomuser.me/api/portraits/women/21.jpg",
-      "name": "Prof. Mia Nguyen",
-      "email": "mia.nguyen@example.com",
-      "status": "Part time"
-    },
-    {
-      "id": "3",
-      "avatar": "https://randomuser.me/api/portraits/men/31.jpg",
-      "name": "Dr. Liam Johnson",
-      "email": "liam.johnson@example.com",
-      "status": "Visiting"
-    },
-    {
-      "id": "4",
-      "avatar": "https://randomuser.me/api/portraits/women/41.jpg",
-      "name": "Dr. Emily Tran",
-      "email": "emily.tran@example.com",
-      "status": "Full time"
-    },
-    {
-      "id": "5",
-      "avatar": "https://randomuser.me/api/portraits/men/51.jpg",
-      "name": "Prof. Noah Lee",
-      "email": "noah.lee@example.com",
-      "status": "Part time"
+      "_id": 0.2575087698544497
     }
   ]
 }

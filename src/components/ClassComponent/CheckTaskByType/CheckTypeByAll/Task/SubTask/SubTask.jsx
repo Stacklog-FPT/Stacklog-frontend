@@ -127,15 +127,15 @@ const SubTask = ({
             </span>
           </div>
           <div className="subtask-content-head-icon">
-            <FaPen className="icon" size={12} />
+            {/* <FaPen className="icon" size={12} />
             <i
               className="fa-solid fa-bookmark"
               style={{
                 color: priority === "HIGH" ? "#045745" : "inherit",
                 cursor: "pointer",
               }}
-            />
-            <CiCirclePlus className="icon" size={14} />
+            /> */}
+            {/* <CiCirclePlus className="icon" size={14} /> */}
             <FaTrashAlt
               className="icon trash-icon"
               size={12}

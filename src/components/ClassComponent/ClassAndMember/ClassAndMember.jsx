@@ -15,12 +15,14 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState("");
   const [groups, setGroups] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState("all");
+  const [selectedGroup, setSelectedGroup] = useState("");
   const [memberList, setMemberList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const visibleMembers = memberList?.slice(0, 3);
   const extraCount = memberList?.length - visibleMembers?.length;
   const { getUserById } = useApi();
+
+  const decodeUser = decodeToken(user.token);
 
   useEffect(() => {
     if (!user || !user.token) return;
@@ -51,7 +53,17 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
     setIsLoading(true);
     const foundClass = classes.find((c) => c.classesId === selectedClass);
     setGroups(foundClass ? foundClass.groups : []);
-    setSelectedGroup("all");
+
+    if (user.role !== "LECTURER" && foundClass) {
+      const userGroup = foundClass.groups.find((group) =>
+        group.groupStudents.some((stu) => stu.userId === decodeUser.id)
+      );
+      if (userGroup) {
+        setSelectedGroup(userGroup.groupsId);
+      }
+    } else {
+      setSelectedGroup("all");
+    }
     setIsLoading(false);
   }, [selectedClass, classes]);
 
@@ -75,6 +87,7 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
         );
         if (group) {
           userIds = group.groupStudents.map((s) => s.userId);
+          setGroup(group)
         }
       }
     }
@@ -111,7 +124,7 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
     setSelectedClass(classId);
     const selected = classes.find((c) => c.classesId === classId);
     setGroups(selected ? selected.groups : []);
-    setSelectedGroup("all");
+    setSelectedGroup("");
   };
 
   const handleGroupChange = (e) => {
@@ -143,11 +156,22 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
             </select>
 
             <select value={selectedGroup} onChange={handleGroupChange}>
-              {groups?.map((item) => (
-                <option key={item?.groupsId} value={item?.groupsId}>
-                  {item?.groupsName}
-                </option>
-              ))}
+              {user.role === "LECTURER" && (
+                <option value="all">All Groups</option>
+              )}
+              {groups
+                ?.filter(
+                  (group) =>
+                    user.role === "LECTURER" ||
+                    group.groupStudents.some(
+                      (stu) => stu.userId === decodeUser.id
+                    )
+                )
+                .map((item) => (
+                  <option key={item?.groupsId} value={item?.groupsId}>
+                    {item?.groupsName}
+                  </option>
+                ))}
             </select>
           </div>
           <div className="class__and__member__content__member__student">

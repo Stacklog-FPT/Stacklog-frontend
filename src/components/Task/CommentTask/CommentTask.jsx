@@ -9,7 +9,9 @@ import userApi from "../../../service/UserService";
 import { useAuth } from "../../../context/AuthProvider";
 import { FaPen, FaTrashAlt, FaCheck } from "react-icons/fa";
 import { BsFillSendFill } from "react-icons/bs";
-import { comment } from "postcss";
+import decodeToken from "../../../service/DecodeJwt";
+import Swal from "sweetalert2";
+import axios from "axios";
 
 const CommentTask = ({ task, isClose, handleDeleteReRender }) => {
   const [newComment, setNewComment] = useState("");
@@ -18,9 +20,9 @@ const CommentTask = ({ task, isClose, handleDeleteReRender }) => {
   const [editedComment, setEditedComment] = useState("");
   const [userMap, setUserMap] = useState({});
   const { user } = useAuth();
+  const decoded = decodeToken(user.token);
   const { getUserById } = userApi();
   const { getAllReview, createReview, deleteReview } = ReviewService();
-
   useEffect(() => {
     if (task) handleGetCommentTask();
   }, [task]);
@@ -65,6 +67,20 @@ const CommentTask = ({ task, isClose, handleDeleteReRender }) => {
       if (res) {
         setNewComment("");
         handleGetCommentTask();
+        await axios.post("http://localhost:3000/notifications", {
+          id: Math.random().toString(16).slice(2, 6),
+          title: `Comment by ${user.username}`,
+          author: {
+            _id: Math.random(),
+            name: user.username || "Unknown",
+            avatar:
+              user.avatar ||
+              "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+          },
+          createdAt: new Date().toISOString().split("T")[0],
+          isRead: false,
+          _id: Math.random(),
+        });
       }
     } catch (e) {
       console.error(e.message);
@@ -72,12 +88,25 @@ const CommentTask = ({ task, isClose, handleDeleteReRender }) => {
   };
 
   const handleDeleteComment = async (commentId) => {
-    try {
-      const result = await deleteReview(user.token, commentId);
-
-      console.log(result)
-    } catch (e) {
-      throw new Error(e.message)
+    const result = await Swal.fire({
+      title: "Are you sure to delete this task?",
+      text: "This action can't completed!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#045745",
+      cancelButtonColor: "#c8cad4",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+    });
+    if (result.isConfirmed) {
+      try {
+        const response = await deleteReview(user.token, commentId);
+        if (response === "Delete success") {
+          handleGetCommentTask();
+        }
+      } catch (e) {
+        throw new Error(e.message);
+      }
     }
   };
 
@@ -103,6 +132,8 @@ const CommentTask = ({ task, isClose, handleDeleteReRender }) => {
       console.error("Update failed:", e.message);
     }
   };
+
+  comments.map((item) => {});
 
   return (
     <div className="comment__task__container">
@@ -152,18 +183,20 @@ const CommentTask = ({ task, isClose, handleDeleteReRender }) => {
                   ) : (
                     <>
                       <p>{item.reviewContent}</p>
-                      <div className="comment__task__card__content__container__feature">
-                        <FaPen
-                          size={12}
-                          className="comment-icon comment-icon-pen"
-                          onClick={() => handleEditComment(item)}
-                        />
-                        <FaTrashAlt
-                          size={12}
-                          className="comment-icon comment-icon-trash"
-                          onClick={() => handleDeleteComment(item.reviewId)}
-                        />
-                      </div>
+                      {decoded.id === item.createdBy && (
+                        <div className="comment__task__card__content__container__feature">
+                          <FaPen
+                            size={12}
+                            className="comment-icon comment-icon-pen"
+                            onClick={() => handleEditComment(item)}
+                          />
+                          <FaTrashAlt
+                            size={12}
+                            className="comment-icon comment-icon-trash"
+                            onClick={() => handleDeleteComment(item.reviewId)}
+                          />
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
@@ -176,7 +209,12 @@ const CommentTask = ({ task, isClose, handleDeleteReRender }) => {
       </div>
 
       <div className="comment__task__footer">
-        <img src={avatar} alt="Current user avatar" />
+        <img
+          src={
+            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+          }
+          alt="avatar"
+        />
         <div className="comment__task__create__content">
           <textarea
             placeholder="Enter comment"

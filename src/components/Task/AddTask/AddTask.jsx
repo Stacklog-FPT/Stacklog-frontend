@@ -10,6 +10,7 @@ import taskService from "../../../service/TaskService";
 import { toast } from "react-toastify";
 import axios from "axios";
 import decodeToken from "../../../service/DecodeJwt";
+import Swal from "sweetalert2";
 
 const AddTask = ({
   status,
@@ -166,7 +167,7 @@ const AddTask = ({
         notify();
         await axios.post("http://localhost:3000/notifications", {
           id: Math.random().toString(16).slice(2, 6),
-          title: `Thông báo môn ${taskData.taskTitle}`,
+          title: `Announce add task ${taskData.taskTitle} by ${user.username}`,
           author: {
             _id: Math.random(),
             name: user.username || userData?.username || "Unknown",

@@ -21,6 +21,7 @@ import AddColumn from "../../../Column/AddColumn/AddColumn";
 import axios from "axios";
 import ReviewService from "../../../../service/ReviewService";
 import AddSubTask from "../../../Task/AddSubTask/AddSubTask";
+import decodeToken from "../../../../service/DecodeJwt";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -46,11 +47,19 @@ const CheckTypeByAll = () => {
   const [memberTask, setMemberTask] = useState([]);
   const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
-  const [group, setGroup] = useState("");
+  const [group, setGroup] = useState({});
   const { getAllGroup } = GroupService();
   const { getAllReview } = ReviewService();
   const [showAddSubTask, setShowAddSubTask] = useState(null);
+  const decoded = decodeToken(user?.token);
+  
+  const isLeader = () => {
+    if (group.groupsLeaderId === decoded.id) {
+      return true;
+    }
 
+    return false;
+  };
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -151,7 +160,7 @@ const CheckTypeByAll = () => {
           const response = await addTask(newTask, user?.token);
           await axios.post("http://localhost:3000/notifications", {
             id: Math.random().toString(16).slice(2, 6),
-            title: `Thông báo môn ${newTask.taskTitle}`,
+            title: `Announcement for ${newTask.taskTitle} change to status`,
             author: {
               _id: Math.random(),
               name: user.username || "Unknown",
@@ -289,7 +298,6 @@ const CheckTypeByAll = () => {
   const handleGetTasks = useCallback(
     async (groupId) => {
       try {
-        console.log("Voo o task");
         const response = await getAllTask(user.token, groupId);
         if (response) {
           const normalizedTasks = response.data.map((task) => ({
@@ -302,7 +310,6 @@ const CheckTypeByAll = () => {
                 .replace(/\b\w/g, (c) => c.toUpperCase()),
             },
           }));
-          console.log(normalizedTasks);
           setTasks(normalizedTasks);
         }
       } catch (e) {
@@ -468,7 +475,7 @@ const CheckTypeByAll = () => {
                 handleDeleteReRender={handleDeleteReRender}
               />
             ))}
-            {user.role === "LECTURER" || user.role === "LEADER" ? (
+            {user.role === "LECTURER" || isLeader() ? (
               <button
                 className="btn_add_status"
                 onClick={() => setShowAddColumn(!showAddColumn)}
@@ -478,7 +485,7 @@ const CheckTypeByAll = () => {
               </button>
             ) : null}
           </div>
-          {user.role === "LECTURER" || user.role === "LEADER"
+          {user.role === "LECTURER" || isLeader()
             ? showAddTask && (
                 <AddTask
                   status={showAddTask}

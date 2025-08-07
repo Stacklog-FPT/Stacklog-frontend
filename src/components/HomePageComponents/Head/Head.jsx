@@ -73,7 +73,7 @@ const Head = () => {
             <span className="head-container-right-task-content-title">
               Task
             </span>
-            <span className="head-container-right-task-content-sum">241</span>
+            {/* <span className="head-container-right-task-content-sum">241</span> */}
           </div>
         </div>
         <div className="head-container-right-task">
@@ -82,7 +82,7 @@ const Head = () => {
             <span className="head-container-right-task-content-title">
               Complete
             </span>
-            <span className="head-container-right-task-content-sum">241</span>
+            {/* <span className="head-container-right-task-content-sum">241</span> */}
           </div>
         </div>
       </div>

@@ -23,7 +23,7 @@ const Column = ({
   onShowComment,
   onShowAddSubTask,
   onTaskUpdated,
-  onColumnUpdated,
+  handleDeleteReRender,
   isLoading = false,
 }) => {
   const { setNodeRef, isOver } = useDroppable({
@@ -114,6 +114,7 @@ const Column = ({
                   onShowComment={onShowComment}
                   onShowAddSubTask={onShowAddSubTask}
                   onTaskUpdated={onTaskUpdated}
+                  handleDeleteReRender={handleDeleteReRender}
                   task={task}
                 />
               ))

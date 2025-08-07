@@ -3,13 +3,13 @@ import "./AddColumn.scss";
 import statusApi from "../../../service/ColumnService";
 import { useAuth } from "../../../context/AuthProvider";
 
-const AddColumn = ({ isClose, group, onStatusAdded }) => {
+const AddColumn = ({ onCancel, group, onColumnUpdated }) => {
   const { user } = useAuth();
   const [color, setColor] = useState("#3498db");
   const [columnData, setColumnData] = useState({
     statusTaskName: "",
     statusTaskColor: "" || color,
-    groupId: "",
+    groupId: group,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { addStatus } = statusApi();
@@ -30,17 +30,21 @@ const AddColumn = ({ isClose, group, onStatusAdded }) => {
       };
 
       const response = await addStatus(user?.token, payload);
+      console.log("Response from addStatus:", response);
 
       setColumnData({
         statusTaskName: "",
         statusTaskColor: color,
-        groupId: "",
+        groupId: group,
       });
-      setIsSubmitting(false);
-      if (isClose) isClose();
-      if (onStatusAdded) onStatusAdded(); // Gọi callback để thông báo thêm status thành công
+
+      if (response.data) {
+        onColumnUpdated(response.data);
+      }
+
+      if (onCancel) onCancel();
     } catch (e) {
-      console.error(e.message);
+      console.error("Failed to add column:", e.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -51,7 +55,7 @@ const AddColumn = ({ isClose, group, onStatusAdded }) => {
       <form className="add__column__container" onSubmit={handleSubmit}>
         <div className="add__column__container__heading">
           <h2>Add Status</h2>
-          <i className="fa-solid fa-xmark" onClick={isClose}></i>
+          <i className="fa-solid fa-xmark" onClick={onCancel}></i>
         </div>
 
         <div className="add__column__container__content">

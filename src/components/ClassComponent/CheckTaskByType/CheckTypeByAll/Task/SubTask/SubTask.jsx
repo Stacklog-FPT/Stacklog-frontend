@@ -14,6 +14,7 @@ const SubTask = ({
   priority,
   createdAt,
   dueDate,
+  startTime,
   members,
   taskId,
   subtask,
@@ -34,6 +35,8 @@ const SubTask = ({
     cursor: isDragging ? "grabbing" : "grab",
   };
 
+  console.log(startTime)
+
   const visibleMembers = members?.slice(0, 3);
   const extraCount = members?.length - visibleMembers?.length;
 
@@ -47,9 +50,9 @@ const SubTask = ({
     return `${day}/${month}/${year}`;
   };
 
-  const calculateRemainingPercent = (createdAt, dueDate) => {
+  const calculateRemainingPercent = (startTime, dueDate) => {
     const now = new Date();
-    const start = new Date(createdAt);
+    const start = new Date(startTime);
     const end = new Date(dueDate);
 
     if (isNaN(start) || isNaN(end) || end <= start) return 0;
@@ -72,7 +75,7 @@ const SubTask = ({
     formatDate(createdAt),
     formatDate(dueDate)
   );
-  
+
   const progressColor = getColorByPercent(percentSubTask);
 
   return (
@@ -116,7 +119,7 @@ const SubTask = ({
           <span>{percentSubTask}%</span>
         </div>
         <div className="subtask-content-deadline">
-          <span>{formatDate(createdAt) || <Skeleton />}</span>
+          <span>{formatDate(startTime) || <Skeleton />}</span>
           <img
             src={iconDeadLine}
             alt="deadline icon"

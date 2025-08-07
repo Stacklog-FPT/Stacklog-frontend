@@ -26,7 +26,12 @@ import { useAuth } from "../../../../../context/AuthProvider";
 import SubTask from "./SubTask/SubTask";
 import ReviewService from "../../../../../service/ReviewService";
 
-const Task = ({ isDraggingOverlay, onTaskUpdated, ...props }) => {
+const Task = ({
+  isDraggingOverlay,
+  onTaskAdded,
+  handleDeleteReRender,
+  ...props
+}) => {
   const {
     attributes,
     listeners,
@@ -41,13 +46,6 @@ const Task = ({ isDraggingOverlay, onTaskUpdated, ...props }) => {
   const { getAllReview } = ReviewService();
   const [commentLength, setCommentLength] = useState(0);
   const [subtasks, setSubtasks] = useState(props.task?.subtasks || []);
-
-  // useEffect(() => {
-  //   const uniqueSubtasks = Array.from(
-  //     new Map(props.task.subtasks.map((item) => [item.taskId, item])).values()
-  //   );
-  //   setSubtasks(uniqueSubtasks);
-  // }, [props.task?.subtasks]);
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -97,7 +95,7 @@ const Task = ({ isDraggingOverlay, onTaskUpdated, ...props }) => {
     if (props.task?.taskId) {
       fetchCommentLength(props.task.taskId);
     }
-  }, [commentLength]);
+  }, [props.task?.taskId]);
 
   const visibleMembers = props?.members?.slice(0, 3);
   const extraCount = props?.members?.length - visibleMembers?.length;
@@ -120,23 +118,17 @@ const Task = ({ isDraggingOverlay, onTaskUpdated, ...props }) => {
         taskDescription: task.taskDescription,
         groupId: task.groupId,
         documentId: task.documentId,
-        taskPoint: task.taskPoint,
-        dueDate: task.taskDueDate,
+        taskPoint: 5,
+        taskStartTime: task.taskStartTime,
+        taskDueDate: task.taskDueDate,
         priority: "HIGH",
-        statusTaskId: task?.statusTask?.statusTaskId,
-        listUserAssign: task?.listUserAssign,
-        subtasks: task?.subtasks,
+        statusTaskId: task.statusTask.statusTaskId,
+        listUserAssign: task.assigns,
         parentTaskId: "",
       };
 
       const response = await addTask(payload, user?.token);
-      console.log(response)
-      // if (response) {
-      //   onTaskUpdated({
-      //     ...task,
-      //     priority: "HIGH",
-      //   });
-      // }
+      console.log(response);
     } catch (e) {
       console.error("Error updating priority:", e.message);
     }
@@ -167,8 +159,10 @@ const Task = ({ isDraggingOverlay, onTaskUpdated, ...props }) => {
     return "#f44336";
   };
 
-  const handleDeleteTask = (taskId) => {
-    Swal.fire({
+  const handleDeleteTask = async (taskId) => {
+    let flag = false;
+
+    const result = await Swal.fire({
       title: "Are you sure to delete this task?",
       text: "This action can't completed!",
       icon: "warning",
@@ -177,25 +171,28 @@ const Task = ({ isDraggingOverlay, onTaskUpdated, ...props }) => {
       cancelButtonColor: "#c8cad4",
       confirmButtonText: "Delete",
       cancelButtonText: "Cancel",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteTask(user.token, taskId)
-          .then((data) => {
-            console.log(data);
-            Swal.fire("Deleted!", "Task was removed successfully.", "success");
-            if (data.data) {
-              console.log("Có vô đây ko?");
-              onTaskUpdated({ taskId, deleted: true });
-            }
-          })
-          .catch(() => {
-            Swal.fire("Error!", "Something wrong!", "error");
-          });
-      }
     });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await deleteTask(user.token, taskId);
+        if (response.data === "Delete success") {
+          flag = true;
+          handleDeleteReRender(flag);
+        }
+
+        Swal.fire("Deleted!", "Task was removed successfully.", "success");
+      } catch (error) {
+        console.error("Delete failed:", error);
+        Swal.fire("Error!", "Something went wrong during deletion.", "error");
+      }
+    }
   };
 
-  const percent = calculateRemainingPercent(props.createdAt, props.dueDate);
+  const percent = calculateRemainingPercent(
+    props?.task?.taskStartTime,
+    props.dueDate
+  );
   const progressColor = getColorByPercent(percent);
 
   return (
@@ -249,7 +246,9 @@ const Task = ({ isDraggingOverlay, onTaskUpdated, ...props }) => {
           </div>
 
           <div className="task-content-deadline">
-            <span>{formatDate(props.createdAt) || <Skeleton />}</span>
+            <span>
+              {formatDate(props?.task?.taskStartTime) || <Skeleton />}
+            </span>
             <img src={iconDeadLine} alt="this is icon deadline" />
             <span>{formatDate(props.dueDate) || <Skeleton />}</span>
           </div>
@@ -325,6 +324,7 @@ const Task = ({ isDraggingOverlay, onTaskUpdated, ...props }) => {
                       percent={item.percent}
                       createdAt={item.createdAt}
                       dueDate={item.taskDueDate}
+                      startTime={item.taskStartTime}
                       members={item.assigns}
                       taskId={props.task.taskId}
                       subtask={item}

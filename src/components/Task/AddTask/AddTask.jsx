@@ -11,7 +11,14 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import decodeToken from "../../../service/DecodeJwt";
 
-const AddTask = ({ status, onCancel, group, members, onTaskAdded }) => {
+const AddTask = ({
+  status,
+  onCancel,
+  group,
+  members,
+  onTaskAdded,
+  task = {},
+}) => {
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
   const notify = () => toast.success("Add task is successfully");
@@ -89,7 +96,7 @@ const AddTask = ({ status, onCancel, group, members, onTaskAdded }) => {
     }
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+    today.setHours(0, 0, 0, 0);
 
     if (taskData.taskStartTime) {
       const startDate = new Date(taskData.taskStartTime);
@@ -130,7 +137,6 @@ const AddTask = ({ status, onCancel, group, members, onTaskAdded }) => {
     try {
       const now = new Date();
       const currentTime = now.toTimeString().split(" ")[0];
-
       let formattedStartTime = taskData.taskStartTime
         ? `${taskData.taskStartTime}T${currentTime}`
         : "";
@@ -155,10 +161,8 @@ const AddTask = ({ status, onCancel, group, members, onTaskAdded }) => {
         priority: taskData.priority || "HIGH",
         listUserAssign: taskData.assignTo,
       };
-      console.log("Payload sent to server:", payload);
       const response = await addTask(payload, user.token);
       if (response.data) {
-        console.log("Response from server:", response.data);
         notify();
         await axios.post("http://localhost:3000/notifications", {
           id: Math.random().toString(16).slice(2, 6),

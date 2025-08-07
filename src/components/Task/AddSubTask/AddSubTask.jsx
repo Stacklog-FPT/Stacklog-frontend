@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import decodeToken from "../../../service/DecodeJwt";
 
-const AddSubTask = ({ isClose, task, members }) => {
+const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
   console.log(task);
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
@@ -130,15 +130,13 @@ const AddSubTask = ({ isClose, task, members }) => {
     try {
       const now = new Date();
       const currentTime = now.toTimeString().split(" ")[0];
-
-      let formattedStartTime = taskData.taskStartTime
-        ? `${taskData.taskStartTime}T${currentTime}`
+      let formattedStartTime = subTaskData.taskStartTime
+        ? `${subTaskData.taskStartTime}T${currentTime}`
         : "";
 
-      let formattedDueDate = taskData.taskDueDate
-        ? `${taskData.taskDueDate}T${currentTime}`
+      let formattedDueDate = subTaskData.taskDueDate
+        ? `${subTaskData.taskDueDate}T${currentTime}`
         : "";
-
       const payload = {
         taskId: "",
         taskTitle: subTaskData.taskTitle,
@@ -154,9 +152,10 @@ const AddSubTask = ({ isClose, task, members }) => {
         parentTaskId: task.taskId,
       };
 
+      console.log(payload)
+
       const response = await addTask(payload, user.token);
       if (response.data) {
-        console.log("Response from server:", response.data);
         notify();
         await axios.post("http://localhost:3000/notifications", {
           id: Math.random().toString(16).slice(2, 6),
@@ -172,6 +171,7 @@ const AddSubTask = ({ isClose, task, members }) => {
           isRead: false,
           _id: Math.random(),
         });
+        if (onSubTaskAdded) onSubTaskAdded(response.data);
         isClose();
       }
     } catch (e) {

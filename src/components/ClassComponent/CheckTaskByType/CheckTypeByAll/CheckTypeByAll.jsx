@@ -257,9 +257,39 @@ const CheckTypeByAll = () => {
     [user.token]
   );
 
+  const handleColumnUpdated = useCallback(
+    (updatedColumn) => {
+      if (updatedColumn?.deleted) {
+        setStatusTasks((prev) =>
+          prev.filter(
+            (status) => status.statusTaskId !== updatedColumn.statusId
+          )
+        );
+      } else if (updatedColumn) {
+        setStatusTasks((prev) => {
+          const exists = prev.some(
+            (status) => status.statusTaskId === updatedColumn.statusTaskId
+          );
+          if (exists) {
+            return prev.map((status) =>
+              status.statusTaskId === updatedColumn.statusTaskId
+                ? { ...status, ...updatedColumn }
+                : status
+            );
+          }
+          return [...prev, updatedColumn];
+        });
+      } else {
+        handleGetStatusTask(group);
+      }
+    },
+    [group, handleGetStatusTask]
+  );
+
   const handleGetTasks = useCallback(
     async (groupId) => {
       try {
+        console.log("Voo o task");
         const response = await getAllTask(user.token, groupId);
         if (response) {
           const normalizedTasks = response.data.map((task) => ({
@@ -272,6 +302,7 @@ const CheckTypeByAll = () => {
                 .replace(/\b\w/g, (c) => c.toUpperCase()),
             },
           }));
+          console.log(normalizedTasks);
           setTasks(normalizedTasks);
         }
       } catch (e) {
@@ -317,6 +348,13 @@ const CheckTypeByAll = () => {
 
   const handleCloseAddSubtask = async () => {
     setShowAddSubTask(null);
+  };
+
+  const handleDeleteReRender = (flag) => {
+    if (flag) {
+      console.log('Co vo day ko? de re render')
+      handleGetTasks(group);
+    }
   };
 
   // useEffect(() => {
@@ -423,9 +461,10 @@ const CheckTypeByAll = () => {
                 )}
                 members={memberTask}
                 onShowAddTask={() => handleShowAddTask(item)}
-                hand
                 onShowComment={handleShowComment}
                 onShowAddSubTask={handleChooseTask}
+                onColumnUpdated={handleColumnUpdated}
+                handleDeleteReRender={handleDeleteReRender}
               />
             ))}
             {user.role === "LECTURER" || user.role === "LEADER" ? (
@@ -455,9 +494,10 @@ const CheckTypeByAll = () => {
           {showAddColumn && (
             <AddColumn
               status={showAddTask}
-              onCancel={() => setShowAddTask(null)}
+              onCancel={handleCloseAddStatus}
               group={group}
               members={memberTask}
+              onColumnUpdated={handleColumnUpdated}
             />
           )}
           {showAddSubTask && (
@@ -465,6 +505,7 @@ const CheckTypeByAll = () => {
               isClose={handleCloseAddSubtask}
               task={showAddSubTask}
               members={memberTask}
+              onSubTaskAdded={() => handleGetTasks(group)}
             />
           )}
         </div>

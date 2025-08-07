@@ -404,21 +404,26 @@ const CheckTypeByList = () => {
               onShowAddSubTask={handleChooseTask}
             />
           ))}
-          <button
-            className="btn_add_status"
-            onClick={() => setShowAddColumn(!showAddColumn)}
-          >
-            <i className="fa-solid fa-plus"></i>
-            <span>Add Status</span>
-          </button>
+          {user.role === "LECTURER" || user.role === "LEADER" ? (
+            <button
+              className="btn_add_status"
+              onClick={() => setShowAddColumn(!showAddColumn)}
+            >
+              <i className="fa-solid fa-plus"></i>
+              <span>Add Status</span>
+            </button>
+          ) : null}
         </div>
-        {showAddTask && (
-          <AddTask
-            status={showAddTask}
-            onCancel={() => setShowAddTask(null)}
-            members={members}
-          />
-        )}
+        {user.role === "LECTURER" || user.role === "LEADER"
+          ? showAddTask && (
+              <AddTask
+                status={showAddTask}
+                onCancel={() => setShowAddTask(null)}
+                group={group}
+                members={memberTask}
+              />
+            )
+          : null}
         {showCommentTask && (
           <CommentTask task={showCommentTask} isClose={handleCloseComment} />
         )}

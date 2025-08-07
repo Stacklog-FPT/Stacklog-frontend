@@ -1,0 +1,48 @@
+.modal__column {
+  position: absolute;
+  top: 5%;
+  left: 60%;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0;
+  z-index: 11000;
+  width: 160px;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal__column__container {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal__column__container__feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: #333;
+  font-size: 14px;
+}
+
+.modal__column__container__feature:hover {
+  background-color: #f0f0f0;
+}
+
+.modal__column__container__feature svg {
+  color: #555;
+  font-size: 16px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -11,14 +11,14 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import decodeToken from "../../../service/DecodeJwt";
 
-const AddTask = (props) => {
+const AddTask = ({ status, onCancel, group, members, onTaskAdded }) => {
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
   const notify = () => toast.success("Add task is successfully");
   const notifyFailure = () => toast.error("Add task is failure");
   const { addTask } = taskService();
-  const visibleMembers = props.members.slice(0, 3);
-  const extraCount = props.members.length - visibleMembers.length;
+  const visibleMembers = members.slice(0, 3);
+  const extraCount = members.length - visibleMembers.length;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
@@ -26,12 +26,13 @@ const AddTask = (props) => {
     taskId: "",
     taskTitle: "",
     taskDescription: "",
-    groupId: props.group || "",
+    groupId: group || "",
     documentId: "",
     taskPoint: 5,
+    taskStartTime: "",
     taskDueDate: "",
     priority: "",
-    statusTaskId: props.status.statusTaskId,
+    statusTaskId: status.statusTaskId,
     assignTo: [],
     parentTaskId: "",
   });
@@ -87,12 +88,30 @@ const AddTask = (props) => {
       return false;
     }
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); 
+
+    if (taskData.taskStartTime) {
+      const startDate = new Date(taskData.taskStartTime);
+      if (startDate < today) {
+        toast.error("Start date must be today or later!");
+        return false;
+      }
+    }
+
     if (taskData.taskDueDate) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
       const dueDate = new Date(taskData.taskDueDate);
       if (dueDate < today) {
-        toast.error("Due date must be today or in the future!");
+        toast.error("Due date must be today or later!");
+        return false;
+      }
+    }
+
+    if (taskData.taskStartTime && taskData.taskDueDate) {
+      const startDate = new Date(taskData.taskStartTime);
+      const dueDate = new Date(taskData.taskDueDate);
+      if (startDate > dueDate) {
+        toast.error("Start date must be before or equal to due date!");
         return false;
       }
     }
@@ -111,18 +130,25 @@ const AddTask = (props) => {
     try {
       const now = new Date();
       const currentTime = now.toTimeString().split(" ")[0];
+
+      let formattedStartTime = taskData.taskStartTime
+        ? `${taskData.taskStartTime}T${currentTime}`
+        : "";
+
       let formattedDueDate = taskData.taskDueDate
         ? `${taskData.taskDueDate}T${currentTime}`
-        : now.toISOString().split(".")[0];
+        : "";
+
       const payload = {
         taskId: "",
-        groupId: props.group || "",
+        groupId: group || "",
         taskTitle: taskData.taskTitle,
         taskDescription: taskData.taskDescription,
         statusTaskId: taskData.statusTaskId,
         documentId: "",
         taskPoint: 0,
         taskParentId: 0,
+        taskStartTime: formattedStartTime,
         taskDueDate: formattedDueDate,
         createdBy: user?.userName || userData?.username || "Unknown",
         updatedBy: "",
@@ -148,8 +174,9 @@ const AddTask = (props) => {
           isRead: false,
           _id: Math.random(),
         });
+        if (onTaskAdded) onTaskAdded(response.data);
       }
-      props.onCancel();
+      onCancel();
     } catch (e) {
       console.error(
         "Failed to add task:",
@@ -157,7 +184,7 @@ const AddTask = (props) => {
         e.response ? e.response.status : ""
       );
       notifyFailure();
-      props.onCancel();
+      onCancel();
     } finally {
       setIsSubmitting(false);
     }
@@ -168,7 +195,7 @@ const AddTask = (props) => {
       <form className="add-task-container" onSubmit={handleSubmit}>
         <div className="wrapper-title">
           <h2 className="text-heading">Title</h2>
-          <i className="fa-solid fa-xmark" onClick={props.onCancel}></i>
+          <i className="fa-solid fa-xmark" onClick={onCancel}></i>
         </div>
         <div className="wrapper-title-input">
           <input
@@ -190,16 +217,6 @@ const AddTask = (props) => {
             required
           />
         </div>
-        <div className="wrapper-subtask">
-          <div className="wrapper-subtask-heading">
-            <img src={iconSubTask} alt="..." />
-            <h2>Subtask</h2>
-          </div>
-          <div className="wrapper-input">
-            <i className="fa-solid fa-plus"></i>
-            <input type="text" placeholder="Create Subtask" />
-          </div>
-        </div>
         <div className="wrapper-assign-user">
           <div className="wrapper-assign-user-heading">
             <img src={assignUser} alt="..." />
@@ -207,7 +224,7 @@ const AddTask = (props) => {
           </div>
           <div className="assigned-users-list">
             {taskData.assignTo.map((userId) => {
-              const member = props.members.find((m) => m._id === userId);
+              const member = members.find((m) => m._id === userId);
               return member ? (
                 <div key={userId} className="assigned-user-card">
                   <div className="user-info">
@@ -256,7 +273,7 @@ const AddTask = (props) => {
           {showAssignDropdown && (
             <div className="assign-dropdown">
               <div className="assign-checkbox-list">
-                {props.members.map((member) => (
+                {members.map((member) => (
                   <label key={member._id} className="member-option">
                     <input
                       type="checkbox"
@@ -338,7 +355,13 @@ const AddTask = (props) => {
           <div className="wrapper_input_time">
             <p>Start</p>
             <div className="date-input-container">
-              <input type="date" className="date-input" />
+              <input
+                type="date"
+                name="taskStartTime"
+                className="date-input"
+                value={taskData.taskStartTime}
+                onChange={handleInputChange}
+              />
             </div>
           </div>
           <div className="wrapper_input_time">
@@ -352,17 +375,6 @@ const AddTask = (props) => {
                 onChange={handleInputChange}
               />
             </div>
-          </div>
-        </div>
-        <div className="wrapper-track-time">
-          <div className="wrapper-track-time-heading">
-            <img src={trackTime || "/placeholder.svg"} alt="...icon" />
-            <h2>Track time</h2>
-          </div>
-          <div className="wrapper-track-time-input">
-            <input type="text" placeholder="Enter your date" />
-            <input type="text" placeholder="Enter your time" />
-            <input type="text" placeholder="Enter your time" />
           </div>
         </div>
         <div className="wrapper-btn-submit">

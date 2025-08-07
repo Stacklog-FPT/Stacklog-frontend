@@ -65,7 +65,24 @@ const taskService = () => {
     }
   };
 
-  return { getAllTask, addTask, setSocket };
+  const deleteTask = async (token, taskId) => {
+    if (!token) {
+      throw new Error("Unauthorized!");
+    }
+
+    try {
+      const response = await axios.delete(`${API_TASK}/task/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  };
+
+  return { getAllTask, addTask, deleteTask, setSocket };
 };
 
 export default taskService;

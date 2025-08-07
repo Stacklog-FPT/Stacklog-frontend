@@ -147,7 +147,6 @@ const CheckTypeByAll = () => {
             ? activeTask.assigns.map((user) => user.assignTo).filter(Boolean)
             : [],
         };
-        console.log(newTask);
         try {
           const response = await addTask(newTask, user?.token);
           await axios.post("http://localhost:3000/notifications", {
@@ -243,37 +242,74 @@ const CheckTypeByAll = () => {
     setShowAddColumn(false);
   };
 
-  const handleGetStatusTask = useCallback(async (groupId) => {
-    try {
-      setStatusTasks([]);
-      const response = await getAllStatus(user.token, groupId);
-      if (response) {
-        setStatusTasks(response.data);
+  const handleGetStatusTask = useCallback(
+    async (groupId) => {
+      try {
+        setStatusTasks([]);
+        const response = await getAllStatus(user.token, groupId);
+        if (response) {
+          setStatusTasks(response.data);
+        }
+      } catch (e) {
+        console.error(e.message);
       }
-    } catch (e) {
-      console.error(e.message);
-    }
-  }, []);
+    },
+    [user.token]
+  );
 
-  const handleGetTasks = useCallback(async (groupId) => {
-    try {
-      const response = await getAllTask(user.token, groupId);
-      if (response) {
-        const normalizedTasks = response.data.map((task) => ({
-          ...task,
-          statusTask: {
-            ...task.statusTask,
-            statusTaskName: task.statusTask.statusTaskName
-              .toLowerCase()
-              .replace(/\b\w/g, (c) => c.toUpperCase()),
-          },
-        }));
-        setTasks(normalizedTasks);
+  const handleGetTasks = useCallback(
+    async (groupId) => {
+      try {
+        const response = await getAllTask(user.token, groupId);
+        if (response) {
+          const normalizedTasks = response.data.map((task) => ({
+            ...task,
+            subtasks: task.subtasks || [],
+            statusTask: {
+              ...task.statusTask,
+              statusTaskName: task.statusTask.statusTaskName
+                .toLowerCase()
+                .replace(/\b\w/g, (c) => c.toUpperCase()),
+            },
+          }));
+          setTasks(normalizedTasks);
+        }
+      } catch (e) {
+        console.error(e.message);
       }
-    } catch (e) {
-      console.error(e.message);
-    }
-  }, []);
+    },
+    [user.token]
+  );
+
+  const handleTaskUpdated = useCallback(
+    (updatedTask) => {
+      if (updatedTask?.deleted) {
+        setTasks((prevTasks) =>
+          prevTasks.filter((task) => task.taskId !== updatedTask.taskId)
+        );
+      } else if (updatedTask) {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.taskId === updatedTask.taskId
+              ? {
+                  ...task,
+                  ...updatedTask,
+                  statusTask: {
+                    ...task.statusTask,
+                    statusTaskName: task.statusTask.statusTaskName
+                      .toLowerCase()
+                      .replace(/\b\w/g, (c) => c.toUpperCase()),
+                  },
+                }
+              : task
+          )
+        );
+      } else {
+        handleGetTasks(group);
+      }
+    },
+    [group, handleGetTasks]
+  );
 
   const handleChooseTask = async (task) => {
     setShowAddSubTask(task);
@@ -283,58 +319,58 @@ const CheckTypeByAll = () => {
     setShowAddSubTask(null);
   };
 
-  useEffect(() => {
-    const stompInstance = setSocket(user.token);
-    setStompClient(stompInstance);
-    stompInstance.onmessage = (message) => {
-      const data = JSON.parse(message.body);
-      if (data.type === "taskUpdate") {
-        setTasks((prevTasks) => {
-          const taskExists = prevTasks.some(
-            (task) => task.taskId === data.taskId
-          );
-          if (taskExists) {
-            return prevTasks.map((task) =>
-              task.taskId === data.taskId
-                ? {
-                    ...task,
-                    ...data,
-                    statusTask: {
-                      ...task.statusTask,
-                      statusTaskName: data.statusTask.statusTaskName
-                        .toLowerCase()
-                        .replace(/\b\w/g, (c) => c.toUpperCase()),
-                    },
-                  }
-                : task
-            );
-          } else {
-            return [
-              ...prevTasks,
-              {
-                ...data,
-                statusTask: {
-                  ...data.statusTask,
-                  statusTaskName: data.statusTask.statusTaskName
-                    .toLowerCase()
-                    .replace(/\b\w/g, (c) => c.toUpperCase()),
-                },
-              },
-            ];
-          }
-        });
-      } else if (data.type === "taskDelete") {
-        setTasks((prevTasks) =>
-          prevTasks.filter((task) => task.taskId !== data.taskId)
-        );
-      }
-    };
-    return () => {
-      if (stompInstance && stompInstance.connected) {
-        stompInstance.disconnect();
-      }
-    };
-  }, []);
+  // useEffect(() => {
+  //   const stompInstance = setSocket(user.token);
+  //   setStompClient(stompInstance);
+  //   stompInstance.onmessage = (message) => {
+  //     const data = JSON.parse(message.body);
+  //     if (data.type === "taskUpdate") {
+  //       setTasks((prevTasks) => {
+  //         const taskExists = prevTasks.some(
+  //           (task) => task.taskId === data.taskId
+  //         );
+  //         if (taskExists) {
+  //           return prevTasks.map((task) =>
+  //             task.taskId === data.taskId
+  //               ? {
+  //                   ...task,
+  //                   ...data,
+  //                   statusTask: {
+  //                     ...task.statusTask,
+  //                     statusTaskName: data.statusTask.statusTaskName
+  //                       .toLowerCase()
+  //                       .replace(/\b\w/g, (c) => c.toUpperCase()),
+  //                   },
+  //                 }
+  //               : task
+  //           );
+  //         } else {
+  //           return [
+  //             ...prevTasks,
+  //             {
+  //               ...data,
+  //               statusTask: {
+  //                 ...data.statusTask,
+  //                 statusTaskName: data.statusTask.statusTaskName
+  //                   .toLowerCase()
+  //                   .replace(/\b\w/g, (c) => c.toUpperCase()),
+  //               },
+  //             },
+  //           ];
+  //         }
+  //       });
+  //     } else if (data.type === "taskDelete") {
+  //       setTasks((prevTasks) =>
+  //         prevTasks.filter((task) => task.taskId !== data.taskId)
+  //       );
+  //     }
+  //   };
+  //   return () => {
+  //     if (stompInstance && stompInstance.connected) {
+  //       stompInstance.disconnect();
+  //     }
+  //   };
+  // }, [setSocket, user.token]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -387,31 +423,42 @@ const CheckTypeByAll = () => {
                 )}
                 members={memberTask}
                 onShowAddTask={() => handleShowAddTask(item)}
+                hand
                 onShowComment={handleShowComment}
                 onShowAddSubTask={handleChooseTask}
               />
             ))}
-            <button
-              className="btn_add_status"
-              onClick={() => setShowAddColumn(!showAddColumn)}
-            >
-              <i className="fa-solid fa-plus"></i>
-              <span>Add Status</span>
-            </button>
+            {user.role === "LECTURER" || user.role === "LEADER" ? (
+              <button
+                className="btn_add_status"
+                onClick={() => setShowAddColumn(!showAddColumn)}
+              >
+                <i className="fa-solid fa-plus"></i>
+                <span>Add Status</span>
+              </button>
+            ) : null}
           </div>
-          {showAddTask && (
-            <AddTask
+          {user.role === "LECTURER" || user.role === "LEADER"
+            ? showAddTask && (
+                <AddTask
+                  status={showAddTask}
+                  onCancel={() => setShowAddTask(null)}
+                  group={group}
+                  members={memberTask}
+                  onTaskAdded={() => handleGetTasks(group)}
+                />
+              )
+            : null}
+          {showCommentTask && (
+            <CommentTask task={showCommentTask} isClose={handleCloseComment} />
+          )}
+          {showAddColumn && (
+            <AddColumn
               status={showAddTask}
               onCancel={() => setShowAddTask(null)}
               group={group}
               members={memberTask}
             />
-          )}
-          {showCommentTask && (
-            <CommentTask task={showCommentTask} isClose={handleCloseComment} />
-          )}
-          {showAddColumn && (
-            <AddColumn isClose={handleCloseAddStatus} group={group} />
           )}
           {showAddSubTask && (
             <AddSubTask
@@ -443,7 +490,9 @@ const CheckTypeByAll = () => {
             percent={activeTask.percentProgress}
             onShowComment={handleShowComment}
             onShowAddSubTask={handleChooseTask}
+            onTaskUpdated={handleTaskUpdated}
             isDraggingOverlay
+            task={activeTask}
           />
         ) : null}
       </DragOverlay>

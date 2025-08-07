@@ -3,6 +3,8 @@ import "./Task.scss";
 import Skeleton from "react-loading-skeleton";
 import iconDeadLine from "../../../../../assets/icon/task/iconDeadLine.png";
 import addButton from "../../../../../assets/icon/avatar_add_button.png";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import iconDontKnow from "../../../../../assets/icon/task/iconDontKnow.png";
 import {
   useSortable,
@@ -24,7 +26,7 @@ import { useAuth } from "../../../../../context/AuthProvider";
 import SubTask from "./SubTask/SubTask";
 import ReviewService from "../../../../../service/ReviewService";
 
-const Task = ({ isDraggingOverlay, ...props }) => {
+const Task = ({ isDraggingOverlay, onTaskUpdated, ...props }) => {
   const {
     attributes,
     listeners,
@@ -35,16 +37,17 @@ const Task = ({ isDraggingOverlay, ...props }) => {
   } = useSortable({ id: props.id, disabled: isDraggingOverlay });
   const { user } = useAuth();
   const [showSubTask, setShowSubTask] = useState(false);
-  const { addTask } = taskService();
-  const [isAddSubTask, setIsAddSubTask] = useState(false);
+  const { addTask, deleteTask } = taskService();
   const { getAllReview } = ReviewService();
   const [commentLength, setCommentLength] = useState(0);
-
   const [subtasks, setSubtasks] = useState(props.task?.subtasks || []);
 
-  useEffect(() => {
-    setSubtasks(props.task?.subtasks || []);
-  }, [props.task?.subtasks]);
+  // useEffect(() => {
+  //   const uniqueSubtasks = Array.from(
+  //     new Map(props.task.subtasks.map((item) => [item.taskId, item])).values()
+  //   );
+  //   setSubtasks(uniqueSubtasks);
+  // }, [props.task?.subtasks]);
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -111,38 +114,29 @@ const Task = ({ isDraggingOverlay, ...props }) => {
 
   const handleEditPriority = async (task) => {
     try {
-      const newPriority =
-        task?.priority === "HIGH"
-          ? "MEDIUM"
-          : task?.priority === "MEDIUM"
-          ? "LOW"
-          : "HIGH";
       const payload = {
         taskId: task.taskId,
-        groupId: task.groupId,
         taskTitle: task.taskTitle,
         taskDescription: task.taskDescription,
+        groupId: task.groupId,
         documentId: task.documentId,
         taskPoint: task.taskPoint,
-        taskParentId: "",
-        dueDate: "",
-        createdBy: task.createdBy,
-        updatedBy: task.updatedBy,
-        priority: newPriority,
-        statusTask: {
-          createdBy: task.statusTask.createdBy,
-          createdAt: task.statusTask.createdAt,
-          updateBy: task.statusTask.updateBy,
-          updateAt: task.statusTask.updateAt,
-          statusTaskId: task.statusTask.statusTaskId,
-          statusTaskName: task.statusTask.statusTaskName,
-          statusTaskColor: task.statusTask.statusTaskColor,
-          groupId: task.statusTask.groupId,
-        },
-        listUserAssign: task?.assigns,
+        dueDate: task.taskDueDate,
+        priority: "HIGH",
+        statusTaskId: task?.statusTask?.statusTaskId,
+        listUserAssign: task?.listUserAssign,
         subtasks: task?.subtasks,
+        parentTaskId: "",
       };
+
       const response = await addTask(payload, user?.token);
+      console.log(response)
+      // if (response) {
+      //   onTaskUpdated({
+      //     ...task,
+      //     priority: "HIGH",
+      //   });
+      // }
     } catch (e) {
       console.error("Error updating priority:", e.message);
     }
@@ -173,6 +167,34 @@ const Task = ({ isDraggingOverlay, ...props }) => {
     return "#f44336";
   };
 
+  const handleDeleteTask = (taskId) => {
+    Swal.fire({
+      title: "Are you sure to delete this task?",
+      text: "This action can't completed!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#045745",
+      cancelButtonColor: "#c8cad4",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteTask(user.token, taskId)
+          .then((data) => {
+            console.log(data);
+            Swal.fire("Deleted!", "Task was removed successfully.", "success");
+            if (data.data) {
+              console.log("Có vô đây ko?");
+              onTaskUpdated({ taskId, deleted: true });
+            }
+          })
+          .catch(() => {
+            Swal.fire("Error!", "Something wrong!", "error");
+          });
+      }
+    });
+  };
+
   const percent = calculateRemainingPercent(props.createdAt, props.dueDate);
   const progressColor = getColorByPercent(percent);
 
@@ -199,8 +221,7 @@ const Task = ({ isDraggingOverlay, ...props }) => {
               <i
                 className="fa-solid fa-bookmark"
                 style={{
-                  color:
-                    props?.task?.priority === "HIGH" ? "#045745" : "inherit",
+                  color: props?.task?.priority === "HIGH" ? "red" : "inherit",
                   cursor: "pointer",
                 }}
                 onClick={() => handleEditPriority(props.task)}
@@ -210,7 +231,11 @@ const Task = ({ isDraggingOverlay, ...props }) => {
                 style={{ cursor: "pointer" }}
                 onClick={() => props.onShowAddSubTask(props.task)}
               />
-              <FaTrashAlt size={12} style={{ cursor: "pointer" }} />
+              <FaTrashAlt
+                size={12}
+                style={{ cursor: "pointer" }}
+                onClick={() => handleDeleteTask(props.task.taskId)}
+              />
             </div>
           </div>
           <div className="task-content-percent">
@@ -285,13 +310,13 @@ const Task = ({ isDraggingOverlay, ...props }) => {
               onDragEnd={handleSubtaskDragEnd}
             >
               <SortableContext
-                items={subtasks.map(
+                items={subtasks?.map(
                   (subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`
                 )}
                 strategy={verticalListSortingStrategy}
               >
                 <div className="subtask-list">
-                  {subtasks.map((item) => (
+                  {subtasks?.map((item) => (
                     <SubTask
                       key={`${props.task.taskId}-subtask-${item.taskId}`}
                       id={`${props.task.taskId}-subtask-${item.taskId}`}

@@ -3,7 +3,7 @@ import "./AddColumn.scss";
 import statusApi from "../../../service/ColumnService";
 import { useAuth } from "../../../context/AuthProvider";
 
-const AddColumn = ({ isClose, group }) => {
+const AddColumn = ({ isClose, group, onStatusAdded }) => {
   const { user } = useAuth();
   const [color, setColor] = useState("#3498db");
   const [columnData, setColumnData] = useState({
@@ -38,10 +38,14 @@ const AddColumn = ({ isClose, group }) => {
       });
       setIsSubmitting(false);
       if (isClose) isClose();
+      if (onStatusAdded) onStatusAdded(); // Gọi callback để thông báo thêm status thành công
     } catch (e) {
-      return e.message;
+      console.error(e.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
   return (
     <div className="add__column">
       <form className="add__column__container" onSubmit={handleSubmit}>

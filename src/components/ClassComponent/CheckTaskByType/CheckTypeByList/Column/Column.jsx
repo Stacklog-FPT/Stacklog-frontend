@@ -24,7 +24,6 @@ const Column = ({
   const { setNodeRef } = useDroppable({
     id: `droppable-${status}`,
   });
-
   return (
     <div className="column-list-container" ref={setNodeRef}>
       <div className="column-list">

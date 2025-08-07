@@ -3,6 +3,7 @@ import "./AddScheduleForm.scss";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import GroupService from "../../../service/GroupService";
 import { useAuth } from "../../../context/AuthProvider";
+import { toast } from "react-toastify";
 import ScheduleService from "../../../service/ScheduleService";
 const AddScheduleForms = ({ onClose }) => {
   const { user } = useAuth();
@@ -11,7 +12,8 @@ const AddScheduleForms = ({ onClose }) => {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-
+  const notify = () => toast.success("Add task is successfully");
+  const notifyFailure = () => toast.error("Add task is failure");
   const [scheduleData, setScheduleData] = useState({
     slotTitle: "",
     slotDescription: "",
@@ -55,32 +57,72 @@ const AddScheduleForms = ({ onClose }) => {
     }));
   };
 
+  const validateForm = () => {
+    if (!selectedGroup) {
+      toast.error("Please select a group!");
+      return false;
+    }
+
+    if (!scheduleData.slotTitle.trim()) {
+      toast.error("Slot title is required!");
+      return false;
+    }
+
+    if (!scheduleData.slotDescription.trim()) {
+      toast.error("Slot description is required!");
+      return false;
+    }
+
+    if (!date || !time) {
+      toast.error("Date and time are required!");
+      return false;
+    }
+
+    const fullDateTime = new Date(`${date}T${time}:00`);
+    const now = new Date();
+
+    if (isNaN(fullDateTime.getTime())) {
+      toast.error("Invalid date or time format!");
+      return false;
+    }
+
+    if (fullDateTime < now) {
+      toast.error("Start time must be in the future!");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedGroup || !date || !time) {
-      alert("Vui lòng nhập đầy đủ thông tin!");
+    if (!validateForm()) {
       return;
     }
 
-    const fullDateTime = new Date(`${date}T${time}:00`).toISOString();
+    if (!selectedGroup || !date || !time) {
+      toast.error("All input are required!");
 
+      return;
+    }
+
+    const fullDateTime = `${date}T${time}:00`;
     const payload = {
       ...scheduleData,
       slotStarTime: fullDateTime,
       groupId: selectedGroup.groupsId,
       userIdAssigns: selectedGroup.groupStudents.map((s) => s.userId),
     };
-
     try {
       const res = await addCreateSlot(user.token, payload);
       if (res.status === 201 || res.status === 200) {
-        alert("Tạo lịch thành công!");
+        toast.success("Create schedule successfully!");
         onClose();
       }
     } catch (err) {
       console.error("Lỗi khi tạo lịch:", err.message);
-      alert("Tạo lịch thất bại!");
+      toast.error("Create schedule failure!");
     }
   };
 

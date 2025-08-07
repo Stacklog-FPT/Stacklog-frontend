@@ -12,6 +12,7 @@ import axios from "axios";
 import decodeToken from "../../../service/DecodeJwt";
 
 const AddSubTask = ({ isClose, task, members }) => {
+  console.log(task);
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
   const notify = () => toast.success("Add task is successfully");
@@ -22,14 +23,14 @@ const AddSubTask = ({ isClose, task, members }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
-
-  const [taskData, setTaskData] = useState({
+  const [subTaskData, setSubTaskData] = useState({
     taskId: "",
     taskTitle: "",
     taskDescription: "",
     groupId: "",
     documentId: "",
     taskPoint: 5,
+    taskStartTime: "",
     taskDueDate: "",
     priority: "",
     statusTaskId: "",
@@ -52,12 +53,12 @@ const AddSubTask = ({ isClose, task, members }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setTaskData((prev) => ({ ...prev, [name]: value }));
+    setSubTaskData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAssignChange = (e) => {
     const { checked, value } = e.target;
-    setTaskData((prev) => {
+    setSubTaskData((prev) => {
       const newAssigns = checked
         ? [...prev.listUserAssign, value]
         : prev.listUserAssign.filter((id) => id !== value);
@@ -66,7 +67,7 @@ const AddSubTask = ({ isClose, task, members }) => {
   };
 
   const handleRemoveAssign = (userId) => {
-    setTaskData((prev) => ({
+    setSubTaskData((prev) => ({
       ...prev,
       listUserAssign: prev.listUserAssign.filter((id) => id !== userId),
     }));
@@ -74,27 +75,44 @@ const AddSubTask = ({ isClose, task, members }) => {
 
   const handlePrioritySelect = (priority) => {
     setSelectedPriority(priority);
-    setTaskData((prev) => ({ ...prev, priority }));
+    setSubTaskData((prev) => ({ ...prev, priority }));
     setShowPriorityDropdown(false);
   };
 
   const validateForm = () => {
-    if (!taskData.taskTitle.trim()) {
+    if (!subTaskData.taskTitle.trim()) {
       toast.error("Task title is required!");
       return false;
     }
 
-    if (!taskData.taskDescription.trim()) {
+    if (!subTaskData.taskDescription.trim()) {
       toast.error("Task description is required!");
       return false;
     }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    if (taskData.taskDueDate) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const dueDate = new Date(taskData.taskDueDate);
+    if (subTaskData.taskStartTime) {
+      const startDate = new Date(subTaskData.taskStartTime);
+      if (startDate < today) {
+        toast.error("Start date must be today or later!");
+        return false;
+      }
+    }
+
+    if (subTaskData.taskDueDate) {
+      const dueDate = new Date(subTaskData.taskDueDate);
       if (dueDate < today) {
-        toast.error("Due date must be today or in the future!");
+        toast.error("Due date must be today or later!");
+        return false;
+      }
+    }
+
+    if (subTaskData.taskStartTime && subTaskData.taskDueDate) {
+      const startDate = new Date(subTaskData.taskStartTime);
+      const dueDate = new Date(subTaskData.taskDueDate);
+      if (startDate > dueDate) {
+        toast.error("Start date must be before or equal to due date!");
         return false;
       }
     }
@@ -112,30 +130,37 @@ const AddSubTask = ({ isClose, task, members }) => {
     try {
       const now = new Date();
       const currentTime = now.toTimeString().split(" ")[0];
+
+      let formattedStartTime = taskData.taskStartTime
+        ? `${taskData.taskStartTime}T${currentTime}`
+        : "";
+
       let formattedDueDate = taskData.taskDueDate
         ? `${taskData.taskDueDate}T${currentTime}`
-        : now.toISOString().split(".")[0];
+        : "";
+
       const payload = {
         taskId: "",
-        taskTitle: taskData.taskTitle,
-        taskDescription: taskData.taskDescription,
-        groupId: task.groupId,
-        documentId: "",
+        taskTitle: subTaskData.taskTitle,
+        taskDescription: subTaskData.taskDescription,
+        groupId: subTaskData.groupId,
+        documentId: subTaskData.documentId,
         taskPoint: 5,
+        taskStartTime: formattedStartTime,
         taskDueDate: formattedDueDate,
-        priority: taskData.priority,
+        priority: subTaskData.priority,
         statusTaskId: task.statusTask.statusTaskId,
-        listUserAssign: taskData.listUserAssign,
+        listUserAssign: subTaskData.listUserAssign,
         parentTaskId: task.taskId,
       };
-      console.log("Payload sent to server:", payload);
+
       const response = await addTask(payload, user.token);
       if (response.data) {
         console.log("Response from server:", response.data);
         notify();
         await axios.post("http://localhost:3000/notifications", {
           id: Math.random().toString(16).slice(2, 6),
-          title: `Thông báo môn ${taskData.taskTitle}`,
+          title: `Thông báo môn ${subTaskData.taskTitle}`,
           author: {
             _id: Math.random(),
             name: user.username || userData?.username || "Unknown",
@@ -173,7 +198,7 @@ const AddSubTask = ({ isClose, task, members }) => {
             type="text"
             name="taskTitle"
             placeholder="Enter task title..."
-            value={taskData.taskTitle}
+            value={subTaskData.taskTitle}
             onChange={handleInputChange}
             required
           />
@@ -183,7 +208,7 @@ const AddSubTask = ({ isClose, task, members }) => {
           <textarea
             placeholder="Enter a description..."
             name="taskDescription"
-            value={taskData.taskDescription}
+            value={subTaskData.taskDescription}
             onChange={handleInputChange}
             required
           />
@@ -195,7 +220,7 @@ const AddSubTask = ({ isClose, task, members }) => {
           </div>
 
           <div className="assigned-users-list">
-            {taskData.listUserAssign.map((userId) => {
+            {subTaskData.listUserAssign.map((userId) => {
               const member = members.find(
                 (m) => String(m._id) === String(userId)
               );
@@ -253,7 +278,7 @@ const AddSubTask = ({ isClose, task, members }) => {
                     <input
                       type="checkbox"
                       value={member._id}
-                      checked={taskData.listUserAssign.includes(member._id)}
+                      checked={subTaskData.listUserAssign.includes(member._id)}
                       onChange={handleAssignChange}
                     />
                     <div className="member-info" key={member._id}>
@@ -340,7 +365,7 @@ const AddSubTask = ({ isClose, task, members }) => {
                 type="date"
                 name="taskDueDate"
                 className="date-input"
-                value={taskData.taskDueDate}
+                value={subTaskData.taskDueDate}
                 onChange={handleInputChange}
               />
             </div>

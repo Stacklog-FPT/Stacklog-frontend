@@ -16,7 +16,7 @@ const Calendar = () => {
   const [events, setEvents] = useState([]);
   const { getScheduleByUser } = ScheduleService();
   const { user } = useAuth();
-
+  console.log(events);
   const formatDateTime = (date) => {
     try {
       const d = new Date(date);
@@ -32,7 +32,7 @@ const Calendar = () => {
 
   const calendar = useCalendarApp({
     views: [createViewWeek(), createViewMonthGrid()],
-    events: [], // Initialize with empty array
+    events: [],
     selectedDate: format(currentDate, "yyyy-MM-dd"),
     defaultView: "month",
     plugins: [createEventModalPlugin(), createDragAndDropPlugin()],
@@ -93,7 +93,6 @@ const Calendar = () => {
     }
   };
 
-  // Update calendar events and date when events change
   useEffect(() => {
     if (calendar && calendar.events && events.length > 0) {
       console.log("Calendar Methods:", Object.keys(calendar));
@@ -102,7 +101,6 @@ const Calendar = () => {
     }
   }, [events, calendar]);
 
-  // Fetch schedules on mount
   useEffect(() => {
     if (user?.token) {
       console.log("Calendar Initialized:", calendar);

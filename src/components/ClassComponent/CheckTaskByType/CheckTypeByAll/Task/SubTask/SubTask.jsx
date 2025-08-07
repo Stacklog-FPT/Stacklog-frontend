@@ -4,9 +4,12 @@ import { CSS } from "@dnd-kit/utilities";
 import { FaPen, FaTrashAlt } from "react-icons/fa";
 import { CiCirclePlus } from "react-icons/ci";
 import Skeleton from "react-loading-skeleton";
+import Swal from "sweetalert2";
+import taskService from "../../../../../../service/TaskService";
 import iconDeadLine from "../../../../../../assets/icon/task/iconDeadLine.png";
 import addButton from "../../../../../../assets/icon/avatar_add_button.png";
 import "./SubTask.scss";
+import { useAuth } from "../../../../../../context/AuthProvider";
 
 const SubTask = ({
   id,
@@ -16,9 +19,8 @@ const SubTask = ({
   dueDate,
   startTime,
   members,
-  taskId,
-  subtask,
-  onShowComment,
+  handleDeleteReRender,
+  subTaskId,
 }) => {
   const {
     attributes,
@@ -32,10 +34,10 @@ const SubTask = ({
     transform: CSS.Transform.toString(transform),
     transition: transition || "transform 0.2s ease, opacity 0.2s ease",
     opacity: isDragging ? 0.6 : 1,
-    cursor: isDragging ? "grabbing" : "grab",
   };
 
-  console.log(startTime)
+  const { deleteTask } = taskService();
+  const { user } = useAuth();
 
   const visibleMembers = members?.slice(0, 3);
   const extraCount = members?.length - visibleMembers?.length;
@@ -71,29 +73,59 @@ const SubTask = ({
     return "#f44336";
   };
 
-  const percentSubTask = calculateRemainingPercent(
-    formatDate(createdAt),
-    formatDate(dueDate)
-  );
-
+  const percentSubTask = calculateRemainingPercent(startTime, dueDate);
   const progressColor = getColorByPercent(percentSubTask);
+
+  const handleDeleteTask = async (taskId) => {
+    if (!user?.token) {
+      Swal.fire("Error!", "User not authenticated.", "error");
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: "Are you sure to delete this task?",
+      text: "This action can't be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#045745",
+      cancelButtonColor: "#c8cad4",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await deleteTask(user.token, taskId);
+        console.log("API response:", response);
+        if (response.data === "Delete success") {
+          handleDeleteReRender(true);
+          Swal.fire("Deleted!", "Task was removed successfully.", "success");
+        } else {
+          throw new Error("Unexpected response from server");
+        }
+      } catch (error) {
+        console.error("Delete failed:", error.message);
+        Swal.fire("Error!", "Something went wrong during deletion.", "error");
+      }
+    }
+  };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
       className={`subtask-container ${isDragging ? "dragging" : ""}`}
       data-priority={priority}
     >
       <div className="subtask-content">
         <div className="subtask-content-head">
-          <span title={title}>
-            {title?.length > 5
-              ? `${title.slice(0, 5)}...`
-              : title || <Skeleton />}
-          </span>
+          <div className="drag-handle" {...attributes} {...listeners}>
+            <span title={title}>
+              {title?.length > 5
+                ? `${title.slice(0, 5)}...`
+                : title || <Skeleton />}
+            </span>
+          </div>
           <div className="subtask-content-head-icon">
             <FaPen className="icon" size={12} />
             <i
@@ -104,7 +136,11 @@ const SubTask = ({
               }}
             />
             <CiCirclePlus className="icon" size={14} />
-            <FaTrashAlt className="icon" size={12} />
+            <FaTrashAlt
+              className="icon trash-icon"
+              size={12}
+              onClick={() => handleDeleteTask(subTaskId)}
+            />
           </div>
         </div>
         <div className="subtask-content-percent">
@@ -152,17 +188,6 @@ const SubTask = ({
           <button>
             <img src={addButton} alt="add icon" />
           </button>
-        </div>
-        <div className="subtask-content-contact">
-          <div className="subtask-content-contact-left">
-            <div className="subtask-content-contact-left-element">
-              <i
-                className="fa-solid fa-comment"
-                onClick={() => onShowComment(subtask)}
-              ></i>
-              <span>0</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>

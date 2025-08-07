@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./AddColumn.scss";
 import statusApi from "../../../service/ColumnService";
 import { useAuth } from "../../../context/AuthProvider";
+import { toast } from "react-toastify";
 
 const AddColumn = ({ onCancel, group, onColumnUpdated }) => {
   const { user } = useAuth();
@@ -30,7 +31,6 @@ const AddColumn = ({ onCancel, group, onColumnUpdated }) => {
       };
 
       const response = await addStatus(user?.token, payload);
-      console.log("Response from addStatus:", response);
 
       setColumnData({
         statusTaskName: "",
@@ -39,11 +39,13 @@ const AddColumn = ({ onCancel, group, onColumnUpdated }) => {
       });
 
       if (response.data) {
+        toast.success('Add status is successfully!');
         onColumnUpdated(response.data);
       }
 
       if (onCancel) onCancel();
     } catch (e) {
+      toast.error('Something is wrong!');
       console.error("Failed to add column:", e.message);
     } finally {
       setIsSubmitting(false);

@@ -12,7 +12,6 @@ import axios from "axios";
 import decodeToken from "../../../service/DecodeJwt";
 
 const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
-  console.log(task);
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
   const notify = () => toast.success("Add task is successfully");
@@ -152,7 +151,7 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
         parentTaskId: task.taskId,
       };
 
-      console.log(payload)
+      console.log("Payload:", payload);
 
       const response = await addTask(payload, user.token);
       if (response.data) {
@@ -355,7 +354,13 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
           <div className="wrapper_input_time">
             <p>Start</p>
             <div className="date-input-container">
-              <input type="date" className="date-input" />
+              <input
+                type="date"
+                name="taskStartTime"
+                className="date-input"
+                value={subTaskData.taskStartTime}
+                onChange={handleInputChange}
+              />
             </div>
           </div>
           <div className="wrapper_input_time">

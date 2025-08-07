@@ -143,7 +143,6 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
             </select>
 
             <select value={selectedGroup} onChange={handleGroupChange}>
-              <option value="all">All Groups</option>
               {groups?.map((item) => (
                 <option key={item?.groupsId} value={item?.groupsId}>
                   {item?.groupsName}

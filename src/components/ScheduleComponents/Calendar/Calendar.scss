@@ -34,9 +34,11 @@
   }
 }
 
+
 .sx__calendar-wrapper button,
 .sx__date-picker-wrapper button,
-.sx__date-picker-popup button {
+.sx__date-picker-popup button,
+p {
   background-color: var(--bg--nav);
   color: var(--text-color);
   outline: 0;

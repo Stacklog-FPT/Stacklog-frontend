@@ -22,10 +22,9 @@ const JoinClass = () => {
     const join = async () => {
       try {
         const joinClass = await joinClassByInviteCode(user.token, inviteCode);
-        setMessage("Tham gia lớp thành công!");
+        navigate("/class");
+        alert(`Bạn đã tham gia lớp học thành công!`);
       } catch (err) {
-        const joinClass = await joinClassByInviteCode(user.token, inviteCode);
-        console.log("Error joining class:", joinClass);
         setMessage(
           err.response?.data?.message ||
             "Mã invite không hợp lệ hoặc bạn đã tham gia lớp này."

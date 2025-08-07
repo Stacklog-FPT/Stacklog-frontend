@@ -96,6 +96,68 @@ const ClassService = () => {
     }
   };
 
+  const deleteUserinGroup = async (token, groupId) => {
+    try {
+      if (!token) throw new Error("Token is missing");
+      const response = await axios.delete(
+        `${CLASS_URI}/groupstudent/${groupId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message ||
+          "Failed to delete user from group: " + error.message
+      );
+    }
+  };
+
+  const leaveGroup = async (token, payload) => {
+    try {
+      if (!token) throw new Error("Token is missing");
+      const response = await axios.put(
+        `${CLASS_URI}/groupstudent/leave-group`,
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to leave group: " + error.message);
+    }
+  };
+
+  const kickUserFromGroup = async (token, userId, payload) => {
+    try {
+      if (!token) throw new Error("Token is missing");
+      const response = await axios.put(
+        `${CLASS_URI}/groupstudent/kick-group/${userId}`,
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to kick user from group: " + error.message);
+    }
+  };
+
+  const updateMemberToGroup = async (token, payload) => {
+    try {
+      if (!token) throw new Error("Token is missing");
+      const response = await axios.put(`${CLASS_URI}/group/update`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to add member to group: " + error.message);
+    }
+  };
+
   return {
     getMembersInClass,
     getMembersClassLecture,
@@ -104,6 +166,10 @@ const ClassService = () => {
     craeteGroup,
     generateInviteCode,
     joinClassByInviteCode,
+    deleteUserinGroup,
+    leaveGroup,
+    kickUserFromGroup,
+    updateMemberToGroup,
   };
 };
 

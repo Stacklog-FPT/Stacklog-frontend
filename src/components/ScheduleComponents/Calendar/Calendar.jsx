@@ -1,128 +1,157 @@
 import { useEffect, useState } from "react";
-import { format, addHours } from "date-fns";
-import "./Calendar.scss";
-import { ScheduleXCalendar, useCalendarApp } from "@schedule-x/react";
-import { createViewWeek, createViewMonthGrid } from "@schedule-x/calendar";
-import { createEventModalPlugin } from "@schedule-x/event-modal";
-import { createDragAndDropPlugin } from "@schedule-x/drag-and-drop";
+import {
+  Calendar as RBCalendar,
+  momentLocalizer,
+  Views,
+} from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import ScheduleService from "../../../service/ScheduleService";
 import { useAuth } from "../../../context/AuthProvider";
-import "@schedule-x/theme-default/dist/calendar.css";
-import { ClockLoader } from "react-spinners";
+import { addHours } from "date-fns";
+import Modal from "./SlotModal";
+import "./Calendar.scss";
 
-const Calendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [isLoading, setIsLoading] = useState(true);
-  const [events, setEvents] = useState([]);
-  const { getScheduleByUser } = ScheduleService();
+import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+
+const { updateScheduleSlot, deleteScheduleSlot } = ScheduleService();
+
+const localizer = momentLocalizer(moment);
+const DragAndDropCalendar = withDragAndDrop(RBCalendar);
+
+export default function CustomCalendar() {
+  const { getScheduleByUser, deleteScheduleSlot } = ScheduleService();
   const { user } = useAuth();
-  console.log(events);
-  const formatDateTime = (date) => {
-    try {
-      const d = new Date(date);
-      if (isNaN(d.getTime())) {
-        throw new Error("Invalid date");
-      }
-      return format(d, "yyyy-MM-dd HH:mm");
-    } catch (error) {
-      console.error("Error formatting date:", date, error);
-      return null;
-    }
-  };
 
-  const calendar = useCalendarApp({
-    views: [createViewWeek(), createViewMonthGrid()],
-    events: [],
-    selectedDate: format(currentDate, "yyyy-MM-dd"),
-    defaultView: "month",
-    plugins: [createEventModalPlugin(), createDragAndDropPlugin()],
-  });
+  const [events, setEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleGetSchedule = async () => {
-    if (!user?.token) {
-      setIsLoading(false);
-      return;
-    }
-
+  const fetchEvents = async () => {
     setIsLoading(true);
     try {
-      const response = await getScheduleByUser(user.token);
-      console.log("API Response:", response.data);
-      if (response && Array.isArray(response.data)) {
-        const formattedEvents = response.data
-          .map((event) => {
-            const start = new Date(event.slotStarTime);
-            if (isNaN(start.getTime())) {
-              console.error("Invalid slotStartTime:", event.slotStarTime);
-              return null;
-            }
-            const end = addHours(start, 1);
-            const formattedStart = formatDateTime(start);
-            const formattedEnd = formatDateTime(end);
-            if (!formattedStart || !formattedEnd) {
-              return null;
-            }
-            return {
-              id: event.slotId,
-              title: event.slotTitle,
-              start: formattedStart,
-              end: formattedEnd,
-            };
-          })
-          .filter((event) => event !== null);
-
-        console.log("Formatted Events:", formattedEvents);
-        setEvents(formattedEvents);
-
-        if (formattedEvents.length > 0) {
-          const sorted = [...formattedEvents].sort(
-            (a, b) => new Date(a.start) - new Date(b.start)
-          );
-          const earliestDate = new Date(sorted[0].start);
-          if (!isNaN(earliestDate.getTime())) {
-            setCurrentDate(earliestDate);
-          } else {
-            console.error("Invalid earliest date:", sorted[0].start);
-          }
-        }
+      const res = await getScheduleByUser(user?.token);
+      if (res?.data) {
+        const formatted = res.data.map((e) => ({
+          id: e.slotId,
+          title: e.slotTitle,
+          start: new Date(e.slotStarTime),
+          end: addHours(new Date(e.slotStarTime), 1),
+        }));
+        setEvents(formatted);
       }
-    } catch (error) {
-      console.error("Failed to get schedules:", error);
+    } catch (err) {
+      console.error("❌ Lỗi khi load lịch:", err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (calendar && calendar.events && events.length > 0) {
-      console.log("Calendar Methods:", Object.keys(calendar));
-      calendar.events.set(events);
-      console.log("Calendar Events After Update:", calendar.events.getAll());
+  const moveEvent = async ({ event, start, end }) => {
+    const now = new Date();
+
+    if (start < now) {
+      alert("⛔ Không thể di chuyển sự kiện về quá khứ!");
+      return;
     }
-  }, [events, calendar]);
+
+    try {
+      const updatedEvent = {
+        ...event,
+        start,
+        end,
+      };
+
+      const payload = {
+        slotId: updatedEvent.id,
+        slotTitle: updatedEvent.title,
+        slotDescription: updatedEvent.description || "",
+        slotStarTime: new Date(start).toISOString(),
+        groupId: updatedEvent.groupId || "",
+        userIdAssigns: updatedEvent.userIdAssigns || [],
+      };
+
+      await updateScheduleSlot(user.token, payload);
+
+      const updatedEvents = events.map((e) =>
+        e.id === event.id ? { ...e, start, end } : e
+      );
+      setEvents(updatedEvents);
+
+      console.log("✅ Đã cập nhật sự kiện:", payload);
+    } catch (error) {
+      console.error("❌ Lỗi khi cập nhật sự kiện:", error);
+    }
+  };
+
+  const handleUpdate = async (updatedEvent) => {
+    try {
+      const payload = {
+        slotId: updatedEvent.id,
+        slotTitle: updatedEvent.title,
+        slotDescription: updatedEvent.description || "",
+        slotStarTime: new Date(updatedEvent.start).toISOString(),
+        groupId: updatedEvent.groupId || "",
+        userIdAssigns: updatedEvent.userIdAssigns || [],
+      };
+
+      await updateScheduleSlot(user?.token, payload);
+
+      const updatedEvents = events.map((e) =>
+        e.id === updatedEvent.id ? updatedEvent : e
+      );
+      setEvents(updatedEvents);
+      console.log("✅ Đã cập nhật slot:", payload);
+    } catch (err) {
+      console.error("❌ Lỗi khi update slot:", err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      window.confirm("Bạn có chắc chắn muốn xóa slot này?");
+      await deleteScheduleSlot(user?.token, id);
+      setEvents((prev) => prev.filter((e) => e.id !== id));
+      setSelectedEvent(null);
+    } catch (err) {
+      console.error("❌ Xóa thất bại:", err);
+    }
+  };
 
   useEffect(() => {
-    if (user?.token) {
-      console.log("Calendar Initialized:", calendar);
-      handleGetSchedule();
-    }
+    if (user?.token) fetchEvents();
   }, [user]);
 
   return (
-    <>
-      <div className={`spinner-overlay ${isLoading ? "open" : ""}`}>
-        <ClockLoader
-          loading={isLoading}
-          size={200}
-          aria-label="Loading Spinner"
-          data-testid="loader"
+    <div className="calendar-wrapper">
+      {isLoading && <div className="loading-overlay">Đang tải...</div>}
+      <DndProvider backend={HTML5Backend}>
+        <DragAndDropCalendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: "80vh" }}
+          onSelectEvent={(event) => setSelectedEvent(event)}
+          draggableAccessor={() => true}
+          onEventDrop={moveEvent}
+          resizable
+          onEventResize={moveEvent}
         />
-      </div>
-      <div className="calendar">
-        <ScheduleXCalendar calendarApp={calendar} />
-      </div>
-    </>
-  );
-};
+      </DndProvider>
 
-export default Calendar;
+      {selectedEvent && (
+        <Modal
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onDelete={() => handleDelete(selectedEvent.id)}
+          onEdit={() => alert(`Bạn muốn sửa: ${selectedEvent.title}`)}
+          onUpdate={handleUpdate}
+        />
+      )}
+    </div>
+  );
+}

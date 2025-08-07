@@ -5,6 +5,7 @@ import iconDeadLine from "../../../../../assets/icon/task/iconDeadLine.png";
 import addButton from "../../../../../assets/icon/avatar_add_button.png";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { FaPen } from "react-icons/fa";
 import iconDontKnow from "../../../../../assets/icon/task/iconDontKnow.png";
 import {
   useSortable,
@@ -42,11 +43,18 @@ const Task = ({
   } = useSortable({ id: props.id, disabled: isDraggingOverlay });
   const { user } = useAuth();
   const [showSubTask, setShowSubTask] = useState(false);
-  const { addTask, deleteTask } = taskService();
+  const { deleteTask, addTask } = taskService();
   const { getAllReview } = ReviewService();
   const [commentLength, setCommentLength] = useState(0);
   const [subtasks, setSubtasks] = useState(props.task?.subtasks || []);
-
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(props.task?.taskTitle || "");
+  const [editedStartTime, setEditedStartTime] = useState(
+    props.task?.taskStartTime || ""
+  );
+  const [editedDueDate, setEditedDueDate] = useState(
+    props.task?.taskDueDate || ""
+  );
   const sensors = useSensors(useSensor(PointerSensor));
 
   const handleSubtaskDragEnd = (event) => {
@@ -126,10 +134,13 @@ const Task = ({
         listUserAssign: task.assigns,
         parentTaskId: "",
       };
+      console.log(payload);
 
       const response = await addTask(payload, user?.token);
       console.log(response);
+      toast.success("Priority is update!");
     } catch (e) {
+      toast.error("Something is wrong!");
       console.error("Error updating priority:", e.message);
     }
   };
@@ -159,6 +170,61 @@ const Task = ({
     return "#f44336";
   };
 
+  const handleUpdateTask = async (task) => {
+    let flag = true;
+    try {
+      const now = new Date();
+      const currentTime = now.toTimeString().split(" ")[0];
+
+      if (!editedStartTime || !editedDueDate) {
+        toast.error("Start time and due date are required!");
+        return;
+      }
+
+      const formattedStartTime = `${editedStartTime}T${currentTime}`;
+      const formattedDueDate = `${editedDueDate}T${currentTime}`;
+
+      const startTime = new Date(formattedStartTime);
+      const dueDate = new Date(formattedDueDate);
+
+      if (isNaN(startTime) || isNaN(dueDate)) {
+        toast.error("Invalid start time or due date format!");
+        return;
+      }
+
+      if (startTime >= dueDate) {
+        toast.error("Start time must be earlier than due date!");
+        return;
+      }
+
+      const payload = {
+        taskId: task.taskId,
+        taskTitle: editedTitle,
+        taskDescription: task.taskDescription,
+        groupId: task.groupId,
+        documentId: task.documentId,
+        taskPoint: 5,
+        taskStartTime: formattedStartTime,
+        taskDueDate: formattedDueDate,
+        priority: task.priority,
+        statusTaskId: task.statusTask.statusTaskId,
+        listUserAssign: task.assigns,
+        parentTaskId: "",
+      };
+
+      const response = await addTask(payload, user.token);
+      if (response.status === 200) {
+        flag = true;
+        setIsEditing(false);
+        handleDeleteReRender(flag);
+        toast.success("Update task is successfully!");
+      }
+    } catch (e) {
+      toast.error(`Update task failed: ${e.message}`);
+      throw new Error(e.message);
+    }
+  };
+
   const handleDeleteTask = async (taskId) => {
     let flag = false;
 
@@ -178,6 +244,7 @@ const Task = ({
         const response = await deleteTask(user.token, taskId);
         if (response.data === "Delete success") {
           flag = true;
+          setShowSubTask(false);
           handleDeleteReRender(flag);
         }
 
@@ -209,12 +276,34 @@ const Task = ({
         <div className="task-content">
           <div className="task-content-head">
             <span>
-              {props.title?.length > 10
-                ? `${props.title.slice(0, 10)}...`
-                : props.title || <Skeleton />}
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  className="task-input-title"
+                />
+              ) : props.title?.length > 10 ? (
+                `${props.title.slice(0, 10)}...`
+              ) : (
+                props.title || <Skeleton />
+              )}
             </span>
+
             <div className="task-content-head-icon">
-              <i className="fa-solid fa-pen" />
+              {isEditing ? (
+                <i
+                  className="fa-solid fa-check"
+                  style={{ cursor: "pointer", color: "#000" }}
+                  onClick={() => handleUpdateTask(props.task)}
+                />
+              ) : (
+                <FaPen
+                  size={14}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setIsEditing(true)}
+                />
+              )}
               <i
                 className="fa-solid fa-bookmark"
                 style={{
@@ -246,12 +335,33 @@ const Task = ({
           </div>
 
           <div className="task-content-deadline">
-            <span>
-              {formatDate(props?.task?.taskStartTime) || <Skeleton />}
-            </span>
-            <img src={iconDeadLine} alt="this is icon deadline" />
-            <span>{formatDate(props.dueDate) || <Skeleton />}</span>
+            {isEditing ? (
+              <>
+                <input
+                  type="date"
+                  value={editedStartTime?.slice(0, 10)}
+                  onChange={(e) => setEditedStartTime(e.target.value)}
+                  className="task-input-date"
+                />
+                <img src={iconDeadLine} alt="icon" />
+                <input
+                  type="date"
+                  value={editedDueDate?.slice(0, 10)}
+                  onChange={(e) => setEditedDueDate(e.target.value)}
+                  className="task-input-date"
+                />
+              </>
+            ) : (
+              <>
+                <span>
+                  {formatDate(props?.task?.taskStartTime) || <Skeleton />}
+                </span>
+                <img src={iconDeadLine} alt="icon" />
+                <span>{formatDate(props.dueDate) || <Skeleton />}</span>
+              </>
+            )}
           </div>
+
           <div className="task-content-members">
             <ul
               className="task-content-members-student-list"
@@ -320,6 +430,7 @@ const Task = ({
                       key={`${props.task.taskId}-subtask-${item.taskId}`}
                       id={`${props.task.taskId}-subtask-${item.taskId}`}
                       title={item.taskTitle}
+                      subTaskId={item.taskId}
                       priority={item.priority}
                       percent={item.percent}
                       createdAt={item.createdAt}
@@ -329,6 +440,7 @@ const Task = ({
                       taskId={props.task.taskId}
                       subtask={item}
                       reviews={item.reviews}
+                      handleDeleteReRender={handleDeleteReRender}
                     />
                   ))}
                 </div>

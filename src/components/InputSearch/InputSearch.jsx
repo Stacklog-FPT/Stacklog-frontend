@@ -35,6 +35,7 @@ const InputSearch = () => {
         <ButtonMode />
         <div className="input-search-user-bell" onClick={toggleAnnouncement}>
           <i
+            style={{ color: "#000" }}
             className={`fa-solid fa-bell ${
               isAnnouncementVisible ? "active" : ""
             }`}

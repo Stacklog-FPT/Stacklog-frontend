@@ -352,7 +352,8 @@ const CheckTypeByAll = () => {
 
   const handleDeleteReRender = (flag) => {
     if (flag) {
-      console.log('Co vo day ko? de re render')
+      if (showCommentTask) setShowCommentTask(null);
+      if (showAddSubTask) setShowAddSubTask(null);
       handleGetTasks(group);
     }
   };
@@ -489,7 +490,11 @@ const CheckTypeByAll = () => {
               )
             : null}
           {showCommentTask && (
-            <CommentTask task={showCommentTask} isClose={handleCloseComment} />
+            <CommentTask
+              task={showCommentTask}
+              isClose={handleCloseComment}
+              handleDeleteReRender={handleDeleteReRender}
+            />
           )}
           {showAddColumn && (
             <AddColumn

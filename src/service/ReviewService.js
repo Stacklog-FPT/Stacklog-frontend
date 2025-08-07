@@ -31,7 +31,21 @@ const ReviewService = () => {
     }
   };
 
-  return { getAllReview, createReview };
+  const deleteReview = async (token, id) => {
+    try {
+      if (!token) throw new Error("Token is missing!");
+      const response = await axios.delete(`${REVIEW_URL}/delete/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (e) {
+      throw new Error(e.message || "Failed to create review!");
+    }
+  };
+
+  return { getAllReview, createReview, deleteReview };
 };
 
 export default ReviewService;

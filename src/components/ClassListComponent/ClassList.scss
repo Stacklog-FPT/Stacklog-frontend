@@ -26,7 +26,6 @@
     border-radius: 16px;
     padding: 36px 32px;
     min-width: 340px;
-    height: 700px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
@@ -36,7 +35,7 @@
       margin-bottom: 12px;
       font-size: 22px;
       font-weight: 700;
-      color: #3498db;
+      color: var(--bg--primary-color);
       text-align: center;
       letter-spacing: 1px;
     }
@@ -52,26 +51,21 @@
       outline: none;
       width: 100%;
       transition: border-color 0.2s;
-      &:focus {
-        border-color: #3498db;
-      }
     }
 
     label {
       font-weight: 600;
-      color: #217dbb;
+      color: var(--bg--primary-color);
       margin-bottom: 6px;
       display: block;
     }
 
-    // Leader select
     select {
       background: #f7fafd;
       font-size: 15px;
       margin-bottom: 16px;
     }
 
-    // Thành viên nhóm
     .group-members-list {
       max-height: 180px;
       overflow-y: auto;
@@ -80,7 +74,6 @@
       border-radius: 8px;
       background: #f7fafd;
       border: 1px solid #e1e8ed;
-      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.05);
 
       .member-checkbox-row {
         display: flex;
@@ -101,13 +94,11 @@
           width: 100%;
         }
         input[type="checkbox"] {
-          accent-color: #3498db;
           width: 18px;
           height: 18px;
           margin-right: 8px;
         }
         .member-name {
-          color: #217dbb;
           font-weight: 600;
         }
         .member-email {
@@ -125,7 +116,7 @@
       margin-top: 10px;
 
       .btn-confirm {
-        background: #3498db;
+        background: #888;
         color: #fff;
         border: none;
         padding: 10px 22px;
@@ -136,7 +127,7 @@
         box-shadow: 0 2px 8px rgba(52, 152, 219, 0.08);
         transition: background 0.2s;
         &:hover {
-          background: #217dbb;
+          background: var(--bg--primary-color);
         }
         &:disabled {
           background: #b2bec3;
@@ -160,9 +151,7 @@
   }
 }
 
-// Nút tạo group/class
 .btn-create-class {
-  background: #3498db;
   color: #fff;
   border: none;
   padding: 8px 18px;
@@ -173,15 +162,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: background 0.2s;
-  &:hover {
-    background: #217dbb;
-  }
 }
 
-// Nút tạo link invite
 .btn-gen-link {
-  background: #f39c12;
   color: #fff;
   border: none;
   padding: 8px 18px;
@@ -192,10 +175,6 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: background 0.2s;
-  &:hover {
-    background: #e67e22;
-  }
 }
 
 // Table danh sách sinh viên
@@ -238,7 +217,7 @@
     p {
       margin: 0;
       font-weight: 500;
-      color: #217dbb;
+      color: var(--bg--primary-color);
     }
   }
 }
@@ -261,7 +240,7 @@
     cursor: pointer;
     transition: background 0.2s;
     &:hover {
-      background: #217dbb;
+      background: var(--bg--primary-color);
     }
     &:disabled {
       background: #b2bec3;
@@ -270,7 +249,51 @@
   }
   .pagination__info {
     font-size: 15px;
-    color: #217dbb;
+    color: var(--bg--primary-color);
     font-weight: 600;
   }
+}
+
+.btn-leave-group {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  width: 100px;
+  height: 44px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-kick-user {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 8px;
+  transition: background 0.2s;
+  &:hover {
+    background: #c0392b;
+  }
+}
+
+.btn-add-member {
+  background: var(--bg--primary-color);
+  color: #fff;
+  border: none;
+  height: 44px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+i{
+  font-size: 15px;
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.2s;
 }

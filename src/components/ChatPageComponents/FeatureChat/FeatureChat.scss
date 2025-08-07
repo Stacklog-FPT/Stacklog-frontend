@@ -229,24 +229,17 @@ $color-heading: #667085;
 .add-people-btn {
   margin: 12px 0 18px 0;
   padding: 7px 18px;
-  background: linear-gradient(90deg, #10b981 0%, #22d3ee 100%);
+  background: var(--bg--primary-color);
   color: #fff;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
-  transition: background 0.2s, transform 0.1s;
   display: flex;
   align-items: center;
   gap: 6px;
 
-  &:hover {
-    background: #059669;
-    color: #fff;
-    transform: translateY(-2px) scale(1.04);
-  }
 }
 
 .add-people-modal {
@@ -344,13 +337,13 @@ $color-heading: #667085;
   top: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(0, 0,  0, 0.18);
 }
 
 .btn-create-add{
   margin: 12px 0 18px 0;
   padding: 7px 18px;
-  background: linear-gradient(90deg, #10b981 0%, #22d3ee 100%);
+  background: var(--bg--primary-color);
   color: #fff;
   border: none;
   border-radius: 8px;

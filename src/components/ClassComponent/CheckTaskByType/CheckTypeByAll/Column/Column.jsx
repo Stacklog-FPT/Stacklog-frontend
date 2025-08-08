@@ -12,6 +12,7 @@ import {
 import { useDroppable } from "@dnd-kit/core";
 import { useAuth } from "../../../../../context/AuthProvider";
 import ModalColumn from "../../../../ModalChange/ModalColumn/ModalColumn";
+import decodeToken from "../../../../../service/DecodeJwt";
 
 const Column = ({
   color,
@@ -24,11 +25,13 @@ const Column = ({
   onShowAddSubTask,
   onTaskUpdated,
   handleDeleteReRender,
+  isLeader,
   isLoading = false,
 }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: `droppable-${statusId}`,
   });
+
   const { user } = useAuth();
   const [openModalColumnId, setOpenModalColumnId] = useState(null);
   const handleIconMoreClick = () => {
@@ -124,9 +127,9 @@ const Column = ({
           </div>
         </SortableContext>
 
-        {user.role === "LECTURER" || user.role === "LEADER" ? (
+        {user.role === "LECTURER" || isLeader() ? (
           <div className="btn-add-task" onClick={onShowAddTask}>
-            <i className="fa-solid fa-plus"></i>
+            <i className="fa-solid fa-plus" style={{color: '#000'}}></i>
             <span>Add Task</span>
           </div>
         ) : null}

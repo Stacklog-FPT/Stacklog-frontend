@@ -34,7 +34,7 @@ const AddTask = ({
     taskId: "",
     taskTitle: "",
     taskDescription: "",
-    groupId: group || "",
+    groupId: group.groupsId || "",
     documentId: "",
     taskPoint: 5,
     taskStartTime: "",
@@ -148,7 +148,7 @@ const AddTask = ({
 
       const payload = {
         taskId: "",
-        groupId: group || "",
+        groupId: taskData.groupId || "",
         taskTitle: taskData.taskTitle,
         taskDescription: taskData.taskDescription,
         statusTaskId: taskData.statusTaskId,
@@ -162,6 +162,8 @@ const AddTask = ({
         priority: taskData.priority || "HIGH",
         listUserAssign: taskData.assignTo,
       };
+
+      console.log(payload)
       const response = await addTask(payload, user.token);
       if (response.data) {
         notify();

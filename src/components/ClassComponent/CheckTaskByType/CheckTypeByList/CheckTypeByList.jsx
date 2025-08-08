@@ -20,6 +20,7 @@ import AddColumn from "../../../Column/AddColumn/AddColumn";
 import axios from "axios";
 import ReviewService from "../../../../service/ReviewService";
 import AddSubTask from "../../../Task/AddSubTask/AddSubTask";
+import decodeToken from "../../../../service/DecodeJwt";
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -32,6 +33,7 @@ const customCollisionDetection = (args) => {
 
 const CheckTypeByList = () => {
   const { user } = useAuth();
+  const decoded = decodeToken(user.token);
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
@@ -42,10 +44,11 @@ const CheckTypeByList = () => {
   const { getAllTask, addTask, setSocket } = taskService();
   const { getAllStatus } = statusApi();
   const [statusTasks, setStatusTasks] = useState([]);
+  console.log(statusTasks);
   const [tasks, setTasks] = useState([]);
   const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
-  const [group, setGroup] = useState("");
+  const [group, setGroup] = useState({});
   const [memberTask, setMemberTask] = useState([]);
   const { getAllGroup } = GroupService();
   const { getAllReview } = ReviewService();
@@ -59,6 +62,14 @@ const CheckTypeByList = () => {
       },
     })
   );
+
+  const isLeader = () => {
+    if (group.groupsLeaderId === decoded.id) {
+      return true;
+    }
+
+    return false;
+  };
 
   const handleDragStart = (event) => {
     const { active } = event;
@@ -254,7 +265,6 @@ const CheckTypeByList = () => {
       try {
         setStatusTasks([]);
         const response = await getAllStatus(user.token, groupId);
-        console.log("Status API response:", response);
         if (response && response.data) {
           setStatusTasks(response.data);
         } else {
@@ -354,7 +364,10 @@ const CheckTypeByList = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        await Promise.all([handleGetStatusTask(group), handleGetTasks(group)]);
+        await Promise.all([
+          handleGetStatusTask(group.groupsId),
+          handleGetTasks(group.groupsId),
+        ]);
       } catch (e) {
         console.error("Error fetching data:", e.message);
       } finally {
@@ -371,7 +384,7 @@ const CheckTypeByList = () => {
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [handleGetStatusTask, handleGetTasks, group]);
+  }, [handleGetStatusTask, handleGetTasks, group.groupsId]);
 
   return (
     <DndContext
@@ -404,7 +417,7 @@ const CheckTypeByList = () => {
               onShowAddSubTask={handleChooseTask}
             />
           ))}
-          {user.role === "LECTURER" || user.role === "LEADER" ? (
+          {user.role === "LECTURER" || isLeader() ? (
             <button
               className="btn_add_status"
               onClick={() => setShowAddColumn(!showAddColumn)}
@@ -414,7 +427,7 @@ const CheckTypeByList = () => {
             </button>
           ) : null}
         </div>
-        {user.role === "LECTURER" || user.role === "LEADER"
+        {user.role === "LECTURER" || isLeader()
           ? showAddTask && (
               <AddTask
                 status={showAddTask}

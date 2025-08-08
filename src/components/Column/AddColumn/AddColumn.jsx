@@ -10,7 +10,7 @@ const AddColumn = ({ onCancel, group, onColumnUpdated }) => {
   const [columnData, setColumnData] = useState({
     statusTaskName: "",
     statusTaskColor: "" || color,
-    groupId: group,
+    groupId: group.groupsId,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { addStatus } = statusApi();
@@ -27,7 +27,7 @@ const AddColumn = ({ onCancel, group, onColumnUpdated }) => {
       const payload = {
         statusTaskName: columnData.statusTaskName,
         statusTaskColor: columnData.statusTaskColor || color,
-        groupId: group,
+        groupId: group.groupsId,
       };
 
       const response = await addStatus(user?.token, payload);
@@ -35,7 +35,7 @@ const AddColumn = ({ onCancel, group, onColumnUpdated }) => {
       setColumnData({
         statusTaskName: "",
         statusTaskColor: color,
-        groupId: group,
+        groupId: group.groupsId,
       });
 
       if (response.data) {

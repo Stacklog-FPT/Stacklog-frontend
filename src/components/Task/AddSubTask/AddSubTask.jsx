@@ -151,8 +151,6 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
         parentTaskId: task.taskId,
       };
 
-      console.log("Payload:", payload);
-
       const response = await addTask(payload, user.token);
       if (response.data) {
         notify();

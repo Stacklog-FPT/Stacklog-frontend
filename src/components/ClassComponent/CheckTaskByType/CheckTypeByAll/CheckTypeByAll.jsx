@@ -52,7 +52,8 @@ const CheckTypeByAll = () => {
   const { getAllReview } = ReviewService();
   const [showAddSubTask, setShowAddSubTask] = useState(null);
   const decoded = decodeToken(user?.token);
-  
+  const idGroup = group.groupsId;
+  console.log(idGroup)
   const isLeader = () => {
     if (group.groupsLeaderId === decoded.id) {
       return true;
@@ -289,17 +290,18 @@ const CheckTypeByAll = () => {
           return [...prev, updatedColumn];
         });
       } else {
-        handleGetStatusTask(group);
+        handleGetStatusTask(idGroup);
       }
     },
-    [group, handleGetStatusTask]
+    [idGroup, handleGetStatusTask]
   );
 
   const handleGetTasks = useCallback(
     async (groupId) => {
       try {
         const response = await getAllTask(user.token, groupId);
-        if (response) {
+        console.log('debug: ',response)
+        if (response.data) {
           const normalizedTasks = response.data.map((task) => ({
             ...task,
             subtasks: task.subtasks || [],
@@ -310,13 +312,14 @@ const CheckTypeByAll = () => {
                 .replace(/\b\w/g, (c) => c.toUpperCase()),
             },
           }));
+          console.log("normalizedTasks: ", normalizedTasks);
           setTasks(normalizedTasks);
         }
       } catch (e) {
         console.error(e.message);
       }
     },
-    [user.token]
+    [user.token, idGroup]
   );
 
   const handleTaskUpdated = useCallback(
@@ -343,10 +346,10 @@ const CheckTypeByAll = () => {
           )
         );
       } else {
-        handleGetTasks(group);
+        handleGetTasks(idGroup);
       }
     },
-    [group, handleGetTasks]
+    [idGroup, handleGetTasks]
   );
 
   const handleChooseTask = async (task) => {
@@ -361,7 +364,7 @@ const CheckTypeByAll = () => {
     if (flag) {
       if (showCommentTask) setShowCommentTask(null);
       if (showAddSubTask) setShowAddSubTask(null);
-      handleGetTasks(group);
+      handleGetTasks(idGroup);
     }
   };
 
@@ -422,7 +425,10 @@ const CheckTypeByAll = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        await Promise.all([handleGetStatusTask(group), handleGetTasks(group)]);
+        await Promise.all([
+          handleGetStatusTask(group.groupsId),
+          handleGetTasks(group.groupsId),
+        ]);
       } catch (e) {
         console.error("Error fetching data:", e.message);
       } finally {
@@ -439,7 +445,7 @@ const CheckTypeByAll = () => {
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [handleGetStatusTask, handleGetTasks, group]);
+  }, [handleGetStatusTask, handleGetTasks, group.groupsId]);
 
   return (
     <DndContext
@@ -473,6 +479,7 @@ const CheckTypeByAll = () => {
                 onShowAddSubTask={handleChooseTask}
                 onColumnUpdated={handleColumnUpdated}
                 handleDeleteReRender={handleDeleteReRender}
+                isLeader={isLeader}
               />
             ))}
             {user.role === "LECTURER" || isLeader() ? (
@@ -492,7 +499,7 @@ const CheckTypeByAll = () => {
                   onCancel={() => setShowAddTask(null)}
                   group={group}
                   members={memberTask}
-                  onTaskAdded={() => handleGetTasks(group)}
+                  onTaskAdded={() => handleGetTasks(group.groupsId)}
                 />
               )
             : null}
@@ -517,7 +524,7 @@ const CheckTypeByAll = () => {
               isClose={handleCloseAddSubtask}
               task={showAddSubTask}
               members={memberTask}
-              onSubTaskAdded={() => handleGetTasks(group)}
+              onSubTaskAdded={() => handleGetTasks(group.groupsId)}
             />
           )}
         </div>

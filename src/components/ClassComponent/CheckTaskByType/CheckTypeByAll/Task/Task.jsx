@@ -120,13 +120,12 @@ const Task = ({
   };
 
   const handleEditPriority = async (task) => {
-    let flag = false;
     try {
       const payload = {
         taskId: task.taskId,
         taskTitle: task.taskTitle,
         taskDescription: task.taskDescription,
-        groupId: task.groupsId,
+        groupId: task.groupId,
         documentId: task.documentId,
         taskPoint: 5,
         taskStartTime: task.taskStartTime,
@@ -137,13 +136,13 @@ const Task = ({
         parentTaskId: "",
       };
 
+      console.log(payload);
       const response = await addTask(payload, user?.token);
-      if(response.status === 500) {
-        flag = true
+      if (response.status === 500) {
       }
       // toast.success("Priority is update!");
     } catch (e) {
-      handleDeleteReRender(flag)
+      handleDeleteReRender(true);
       // toast.error("Something is wrong!");
       console.error("Error updating priority:", e.message);
     }
@@ -214,12 +213,9 @@ const Task = ({
         listUserAssign: task.assigns.assignTo,
         parentTaskId: "",
       };
+
+      setIsEditing(false);
       const response = await addTask(payload, user.token);
-      if (response.status === 200) {
-        flag = true;
-        setIsEditing(false);
-        handleDeleteReRender(flag);
-      }
     } catch (e) {
       throw new Error(e.message);
     }

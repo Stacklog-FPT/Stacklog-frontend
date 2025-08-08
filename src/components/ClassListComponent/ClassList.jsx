@@ -478,62 +478,66 @@ const ClassList = ({ handleActivityAddClass }) => {
             </thead>
             <tbody>
               {currentItems.length > 0 ? (
-                currentItems.map((item, index) => (
-                  <tr key={item._id || index}>
-                    <td>
-                      <p style={{ paddingTop: "15px" }}>
-                        {startIndex + index + 1}
-                      </p>
-                    </td>
-                    <td>
-                      <div className="name__ava">
-                        <img src={item.avatar} alt="avatar" />
-                        <p>{item.name}</p>
-                      </div>
-                    </td>
-                    <td>
-                      <p>{item.email}</p>
-                    </td>
-                    <td>
-                      <p>{item.id}</p>
-                    </td>
-                    <td>
-                      <span onClick={() => handleShowDetail(item)}>Detail</span>
-                      {(() => {
-                        const currentClass = classes.find(
-                          (cls) => cls.classesId === selectedClass
-                        );
-                        if (!currentClass) return null;
-                        const group = currentClass.groups.find(
-                          (g) => g.groupsId === selectedGroup
-                        );
-                        if (
-                          !group ||
-                          selectedGroup === "all" ||
-                          group.groupsName.toLowerCase() === "unassigned"
-                        )
-                          return null;
-
-                        if (
-                          user.role === "LECTURER" ||
-                          (user.role === "STUDENT" &&
-                            decodeUser.id === group.groupsLeaderId)
-                        ) {
-                          return (
-                            <button
-                              className="btn-kick-user"
-                              style={{ marginLeft: "8px" }}
-                              onClick={() => handleKickUser(item._id)}
-                            >
-                              <span>Kick</span>
-                            </button>
+                currentItems
+                  .filter((item) => item._id !== "688e1238e4acb643f2bbc486") // Bỏ user này
+                  .map((item, index) => (
+                    <tr key={item._id || index}>
+                      <td>
+                        <p style={{ paddingTop: "15px" }}>
+                          {startIndex + index + 1}
+                        </p>
+                      </td>
+                      <td>
+                        <div className="name__ava">
+                          <img src={item.avatar} alt="avatar" />
+                          <p>{item.name}</p>
+                        </div>
+                      </td>
+                      <td>
+                        <p>{item.email}</p>
+                      </td>
+                      <td>
+                        <p>{item.id}</p>
+                      </td>
+                      <td>
+                        <span onClick={() => handleShowDetail(item)}>
+                          Detail
+                        </span>
+                        {(() => {
+                          const currentClass = classes.find(
+                            (cls) => cls.classesId === selectedClass
                           );
-                        }
-                        return null;
-                      })()}
-                    </td>
-                  </tr>
-                ))
+                          if (!currentClass) return null;
+                          const group = currentClass.groups.find(
+                            (g) => g.groupsId === selectedGroup
+                          );
+                          if (
+                            !group ||
+                            selectedGroup === "all" ||
+                            group.groupsName.toLowerCase() === "unassigned"
+                          )
+                            return null;
+
+                          if (
+                            user.role === "LECTURER" ||
+                            (user.role === "STUDENT" &&
+                              decodeUser.id === group.groupsLeaderId)
+                          ) {
+                            return (
+                              <button
+                                className="btn-kick-user"
+                                style={{ marginLeft: "8px" }}
+                                onClick={() => handleKickUser(item._id)}
+                              >
+                                <span>Kick</span>
+                              </button>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </td>
+                    </tr>
+                  ))
               ) : (
                 <tr>
                   <td colSpan={5} style={{ textAlign: "center" }}>

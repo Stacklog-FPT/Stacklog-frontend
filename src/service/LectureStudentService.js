@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const LECTURER_API = "http://103.166.183.142:8080/api/profile/user";
+const LECTURER_API = "https://stacklog.id.vn/api/profile/user";
 const LectureService = () => {
   const createUser = async (token, payload) => {
     try {

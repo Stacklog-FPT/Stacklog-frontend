@@ -161,7 +161,7 @@ const ChatWindow = () => {
                   senderInfo?.email ||
                   msg.createdBy;
                 const senderAvatar = senderInfo?.avatar_link
-                  ? `http://103.166.183.142:8080/${senderInfo.avatar_link}`
+                  ? `https://stacklog.id.vn/${senderInfo.avatar_link}`
                   : avatarDefault;
 
                 return (

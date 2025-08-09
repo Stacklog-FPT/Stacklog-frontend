@@ -202,7 +202,7 @@ const FeatureChat = () => {
                       <img
                         src={
                           user.avatar_link
-                            ? `http://103.166.183.142:8080/${user.avatar_link}`
+                            ? `https://stacklog.id.vn/${user.avatar_link}`
                             : defaulfAvatar
                         }
                         alt={user.full_name}

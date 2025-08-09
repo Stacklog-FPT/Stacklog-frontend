@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const SCHEDULE_API = "http://103.166.183.142:8080/api/schedule";
+const SCHEDULE_API = "https://stacklog.id.vn/api/schedule";
 const ScheduleService = () => {
   const getScheduleByUser = async (token) => {
     try {

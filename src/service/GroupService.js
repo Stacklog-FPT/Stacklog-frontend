@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const GROUP_API = "http://103.166.183.142:8080/api/profile/user/group";
+const GROUP_API = "https://stacklog.id.vn/api/profile/user/group";
 const GroupService = () => {
   const getAllGroup = async (token) => {
     try {
@@ -23,7 +23,7 @@ const GroupService = () => {
       if (!token) throw new Error("Token is missing!");
 
       const response = await axios.get(
-        "http://103.166.183.142:8080/api/class/group",
+        "https://stacklog.id.vn/api/class/group",
         {
           headers: {
             Authorization: `Bearer ${token}`,

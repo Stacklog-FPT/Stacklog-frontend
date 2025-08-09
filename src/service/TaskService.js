@@ -2,8 +2,8 @@ import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
 
-const API_TASK = "http://103.166.183.142:8080/api/task";
-const SOCKET_URL = "http://103.166.183.142/ws/taskify";
+const API_TASK = "https://stacklog.id.vn/api/task";
+const SOCKET_URL = "https://stacklog.id.vn/ws/taskify";
 
 const taskService = () => {
   let stompClient = null;

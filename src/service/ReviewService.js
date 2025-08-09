@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const REVIEW_URL = "http://103.166.183.142:8080/api/task/review";
+const REVIEW_URL = "https://stacklog.id.vn/api/task/review";
 const ReviewService = () => {
   const getAllReview = async (token, taskId) => {
     try {

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const CLASS_URI = "http://103.166.183.142:8080/api/class";
+const CLASS_URI = "https://stacklog.id.vn/api/class";
 
 const ClassService = () => {
   const getMembersInClass = async (token) => {

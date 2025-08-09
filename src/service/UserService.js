@@ -1,7 +1,7 @@
 import axios from "axios";
 import usePostApi from "../hooks/usePost";
 
-const API_AUTH = "http://103.166.183.142:8080/api/";
+const API_AUTH = "https://stacklog.id.vn/api/";
 const userApi = () => {
   const { postData, isLoading, error, data } = usePostApi();
 
@@ -21,7 +21,7 @@ const userApi = () => {
   const logout = async (token) => {
     try {
       const response = await axios.post(
-        "http://103.166.183.142:8080/api/auth/logout",
+        "https://stacklog.id.vn/api/auth/logout",
         {},
         {
           headers: {

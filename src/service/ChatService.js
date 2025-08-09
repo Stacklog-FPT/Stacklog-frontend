@@ -1,5 +1,5 @@
 import axios from "axios";
-const CHAT_API = "http://103.166.183.142:8080/api/chat";
+const CHAT_API = "https://stacklog.id.vn/api/chat";
 
 const ChatBoxApi = () => {
   // Lấy danh sách các box chat

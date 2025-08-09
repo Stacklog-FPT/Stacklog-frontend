@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.2'
 services:
   frontend:
     build:
@@ -6,4 +6,4 @@ services:
       dockerfile: Dockerfile
     ports:
       - "4173:4173"
-    container_name: trello-fe
+    container_name: stacklog-fe

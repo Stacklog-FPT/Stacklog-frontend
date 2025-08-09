@@ -1,5 +1,5 @@
 import React from "react";
-import "./Detailstudent.scss";
+import "./DetailStudent.scss";
 const Detailstudent = ({ student, handleActiveDetailStudent }) => {
   React.useEffect(() => {
     const handleEsc = (e) => {

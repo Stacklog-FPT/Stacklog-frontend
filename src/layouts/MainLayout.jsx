@@ -9,7 +9,7 @@ import { ColorModeContext } from "../context/ColorModeContext";
 import {
   GroupChatContext,
   GroupChatProvider,
-} from "../context/GroupchatContext";
+} from "../context/GroupChatContext";
 import GroupComponent from "../components/ChatPageComponents/GroupComponent/GroupComponent";
 import { SidebarContext } from "../context/SideBarContext";
 import { ToastContainer } from "react-toastify";

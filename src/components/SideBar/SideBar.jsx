@@ -7,7 +7,7 @@ import logoDark from "../../assets/darkMode/logo-darkmode.png";
 import sideBarDark from "../../assets/darkMode/sidebar-dark-mode.png";
 import "./SideBar.scss";
 import { ColorModeContext } from "../../context/ColorModeContext";
-import { GroupChatContext } from "../../context/GroupchatContext";
+import { GroupChatContext } from "../../context/GroupChatContext";
 
 const SideBar = ({ isOpen, setIsOpen }) => {
   const { mode } = useContext(ColorModeContext);

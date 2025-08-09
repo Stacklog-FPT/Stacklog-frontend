@@ -3,7 +3,7 @@ import "./ClassList.scss";
 import { useAuth } from "../../context/AuthProvider";
 import ClassService from "../../service/ClassService";
 import userApi from "../../service/UserService";
-import Detailstudent from "./Detailstudent/Detailstudent";
+import Detailstudent from "./Detailstudent/DetailStudent";
 import decodeToken from "../../service/DecodeJwt";
 import PopupCreateClass from "./PopupCreateClass/PopupCreateClass";
 import PopupCreateGroup from "./PopupCreateGroup/PopupCreateGroup";

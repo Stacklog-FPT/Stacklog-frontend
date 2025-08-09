@@ -1,7 +1,7 @@
 import React from "react";
 import ClassList from "../../components/ClassListComponent/ClassList";
 import AddClass from "../../components/ClassListComponent/AddClass/AddClass";
-import Detailstudent from "../../components/ClassListComponent/Detailstudent/Detailstudent";
+import Detailstudent from "../../components/ClassListComponent/Detailstudent/DetailStudent";
 import "./TaskPage.scss";
 
 const TaskPage = () => {

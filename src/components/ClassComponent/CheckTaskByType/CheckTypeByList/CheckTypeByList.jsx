@@ -44,7 +44,6 @@ const CheckTypeByList = () => {
   const { getAllTask, addTask, setSocket } = taskService();
   const { getAllStatus } = statusApi();
   const [statusTasks, setStatusTasks] = useState([]);
-  console.log(statusTasks);
   const [tasks, setTasks] = useState([]);
   const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);

@@ -926,6 +926,289 @@
       "createdAt": "2025-08-08",
       "isRead": false,
       "_id": 0.5447518216524253
+    },
+    {
+      "id": "0434",
+      "title": "Announcement for Thu thập tài liệu change to status",
+      "author": {
+        "_id": 0.413909526987149,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-08",
+      "isRead": false,
+      "_id": 0.5057392030598243
+    },
+    {
+      "id": "8d1d",
+      "title": "Announcement for Thiết kế hệ thống change to status",
+      "author": {
+        "_id": 0.6103434529177909,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-08",
+      "isRead": false,
+      "_id": 0.5339802026583355
+    },
+    {
+      "id": "9c21",
+      "title": "Announcement for Phân tích hệ thống change to status",
+      "author": {
+        "_id": 0.5993554924005156,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-08",
+      "isRead": false,
+      "_id": 0.9822531930295257
+    },
+    {
+      "id": "1bce",
+      "title": "Announcement for Cài đặt chức năng chính change to status",
+      "author": {
+        "_id": 0.7388963133593368,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-08",
+      "isRead": false,
+      "_id": 0.6654298364866091
+    },
+    {
+      "id": "a79d",
+      "title": "Announcement for Cài đặt chức năng chính change to status",
+      "author": {
+        "_id": 0.09570696014085311,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-08",
+      "isRead": false,
+      "_id": 0.9773879373306643
+    },
+    {
+      "id": "dad4",
+      "title": "Thông báo môn Tìm hiểu chi đó",
+      "author": {
+        "_id": 0.8863654834291333,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-08",
+      "isRead": false,
+      "_id": 0.1321144224762053
+    },
+    {
+      "id": "8556",
+      "title": "Comment by de170159",
+      "author": {
+        "_id": 0.7500396424790573,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-08",
+      "isRead": false,
+      "_id": 0.9646395089345844
+    },
+    {
+      "id": "f0ca",
+      "title": "Delete task Thiết kế hệ thống by de170159",
+      "author": {
+        "_id": 0.23677054983293078,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-08",
+      "isRead": false,
+      "_id": 0.6539853118544487
+    },
+    {
+      "id": "3971",
+      "title": "Announcement for Thiết kế APi change to status",
+      "author": {
+        "_id": 0.4998937627972734,
+        "name": "de170159",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-08",
+      "isRead": false,
+      "_id": 0.7901434313716464
+    },
+    {
+      "id": "c597",
+      "title": "Announcement for Thiết kế DB notification change to status",
+      "author": {
+        "_id": 0.029750747148026835,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-08",
+      "isRead": false,
+      "_id": 0.13005636783978147
+    },
+    {
+      "id": "f493",
+      "title": "Announcement for Hoàn thiện và chỉnh sửa change to status",
+      "author": {
+        "_id": 0.13922539555828972,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-12",
+      "isRead": false,
+      "_id": 0.20799528157076896
+    },
+    {
+      "id": "ce11",
+      "title": "Announcement for Thu thập tài liệu change to status",
+      "author": {
+        "_id": 0.48740883895544573,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-12",
+      "isRead": false,
+      "_id": 0.903088132806474
+    }
+  ],
+  "semester": [
+    {
+      "_id": "65n423jb65b3jb523",
+      "semesterName": "FA25",
+      "semesterClass": [
+        {
+          "_id": "5b235b2b52b5i3b5i",
+          "name": "SWP391c",
+          "groups": [
+            {
+              "_id": "b5n4j235b43b254b3i2b5",
+              "groupName": "Group 1",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b6",
+              "groupName": "Group 2",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b7",
+              "groupName": "Group 3",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b8",
+              "groupName": "Group 4",
+              "groupsStudent": []
+            }
+          ]
+        },
+        {
+          "_id": "5b235b2b52b5i3b6i",
+          "name": "SDN302c",
+          "groups": [
+            {
+              "_id": "b5n4j235b43b254b3i2b1",
+              "groupName": "Group 1",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b2",
+              "groupName": "Group 2",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b3",
+              "groupName": "Group 3",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b4",
+              "groupName": "Group 4",
+              "groupsStudent": []
+            }
+          ]
+        },
+        {
+          "_id": "5b235b2b52b5i3b7i",
+          "name": "MLN111",
+          "groups": [
+            {
+              "_id": "b5n4j235b43b254b3i2b9",
+              "groupName": "Group 1",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b10",
+              "groupName": "Group 2",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b11",
+              "groupName": "Group 3",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b12",
+              "groupName": "Group 4",
+              "groupsStudent": []
+            }
+          ]
+        },
+        {
+          "_id": "5b235b2b52b5i3b8i",
+          "name": "MLN122",
+          "groups": [
+            {
+              "_id": "b5n4j235b43b254b3i2b13",
+              "groupName": "Group 1",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b14",
+              "groupName": "Group 2",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b15",
+              "groupName": "Group 3",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b16",
+              "groupName": "Group 4",
+              "groupsStudent": []
+            }
+          ]
+        },
+        {
+          "_id": "5b235b2b52b5i3b8i",
+          "name": "WDP301",
+          "groups": [
+            {
+              "_id": "b5n4j235b43b254b3i2b17",
+              "groupName": "Group 1",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b18",
+              "groupName": "Group 2",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b19",
+              "groupName": "Group 3",
+              "groupsStudent": []
+            },
+            {
+              "_id": "b5n4j235b43b254b3i2b20",
+              "groupName": "Group 4",
+              "groupsStudent": []
+            }
+          ]
+        }
+      ],
+      "id": "5f9a"
     }
   ]
 }

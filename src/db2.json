@@ -25,6 +25,28 @@
           "createdAt": "2025-08-05T15:07:25.017Z"
         }
       ]
+    },
+    {
+      "id": "1754630009325",
+      "boxChat": {
+        "boxChatId": "1754630009325",
+        "nameBox": "Trà sữa",
+        "avaBox": "/src/assets/logo-login.png"
+      },
+      "members": [
+        "688e110fe4acb643f2bbc47b",
+        "688e1182e4acb643f2bbc47e",
+        "688e11b2e4acb643f2bbc482",
+        "688e1238e4acb643f2bbc486"
+      ],
+      "messages": [
+        {
+          "chatMessageId": "0.2672705425119323",
+          "chatMessageContent": "Hello cả nhà",
+          "createdBy": "688e110fe4acb643f2bbc47b",
+          "createdAt": "2025-08-08T05:13:57.104Z"
+        }
+      ]
     }
   ]
 }

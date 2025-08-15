@@ -1,0 +1,121 @@
+$back-ground-color-white: #ffffff;
+$color-text: #545454;
+$color-text-heading: #8a8a8a;
+$color-border: #c8cad4;
+$color-hover: #045745;
+
+$hover-05: rgba($color-hover, 0.05);
+$hover-10: rgba($color-hover, 0.1);
+$hover-15: rgba($color-hover, 0.15);
+.semester-dropdown {
+  position: relative;
+  font-family: inherit;
+
+  .sd-trigger {
+    width: 100%;
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid $color-border;
+    background: var(--bg--nav);
+    color: $color-text;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+
+    &:hover {
+      border-color: $color-hover;
+      box-shadow: 0 0 0 3px $hover-10;
+    }
+
+    &.open {
+      border-color: $color-hover;
+      box-shadow: 0 0 0 4px $hover-10;
+    }
+
+    .sd-label {
+      font-size: 14px;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sd-caret {
+      font-size: 12px;
+      color: $color-text;
+      transition: transform 0.2s ease;
+      &.rotated {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .sd-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid $color-border;
+    background: var(--bg--nav);
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    padding: 6px;
+    z-index: 20;
+  }
+
+  .sd-empty {
+    padding: 12px;
+    font-size: 14px;
+    color: $color-text-heading;
+    text-align: center;
+  }
+
+  .sd-item {
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background: $hover-05;
+    }
+
+    &.active {
+      background: var(--bg--primary-color);
+
+      .sd-item-text {
+        color: #fff;
+      }
+
+      .sd-check {
+        color: #fff;
+      }
+    }
+
+    .sd-item-text {
+      font-size: 14px;
+      color: $color-text;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sd-check {
+      font-size: 14px;
+      color: $color-hover;
+    }
+  }
+}

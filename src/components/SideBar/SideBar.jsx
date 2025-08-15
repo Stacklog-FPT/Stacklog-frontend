@@ -1,113 +1,129 @@
-import { useContext } from "react";
-import { Link, NavLink } from "react-router-dom";
-import logo from "../../assets/main-logo.png";
-import logoClose from "../../assets/Logo.png";
-import sideBarIcon from "../../assets/icon/sidebaricon/Side-Bar-Icon.png";
-import logoDark from "../../assets/darkMode/logo-darkmode.png";
-import sideBarDark from "../../assets/darkMode/sidebar-dark-mode.png";
-import "./SideBar.scss";
-import { ColorModeContext } from "../../context/ColorModeContext";
-import { GroupChatContext } from "../../context/GroupChatContext";
+import { useContext, useEffect, useState } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import logo from '../../assets/main-logo.png';
+import logoClose from '../../assets/Logo.png';
+import logoDark from '../../assets/darkMode/logo-darkmode.png';
+import './SideBar.scss';
+import { ColorModeContext } from '../../context/ColorModeContext';
+import { GroupChatContext } from '../../context/GroupChatContext';
+import { useAuth } from '../../context/AuthProvider';
+import { fetchSemesters } from '../../service/SemesterService';
+import { getClasses } from '../../service/ClassService';
+import SemesterDropdown from '../Modal/SemesterList/SemesterDropdown';
+import ClassDropdown from '../../components/Modal/ClassList/ClassDropDown';
+
+import {
+  selectSemester,
+  selectSemesters,
+  selectPending,
+  selectCurrentSemesterId,
+  selectError,
+} from '../../redux/slice/semesterSlice';
 
 const SideBar = ({ isOpen, setIsOpen }) => {
   const { mode } = useContext(ColorModeContext);
-  const dashBoardItems = [
-    { name: "Home", path: "/", icon: "fa-solid fa-house" },
-    { name: "Task", path: "/tasks", icon: "fa-solid fa-list-check" },
-    { name: "Class", path: "/class", icon: "fa-solid fa-users" },
-    { name: "Schedule", path: "/schedule", icon: "fa-solid fa-calendar-days" },
-    // { name: "Documents", path: "/documents", icon: "fa-solid fa-folder-plus" },
-    { name: "Chat", path: "/chatbox", icon: "fa-solid fa-comment" },
-    // { name: "Grades", path: "/grades", icon: "fa-solid fa-user-graduate" },
-    // { name: "Plan", path: "/plan", icon: "fas fa-tasks" },
-    // { name: "More", path: "/more", icon: "fas fa-info-circle" },
-  ];
+  const { toggleGroupChat } = useContext(GroupChatContext);
+  const { user } = useAuth();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const semesters = useSelector(selectSemesters);
+  const pending = useSelector(selectPending);
+  const currentSemesterId = useSelector(selectCurrentSemesterId);
+  const error = useSelector(selectError);
+  const [showClasses, setShowClasses] = useState(false);
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleSidebar = () => setIsOpen(!isOpen);
 
   const handleChatClick = () => {
     toggleGroupChat();
     setIsOpen(!isOpen);
-    navigate("/chatbox");
+    navigate('/chatbox');
   };
 
+  const dashBoardItems = [
+    { name: 'Home', path: '/', icon: 'fa-solid fa-house' },
+    { name: 'Task', path: '/tasks', icon: 'fa-solid fa-list-check' },
+    { name: 'Class', path: '/class', icon: 'fa-solid fa-users' },
+    { name: 'Schedule', path: '/schedule', icon: 'fa-solid fa-calendar-days' },
+    { name: 'Documents', path: '/documents', icon: 'fa-solid fa-folder-plus' },
+    { name: 'Chat', path: '/chatbox', icon: 'fa-solid fa-comment', onClick: handleChatClick },
+    { name: 'Grades', path: '/grades', icon: 'fa-solid fa-user-graduate' },
+    { name: 'Plan', path: '/plan', icon: 'fas fa-tasks' },
+    { name: 'More', path: '/more', icon: 'fas fa-info-circle' },
+  ];
+
+  useEffect(() => {
+    dispatch(fetchSemesters(user.token));
+  }, []);
+
+  useEffect(() => {
+    getClasses(currentSemesterId, user.token, dispatch);
+  }, [currentSemesterId]);
+
   return (
-    <div className={`navbar-container ${isOpen ? "open" : "close"} `}>
+    <div className={`navbar-container ${isOpen ? 'open' : 'close'}`}>
       <div className="wrapper_navbar">
-        <div
-          className={`wrapper_navbar_header ${isOpen ? "isOpen" : "isClose"}`}
-        >
+        <div className={`wrapper_navbar_header ${isOpen ? 'isOpen' : 'isClose'}`}>
           <Link to="/">
-            {mode === "light" ? (
+            {mode === 'light' ? (
               <img
                 src={isOpen ? logo : logoClose}
                 className="wrapper_navbar_header_logo"
                 alt="Logo web"
               />
             ) : (
-              <img
-                src={logoDark}
-                className="wrapper_navbar_header_logo"
-                alt="Logo web"
-              />
+              <img src={logoDark} className="wrapper_navbar_header_logo" alt="Logo web" />
             )}
           </Link>
           <button className="wrapper_navbar_toggle" onClick={toggleSidebar}>
-            <i
-              className={isOpen ? "fa-solid fa-times" : "fa-solid fa-bars"}
-            ></i>
+            <i className={isOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'}></i>
           </button>
         </div>
 
-        {/* DashBoard */}
+        <div className="semester__picker">
+          <label className="semester__label">Semester</label>
+          <SemesterDropdown
+            semesters={semesters}
+            value={currentSemesterId ?? null}
+            onChange={(id) => dispatch(selectSemester(id))}
+            placeholder="Select semester"
+          />
+        </div>
+
+        {/* DASHBOARD */}
         <nav className="navbar-dashboard">
           <h2 className="navbar-dashboard-heading">DashBoard</h2>
           <ul>
             {dashBoardItems.map((item, index) => (
-              <li key={index}>
-                <NavLink
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `nav-link ${isActive ? "active" : ""}`
-                  }
-                  onClick={item.name === "Chat" ? handleChatClick : undefined}
-                >
-                  {item.name === "Class" ? (
-                    <div className="nav-icon-container">
-                      <div className="nav-icon-container-inner">
-                        {item.icon && <i className={item.icon}></i>}
-                        <span className="nav-icon-container-text">
-                          {item.name}
-                        </span>
-                      </div>
-                      <i className="fa-solid fa-arrow-right"></i>
-                    </div>
-                  ) : (
+              <li key={index} className={item.name === 'Class' ? 'class-item' : ''}>
+                {item.name === 'Class' ? (
+                  <ClassDropdown showClasses={showClasses} setShowClasses={setShowClasses} />
+                ) : (
+                  <NavLink
+                    to={item.path}
+                    className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                    onClick={item.onClick}
+                  >
                     <div className="nav-icon-container">
                       {item.icon && <i className={item.icon}></i>}
-                      <span className="nav-icon-container-text">
-                        {item.name}
-                      </span>
+                      <span className="nav-icon-container-text">{item.name}</span>
                     </div>
-                  )}
-                </NavLink>
+                  </NavLink>
+                )}
               </li>
             ))}
           </ul>
         </nav>
 
-        {/* Support */}
+        {/* SUPPORT */}
         <nav className="navbar-support">
           <h2 className="navbar-support-heading">Support</h2>
           <ul>
             <li>
               <NavLink
                 to="/settings"
-                className={({ isActive }) =>
-                  `nav-link ${isActive ? "active" : ""}`
-                }
+                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
               >
                 <div className="nav-icon-container">
                   <i className="fa-solid fa-gear"></i>

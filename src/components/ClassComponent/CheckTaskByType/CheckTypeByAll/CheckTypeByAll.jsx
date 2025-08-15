@@ -1,27 +1,28 @@
-import { useEffect, useState, useCallback } from "react";
-import "./CheckTypeByAll.scss";
-import Column from "./Column/Column";
-import Task from "./Task/Task";
+import { useEffect, useState, useCallback } from 'react';
+import './CheckTypeByAll.scss';
+import Column from './Column/Column';
+import Task from './Task/Task';
 import {
   DndContext,
   rectIntersection,
   closestCorners,
   DragOverlay,
   defaultDropAnimationSideEffects,
-} from "@dnd-kit/core";
-import { useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
-import AddTask from "../../../Task/AddTask/AddTask";
-import CommentTask from "../../../Task/CommentTask/CommentTask";
-import ClassAndMember from "../../ClassAndMember/ClassAndMember";
-import { useAuth } from "../../../../context/AuthProvider";
-import taskService from "../../../../service/TaskService";
-import statusApi from "../../../../service/ColumnService";
-import GroupService from "../../../../service/GroupService";
-import AddColumn from "../../../Column/AddColumn/AddColumn";
-import axios from "axios";
-import ReviewService from "../../../../service/ReviewService";
-import AddSubTask from "../../../Task/AddSubTask/AddSubTask";
-import decodeToken from "../../../../service/DecodeJwt";
+} from '@dnd-kit/core';
+import { useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
+import AddTask from '../../../Task/AddTask/AddTask';
+import CommentTask from '../../../Task/CommentTask/CommentTask';
+import ClassAndMember from '../../ClassAndMember/ClassAndMember';
+import { useAuth } from '../../../../context/AuthProvider';
+import taskService from '../../../../service/TaskService';
+import statusApi from '../../../../service/ColumnService';
+import AddColumn from '../../../Column/AddColumn/AddColumn';
+import axios from 'axios';
+import AddSubTask from '../../../Task/AddSubTask/AddSubTask';
+import decodeToken from '../../../../service/DecodeJwt';
+import { useParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -34,6 +35,8 @@ const customCollisionDetection = (args) => {
 
 const CheckTypeByAll = () => {
   const { user } = useAuth();
+  const dispatch = useDispatch();
+  const statuses = useSelector((s) => s.status.statuses);
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
@@ -41,19 +44,17 @@ const CheckTypeByAll = () => {
   const [showAddColumn, setShowAddColumn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { getAllTask, addTask, setSocket } = taskService();
-  const { getAllStatus } = statusApi();
+  const { getAllStatus, getStatus } = statusApi();
   const [statusTasks, setStatusTasks] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [memberTask, setMemberTask] = useState([]);
   const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const [group, setGroup] = useState({});
-  const { getAllGroup } = GroupService();
-  const { getAllReview } = ReviewService();
+  const { groupId } = useParams();
   const [showAddSubTask, setShowAddSubTask] = useState(null);
   const decoded = decodeToken(user?.token);
   const idGroup = group.groupsId;
-  console.log(idGroup)
   const isLeader = () => {
     if (group.groupsLeaderId === decoded.id) {
       return true;
@@ -66,7 +67,7 @@ const CheckTypeByAll = () => {
       activationConstraint: {
         distance: 5,
       },
-    })
+    }),
   );
 
   const handleDragStart = (event) => {
@@ -79,8 +80,8 @@ const CheckTypeByAll = () => {
     const { over } = event;
     if (over) {
       const overId = over.id;
-      if (overId.startsWith("droppable-")) {
-        const targetStatus = overId.replace("droppable-", "");
+      if (overId.startsWith('droppable-')) {
+        const targetStatus = overId.replace('droppable-', '');
         setActiveColumn(targetStatus);
       }
     } else {
@@ -107,16 +108,16 @@ const CheckTypeByAll = () => {
       const activeIndex = tasks.findIndex((task) => task.taskId === activeId);
 
       const droppableId = over.id;
-      const isOverDroppable = droppableId.startsWith("droppable-");
+      const isOverDroppable = droppableId.startsWith('droppable-');
       const isOverTask = tasks.some((task) => task.taskId === over.id);
 
       let targetStatusId;
       let targetStatus;
 
       if (isOverDroppable) {
-        targetStatusId = droppableId.replace("droppable-", "");
+        targetStatusId = droppableId.replace('droppable-', '');
         targetStatus = statusTasks.find(
-          (item) => item.statusTaskId === targetStatusId
+          (item) => item.statusTaskId === targetStatusId,
         )?.statusTaskName;
       } else if (isOverTask) {
         const overTask = tasks.find((task) => task.taskId === over.id);
@@ -146,7 +147,7 @@ const CheckTypeByAll = () => {
                 statusTaskName: targetStatus,
               },
             }
-          : task
+          : task,
       );
 
       if (activeTask.statusTask.statusTaskId !== targetStatusId) {
@@ -159,30 +160,28 @@ const CheckTypeByAll = () => {
         };
         try {
           const response = await addTask(newTask, user?.token);
-          await axios.post("http://localhost:3000/notifications", {
+          await axios.post('http://localhost:3000/notifications', {
             id: Math.random().toString(16).slice(2, 6),
             title: `Announcement for ${newTask.taskTitle} change to status`,
             author: {
               _id: Math.random(),
-              name: user.username || "Unknown",
+              name: user.username || 'Unknown',
               avatar:
                 user.avatar ||
-                "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+                'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
             },
-            createdAt: new Date().toISOString().split("T")[0],
+            createdAt: new Date().toISOString().split('T')[0],
             isRead: false,
             _id: Math.random(),
           });
         } catch (error) {
-          console.error("Failed to update task or send notification:", error);
+          console.error('Failed to update task or send notification:', error);
         }
       }
 
       if (isOverDroppable) {
         const targetTasks = tasks.filter(
-          (task) =>
-            task?.statusTask?.statusTaskId === targetStatusId &&
-            task.taskId !== activeId
+          (task) => task?.statusTask?.statusTaskId === targetStatusId && task.taskId !== activeId,
         );
         updatedTasks.splice(activeIndex, 1);
         updatedTasks.push({
@@ -215,7 +214,7 @@ const CheckTypeByAll = () => {
       setTasks(updatedTasks);
       setActiveColumn(null);
     },
-    [tasks, activeColumn, statusTasks, addTask, user]
+    [tasks, activeColumn, statusTasks, addTask, user],
   );
 
   const handleFilterByPriority = () => {
@@ -264,27 +263,23 @@ const CheckTypeByAll = () => {
         console.error(e.message);
       }
     },
-    [user.token]
+    [user.token],
   );
 
   const handleColumnUpdated = useCallback(
     (updatedColumn) => {
       if (updatedColumn?.deleted) {
         setStatusTasks((prev) =>
-          prev.filter(
-            (status) => status.statusTaskId !== updatedColumn.statusId
-          )
+          prev.filter((status) => status.statusTaskId !== updatedColumn.statusId),
         );
       } else if (updatedColumn) {
         setStatusTasks((prev) => {
-          const exists = prev.some(
-            (status) => status.statusTaskId === updatedColumn.statusTaskId
-          );
+          const exists = prev.some((status) => status.statusTaskId === updatedColumn.statusTaskId);
           if (exists) {
             return prev.map((status) =>
               status.statusTaskId === updatedColumn.statusTaskId
                 ? { ...status, ...updatedColumn }
-                : status
+                : status,
             );
           }
           return [...prev, updatedColumn];
@@ -293,14 +288,14 @@ const CheckTypeByAll = () => {
         handleGetStatusTask(idGroup);
       }
     },
-    [idGroup, handleGetStatusTask]
+    [idGroup, handleGetStatusTask],
   );
 
   const handleGetTasks = useCallback(
     async (groupId) => {
       try {
         const response = await getAllTask(user.token, groupId);
-        console.log('debug: ',response)
+        console.log('debug: ', response);
         if (response.data) {
           const normalizedTasks = response.data.map((task) => ({
             ...task,
@@ -312,22 +307,20 @@ const CheckTypeByAll = () => {
                 .replace(/\b\w/g, (c) => c.toUpperCase()),
             },
           }));
-          console.log("normalizedTasks: ", normalizedTasks);
+          console.log('normalizedTasks: ', normalizedTasks);
           setTasks(normalizedTasks);
         }
       } catch (e) {
         console.error(e.message);
       }
     },
-    [user.token, idGroup]
+    [user.token, idGroup],
   );
 
   const handleTaskUpdated = useCallback(
     (updatedTask) => {
       if (updatedTask?.deleted) {
-        setTasks((prevTasks) =>
-          prevTasks.filter((task) => task.taskId !== updatedTask.taskId)
-        );
+        setTasks((prevTasks) => prevTasks.filter((task) => task.taskId !== updatedTask.taskId));
       } else if (updatedTask) {
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
@@ -342,14 +335,14 @@ const CheckTypeByAll = () => {
                       .replace(/\b\w/g, (c) => c.toUpperCase()),
                   },
                 }
-              : task
-          )
+              : task,
+          ),
         );
       } else {
         handleGetTasks(idGroup);
       }
     },
-    [idGroup, handleGetTasks]
+    [idGroup, handleGetTasks],
   );
 
   const handleChooseTask = async (task) => {
@@ -367,6 +360,10 @@ const CheckTypeByAll = () => {
       handleGetTasks(idGroup);
     }
   };
+
+  // useEffect(() => {
+  //   dispatch(getStatus(user.token, groupId));
+  // }, [groupId]);
 
   // useEffect(() => {
   //   const stompInstance = setSocket(user.token);
@@ -425,25 +422,22 @@ const CheckTypeByAll = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        await Promise.all([
-          handleGetStatusTask(group.groupsId),
-          handleGetTasks(group.groupsId),
-        ]);
+        await Promise.all([handleGetStatusTask(group.groupsId), handleGetTasks(group.groupsId)]);
       } catch (e) {
-        console.error("Error fetching data:", e.message);
+        console.error('Error fetching data:', e.message);
       } finally {
         setIsLoading(false);
       }
     };
     fetchData();
     const handleEscape = (e) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         setShowAddTask(null);
       }
     };
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener('keydown', handleEscape);
     return () => {
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, [handleGetStatusTask, handleGetTasks, group.groupsId]);
 
@@ -463,16 +457,14 @@ const CheckTypeByAll = () => {
             setMemberTask={setMemberTask}
           />
           <div className="task-column-container">
-            {statusTasks.map((item) => (
+            {statuses.map((item) => (
               <Column
                 key={item.statusTaskId}
                 statusId={item.statusTaskId}
                 status={item.statusTaskName}
                 color={item.statusTaskColor}
                 isLoading={isLoading}
-                tasks={tasks.filter(
-                  (task) => task?.statusTask?.statusTaskId === item.statusTaskId
-                )}
+                tasks={tasks.filter((task) => task?.statusTask?.statusTaskId === item.statusTaskId)}
                 members={memberTask}
                 onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}
@@ -482,17 +474,14 @@ const CheckTypeByAll = () => {
                 isLeader={isLeader}
               />
             ))}
-            {user.role === "LECTURER" || isLeader() ? (
-              <button
-                className="btn_add_status"
-                onClick={() => setShowAddColumn(!showAddColumn)}
-              >
+            {user.role === 'LECTURER' || isLeader() ? (
+              <button className="btn_add_status" onClick={() => setShowAddColumn(!showAddColumn)}>
                 <i className="fa-solid fa-plus"></i>
                 <span>Add Status</span>
               </button>
             ) : null}
           </div>
-          {user.role === "LECTURER" || isLeader()
+          {user.role === 'LECTURER' || isLeader()
             ? showAddTask && (
                 <AddTask
                   status={showAddTask}
@@ -532,11 +521,11 @@ const CheckTypeByAll = () => {
       <DragOverlay
         dropAnimation={{
           duration: 250,
-          easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",
+          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
           sideEffects: defaultDropAnimationSideEffects({
             styles: {
               active: {
-                opacity: "1",
+                opacity: '1',
               },
             },
           }),

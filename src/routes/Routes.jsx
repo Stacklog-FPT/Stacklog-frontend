@@ -1,24 +1,24 @@
-import React from "react";
-import Home from "../pages/HomePage/Home";
-import LoginPage from "../pages/LoginPage/LoginPage";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import MainLayout from "../layouts/MainLayout";
-import TaskPage from "../pages/TaskPage/TaskPage";
-import ClassPage from "../pages/ClassPage/ClassPage";
-import SchedulePage from "../pages/SchedulePage/SchedulePage";
-import DocumentPage from "../pages/DocumentPage/DocumentPage";
-import ChatPage from "../pages/ChatPage/ChatPage";
-import GradesPage from "../pages/GradesPage/GradesPage";
-import PlanPage from "../pages/PlanPage/PlanPage";
-import Profile from "../pages/Profile/Profile";
-import { AuthProvider } from "../context/AuthProvider";
-import ProtectedRoutes from "./ProtectedRoutes";
-import NotFoundPage from "../pages/404page/NotFoundPage";
-import AdminProtectedRoutes from "./AdminProtectedRoutes";
-import AdminDashBoard from "../pages/Admin/AdminDashBoard";
-import MorePage from "../pages/MorePage/MorePage";
-import LayoutAdmin from "../layouts/LayoutAdmin/LayoutAdmin";
-import JoinClass from "../pages/JoinClass/JoinClass";
+import React from 'react';
+import Home from '../pages/HomePage/Home';
+import LoginPage from '../pages/LoginPage/LoginPage';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import MainLayout from '../layouts/MainLayout';
+import TaskPage from '../pages/TaskPage/TaskPage';
+import ClassPage from '../pages/ClassPage/ClassPage';
+import SchedulePage from '../pages/SchedulePage/SchedulePage';
+import DocumentPage from '../pages/DocumentPage/DocumentPage';
+import ChatPage from '../pages/ChatPage/ChatPage';
+import GradesPage from '../pages/GradesPage/GradesPage';
+import PlanPage from '../pages/PlanPage/PlanPage';
+import Profile from '../pages/Profile/Profile';
+import { AuthProvider } from '../context/AuthProvider';
+import ProtectedRoutes from './ProtectedRoutes';
+import NotFoundPage from '../pages/404page/NotFoundPage';
+import AdminProtectedRoutes from './AdminProtectedRoutes';
+import AdminDashBoard from '../pages/Admin/AdminDashBoard';
+import MorePage from '../pages/MorePage/MorePage';
+import LayoutAdmin from '../layouts/LayoutAdmin/LayoutAdmin';
+import JoinClass from '../pages/JoinClass/JoinClass';
 
 const routes = [
   {
@@ -31,16 +31,16 @@ const routes = [
       {
         element: <MainLayout />,
         children: [
-          { path: "/", element: <Home /> },
-          { path: "/tasks", element: <ClassPage /> }, // Task
-          { path: "/class", element: <TaskPage /> }, // Class
-          { path: "/schedule", element: <SchedulePage /> },
-          { path: "/documents", element: <DocumentPage /> },
-          { path: "/chatbox", element: <ChatPage /> },
-          { path: "/grades", element: <GradesPage /> },
-          { path: "/plan", element: <PlanPage /> },
-          { path: "/user-detail", element: <Profile /> },
-          { path: "/more", element: <MorePage /> },
+          { path: '/', element: <Home /> },
+          { path: '/tasks/:groupId', element: <ClassPage /> }, // Task
+          { path: '/class', element: <TaskPage /> }, // Class
+          { path: '/schedule', element: <SchedulePage /> },
+          { path: '/documents', element: <DocumentPage /> },
+          { path: '/chatbox', element: <ChatPage /> },
+          { path: '/grades', element: <GradesPage /> },
+          { path: '/plan', element: <PlanPage /> },
+          { path: '/user-detail', element: <Profile /> },
+          { path: '/more', element: <MorePage /> },
         ],
       },
     ],
@@ -55,14 +55,14 @@ const routes = [
       {
         element: <LayoutAdmin />,
         children: [
-          { path: "/admin", element: <AdminDashBoard /> },
-          { path: "/user-detail", element: <Profile /> },
+          { path: '/admin', element: <AdminDashBoard /> },
+          { path: '/user-detail', element: <Profile /> },
         ],
       },
     ],
   },
   {
-    path: "/login",
+    path: '/login',
     element: (
       <AuthProvider>
         <LoginPage />
@@ -70,7 +70,7 @@ const routes = [
     ),
   },
   {
-    path: "/join-class/:inviteCode",
+    path: '/join-class/:inviteCode',
     element: (
       <AuthProvider>
         <JoinClass />
@@ -78,7 +78,7 @@ const routes = [
     ),
   },
   {
-    path: "/404",
+    path: '/404',
     element: <NotFoundPage />,
   },
 ];

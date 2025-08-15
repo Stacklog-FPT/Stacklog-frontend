@@ -4,8 +4,8 @@ $color-hover: red;
 
 .add__column {
   position: absolute;
-  top: 50%;
-  left: 58%;
+  top: 35%;
+  left: 55%;
   transform: translate(-50%, -50%);
   width: 400px;
   padding: 20px;
@@ -51,7 +51,7 @@ $color-hover: red;
       gap: 15px;
 
       &__input {
-        input[type="text"] {
+        input[type='text'] {
           width: 100%;
           background-color: var(--bg--nav);
           color: var(--text-color);
@@ -75,7 +75,7 @@ $color-hover: red;
           color: var(--text-color);
         }
 
-        input[type="color"] {
+        input[type='color'] {
           width: 50px;
           height: 40px;
           border: none;

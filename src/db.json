@@ -1182,7 +1182,7 @@
           ]
         },
         {
-          "_id": "5b235b2b52b5i3b8i",
+          "_id": "5b235b2b52b5i3b8i1",
           "name": "WDP301",
           "groups": [
             {
@@ -1209,6 +1209,40 @@
         }
       ],
       "id": "5f9a"
+    }
+  ],
+
+  "status": [
+    {
+      "statusTaskId": "j2kb1kb42",
+      "statusTaskName": "ToDo",
+      "groupId": "b5n4j235b43b254b3i2b5",
+      "statusTaskColor": "red"
+    },
+
+    {
+      "statusTaskId": "j2kb1kb42",
+      "statusTaskName": "Doing",
+      "groupId": "b5n4j235b43b254b3i2b5",
+      "statusTaskColor": "blue"
+    },
+    {
+      "statusTaskId": "j2kb1kb42",
+      "statusTaskName": "UAT",
+      "groupId": "b5n4j235b43b254b3i2b5",
+      "statusTaskColor": "yellow"
+    },
+    {
+      "statusTaskId": "j2kb1kb42",
+      "statusTaskName": "ToDo",
+      "groupId": "b5n4j235b43b254b3i2b6",
+      "statusTaskColor": "green"
+    },
+    {
+      "statusTaskId": "j2kb1kb42",
+      "statusTaskName": "Doing",
+      "groupId": "b5n4j235b43b254b3i2b6",
+      "statusTaskColor": "black"
     }
   ]
 }

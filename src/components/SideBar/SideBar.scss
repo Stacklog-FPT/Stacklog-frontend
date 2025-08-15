@@ -1,20 +1,14 @@
-/* ===== Palette theo bạn cung cấp ===== */
 $back-ground-color-white: #ffffff;
 $color-text: #545454;
 $color-text-heading: #8a8a8a;
 $color-border: #c8cad4;
 $color-hover: #045745;
 
-$hover-05: rgba($color-hover, 0.05);
-$hover-10: rgba($color-hover, 0.1);
-$hover-15: rgba($color-hover, 0.15);
-
-/* ===== Shell ===== */
 .navbar-container {
   display: flex;
   flex-direction: column;
   width: 288px;
-  height: 100vh;
+  height: auto;
   transition: width 0.3s ease;
   background: var(--bg--nav);
   color: var(--text-color);
@@ -24,8 +18,7 @@ $hover-15: rgba($color-hover, 0.15);
 
     .navbar-dashboard-heading,
     .navbar-support-heading,
-    .nav-icon-container-text,
-    .fa-arrow-right {
+    .nav-icon-container-text {
       display: none;
     }
 
@@ -53,9 +46,11 @@ $hover-15: rgba($color-hover, 0.15);
     .navbar-dashboard,
     .navbar-support {
       padding: 10px 15px;
+      border-radius: 20px;
       li {
         width: 36px;
         padding: 8px 5px;
+        border-radius: 20px;
         .nav-link {
           justify-content: center;
         }
@@ -98,8 +93,11 @@ $hover-15: rgba($color-hover, 0.15);
       }
     }
     &:hover {
-      background: $hover-10;
+      background: $color-hover;
       border-radius: 50%;
+      i {
+        color: #fff;
+      }
     }
   }
 
@@ -109,28 +107,12 @@ $hover-15: rgba($color-hover, 0.15);
   }
 }
 
-/* ===== Row base ===== */
 .nav-icon-container {
   display: flex;
   align-items: center;
   gap: 20px;
   width: 100%;
-  .arrow-transition {
-    transition: transform 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    margin-left: 8px;
 
-    &.rotated {
-      transform: rotate(90deg);
-    }
-
-    svg {
-      color: inherit;
-    }
-  }
   &-text {
     font-size: 16px;
     font-weight: 500;
@@ -138,16 +120,11 @@ $hover-15: rgba($color-hover, 0.15);
   }
   i {
     color: $color-text;
-    font-size: 16px;
-  }
-  &-inner {
-    display: flex;
-    align-items: center;
-    gap: 20px;
+    font-size: 14px;
   }
 }
 
-/* ===== Dashboard level-0 ===== */
+/* Dashboard */
 .navbar-dashboard {
   display: flex;
   flex-direction: column;
@@ -173,36 +150,37 @@ $hover-15: rgba($color-hover, 0.15);
   li {
     list-style: none;
     width: 100%;
-    border-radius: 8px;
-    transition: background 0.2s ease;
+    border-radius: 20px;
+    transition: background 0.2s ease, color 0.2s ease;
+
     > .nav-link {
       height: 40px;
       padding: 0 20px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       color: $color-text;
       text-decoration: none;
       width: 100%;
       background: transparent;
       border: none;
+      border-radius: 10px;
       cursor: pointer;
-      &:hover {
-        color: $color-hover;
-      }
-      &.active {
-        color: $color-hover;
-      }
-    }
-  }
+      transition: background 0.2s ease, color 0.2s ease;
 
-  > ul > li:hover {
-    background: var(--bg--primary-color);
-    .nav-link {
-      color: #fff;
-      .nav-icon-container {
-        span,
-        i {
+      &:hover {
+        background: $color-hover;
+        color: #fff;
+        .nav-icon-container span,
+        .nav-icon-container i {
+          color: #fff;
+        }
+      }
+
+      &.active {
+        background: $color-hover;
+        color: #fff;
+        .nav-icon-container span,
+        .nav-icon-container i {
           color: #fff;
         }
       }
@@ -210,168 +188,7 @@ $hover-15: rgba($color-hover, 0.15);
   }
 }
 
-/* ===== Nested lists with indentation ===== */
-.nested-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, opacity 0.2s ease;
-}
-
-/* Semester list - level 1 */
-.semester-list {
-  padding-left: 16px; /* Thụt vào so với Class */
-  max-height: 0;
-  opacity: 0;
-
-  &.open {
-    max-height: 1000px;
-    opacity: 1;
-    margin: 8px 0;
-  }
-
-  > li {
-    .nav-link {
-      padding-left: 12px;
-    }
-  }
-}
-
-/* Class list - level 2 */
-.class-list {
-  padding-left: 16px; /* Thụt vào thêm so với Semester */
-  max-height: 0;
-  opacity: 0;
-
-  &.open {
-    max-height: 1000px;
-    opacity: 1;
-    margin: 8px 0;
-  }
-
-  > li {
-    .class-head {
-      padding-left: 12px;
-    }
-  }
-}
-
-/* Group list - level 3 */
-.group-list {
-  padding-left: 16px; /* Thụt vào thêm so với Class */
-  max-height: 0;
-  opacity: 0;
-
-  &.open {
-    max-height: 1000px;
-    opacity: 1;
-    margin: 4px 0;
-  }
-
-  > li {
-    .group-link {
-      padding-left: 12px;
-    }
-  }
-}
-
-/* ===== Class & Group items styling ===== */
-.class-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: var(--bg--primary-color);
-    color: #fff;
-
-    .class-name {
-      color: #fff;
-    }
-
-    .class-avatar {
-      color: #fff;
-    }
-  }
-
-  .class-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    background: $hover-10;
-    color: $color-hover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  .class-name {
-    flex-grow: 1;
-    color: $color-text;
-    font-weight: 500;
-  }
-
-  .class-actions {
-    display: flex;
-    gap: 8px;
-
-    .icon-btn {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.1);
-      }
-
-      i {
-        color: inherit;
-        font-size: 14px;
-      }
-    }
-  }
-}
-
-.group-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 0;
-  border-radius: 6px;
-  color: $color-text;
-  text-decoration: none;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: $hover-10;
-    color: $color-hover;
-
-    i {
-      color: $color-hover;
-    }
-  }
-
-  i {
-    font-size: 14px;
-    color: $color-text;
-    transition: color 0.2s ease;
-  }
-}
-
-/* ===== Support section ===== */
+/* Support */
 .navbar-support {
   display: flex;
   flex-direction: column;
@@ -385,6 +202,7 @@ $hover-15: rgba($color-hover, 0.15);
     font-weight: 700;
     text-transform: uppercase;
   }
+
   ul {
     display: flex;
     flex-direction: column;
@@ -395,8 +213,9 @@ $hover-15: rgba($color-hover, 0.15);
 
   li {
     list-style: none;
-    border-radius: 8px;
-    transition: background 0.2s ease;
+    border-radius: 20px;
+    transition: background 0.2s ease, color 0.2s ease;
+
     > .nav-link {
       height: 40px;
       padding: 0 20px;
@@ -406,12 +225,150 @@ $hover-15: rgba($color-hover, 0.15);
       color: $color-text;
       text-decoration: none;
       width: 100%;
-    }
-    &:hover {
-      background: $hover-10;
-      .nav-link {
-        color: $color-hover;
+      transition: background 0.2s ease, color 0.2s ease;
+
+      &:hover {
+        background: $color-hover;
+        color: #fff;
+        .nav-icon-container span,
+        .nav-icon-container i {
+          color: #fff;
+        }
       }
+
+      &.active {
+        background: $color-hover;
+        color: #fff;
+        .nav-icon-container span,
+        .nav-icon-container i {
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+
+/* Semester Picker */
+.semester__picker {
+  padding: 12px 24px 4px;
+
+  .semester__label {
+    font-size: 12px;
+    color: $color-text-heading;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+    display: inline-block;
+  }
+}
+
+/* Semester Dropdown */
+.semester-dropdown {
+  position: relative;
+
+  .sd-trigger {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px 0 14px;
+    border: 1px solid $color-border;
+    background: var(--bg--nav);
+    color: $color-text;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+
+    &:hover {
+      border-color: $color-hover;
+    }
+
+    &.open {
+      border-color: $color-hover;
+    }
+
+    .sd-label {
+      font-size: 14px;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sd-caret {
+      font-size: 12px;
+      color: $color-text;
+      transition: transform 0.2s ease;
+
+      &.rotated {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .sd-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    max-height: 240px;
+    overflow: auto;
+    border: 1px solid $color-border;
+    background: var(--bg--nav);
+    border-radius: 12px;
+    padding: 6px;
+    z-index: 20;
+  }
+
+  .sd-empty {
+    padding: 12px;
+    font-size: 14px;
+    color: $color-text-heading;
+    text-align: center;
+  }
+
+  .sd-item {
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background: $color-hover;
+      .sd-item-text,
+      .sd-check {
+        color: #fff;
+      }
+    }
+
+    &.active {
+      background: $color-hover;
+      .sd-item-text,
+      .sd-check {
+        color: #fff;
+      }
+    }
+
+    .sd-item-text {
+      font-size: 14px;
+      color: $color-text;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sd-check {
+      font-size: 14px;
+      color: $color-text;
     }
   }
 }

@@ -11,10 +11,11 @@ export const fetchSemesters = (token) => async (dispatch) => {
     dispatch(getSemestersStart());
     if (!token) throw new Error('Missing token or Invalid Token');
 
-    const { data } = await axios.get('http://localhost:3000/semester', {
+    const response = await axios.get('http://localhost:3001/semesters', {
       headers: { Authorization: `Bearer ${token}` },
     });
 
+    const data = response.data;
     dispatch(getSemestersSuccess(data));
     return data;
   } catch (e) {

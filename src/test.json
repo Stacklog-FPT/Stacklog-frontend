@@ -1,0 +1,284 @@
+{
+  "semesters": [
+    {
+      "semester_id": "3b21h3vb1u",
+      "semester_name": "Fall 2025"
+    },
+    {
+      "semesterId": "3b213vb2u",
+      "semester_name": "Sum 2025"
+    },
+    {
+      "semesterId": "3b213vb3u",
+      "semester_name": "Spring 2025"
+    },
+    {
+      "semesterId": "3b213vb4u",
+      "semester_name": "Spring 2025"
+    }
+  ],
+
+  "classes": [
+    {
+      "classes_id": "1",
+      "created_at": "timestamp",
+      "created_by": "user_id",
+      "update_at": "timestamp",
+      "update_by": "user_id",
+      "classes_name": "SWP391c",
+      "lecture_id": "id_giảng_viên",
+      "semester_id": "3b213vb2u",
+      "groups": [
+        {
+          "groups_id": "1",
+          "created_at": "timestamp",
+          "created_by": "user_id",
+          "update_at": "timestamp",
+          "update_by": "user_id",
+          "groups_avg_score": 85.5,
+          "groups_descriptions": "Mô_tả_nhóm",
+          "groups_leader_id": "user_id_của_nhóm_trưởng",
+          "groups_max_member": 10,
+          "groups_name": "Tên_Nhóm_1",
+          "classes_id": "1",
+          "group_student": [
+            {
+              "group_student_id": "unique_id_for_group_student_1",
+              "created_at": "timestamp",
+              "created_by": "user_id",
+              "update_at": "timestamp",
+              "update_by": "user_id",
+              "user_id": [
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên"
+              ],
+              "groups_id": "unique_id_for_group_1"
+            },
+            {
+              "group_student_id": "unique_id_for_group_student_2",
+              "created_at": "timestamp",
+              "created_by": "user_id",
+              "update_at": "timestamp",
+              "update_by": "user_id",
+              "user_id": [
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên"
+              ],
+              "groups_id": "unique_id_for_group_1"
+            }
+          ]
+        },
+        {
+          "groups_id": "2",
+          "created_at": "timestamp",
+          "created_by": "user_id",
+          "update_at": "timestamp",
+          "update_by": "user_id",
+          "groups_avg_score": 92.0,
+          "groups_descriptions": "Mô_tả_nhóm_khác",
+          "groups_leader_id": "user_id_của_nhóm_trưởng_khác",
+          "groups_max_member": 8,
+          "groups_name": "Tên_Nhóm_2",
+          "classes_id": "1",
+          "group_student": [
+            {
+              "group_student_id": "unique_id_for_group_student_3",
+              "created_at": "timestamp",
+              "created_by": "user_id",
+              "update_at": "timestamp",
+              "update_by": "user_id",
+              "user_id": [
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên"
+              ],
+              "groups_id": "unique_id_for_group_2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "classes_id": "2",
+      "created_at": "timestamp",
+      "created_by": "user_id",
+      "update_at": "timestamp",
+      "update_by": "user_id",
+      "classes_name": "SDN302c",
+      "lecture_id": "id_giảng_viên",
+      "semester_id": "3b21h3vb1u",
+      "groups": [
+        {
+          "groups_id": "1",
+          "created_at": "timestamp",
+          "created_by": "user_id",
+          "update_at": "timestamp",
+          "update_by": "user_id",
+          "groups_avg_score": 85.5,
+          "groups_descriptions": "Mô_tả_nhóm",
+          "groups_leader_id": "user_id_của_nhóm_trưởng",
+          "groups_max_member": 10,
+          "groups_name": "Tên_Nhóm_1",
+          "classes_id": "2",
+          "group_student": [
+            {
+              "group_student_id": "unique_id_for_group_student_1",
+              "created_at": "timestamp",
+              "created_by": "user_id",
+              "update_at": "timestamp",
+              "update_by": "user_id",
+              "user_id": [
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên"
+              ],
+              "groups_id": "unique_id_for_group_1"
+            },
+            {
+              "group_student_id": "unique_id_for_group_student_2",
+              "created_at": "timestamp",
+              "created_by": "user_id",
+              "update_at": "timestamp",
+              "update_by": "user_id",
+              "user_id": [
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên"
+              ],
+              "groups_id": "unique_id_for_group_1"
+            }
+          ]
+        },
+        {
+          "groups_id": "2",
+          "created_at": "timestamp",
+          "created_by": "user_id",
+          "update_at": "timestamp",
+          "update_by": "user_id",
+          "groups_avg_score": 92.0,
+          "groups_descriptions": "Mô_tả_nhóm_khác",
+          "groups_leader_id": "user_id_của_nhóm_trưởng_khác",
+          "groups_max_member": 8,
+          "groups_name": "Tên_Nhóm_2",
+          "classes_id": "2",
+          "group_student": [
+            {
+              "group_student_id": "unique_id_for_group_student_3",
+              "created_at": "timestamp",
+              "created_by": "user_id",
+              "update_at": "timestamp",
+              "update_by": "user_id",
+              "user_id": [
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên"
+              ],
+              "groups_id": "unique_id_for_group_2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "classes_id": "3",
+      "created_at": "timestamp",
+      "created_by": "user_id",
+      "update_at": "timestamp",
+      "update_by": "user_id",
+      "classes_name": "MMA301",
+      "lecture_id": "id_giảng_viên",
+      "semester_id": "3b21h3vb1u",
+      "groups": [
+        {
+          "groups_id": "unique_id_for_group_1",
+          "created_at": "timestamp",
+          "created_by": "user_id",
+          "update_at": "timestamp",
+          "update_by": "user_id",
+          "groups_avg_score": 85.5,
+          "groups_descriptions": "Mô_tả_nhóm",
+          "groups_leader_id": "user_id_của_nhóm_trưởng",
+          "groups_max_member": 10,
+          "groups_name": "Tên_Nhóm_1",
+          "classes_id": "3",
+          "group_student": [
+            {
+              "group_student_id": "unique_id_for_group_student_1",
+              "created_at": "timestamp",
+              "created_by": "user_id",
+              "update_at": "timestamp",
+              "update_by": "user_id",
+              "user_id": [
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên"
+              ],
+              "groups_id": "unique_id_for_group_1"
+            },
+            {
+              "group_student_id": "unique_id_for_group_student_2",
+              "created_at": "timestamp",
+              "created_by": "user_id",
+              "update_at": "timestamp",
+              "update_by": "user_id",
+              "user_id": [
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên"
+              ],
+              "groups_id": "unique_id_for_group_1"
+            }
+          ]
+        },
+        {
+          "groups_id": "unique_id_for_group_2",
+          "created_at": "timestamp",
+          "created_by": "user_id",
+          "update_at": "timestamp",
+          "update_by": "user_id",
+          "groups_avg_score": 92.0,
+          "groups_descriptions": "Mô_tả_nhóm_khác",
+          "groups_leader_id": "user_id_của_nhóm_trưởng_khác",
+          "groups_max_member": 8,
+          "groups_name": "Tên_Nhóm_2",
+          "classes_id": "3",
+          "group_student": [
+            {
+              "group_student_id": "unique_id_for_group_student_3",
+              "created_at": "timestamp",
+              "created_by": "user_id",
+              "update_at": "timestamp",
+              "update_by": "user_id",
+              "user_id": [
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên",
+                "user_id_của_sinh_viên"
+              ],
+              "groups_id": "unique_id_for_group_2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

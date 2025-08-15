@@ -100,11 +100,11 @@ const LoginPage = () => {
                 {isLoading ? "Signing in..." : "Sign in"}
               </button>
               <GoogleLogin
+                className="google-login-btn"
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleFailure}
                 text="signin_with"
                 logo_alignment="left"
-                width="382"
               />
             </div>
           </form>

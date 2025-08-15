@@ -59,7 +59,8 @@
 }
 
 .detail__meeting__card {
-  width: 486px;
+  width: 100%;
+  max-width: 100%;
   min-height: 200px;
   background-color: var(--bg--color--meeting);
   color: var(--text-color);

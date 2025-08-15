@@ -1,3 +1,4 @@
+/* ========== COLORS (giữ nguyên) ========== */
 $color-white: #ffffff;
 $color-gray: #667085;
 $color-black: #101828;
@@ -8,10 +9,19 @@ $color-primary-green-500: #03624c;
 $color-primary-green-500-light: #04805e;
 $color-white-dark: #f5f5f5;
 
+/* ========== BREAKPOINTS ========== */
+$bp-xs: 480px; // phones
+$bp-sm: 640px; // small tablets
+$bp-md: 768px; // tablets
+$bp-lg: 1024px; // laptops
+$bp-xl: 1280px; // desktops
+$bp-2xl: 1536px; // wide screens
+
+/* ========== BASE (GIỮ NGUYÊN BỐ CỤC) ========== */
 .form-login-container {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-end; /* giữ fix-end như bố cục gốc */
   width: 100%;
   min-height: 100vh;
   background-image: url('../../assets/login/back-ground-bean.png'),
@@ -26,7 +36,7 @@ $color-white-dark: #f5f5f5;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-right: 100px;
+  margin-right: 100px; /* sẽ thu nhỏ ở các breakpoint nhỏ hơn */
   justify-content: right;
 }
 
@@ -92,7 +102,6 @@ $color-white-dark: #f5f5f5;
       font-weight: 500;
       color: $color-label;
       padding-bottom: 5px;
-      // overflow-y: hidden;
     }
 
     input {
@@ -253,4 +262,180 @@ $color-white-dark: #f5f5f5;
       background-color: $color-white-dark !important;
     }
   }
+}
+
+/* ========== RESPONSIVE (không đổi bố cục, chỉ co giãn/điều chỉnh) ========== */
+
+/* <= desktops vừa */
+@media (max-width: $bp-xl) {
+  .form-login-container {
+    background-size: cover, 50% 100%; /* thu bớt mảng trái */
+  }
+  .wrapper-form {
+    margin-right: 80px; /* giảm khoảng cách bên phải */
+  }
+}
+
+/* <= laptops */
+@media (max-width: $bp-lg) {
+  .form-login-container {
+    /* vẫn giữ 2 ảnh & flex-end, chỉ thu mảng trái để form không chèn biên */
+    background-size: cover, 40% 100%;
+    padding: 16px; /* viền an toàn */
+  }
+  .wrapper-form {
+    margin-right: 48px; /* giảm nữa cho màn nhỏ hơn */
+  }
+  .form {
+    width: 100%; /* co dãn theo màn hình */
+    max-width: 480px; /* không vượt quá kích thước gốc */
+    padding: 32px; /* bớt padding để tránh chật */
+  }
+  .form_text_heading {
+    font-size: 26px;
+  }
+  .form_text_content {
+    font-size: 15px;
+  }
+}
+
+/* <= tablets */
+@media (max-width: $bp-md) {
+  .form-login-container {
+    background-size: cover, 32% 100%; /* mảng trái nhỏ hơn nữa */
+  }
+  .wrapper-form {
+    margin-right: 28px;
+  }
+  .form {
+    max-width: 440px;
+    padding: 28px;
+  }
+  .form_wrapper_input_field input {
+    padding: 12px 14px; /* tăng tap target */
+  }
+  .form_wrapper_checkbox {
+    gap: 10px;
+    flex-wrap: wrap; /* tránh vỡ layout khi thiếu chỗ */
+  }
+}
+
+/* <= small tablets / phones lớn */
+@media (max-width: $bp-sm) {
+  .form-login-container {
+    background-size: cover, 28% 100%;
+  }
+  .wrapper-form {
+    margin-right: 20px;
+  }
+  .form {
+    width: 92vw; /* chiếm ~full chiều ngang nhưng chừa mép */
+    max-width: 420px;
+    padding: 24px;
+    border-radius: 14px;
+  }
+  .form_text_logo {
+    width: 56px;
+    height: 56px;
+  }
+  .form_text_heading {
+    font-size: 24px;
+  }
+  .form_text_content {
+    font-size: 14px;
+    padding-bottom: 16px;
+  }
+  .form_wrapper_button button,
+  .form_wrapper_button .g_id_signin {
+    height: 46px !important;
+  }
+}
+
+/* <= phones */
+@media (max-width: $bp-xs) {
+  .form-login-container {
+    /* vẫn giữ flex-end; chỉ tối ưu ảnh trái rất nhỏ để không đè lên form */
+    background-size: cover, 24% 100%;
+    padding: 12px;
+  }
+  .wrapper-form {
+    margin-right: 16px;
+  }
+  .form {
+    width: 94vw;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 12px;
+  }
+  .form_wrapper_input {
+    gap: 12px;
+  }
+  .form_wrapper_checkbox {
+    padding: 12px 0 4px;
+  }
+  .form_wrapper_button {
+    gap: 10px;
+    padding-top: 12px;
+  }
+  .form_wrapper_button button,
+  .form_wrapper_button .g_id_signin {
+    height: 44px !important;
+  }
+}
+
+/* >= very wide screens (giữ bố cục, tăng nhẹ tỉ lệ ảnh trái) */
+@media (min-width: $bp-2xl) {
+  .form-login-container {
+    background-size: cover, 58% 100%;
+  }
+  .form {
+    /* giữ nguyên kích thước để không quá lớn; nếu muốn có thể max-width: 520px */
+  }
+}
+
+
+/* ---- GoogleLogin full-width, chống vỡ ở mọi cỡ màn ---- */
+.google-login-btn {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 48px !important;
+  border-radius: 8px !important;
+  display: block !important; /* tránh shrink khi là flex item */
+
+  /* Mọi con trực tiếp mà lib có thể bọc */
+  > div {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Iframe do Google render */
+  iframe {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    display: block !important;
+  }
+
+  /* Phòng trường hợp Google bơi thêm wrapper với width inline */
+  > div > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Nếu Google set inline width ở bất kỳ level nào */
+  [style*="width"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  @media (max-width: 480px) {
+    height: 44px !important;
+  }
+}
+
+/* Bảo đảm container nút căng theo form */
+.form_wrapper_button {
+  align-items: stretch; /* thay vì center để child span full width */
 }

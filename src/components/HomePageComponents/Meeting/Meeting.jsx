@@ -4,19 +4,22 @@ import Calendar from "./Calendar/Calendar";
 import DetailMeeting from "./DetailMeeting/DetailMeeting";
 import { useAuth } from "../../../context/AuthProvider";
 import OverallProject from "../OverallProject/OverallProject";
+
 const Meeting = () => {
   const { user } = useAuth();
 
   const isLecture = user?.role == "LECTURER";
   return (
     <div className="meeting__container">
-      {/* {isLecture && <OverallProject />} */}
+      {isLecture && <OverallProject />}
       <div className="meeting">
         <div className="meeting__title">
           <h2>Next Upcoming Meeting</h2>
         </div>
         <div className="meeting__content">
-          <Calendar />
+          <div className="meeting__calendar">
+            <Calendar />
+          </div>
           {isLecture ? "" : <DetailMeeting />}
         </div>
       </div>

@@ -62,15 +62,20 @@ const Head = () => {
         <div className="head-container-right-task">
           <img src={taskImg} alt="this is img task" />
           <div className="head-container-right-task-content">
-            <span className="head-container-right-task-content-title">Task</span>
-            {/* <span className="head-container-right-task-content-sum">241</span> */}
+
+            <span className="head-container-right-task-content-title">
+              Task
+            </span>
+            <span className="head-container-right-task-content-sum">241</span>
           </div>
         </div>
         <div className="head-container-right-task">
           <img src={completeImg} alt="this is img task" />
           <div className="head-container-right-task-content">
-            <span className="head-container-right-task-content-title">Complete</span>
-            {/* <span className="head-container-right-task-content-sum">241</span> */}
+            <span className="head-container-right-task-content-title">
+              Complete
+            </span>
+            <span className="head-container-right-task-content-sum">241</span>
           </div>
         </div>
       </div>

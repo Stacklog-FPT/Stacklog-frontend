@@ -63,7 +63,7 @@ const Home = () => {
     <div className="home__container">
       <Head />
       <Meeting />
-      <div className="d-flex align-items-center justify-content-around mt-4 gap-4">
+      <div className=" home__pair d-flex align-items-center justify-content-around mt-4 gap-4">
         <MyPlan
           getCurrentHour={getCurrentHour}
           getCurrentSession={getCurrentSession}

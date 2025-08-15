@@ -1,15 +1,16 @@
-$color-bg-main: #045745;
-$color-bg-light: #ffffff;
+$bp-lg: 1024px;
+$bp-md: 768px;
 
 .meeting__container {
   width: 100%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 400px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
 }
+
 .meeting {
+  min-width: 0;
   width: 100%;
   height: 598px;
   overflow-y: auto;
@@ -17,29 +18,92 @@ $color-bg-light: #ffffff;
   border-radius: 20px;
   padding-bottom: 20px;
   padding-right: 20px;
+
   &__title {
     width: 284px;
-    height: auto;
     background-color: var(--color--div-head);
     padding: 12px 24px;
     border-top-right-radius: 16px;
     border-top-left-radius: 16px;
     border-bottom-right-radius: 16px;
     margin: 8px 24px 8px 12px;
+
     h2 {
       color: var(--text--name);
       line-height: 30px;
       font-weight: bold;
       font-size: 20px;
+      margin: 0;
     }
   }
 
   &__content {
     width: 100%;
-    height: auto;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-between;
     gap: 20px;
+
+    > * {
+      min-width: 0;
+    }
+  }
+}
+
+.meeting__calendar {
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior: contain;
+  padding-bottom: 6px;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+  }
+}
+
+.meeting__calendar > * {
+  min-width: 960px;
+}
+@media (max-width: 1280px) {
+  .meeting__calendar > * {
+    min-width: 900px;
+  }
+}
+@media (max-width: 1024px) {
+  .meeting__calendar > * {
+    min-width: 820px;
+  }
+}
+@media (max-width: 768px) {
+  .meeting__calendar > * {
+    min-width: 700px;
+  }
+}
+@media (max-width: 640px) {
+  .meeting__calendar > * {
+    min-width: 640px;
+  }
+}
+
+@media (max-width: $bp-lg) {
+  .meeting__container {
+    grid-template-columns: 1fr;
+  }
+  .meeting {
+    height: auto;
+    padding-right: 12px;
+  }
+  .meeting__content {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: $bp-md) {
+  .meeting {
+    padding-bottom: 12px;
   }
 }

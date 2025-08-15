@@ -1,5 +1,6 @@
 .list__task__container {
-  width: 1112px;
+  width: 100%;
+  max-width: 100%;
   height: auto;
   padding: 12px 12px 20px 12px;
   background-color: var(--bg--nav);
@@ -9,12 +10,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     &__text {
       width: 155px;
       background-color: var(--color--div-head);
       border-top-left-radius: 16px;
       border-top-right-radius: 16px;
       border-bottom-right-radius: 16px;
+
       p {
         font-weight: 700;
         font-size: 16px;
@@ -22,6 +25,7 @@
         color: var(--text--name);
       }
     }
+
     &__feature {
       display: flex;
       align-items: center;
@@ -37,20 +41,26 @@
   .list__task__table {
     width: 100%;
     padding-top: 20px;
+
+    /* ⛔️ mặc định: KHÔNG scroll ngang */
+    overflow-x: visible;
+
     table {
       width: 100%;
+      min-width: 0; /* rất quan trọng: không ép bề rộng -> không tạo scroll */
+      table-layout: fixed;
+
       border-collapse: separate;
       border-spacing: 0;
       border-radius: 10px;
       overflow: hidden;
-      border-radius: 10px;
 
       input {
         width: 15px;
         height: 15px;
         border-radius: 10px;
         border: 1px solid #d0d5dd;
-        background-color: #ffff;
+        background-color: #fff;
         margin-top: 5px;
       }
 
@@ -63,25 +73,26 @@
           font-size: 13px;
           line-height: 21px;
           color: #000;
+          white-space: nowrap;
           &:nth-child(1) {
             width: 68px;
             text-align: center;
           }
           &:nth-child(2) {
             width: 454px;
-          }
+          } /* Task */
           &:nth-child(3) {
             width: 200px;
-          }
+          } /* Team */
           &:nth-child(4) {
             width: 93px;
-          }
+          } /* Priority */
           &:nth-child(5) {
             width: 145px;
-          }
+          } /* Note */
           &:nth-child(6) {
             width: 127px;
-          }
+          } /* Process */
         }
       }
 
@@ -96,6 +107,9 @@
           line-height: 21px;
           color: var(--text-color);
           border-bottom: 1px solid var(--bg--color--table);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
 
           &:nth-child(1) {
             width: 68px;
@@ -103,7 +117,8 @@
           }
           &:nth-child(2) {
             width: 454px;
-          }
+            white-space: normal;
+          } /* Task cho phép xuống dòng */
           &:nth-child(3) {
             width: 200px;
           }
@@ -138,15 +153,12 @@
             list-style: none;
             padding-left: 10px;
             margin: 0;
-
             li {
               position: relative;
               margin-left: -10px;
-
               &:nth-child(n + 4):not(.extra-count) {
                 display: none;
               }
-
               img {
                 width: 30px;
                 height: 30px;
@@ -164,10 +176,10 @@
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            background-color: #f0f0f0;
+            background: #f0f0f0;
             color: #333;
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 700;
             border: 2px solid #fff;
             margin-left: -10px;
             z-index: 1;
@@ -178,6 +190,7 @@
             font-weight: 400;
             font-size: 13px;
             line-height: 20px;
+            white-space: nowrap;
           }
         }
       }
@@ -190,5 +203,85 @@
       gap: 20px;
       margin-top: 20px;
     }
+  }
+}
+
+/* ====== Tablet trở xuống: thu chữ/padding + BẬT scroll ngang ====== */
+@media (max-width: 992px) {
+  .list__task__container {
+    padding: 10px;
+  }
+  .list__task__container .list__task__heading__text p {
+    font-size: 15px;
+  }
+
+  .list__task__container .list__task__table {
+    overflow-x: auto; /* bật scroll ngang */
+    -webkit-overflow-scrolling: touch;
+
+    /* scrollbar */
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #cfd8dc;
+      border-radius: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  }
+
+  .list__task__container .list__task__table table {
+    min-width: 1080px; /* đủ chỗ cho 6 cột */
+  }
+
+  .list__task__container .list__task__table thead th,
+  .list__task__container .list__task__table tbody td {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
+  .list__task__container .list__task__table tbody td p {
+    font-size: 13px;
+  }
+  .list__task__container .list__task__table tbody td ul li img {
+    width: 26px;
+    height: 26px;
+  }
+  .list__task__container .list__task__table tbody td .extra-count {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+}
+
+/* Điện thoại nhỏ */
+@media (max-width: 576px) {
+  .list__task__container .list__task__heading__text p {
+    font-size: 14px;
+  }
+  .list__task__container .list__task__table table {
+    min-width: 900px;
+  }
+  .list__task__container .list__task__table thead th {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+  .list__task__container .list__task__table tbody td {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+  .list__task__container .list__task__table tbody td p {
+    font-size: 12px;
+  }
+  .list__task__container .list__task__table tbody td ul li img {
+    width: 24px;
+    height: 24px;
+  }
+  .list__task__container .list__task__table tbody td .extra-count {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
   }
 }

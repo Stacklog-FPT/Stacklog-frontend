@@ -1,3 +1,25 @@
 .home__container {
   width: 100%;
 }
+
+.home__pair {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.home__pair > .my__plan__container,
+.home__pair > .document__container {
+  flex: 1 1 520px;
+  width: auto !important;
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .home__pair {
+    gap: 12px;
+  }
+  .home__pair > .my__plan__container,
+  .home__pair > .document__container {
+    flex: 1 1 100%;
+  }
+}

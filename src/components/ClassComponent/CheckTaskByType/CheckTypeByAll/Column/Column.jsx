@@ -10,26 +10,26 @@ import { useDroppable } from '@dnd-kit/core';
 import { useAuth } from '../../../../../context/AuthProvider';
 import ModalColumn from '../../../../ModalChange/ModalColumn/ModalColumn';
 import decodeToken from '../../../../../service/DecodeJwt';
+import { useSelector } from 'react-redux';
 
 const Column = ({
   color,
   statusId,
   status,
   tasks,
-  members,
   onShowAddTask,
   onShowComment,
   onShowAddSubTask,
   onTaskUpdated,
   handleDeleteReRender,
   isLeader,
-  isLoading = false,
 }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: `droppable-${statusId}`,
   });
 
   const { user } = useAuth();
+  const { pending } = useSelector((s) => s.status.pending);
   const [openModalColumnId, setOpenModalColumnId] = useState(null);
   const handleIconMoreClick = () => {
     setOpenModalColumnId((prev) => (prev === statusId ? null : statusId));
@@ -55,7 +55,7 @@ const Column = ({
               <img src={iconVector} alt="vector icon" />
               <span>{status}</span>
               <span className="prop-status-text-total-task">
-                {isLoading ? <Skeleton width={20} height={16} /> : tasks ? tasks.length : 0}
+                {pending ? <Skeleton width={20} height={16} /> : tasks ? tasks.length : 0}
               </span>
             </div>
           </div>
@@ -79,7 +79,7 @@ const Column = ({
           strategy={verticalListSortingStrategy}
         >
           <div className="column-task" data-status={statusId}>
-            {isLoading ? (
+            {pending ? (
               Array.from({ length: 3 }).map((_, index) => (
                 <div key={index} className="task-skeleton" style={{ marginBottom: '10px' }}>
                   <Skeleton height={80} borderRadius={8} />
@@ -88,13 +88,12 @@ const Column = ({
             ) : tasks && tasks.length > 0 ? (
               tasks.map((task) => (
                 <Task
-                  key={task?.taskId}
-                  id={task?.taskId}
-                  title={task?.taskTitle}
-                  percent={task?.percentProgress}
+                  key={task?.task_id}
+                  id={task?.task_id}
+                  title={task?.task_title}
                   members={task?.assigns}
-                  createdAt={task?.createdAt}
-                  dueDate={task?.taskDueDate}
+                  createdAt={task?.task_start_time}
+                  dueDate={task?.task_due_date}
                   onShowComment={onShowComment}
                   onShowAddSubTask={onShowAddSubTask}
                   onTaskUpdated={onTaskUpdated}

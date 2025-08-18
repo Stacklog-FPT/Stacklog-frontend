@@ -38,16 +38,16 @@ const CheckTypeByAll = () => {
   const { groupId } = useParams();
   const dispatch = useDispatch();
   const statuses = useSelector((s) => s.status.statuses);
+  const tasks = useSelector((t) => t.task.tasks);
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
   const [showAddColumn, setShowAddColumn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const { getAllTask, addTask, setSocket } = taskService();
   const { getAllStatus, getStatus } = statusApi();
   const [statusTasks, setStatusTasks] = useState([]);
-  const [tasks, setTasks] = useState([]);
   const [memberTask, setMemberTask] = useState([]);
   const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
@@ -117,7 +117,7 @@ const CheckTypeByAll = () => {
       if (isOverDroppable) {
         targetStatusId = droppableId.replace('droppable-', '');
         targetStatus = statusTasks.find(
-          (item) => item.statusTaskId === targetStatusId,
+          (item) => item.status_task_id === targetStatusId,
         )?.statusTaskName;
       } else if (isOverTask) {
         const overTask = tasks.find((task) => task.taskId === over.id);
@@ -125,7 +125,7 @@ const CheckTypeByAll = () => {
           setActiveColumn(null);
           return;
         }
-        targetStatusId = overTask?.statusTask?.statusTaskId;
+        targetStatusId = overTask?.statusTask?.status_task_id;
         targetStatus = overTask?.statusTask?.statusTaskName;
       } else {
         setActiveColumn(null);
@@ -143,17 +143,17 @@ const CheckTypeByAll = () => {
               ...task,
               statusTask: {
                 ...task.statusTask,
-                statusTaskId: targetStatusId,
+                status_task_id: targetStatusId,
                 statusTaskName: targetStatus,
               },
             }
           : task,
       );
 
-      if (activeTask.statusTask.statusTaskId !== targetStatusId) {
+      if (activeTask.statusTask.status_task_id !== targetStatusId) {
         const newTask = {
           ...activeTask,
-          statusTaskId: targetStatusId,
+          status_task_id: targetStatusId,
           listUserAssign: Array.isArray(activeTask.assigns)
             ? activeTask.assigns.map((user) => user.assignTo).filter(Boolean)
             : [],
@@ -181,21 +181,21 @@ const CheckTypeByAll = () => {
 
       if (isOverDroppable) {
         const targetTasks = tasks.filter(
-          (task) => task?.statusTask?.statusTaskId === targetStatusId && task.taskId !== activeId,
+          (task) => task?.statusTask?.status_task_id === targetStatusId && task.taskId !== activeId,
         );
         updatedTasks.splice(activeIndex, 1);
         updatedTasks.push({
           ...activeTask,
           statusTask: {
             ...activeTask.statusTask,
-            statusTaskId: targetStatusId,
+            status_task_id: targetStatusId,
             statusTaskName: targetStatus,
           },
         });
       } else if (isOverTask) {
         const overTask = tasks.find((task) => task.taskId === over.id);
         const overIndex = tasks.findIndex((task) => task.taskId === over.id);
-        if (activeTask?.statusTask?.statusTaskId === targetStatusId) {
+        if (activeTask?.statusTask?.status_task_id === targetStatusId) {
           updatedTasks.splice(activeIndex, 1);
           updatedTasks.splice(overIndex, 0, activeTask);
         } else {
@@ -204,7 +204,7 @@ const CheckTypeByAll = () => {
             ...activeTask,
             statusTask: {
               ...activeTask.statusTask,
-              statusTaskId: targetStatusId,
+              status_task_id: targetStatusId,
               statusTaskName: targetStatus,
             },
           });
@@ -270,14 +270,16 @@ const CheckTypeByAll = () => {
     (updatedColumn) => {
       if (updatedColumn?.deleted) {
         setStatusTasks((prev) =>
-          prev.filter((status) => status.statusTaskId !== updatedColumn.statusId),
+          prev.filter((status) => status.status_task_id !== updatedColumn.statusId),
         );
       } else if (updatedColumn) {
         setStatusTasks((prev) => {
-          const exists = prev.some((status) => status.statusTaskId === updatedColumn.statusTaskId);
+          const exists = prev.some(
+            (status) => status.status_task_id === updatedColumn.status_task_id,
+          );
           if (exists) {
             return prev.map((status) =>
-              status.statusTaskId === updatedColumn.statusTaskId
+              status.status_task_id === updatedColumn.status_task_id
                 ? { ...status, ...updatedColumn }
                 : status,
             );
@@ -294,8 +296,7 @@ const CheckTypeByAll = () => {
   const handleGetTasks = useCallback(
     async (groupId) => {
       try {
-        const response = await getAllTask(user.token, groupId);
-        console.log('debug: ', response);
+        const response = await getAllTask(user.token, groupId, dispatch);
         if (response.data) {
           const normalizedTasks = response.data.map((task) => ({
             ...task,
@@ -314,7 +315,7 @@ const CheckTypeByAll = () => {
         console.error(e.message);
       }
     },
-    [user.token, idGroup],
+    [user.token, groupId],
   );
 
   const handleTaskUpdated = useCallback(
@@ -363,6 +364,7 @@ const CheckTypeByAll = () => {
 
   useEffect(() => {
     getStatus(user.token, groupId, dispatch);
+    getAllTask(user.token, groupId, dispatch);
   }, [groupId]);
 
   // useEffect(() => {
@@ -418,28 +420,28 @@ const CheckTypeByAll = () => {
   //   };
   // }, [setSocket, user.token]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        await Promise.all([handleGetStatusTask(group.groupsId), handleGetTasks(group.groupsId)]);
-      } catch (e) {
-        console.error('Error fetching data:', e.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        setShowAddTask(null);
-      }
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [handleGetStatusTask, handleGetTasks, group.groupsId]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       setIsLoading(true);
+  //       await Promise.all([handleGetStatusTask(group.groupsId), handleGetTasks(group.groupsId)]);
+  //     } catch (e) {
+  //       console.error('Error fetching data:', e.message);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  //   const handleEscape = (e) => {
+  //     if (e.key === 'Escape') {
+  //       setShowAddTask(null);
+  //     }
+  //   };
+  //   document.addEventListener('keydown', handleEscape);
+  //   return () => {
+  //     document.removeEventListener('keydown', handleEscape);
+  //   };
+  // }, [handleGetStatusTask, handleGetTasks, group.groupsId]);
 
   return (
     <DndContext
@@ -459,12 +461,11 @@ const CheckTypeByAll = () => {
           <div className="task-column-container">
             {statuses.map((item) => (
               <Column
-                key={item.id}
-                statusId={item.statusTaskId}
+                key={item.status_task_id}
+                statusId={item.status_task_id}
                 status={item.statusTaskName}
                 color={item.statusTaskColor}
-                isLoading={isLoading}
-                tasks={tasks.filter((task) => task?.statusTask?.statusTaskId === item.statusTaskId)}
+                tasks={tasks.filter((task) => task?.status_task_id === item.status_task_id)}
                 members={memberTask}
                 onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}

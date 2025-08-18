@@ -13,9 +13,15 @@ const tasksSlice = createSlice({
     getTasks: (state, action) => {
       state.tasks = action.payload;
     },
+    setPending: (state, action) => {
+      state.pending = action.payload;
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
   },
 });
 
-export const { getTasks } = tasksSlice.actions;
+export const { getTasks, setPending, setError } = tasksSlice.actions;
 
 export default tasksSlice.reducer;

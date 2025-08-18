@@ -12,7 +12,7 @@ const statusApi = () => {
         },
       });
 
-      console.log(res.data);
+      console.log('debug: ', res);
       dispatch(setStatus(res.data));
       dispatch(setPending(false));
     } catch (err) {

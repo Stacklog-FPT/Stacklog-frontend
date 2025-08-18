@@ -292,25 +292,48 @@
       "id": "da2a",
       "statusTaskName": "To do",
       "statusTaskColor": "#2a8361",
-      "groupId": "1"
+      "groupId": "1",
+      "status_task_id": "123"
     },
     {
       "id": "9cf2",
       "statusTaskName": "Doing",
       "statusTaskColor": "#238553",
-      "groupId": "1"
+      "groupId": "1",
+      "status_task_id": "124"
     },
     {
       "id": "0e33",
       "statusTaskName": "UAT",
       "statusTaskColor": "#88a92d",
-      "groupId": "1"
+      "groupId": "1",
+      "status_task_id": "125"
     },
     {
       "id": "7457",
       "statusTaskName": "Done ",
       "statusTaskColor": "#f4b74e",
-      "groupId": "1"
+      "groupId": "1",
+      "status_task_id": "126"
+    }
+  ],
+  "task": [
+    {
+      "task_id": "12",
+      "created_at": "2025-08-14T04:30:00Z",
+      "created_by": "user_id_A",
+      "update_at": "2025-08-14T04:35:00Z",
+      "update_by": "user_id_A",
+      "document_id": "doc_id_456",
+      "group_id": "1",
+      "priority": "High",
+      "task_description": "Mô tả chi tiết của công việc này.",
+      "task_due_date": "2025-08-21T17:00:00Z",
+      "task_point": 10,
+      "task_title": "Tiêu đề của công việc",
+      "parent_task_id": null,
+      "status_task_id": "123",
+      "task_start_time": "2025-08-14T04:30:00Z"
     }
   ]
 }

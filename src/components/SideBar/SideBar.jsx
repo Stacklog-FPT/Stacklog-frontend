@@ -54,7 +54,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   ];
 
   useEffect(() => {
-    dispatch(fetchSemesters(user.token));
+    fetchSemesters(user.token, dispatch);
   }, []);
 
   useEffect(() => {

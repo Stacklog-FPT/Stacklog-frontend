@@ -35,6 +35,7 @@ const customCollisionDetection = (args) => {
 
 const CheckTypeByAll = () => {
   const { user } = useAuth();
+  const { groupId } = useParams();
   const dispatch = useDispatch();
   const statuses = useSelector((s) => s.status.statuses);
   const [activeColumn, setActiveColumn] = useState(null);
@@ -51,7 +52,6 @@ const CheckTypeByAll = () => {
   const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const [group, setGroup] = useState({});
-  const { groupId } = useParams();
   const [showAddSubTask, setShowAddSubTask] = useState(null);
   const decoded = decodeToken(user?.token);
   const idGroup = group.groupsId;
@@ -361,9 +361,9 @@ const CheckTypeByAll = () => {
     }
   };
 
-  // useEffect(() => {
-  //   dispatch(getStatus(user.token, groupId));
-  // }, [groupId]);
+  useEffect(() => {
+    getStatus(user.token, groupId, dispatch);
+  }, [groupId]);
 
   // useEffect(() => {
   //   const stompInstance = setSocket(user.token);
@@ -459,7 +459,7 @@ const CheckTypeByAll = () => {
           <div className="task-column-container">
             {statuses.map((item) => (
               <Column
-                key={item.statusTaskId}
+                key={item.id}
                 statusId={item.statusTaskId}
                 status={item.statusTaskName}
                 color={item.statusTaskColor}
@@ -504,6 +504,7 @@ const CheckTypeByAll = () => {
               status={showAddTask}
               onCancel={handleCloseAddStatus}
               group={group}
+              groupId={groupId}
               members={memberTask}
               onColumnUpdated={handleColumnUpdated}
             />

@@ -8,16 +8,8 @@ const ClassDropdown = ({ showClasses, setShowClasses }) => {
   const classes = useSelector((state) => state.class.classes);
   const groups = useSelector((state) => state.group.groups);
   const [selectedClassId, setSelectedClassId] = useState(null);
-  console.log(selectedClassId);
   const handleClassClick = (classId) => {
     setSelectedClassId(classId === selectedClassId ? null : classId);
-  };
-
-  const handleGroupClick = (group) => {
-    console.log(`Selected group: ${group.name} (ID: ${group.id})`);
-    // Close both dropdowns after selecting a group (optional)
-    setShowClasses(false);
-    setSelectedClassId(null);
   };
 
   return (
@@ -50,11 +42,7 @@ const ClassDropdown = ({ showClasses, setShowClasses }) => {
                     {classItem.classes_name}
                   </div>
                   {selectedClassId === classItem.classes_id && (
-                    <GroupDropDown
-                      classId={classItem.classes_id}
-                      groups={classGroups}
-                      onGroupClick={handleGroupClick}
-                    />
+                    <GroupDropDown classId={classItem.classes_id} groups={classGroups} />
                   )}
                 </li>
               );

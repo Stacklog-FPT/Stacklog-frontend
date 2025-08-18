@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import reducer from './statusSlice';
 
 const initialState = {
   pending: false,

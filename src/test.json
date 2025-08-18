@@ -2,22 +2,25 @@
   "semesters": [
     {
       "semester_id": "3b21h3vb1u",
-      "semester_name": "Fall 2025"
+      "semester_name": "Fall 2025",
+      "id": "afe4"
     },
     {
       "semesterId": "3b213vb2u",
-      "semester_name": "Sum 2025"
+      "semester_name": "Sum 2025",
+      "id": "db21"
     },
     {
       "semesterId": "3b213vb3u",
-      "semester_name": "Spring 2025"
+      "semester_name": "Spring 2025",
+      "id": "88fc"
     },
     {
       "semesterId": "3b213vb4u",
-      "semester_name": "Spring 2025"
+      "semester_name": "Spring 2025",
+      "id": "9bdf"
     }
   ],
-
   "classes": [
     {
       "classes_id": "1",
@@ -80,7 +83,7 @@
           "created_by": "user_id",
           "update_at": "timestamp",
           "update_by": "user_id",
-          "groups_avg_score": 92.0,
+          "groups_avg_score": 92,
           "groups_descriptions": "Mô_tả_nhóm_khác",
           "groups_leader_id": "user_id_của_nhóm_trưởng_khác",
           "groups_max_member": 8,
@@ -104,7 +107,8 @@
             }
           ]
         }
-      ]
+      ],
+      "id": "650d"
     },
     {
       "classes_id": "2",
@@ -167,7 +171,7 @@
           "created_by": "user_id",
           "update_at": "timestamp",
           "update_by": "user_id",
-          "groups_avg_score": 92.0,
+          "groups_avg_score": 92,
           "groups_descriptions": "Mô_tả_nhóm_khác",
           "groups_leader_id": "user_id_của_nhóm_trưởng_khác",
           "groups_max_member": 8,
@@ -191,7 +195,8 @@
             }
           ]
         }
-      ]
+      ],
+      "id": "6508"
     },
     {
       "classes_id": "3",
@@ -254,7 +259,7 @@
           "created_by": "user_id",
           "update_at": "timestamp",
           "update_by": "user_id",
-          "groups_avg_score": 92.0,
+          "groups_avg_score": 92,
           "groups_descriptions": "Mô_tả_nhóm_khác",
           "groups_leader_id": "user_id_của_nhóm_trưởng_khác",
           "groups_max_member": 8,
@@ -278,7 +283,34 @@
             }
           ]
         }
-      ]
+      ],
+      "id": "0ae9"
+    }
+  ],
+  "status": [
+    {
+      "id": "da2a",
+      "statusTaskName": "To do",
+      "statusTaskColor": "#2a8361",
+      "groupId": "1"
+    },
+    {
+      "id": "9cf2",
+      "statusTaskName": "Doing",
+      "statusTaskColor": "#238553",
+      "groupId": "1"
+    },
+    {
+      "id": "0e33",
+      "statusTaskName": "UAT",
+      "statusTaskColor": "#88a92d",
+      "groupId": "1"
+    },
+    {
+      "id": "7457",
+      "statusTaskName": "Done ",
+      "statusTaskColor": "#f4b74e",
+      "groupId": "1"
     }
   ]
 }

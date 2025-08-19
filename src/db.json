@@ -1070,179 +1070,42 @@
       "createdAt": "2025-08-12",
       "isRead": false,
       "_id": 0.903088132806474
-    }
-  ],
-  "semester": [
-    {
-      "_id": "65n423jb65b3jb523",
-      "semesterName": "FA25",
-      "semesterClass": [
-        {
-          "_id": "5b235b2b52b5i3b5i",
-          "name": "SWP391c",
-          "groups": [
-            {
-              "_id": "b5n4j235b43b254b3i2b5",
-              "groupName": "Group 1",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b6",
-              "groupName": "Group 2",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b7",
-              "groupName": "Group 3",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b8",
-              "groupName": "Group 4",
-              "groupsStudent": []
-            }
-          ]
-        },
-        {
-          "_id": "5b235b2b52b5i3b6i",
-          "name": "SDN302c",
-          "groups": [
-            {
-              "_id": "b5n4j235b43b254b3i2b1",
-              "groupName": "Group 1",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b2",
-              "groupName": "Group 2",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b3",
-              "groupName": "Group 3",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b4",
-              "groupName": "Group 4",
-              "groupsStudent": []
-            }
-          ]
-        },
-        {
-          "_id": "5b235b2b52b5i3b7i",
-          "name": "MLN111",
-          "groups": [
-            {
-              "_id": "b5n4j235b43b254b3i2b9",
-              "groupName": "Group 1",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b10",
-              "groupName": "Group 2",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b11",
-              "groupName": "Group 3",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b12",
-              "groupName": "Group 4",
-              "groupsStudent": []
-            }
-          ]
-        },
-        {
-          "_id": "5b235b2b52b5i3b8i",
-          "name": "MLN122",
-          "groups": [
-            {
-              "_id": "b5n4j235b43b254b3i2b13",
-              "groupName": "Group 1",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b14",
-              "groupName": "Group 2",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b15",
-              "groupName": "Group 3",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b16",
-              "groupName": "Group 4",
-              "groupsStudent": []
-            }
-          ]
-        },
-        {
-          "_id": "5b235b2b52b5i3b8i1",
-          "name": "WDP301",
-          "groups": [
-            {
-              "_id": "b5n4j235b43b254b3i2b17",
-              "groupName": "Group 1",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b18",
-              "groupName": "Group 2",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b19",
-              "groupName": "Group 3",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b20",
-              "groupName": "Group 4",
-              "groupsStudent": []
-            }
-          ]
-        }
-      ],
-      "id": "5f9a"
-    }
-  ],
-
-  "status": [
-    {
-      "statusTaskId": "j2kb1kb42",
-      "statusTaskName": "ToDo",
-      "groupId": "b5n4j235b43b254b3i2b5",
-      "statusTaskColor": "red"
-    },
-
-    {
-      "statusTaskId": "j2kb1kb42",
-      "statusTaskName": "Doing",
-      "groupId": "b5n4j235b43b254b3i2b5",
-      "statusTaskColor": "blue"
     },
     {
-      "statusTaskId": "j2kb1kb42",
-      "statusTaskName": "UAT",
-      "groupId": "b5n4j235b43b254b3i2b5",
-      "statusTaskColor": "yellow"
+      "id": "90ca",
+      "title": "Announce add task Design Model User by hoaintt40",
+      "author": {
+        "_id": 0.6438539690287297,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.35193460341863325
     },
     {
-      "statusTaskId": "j2kb1kb42",
-      "statusTaskName": "ToDo",
-      "groupId": "b5n4j235b43b254b3i2b6",
-      "statusTaskColor": "green"
+      "id": "b3a9",
+      "title": "Announce add task Design common button submit by hoaintt40",
+      "author": {
+        "_id": 0.7305439527748588,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.4187623726198302
     },
     {
-      "statusTaskId": "j2kb1kb42",
-      "statusTaskName": "Doing",
-      "groupId": "b5n4j235b43b254b3i2b6",
-      "statusTaskColor": "black"
+      "id": "24a1",
+      "title": "Announce add task Thiết kế DB notification by hoaintt40",
+      "author": {
+        "_id": 0.15351156089389528,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.46618407439879905
     }
   ]
 }

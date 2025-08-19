@@ -28,11 +28,8 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const semesters = useSelector(selectSemesters);
-  const pending = useSelector(selectPending);
   const currentSemesterId = useSelector(selectCurrentSemesterId);
-  const error = useSelector(selectError);
   const [showClasses, setShowClasses] = useState(false);
-
   const toggleSidebar = () => setIsOpen(!isOpen);
 
   const handleChatClick = () => {

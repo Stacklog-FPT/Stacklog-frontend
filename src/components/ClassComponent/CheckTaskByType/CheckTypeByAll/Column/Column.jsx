@@ -21,13 +21,11 @@ const Column = ({
   onShowComment,
   onShowAddSubTask,
   onTaskUpdated,
-  handleDeleteReRender,
   isLeader,
 }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: `droppable-${statusId}`,
   });
-
   const { user } = useAuth();
   const { pending } = useSelector((s) => s.status.pending);
   const [openModalColumnId, setOpenModalColumnId] = useState(null);
@@ -88,16 +86,15 @@ const Column = ({
             ) : tasks && tasks.length > 0 ? (
               tasks.map((task) => (
                 <Task
-                  key={task?.task_id}
-                  id={task?.task_id}
-                  title={task?.task_title}
+                  key={task?.taskId}
+                  id={task?.taskId}
+                  title={task?.taskTitle}
                   members={task?.assigns}
-                  createdAt={task?.task_start_time}
-                  dueDate={task?.task_due_date}
+                  createdAt={task?.taskStartTime}
+                  dueDate={task?.taskDueDate}
                   onShowComment={onShowComment}
                   onShowAddSubTask={onShowAddSubTask}
                   onTaskUpdated={onTaskUpdated}
-                  handleDeleteReRender={handleDeleteReRender}
                   task={task}
                 />
               ))

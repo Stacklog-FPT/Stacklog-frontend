@@ -13,10 +13,11 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from 
 import { arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { FaTrashAlt, FaPlus } from 'react-icons/fa';
-import taskService from '../../../../../service/TaskService';
 import { useAuth } from '../../../../../context/AuthProvider';
 import SubTask from './SubTask/SubTask';
 import ReviewService from '../../../../../service/ReviewService';
+import { useDispatch } from 'react-redux';
+import { deleteTaskApi } from '../../../../../service/TaskService';
 
 const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -25,8 +26,8 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
   });
   const { user } = useAuth();
   const [showSubTask, setShowSubTask] = useState(false);
-  const { deleteTask, addTask } = taskService();
   const { getAllReview } = ReviewService();
+  const dispatch = useDispatch();
   const [commentLength, setCommentLength] = useState(0);
   const [subtasks, setSubtasks] = useState(props.task?.subtasks || []);
   const [isEditing, setIsEditing] = useState(false);
@@ -147,7 +148,6 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
   };
 
   const handleUpdateTask = async (task) => {
-    let flag = true;
     try {
       const now = new Date();
       const currentTime = now.toTimeString().split(' ')[0];
@@ -195,8 +195,6 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
   };
 
   const handleDeleteTask = async (taskId, task) => {
-    let flag = false;
-
     const result = await Swal.fire({
       title: 'Are you sure to delete this task?',
       text: "This action can't completed!",
@@ -210,15 +208,14 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
 
     if (result.isConfirmed) {
       try {
-        const response = await deleteTask(user.token, taskId);
+        const response = await deleteTaskApi(user.token, task.id, dispatch);
         if (response.data === 'Delete success') {
           flag = true;
           setShowSubTask(false);
-          handleDeleteReRender(flag);
 
           await axios.post('http://localhost:3000/notifications', {
             id: Math.random().toString(16).slice(2, 6),
-            title: `Delete task ${task.taskTitle} by ${user.username}`,
+            title: `Delete task ${task.task_title} by ${user.username}`,
             author: {
               _id: Math.random(),
               name: user.username || 'Unknown',
@@ -240,10 +237,7 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
     }
   };
 
-  const percent = calculateRemainingPercent(
-    props?.task?.task_start_time,
-    props?.task?.task_due_date,
-  );
+  const percent = calculateRemainingPercent(props?.task?.taskStartTime, props?.task?.taskDueDate);
   const progressColor = getColorByPercent(percent);
 
   return (
@@ -339,9 +333,9 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
               </>
             ) : (
               <>
-                <span>{formatDate(props?.task?.task_start_time) || <Skeleton />}</span>
+                <span>{formatDate(props?.task?.taskStartTime) || <Skeleton />}</span>
                 <img src={iconDeadLine} alt="icon" />
-                <span>{formatDate(props?.task?.task_due_date) || <Skeleton />}</span>
+                <span>{formatDate(props?.task?.taskDueDate) || <Skeleton />}</span>
               </>
             )}
           </div>
@@ -377,7 +371,7 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
               <div className="task-content-contact-left-element">
                 <i
                   className="fa-solid fa-comment"
-                  onClick={() => props.onShowComment(props.task?.task_id)}
+                  onClick={() => props.onShowComment(props.task?.taskId)}
                 ></i>
                 <span>{commentLength}</span>
               </div>

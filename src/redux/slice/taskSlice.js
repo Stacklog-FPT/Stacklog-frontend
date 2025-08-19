@@ -13,6 +13,22 @@ const tasksSlice = createSlice({
     getTasks: (state, action) => {
       state.tasks = action.payload;
     },
+    setTasks: (state, action) => {
+      state.tasks = action.payload;
+    },
+    addTasks: (state, action) => {
+      state.tasks.push(action.payload);
+    },
+    updateTasks: (state, action) => {
+      const { id, ...changes } = action.payload;
+      const task = state.tasks.find((t) => t.id === id);
+      if (task) {
+        Object.assign(task, changes);
+      }
+    },
+    deleteTask: (state, action) => {
+      state.tasks = state.tasks.filter((t) => t.id !== action.payload);
+    },
     setPending: (state, action) => {
       state.pending = action.payload;
     },
@@ -22,6 +38,7 @@ const tasksSlice = createSlice({
   },
 });
 
-export const { getTasks, setPending, setError } = tasksSlice.actions;
+export const { setTasks, getTasks, setPending, setError, deleteTask, addTasks, updateTasks } =
+  tasksSlice.actions;
 
 export default tasksSlice.reducer;

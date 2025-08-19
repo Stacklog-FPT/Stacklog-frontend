@@ -9,6 +9,7 @@ import iconDeadLine from '../../../../../../assets/icon/task/iconDeadLine.png';
 import addButton from '../../../../../../assets/icon/avatar_add_button.png';
 import './SubTask.scss';
 import { useAuth } from '../../../../../../context/AuthProvider';
+import { deleteTaskApi } from '../../../../../../service/TaskService';
 
 const SubTask = ({
   id,
@@ -30,7 +31,6 @@ const SubTask = ({
     opacity: isDragging ? 0.6 : 1,
   };
 
-  const { deleteTask } = taskService();
   const { user } = useAuth();
 
   const visibleMembers = members?.slice(0, 3);
@@ -89,7 +89,7 @@ const SubTask = ({
 
     if (result.isConfirmed) {
       try {
-        const response = await deleteTask(user.token, taskId);
+        const response = await deleteTaskApi(user.token, taskId);
         console.log('API response:', response);
         if (response.data === 'Delete success') {
           handleDeleteReRender(true);

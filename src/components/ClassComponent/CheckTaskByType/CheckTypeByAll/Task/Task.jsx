@@ -29,13 +29,11 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
   const { getAllReview } = ReviewService();
   const dispatch = useDispatch();
   const [commentLength, setCommentLength] = useState(0);
-  const [subtasks, setSubtasks] = useState(props.task?.subtasks || []);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(props.task?.taskTitle || '');
   const [editedStartTime, setEditedStartTime] = useState(props.task?.taskStartTime || '');
   const [editedDueDate, setEditedDueDate] = useState(props.task?.taskDueDate || '');
   const sensors = useSensors(useSensor(PointerSensor));
-
   const handleSubtaskDragEnd = (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -381,7 +379,7 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
                 onClick={handleShowSubTask}
               >
                 <img src={iconDontKnow} alt="this is icon" />
-                <span>{props.task?.subtasks?.length || 0}</span>
+                <span>{props.task?.subTasks?.length || 0}</span>
               </div>
             </div>
             <div className="task-content-contact-right"></div>
@@ -390,18 +388,20 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
       </div>
       <div className="task-content-subtask">
         {showSubTask &&
-          (subtasks?.length > 0 ? (
+          (props.task?.subTasks?.length > 0 ? (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={handleSubtaskDragEnd}
             >
               <SortableContext
-                items={subtasks?.map((subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`)}
+                items={props.task?.subTasks?.map(
+                  (subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`,
+                )}
                 strategy={verticalListSortingStrategy}
               >
                 <div className="subtask-list">
-                  {subtasks?.map((item) => (
+                  {props.task?.subTasks?.map((item) => (
                     <SubTask
                       key={`${props.task.taskId}-subtask-${item.taskId}`}
                       id={`${props.task.taskId}-subtask-${item.taskId}`}
@@ -414,7 +414,6 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
                       startTime={item.taskStartTime}
                       members={item.assigns}
                       taskId={props.task.taskId}
-                      subtask={item}
                       reviews={item.reviews}
                       handleDeleteReRender={handleDeleteReRender}
                     />

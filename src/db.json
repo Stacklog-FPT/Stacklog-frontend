@@ -1106,6 +1106,42 @@
       "createdAt": "2025-08-19",
       "isRead": false,
       "_id": 0.46618407439879905
+    },
+    {
+      "id": "7849",
+      "title": "Thông báo môn 321",
+      "author": {
+        "_id": 0.3471401115200916,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.3761176172973656
+    },
+    {
+      "id": "716a",
+      "title": "Announce add task Create user slice for manager state user by hoaintt40",
+      "author": {
+        "_id": 0.13895072479487314,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.9823695018502513
+    },
+    {
+      "id": "a2d5",
+      "title": "Thông báo môn Research Redux",
+      "author": {
+        "_id": 0.4887967431820992,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.2320657840982735
     }
   ]
 }

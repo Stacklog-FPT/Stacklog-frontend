@@ -6,7 +6,7 @@ import iconPriority from '../../../assets/task/icon-priority.png';
 import iconSubTask from '../../../assets/task/icon-subtask.png';
 import trackTime from '../../../assets/task/icon-track-time.png';
 import { useAuth } from '../../../context/AuthProvider';
-import { addTask } from '../../../service/TaskService';
+import { addTask, updateTaskApi } from '../../../service/TaskService';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import decodeToken from '../../../service/DecodeJwt';
@@ -18,8 +18,8 @@ const AddSubTask = ({ isClose, task, members }) => {
   const dispatch = useDispatch();
   const notify = () => toast.success('Add task is successfully');
   const notifyFailure = () => toast.error('Add task is failure');
-  const visibleMembers = task.assigns.slice(0, 3);
-  const extraCount = task.assigns.length - visibleMembers.length;
+  const visibleMembers = task?.assigns?.slice(0, 3);
+  const extraCount = task?.assigns?.length - visibleMembers?.length;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
@@ -136,21 +136,24 @@ const AddSubTask = ({ isClose, task, members }) => {
         ? `${subTaskData.taskDueDate}T${currentTime}`
         : '';
       const payload = {
-        taskId: Math.random(),
-        taskTitle: subTaskData.taskTitle,
-        taskDescription: subTaskData.taskDescription,
-        groupId: subTaskData.groupId,
-        documentId: subTaskData.documentId,
-        taskPoint: 5,
-        taskStartTime: formattedStartTime,
-        taskDueDate: formattedDueDate,
-        priority: subTaskData.priority,
-        statusTaskId: task.statusTask.statusTaskId,
-        listUserAssign: subTaskData.listUserAssign,
-        parentTaskId: task.taskId,
+        ...task,
+        subTasks: [
+          ...(task.subTasks || []),
+          {
+            taskId: Math.random(),
+            taskTitle: subTaskData.taskTitle,
+            taskDescription: subTaskData.taskDescription,
+            priority: subTaskData.priority,
+            statusTaskId: task.statusTaskId,
+            taskStartTime: formattedStartTime,
+            taskDueDate: formattedDueDate,
+            listUserAssign: subTaskData.listUserAssign,
+            parentTaskId: task.taskId,
+          },
+        ],
       };
 
-      const response = await addTask(payload, user.token);
+      const response = await updateTaskApi(task.id, payload, user.token, dispatch);
       if (response.data) {
         notify();
         await axios.post('http://localhost:3000/notifications', {

@@ -47,9 +47,6 @@ export const getAllTask = async (token, groupId, dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    console.log('debug task service: ', response);
-
     dispatch(getTasks(response.data));
     dispatch(setPending(false));
   } catch (e) {
@@ -97,10 +94,10 @@ export const deleteTaskApi = async (token, taskId, dispatch) => {
   }
 };
 
-export const updateTaskApi = async (token, taskId, taskData, dispatch) => {
+export const updateTaskApi = async (taskId, taskData, token, dispatch) => {
   try {
     if (!token) dispatch(setError('The token is missing!'));
-    const response = await axios.post(`http://localhost:3001/task`, taskData, {
+    const response = await axios.put(`http://localhost:3001/task/${taskId}`, taskData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -109,7 +106,7 @@ export const updateTaskApi = async (token, taskId, taskData, dispatch) => {
     dispatch(setPending(false));
     return response;
   } catch (e) {
-    dispatch(setError(err.message));
+    dispatch(setError(e.message));
     dispatch(setPending(false));
     throw new Error(e.message);
   }

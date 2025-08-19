@@ -153,7 +153,6 @@ const ClassService = () => {
 };
 
 export const getClasses = async (semesterId, token, dispatch) => {
-  console.log(semesterId);
   try {
     dispatch(getClassesStart());
     const response = await axios(`http://localhost:3001/classes?semester_id=${semesterId}`, {

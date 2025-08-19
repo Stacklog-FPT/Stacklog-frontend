@@ -1,10 +1,9 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import './CheckTypeByAll.scss';
 import Column from './Column/Column';
 import Task from './Task/Task';
 import {
   DndContext,
-  rectIntersection,
   closestCorners,
   DragOverlay,
   defaultDropAnimationSideEffects,
@@ -14,70 +13,51 @@ import AddTask from '../../../Task/AddTask/AddTask';
 import CommentTask from '../../../Task/CommentTask/CommentTask';
 import ClassAndMember from '../../ClassAndMember/ClassAndMember';
 import { useAuth } from '../../../../context/AuthProvider';
-import taskService from '../../../../service/TaskService';
-import statusApi from '../../../../service/ColumnService';
 import AddColumn from '../../../Column/AddColumn/AddColumn';
-import axios from 'axios';
 import AddSubTask from '../../../Task/AddSubTask/AddSubTask';
-import decodeToken from '../../../../service/DecodeJwt';
 import { useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
-
-const customCollisionDetection = (args) => {
-  const droppableCollisions = rectIntersection(args) || [];
-  if (droppableCollisions.length > 0) {
-    return droppableCollisions;
-  }
-  const sortableCollisions = closestCorners(args) || [];
-  return sortableCollisions.length > 0 ? sortableCollisions : null;
-};
+import { useDispatch, useSelector } from 'react-redux';
+import { setTasks } from '../../../../redux/slice/taskSlice';
+import { getAllTask } from '../../../../service/TaskService';
+import { getStatus } from '../../../../service/ColumnService';
 
 const CheckTypeByAll = () => {
   const { user } = useAuth();
+  const { groupId } = useParams();
   const dispatch = useDispatch();
   const statuses = useSelector((s) => s.status.statuses);
+  const tasks = useSelector((t) => t.task.tasks);
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
   const [showAddColumn, setShowAddColumn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const { getAllTask, addTask, setSocket } = taskService();
-  const { getAllStatus, getStatus } = statusApi();
-  const [statusTasks, setStatusTasks] = useState([]);
-  const [tasks, setTasks] = useState([]);
   const [memberTask, setMemberTask] = useState([]);
-  const [stompClient, setStompClient] = useState(null);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const [group, setGroup] = useState({});
-  const { groupId } = useParams();
   const [showAddSubTask, setShowAddSubTask] = useState(null);
-  const decoded = decodeToken(user?.token);
-  const idGroup = group.groupsId;
-  const isLeader = () => {
-    if (group.groupsLeaderId === decoded.id) {
-      return true;
-    }
 
-    return false;
-  };
+  const isLeader = () => group.groupsLeaderId === user?.id;
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5,
+        distance: 10,
       },
     }),
   );
 
   const handleDragStart = (event) => {
     const { active } = event;
+    console.log('Drag start:', { activeId: active.id, tasks });
     const activeTask = tasks.find((task) => task.taskId === active.id);
+    console.log('Active task:', activeTask);
     setActiveTask(activeTask);
   };
 
   const handleDragOver = (event) => {
     const { over } = event;
+    console.log('Drag over:', { overId: over?.id });
     if (over) {
       const overId = over.id;
       if (overId.startsWith('droppable-')) {
@@ -90,8 +70,9 @@ const CheckTypeByAll = () => {
   };
 
   const handleDragEnd = useCallback(
-    async (event) => {
+    (event) => {
       const { active, over } = event;
+      console.log('Drag end:', { activeId: active.id, overId: over?.id, statuses });
       setActiveTask(null);
       if (!over) {
         setActiveColumn(null);
@@ -100,6 +81,7 @@ const CheckTypeByAll = () => {
       const activeId = active.id;
       const activeTask = tasks.find((task) => task.taskId === activeId);
       if (!activeTask) {
+        console.log('No active task found for ID:', activeId);
         setActiveColumn(null);
         return;
       }
@@ -116,110 +98,65 @@ const CheckTypeByAll = () => {
 
       if (isOverDroppable) {
         targetStatusId = droppableId.replace('droppable-', '');
-        targetStatus = statusTasks.find(
+        targetStatus = statuses.find(
           (item) => item.statusTaskId === targetStatusId,
         )?.statusTaskName;
       } else if (isOverTask) {
         const overTask = tasks.find((task) => task.taskId === over.id);
         if (!overTask) {
+          console.log('No over task found for ID:', over.id);
           setActiveColumn(null);
           return;
         }
-        targetStatusId = overTask?.statusTask?.statusTaskId;
-        targetStatus = overTask?.statusTask?.statusTaskName;
+        targetStatusId = overTask.statusTaskId;
+        targetStatus = statuses.find(
+          (item) => item.statusTaskId === targetStatusId,
+        )?.statusTaskName;
       } else {
         setActiveColumn(null);
         return;
       }
 
+      console.log('Target:', { targetStatusId, targetStatus });
+
       if (!targetStatusId || !targetStatus) {
+        console.log('Invalid target status:', { targetStatusId, targetStatus });
         setActiveColumn(null);
         return;
       }
 
-      updatedTasks = updatedTasks.map((task) =>
-        task.taskId === activeId
-          ? {
-              ...task,
-              statusTask: {
-                ...task.statusTask,
-                statusTaskId: targetStatusId,
-                statusTaskName: targetStatus,
-              },
-            }
-          : task,
-      );
-
-      if (activeTask.statusTask.statusTaskId !== targetStatusId) {
-        const newTask = {
-          ...activeTask,
-          statusTaskId: targetStatusId,
-          listUserAssign: Array.isArray(activeTask.assigns)
-            ? activeTask.assigns.map((user) => user.assignTo).filter(Boolean)
-            : [],
-        };
-        try {
-          const response = await addTask(newTask, user?.token);
-          await axios.post('http://localhost:3000/notifications', {
-            id: Math.random().toString(16).slice(2, 6),
-            title: `Announcement for ${newTask.taskTitle} change to status`,
-            author: {
-              _id: Math.random(),
-              name: user.username || 'Unknown',
-              avatar:
-                user.avatar ||
-                'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
-            },
-            createdAt: new Date().toISOString().split('T')[0],
-            isRead: false,
-            _id: Math.random(),
-          });
-        } catch (error) {
-          console.error('Failed to update task or send notification:', error);
-        }
-      }
-
       if (isOverDroppable) {
-        const targetTasks = tasks.filter(
-          (task) => task?.statusTask?.statusTaskId === targetStatusId && task.taskId !== activeId,
-        );
-        updatedTasks.splice(activeIndex, 1);
+        updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
         updatedTasks.push({
           ...activeTask,
-          statusTask: {
-            ...activeTask.statusTask,
-            statusTaskId: targetStatusId,
-            statusTaskName: targetStatus,
-          },
+          statusTaskId: targetStatusId,
+          statusTaskName: targetStatus,
         });
       } else if (isOverTask) {
         const overTask = tasks.find((task) => task.taskId === over.id);
         const overIndex = tasks.findIndex((task) => task.taskId === over.id);
-        if (activeTask?.statusTask?.statusTaskId === targetStatusId) {
+        if (activeTask.statusTaskId === targetStatusId) {
           updatedTasks.splice(activeIndex, 1);
           updatedTasks.splice(overIndex, 0, activeTask);
         } else {
-          updatedTasks.splice(activeIndex, 1);
+          updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
           updatedTasks.splice(overIndex, 0, {
             ...activeTask,
-            statusTask: {
-              ...activeTask.statusTask,
-              statusTaskId: targetStatusId,
-              statusTaskName: targetStatus,
-            },
+            statusTaskId: targetStatusId,
+            statusTaskName: targetStatus,
           });
         }
       }
 
-      setTasks(updatedTasks);
+      console.log('Updated tasks:', updatedTasks);
+      dispatch(setTasks(updatedTasks));
       setActiveColumn(null);
     },
-    [tasks, activeColumn, statusTasks, addTask, user],
+    [tasks, statuses, dispatch],
   );
 
   const handleFilterByPriority = () => {
     if (isSortedByPriority) {
-      handleGetTasks();
       setIsSortedByPriority(false);
     } else {
       const priorityOrder = { HIGH: 1, MEDIUM: 2, LOW: 3 };
@@ -228,10 +165,8 @@ const CheckTypeByAll = () => {
         const priorityB = priorityOrder[b.priority] || 4;
         return priorityA - priorityB;
       });
-      if (sortedTasks) {
-        setTasks(sortedTasks);
-        setIsSortedByPriority(true);
-      }
+      dispatch(setTasks(sortedTasks));
+      setIsSortedByPriority(true);
     }
   };
 
@@ -251,200 +186,95 @@ const CheckTypeByAll = () => {
     setShowAddColumn(false);
   };
 
-  const handleGetStatusTask = useCallback(
-    async (groupId) => {
-      try {
-        setStatusTasks([]);
-        const response = await getAllStatus(user.token, groupId);
-        if (response) {
-          setStatusTasks(response.data);
-        }
-      } catch (e) {
-        console.error(e.message);
-      }
-    },
-    [user.token],
-  );
-
   const handleColumnUpdated = useCallback(
     (updatedColumn) => {
       if (updatedColumn?.deleted) {
-        setStatusTasks((prev) =>
-          prev.filter((status) => status.statusTaskId !== updatedColumn.statusId),
+        dispatch(
+          setTasks(tasks.filter((task) => task.statusTaskId !== updatedColumn.statusTaskId)),
         );
       } else if (updatedColumn) {
-        setStatusTasks((prev) => {
-          const exists = prev.some((status) => status.statusTaskId === updatedColumn.statusTaskId);
-          if (exists) {
-            return prev.map((status) =>
-              status.statusTaskId === updatedColumn.statusTaskId
-                ? { ...status, ...updatedColumn }
-                : status,
-            );
-          }
-          return [...prev, updatedColumn];
-        });
-      } else {
-        handleGetStatusTask(idGroup);
+        dispatch(setStatus([...statuses, updatedColumn]));
       }
     },
-    [idGroup, handleGetStatusTask],
-  );
-
-  const handleGetTasks = useCallback(
-    async (groupId) => {
-      try {
-        const response = await getAllTask(user.token, groupId);
-        console.log('debug: ', response);
-        if (response.data) {
-          const normalizedTasks = response.data.map((task) => ({
-            ...task,
-            subtasks: task.subtasks || [],
-            statusTask: {
-              ...task.statusTask,
-              statusTaskName: task.statusTask.statusTaskName
-                .toLowerCase()
-                .replace(/\b\w/g, (c) => c.toUpperCase()),
-            },
-          }));
-          console.log('normalizedTasks: ', normalizedTasks);
-          setTasks(normalizedTasks);
-        }
-      } catch (e) {
-        console.error(e.message);
-      }
-    },
-    [user.token, idGroup],
+    [dispatch, tasks, statuses],
   );
 
   const handleTaskUpdated = useCallback(
     (updatedTask) => {
       if (updatedTask?.deleted) {
-        setTasks((prevTasks) => prevTasks.filter((task) => task.taskId !== updatedTask.taskId));
+        dispatch(setTasks(tasks.filter((task) => task.taskId !== updatedTask.taskId)));
       } else if (updatedTask) {
-        setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.taskId === updatedTask.taskId
-              ? {
-                  ...task,
-                  ...updatedTask,
-                  statusTask: {
-                    ...task.statusTask,
-                    statusTaskName: task.statusTask.statusTaskName
-                      .toLowerCase()
-                      .replace(/\b\w/g, (c) => c.toUpperCase()),
-                  },
-                }
-              : task,
+        dispatch(
+          setTasks(
+            tasks.map((task) =>
+              task.taskId === updatedTask.taskId ? { ...task, ...updatedTask } : task,
+            ),
           ),
         );
-      } else {
-        handleGetTasks(idGroup);
       }
     },
-    [idGroup, handleGetTasks],
+    [dispatch, tasks],
   );
 
-  const handleChooseTask = async (task) => {
+  const handleChooseTask = (task) => {
     setShowAddSubTask(task);
   };
 
-  const handleCloseAddSubtask = async () => {
+  const handleCloseAddSubtask = () => {
     setShowAddSubTask(null);
   };
+  // Comment các đoạn gọi API
+  // const handleGetStatusTask = useCallback(
+  //   async (groupId) => {
+  //     try {
+  //       setStatusTasks([]);
+  //       const response = await getAllStatus(user.token, groupId);
+  //       if (response) {
+  //         setStatusTasks(response.data);
+  //       }
+  //     } catch (e) {
+  //       console.error('Error fetching statuses:', e.message);
+  //     }
+  //   },
+  //   [user.token],
+  // );
 
-  const handleDeleteReRender = (flag) => {
-    if (flag) {
-      if (showCommentTask) setShowCommentTask(null);
-      if (showAddSubTask) setShowAddSubTask(null);
-      handleGetTasks(idGroup);
-    }
-  };
+  // const handleGetTasks = useCallback(
+  //   async (groupId) => {
+  //     try {
+  //       const response = await getAllTask(user.token, groupId, dispatch);
+  //       if (response.data) {
+  //         const normalizedTasks = response.data.map((task) => ({
+  //           ...task,
+  //           subtasks: task.subtasks || [],
+  //           statusTaskName: statuses.find(
+  //             (status) => status.statusTaskId === task.statusTaskId
+  //           )?.statusTaskName || task.statusTaskName,
+  //         }));
+  //         console.log('normalizedTasks:', normalizedTasks);
+  //         dispatch(setTasks(normalizedTasks));
+  //       }
+  //     } catch (e) {
+  //       console.error('Error fetching tasks:', e.message);
+  //     }
+  //   },
+  //   [user.token, groupId, dispatch, statuses],
+  // );
 
   // useEffect(() => {
-  //   dispatch(getStatus(user.token, groupId));
-  // }, [groupId]);
-
-  // useEffect(() => {
-  //   const stompInstance = setSocket(user.token);
-  //   setStompClient(stompInstance);
-  //   stompInstance.onmessage = (message) => {
-  //     const data = JSON.parse(message.body);
-  //     if (data.type === "taskUpdate") {
-  //       setTasks((prevTasks) => {
-  //         const taskExists = prevTasks.some(
-  //           (task) => task.taskId === data.taskId
-  //         );
-  //         if (taskExists) {
-  //           return prevTasks.map((task) =>
-  //             task.taskId === data.taskId
-  //               ? {
-  //                   ...task,
-  //                   ...data,
-  //                   statusTask: {
-  //                     ...task.statusTask,
-  //                     statusTaskName: data.statusTask.statusTaskName
-  //                       .toLowerCase()
-  //                       .replace(/\b\w/g, (c) => c.toUpperCase()),
-  //                   },
-  //                 }
-  //               : task
-  //           );
-  //         } else {
-  //           return [
-  //             ...prevTasks,
-  //             {
-  //               ...data,
-  //               statusTask: {
-  //                 ...data.statusTask,
-  //                 statusTaskName: data.statusTask.statusTaskName
-  //                   .toLowerCase()
-  //                   .replace(/\b\w/g, (c) => c.toUpperCase()),
-  //               },
-  //             },
-  //           ];
-  //         }
-  //       });
-  //     } else if (data.type === "taskDelete") {
-  //       setTasks((prevTasks) =>
-  //         prevTasks.filter((task) => task.taskId !== data.taskId)
-  //       );
-  //     }
-  //   };
-  //   return () => {
-  //     if (stompInstance && stompInstance.connected) {
-  //       stompInstance.disconnect();
-  //     }
-  //   };
-  // }, [setSocket, user.token]);
+  //   handleGetStatusTask(groupId);
+  //   handleGetTasks(groupId);
+  // }, [groupId, handleGetStatusTask, handleGetTasks]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        await Promise.all([handleGetStatusTask(group.groupsId), handleGetTasks(group.groupsId)]);
-      } catch (e) {
-        console.error('Error fetching data:', e.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        setShowAddTask(null);
-      }
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [handleGetStatusTask, handleGetTasks, group.groupsId]);
+    getStatus(user.token, groupId, dispatch);
+    getAllTask(user.token, groupId, dispatch);
+  }, [groupId]);
 
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={customCollisionDetection}
+      collisionDetection={closestCorners}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
@@ -463,14 +293,12 @@ const CheckTypeByAll = () => {
                 statusId={item.statusTaskId}
                 status={item.statusTaskName}
                 color={item.statusTaskColor}
-                isLoading={isLoading}
-                tasks={tasks.filter((task) => task?.statusTask?.statusTaskId === item.statusTaskId)}
+                tasks={tasks.filter((task) => task?.statusTaskId === item.statusTaskId)}
                 members={memberTask}
                 onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}
                 onShowAddSubTask={handleChooseTask}
                 onColumnUpdated={handleColumnUpdated}
-                handleDeleteReRender={handleDeleteReRender}
                 isLeader={isLeader}
               />
             ))}
@@ -486,24 +314,18 @@ const CheckTypeByAll = () => {
                 <AddTask
                   status={showAddTask}
                   onCancel={() => setShowAddTask(null)}
-                  group={group}
+                  group={groupId}
                   members={memberTask}
-                  onTaskAdded={() => handleGetTasks(group.groupsId)}
                 />
               )
             : null}
-          {showCommentTask && (
-            <CommentTask
-              task={showCommentTask}
-              isClose={handleCloseComment}
-              handleDeleteReRender={handleDeleteReRender}
-            />
-          )}
+          {showCommentTask && <CommentTask task={showCommentTask} isClose={handleCloseComment} />}
           {showAddColumn && (
             <AddColumn
               status={showAddTask}
               onCancel={handleCloseAddStatus}
               group={group}
+              groupId={groupId}
               members={memberTask}
               onColumnUpdated={handleColumnUpdated}
             />
@@ -513,7 +335,7 @@ const CheckTypeByAll = () => {
               isClose={handleCloseAddSubtask}
               task={showAddSubTask}
               members={memberTask}
-              onSubTaskAdded={() => handleGetTasks(group.groupsId)}
+              // onSubTaskAdded={() => handleGetTasks(groupId)}
             />
           )}
         </div>
@@ -536,7 +358,8 @@ const CheckTypeByAll = () => {
             id={activeTask.taskId}
             title={activeTask.taskTitle}
             members={memberTask}
-            percent={activeTask.percentProgress}
+            createdAt={activeTask.taskStartTime}
+            dueDate={activeTask.taskDueDate}
             onShowComment={handleShowComment}
             onShowAddSubTask={handleChooseTask}
             onTaskUpdated={handleTaskUpdated}

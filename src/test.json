@@ -2,22 +2,25 @@
   "semesters": [
     {
       "semester_id": "3b21h3vb1u",
-      "semester_name": "Fall 2025"
+      "semester_name": "Fall 2025",
+      "id": "afe4"
     },
     {
       "semesterId": "3b213vb2u",
-      "semester_name": "Sum 2025"
+      "semester_name": "Sum 2025",
+      "id": "db21"
     },
     {
       "semesterId": "3b213vb3u",
-      "semester_name": "Spring 2025"
+      "semester_name": "Spring 2025",
+      "id": "88fc"
     },
     {
       "semesterId": "3b213vb4u",
-      "semester_name": "Spring 2025"
+      "semester_name": "Spring 2025",
+      "id": "9bdf"
     }
   ],
-
   "classes": [
     {
       "classes_id": "1",
@@ -80,7 +83,7 @@
           "created_by": "user_id",
           "update_at": "timestamp",
           "update_by": "user_id",
-          "groups_avg_score": 92.0,
+          "groups_avg_score": 92,
           "groups_descriptions": "Mô_tả_nhóm_khác",
           "groups_leader_id": "user_id_của_nhóm_trưởng_khác",
           "groups_max_member": 8,
@@ -104,7 +107,8 @@
             }
           ]
         }
-      ]
+      ],
+      "id": "650d"
     },
     {
       "classes_id": "2",
@@ -167,7 +171,7 @@
           "created_by": "user_id",
           "update_at": "timestamp",
           "update_by": "user_id",
-          "groups_avg_score": 92.0,
+          "groups_avg_score": 92,
           "groups_descriptions": "Mô_tả_nhóm_khác",
           "groups_leader_id": "user_id_của_nhóm_trưởng_khác",
           "groups_max_member": 8,
@@ -191,7 +195,8 @@
             }
           ]
         }
-      ]
+      ],
+      "id": "6508"
     },
     {
       "classes_id": "3",
@@ -254,7 +259,7 @@
           "created_by": "user_id",
           "update_at": "timestamp",
           "update_by": "user_id",
-          "groups_avg_score": 92.0,
+          "groups_avg_score": 92,
           "groups_descriptions": "Mô_tả_nhóm_khác",
           "groups_leader_id": "user_id_của_nhóm_trưởng_khác",
           "groups_max_member": 8,
@@ -278,7 +283,119 @@
             }
           ]
         }
-      ]
+      ],
+      "id": "0ae9"
+    }
+  ],
+  "status": [
+    {
+      "id": "da2a",
+      "statusTaskName": "To do",
+      "statusTaskColor": "#2a8361",
+      "groupId": "1",
+      "statusTaskId": "123"
+    },
+    {
+      "id": "9cf2",
+      "statusTaskName": "Doing",
+      "statusTaskColor": "#238553",
+      "groupId": "1",
+      "statusTaskId": "124"
+    },
+    {
+      "id": "0e33",
+      "statusTaskName": "UAT",
+      "statusTaskColor": "#88a92d",
+      "groupId": "1",
+      "statusTaskId": "125"
+    },
+    {
+      "id": "7457",
+      "statusTaskName": "Done ",
+      "statusTaskColor": "#f4b74e",
+      "groupId": "1",
+      "statusTaskId": "126"
+    },
+    {
+      "id": "83e3",
+      "statusTaskName": "Up Coming",
+      "statusTaskColor": "#9bc936",
+      "groupId": "2"
+    }
+  ],
+  "task": [
+    {
+      "taskId": "123",
+      "taskTitle": "Thiết kế API cho task",
+      "taskDescription": "API lành mạnh và healthy",
+      "groupId": "1",
+      "documentId": "",
+      "taskPoint": 0,
+      "taskDueDate": "2025-08-24T08:30:00Z",
+      "taskStartTime": "2025-08-19T08:30:00Z",
+      "priority": "HIGH",
+      "createdBy": "",
+      "createdAt": "",
+      "updateBy": "",
+      "updateAt": "",
+      "statusTaskId": "123",
+      "review": ["reviewid", "reviewid"],
+      "parentTask": null,
+      "assignTo": [],
+      "subTasks": []
+    },
+    {
+      "id": "12e2",
+      "taskId": "0.7272000231475456",
+      "group_id": "1",
+      "taskTitle": "Design Model User",
+      "taskDescription": "Design both ReactJs and Server (Java/ Nodejs)",
+      "statusTaskId": "124",
+      "documentId": "",
+      "taskPoint": 0,
+      "taskParentId": 0,
+      "taskStartTime": "2025-08-19T09:16:02",
+      "taskDueDate": "2025-08-20T09:16:02",
+      "createdBy": "hoaintt40",
+      "updatedBy": "",
+      "priority": "LOW",
+      "assignTo": [],
+      "subTasks": []
+    },
+    {
+      "id": "a538",
+      "taskId": "0.02872576146702488",
+      "group_id": "1",
+      "taskTitle": "Design common button submit",
+      "taskDescription": "Common button can scale and usable in all components",
+      "statusTaskId": "123",
+      "documentId": "",
+      "taskPoint": 0,
+      "taskParentId": 0,
+      "taskStartTime": "2025-08-19T09:22:31",
+      "taskDueDate": "2025-08-20T09:22:31",
+      "createdBy": "hoaintt40",
+      "updatedBy": "",
+      "priority": "MEDIUM",
+      "assignTo": [],
+      "subTasks": []
+    },
+    {
+      "id": "6377",
+      "taskId": "0.3012876117344242",
+      "group_id": "2",
+      "taskTitle": "Thiết kế DB notification",
+      "taskDescription": "Design DB notification healthy và balance",
+      "documentId": "",
+      "taskPoint": 0,
+      "taskParentId": 0,
+      "taskStartTime": "2025-08-19T09:29:59",
+      "taskDueDate": "2025-08-20T09:29:59",
+      "createdBy": "hoaintt40",
+      "updatedBy": "",
+      "priority": "HIGH",
+      "assignTo": [],
+      "subTasks": []
     }
   ]
 }

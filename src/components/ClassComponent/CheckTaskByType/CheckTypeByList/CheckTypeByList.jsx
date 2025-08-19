@@ -1,26 +1,20 @@
-import React, { useEffect, useState, useCallback } from "react";
-import "./CheckTypeByList.scss";
-import Column from "./Column/Column";
-import Task from "./Task/Task";
-import ClassAndMember from "../../ClassAndMember/ClassAndMember";
-import {
-  DndContext,
-  rectIntersection,
-  closestCorners,
-  DragOverlay,
-} from "@dnd-kit/core";
-import { useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
-import AddTask from "../../../Task/AddTask/AddTask";
-import CommentTask from "../../../Task/CommentTask/CommentTask";
-import taskService from "../../../../service/TaskService";
-import { useAuth } from "../../../../context/AuthProvider";
-import statusApi from "../../../../service/ColumnService";
-import GroupService from "../../../../service/GroupService";
-import AddColumn from "../../../Column/AddColumn/AddColumn";
-import axios from "axios";
-import ReviewService from "../../../../service/ReviewService";
-import AddSubTask from "../../../Task/AddSubTask/AddSubTask";
-import decodeToken from "../../../../service/DecodeJwt";
+import React, { useEffect, useState, useCallback } from 'react';
+import './CheckTypeByList.scss';
+import Column from './Column/Column';
+import Task from './Task/Task';
+import ClassAndMember from '../../ClassAndMember/ClassAndMember';
+import { DndContext, rectIntersection, closestCorners, DragOverlay } from '@dnd-kit/core';
+import { useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
+import AddTask from '../../../Task/AddTask/AddTask';
+import CommentTask from '../../../Task/CommentTask/CommentTask';
+import { useAuth } from '../../../../context/AuthProvider';
+import statusApi from '../../../../service/ColumnService';
+import GroupService from '../../../../service/GroupService';
+import AddColumn from '../../../Column/AddColumn/AddColumn';
+import axios from 'axios';
+import ReviewService from '../../../../service/ReviewService';
+import AddSubTask from '../../../Task/AddSubTask/AddSubTask';
+import decodeToken from '../../../../service/DecodeJwt';
 
 const customCollisionDetection = (args) => {
   const droppableCollisions = rectIntersection(args) || [];
@@ -59,7 +53,7 @@ const CheckTypeByList = () => {
       activationConstraint: {
         distance: 8,
       },
-    })
+    }),
   );
 
   const isLeader = () => {
@@ -80,8 +74,8 @@ const CheckTypeByList = () => {
     const { over } = event;
     if (over) {
       const overId = over.id;
-      if (overId.startsWith("droppable-")) {
-        const targetStatus = overId.replace("droppable-", "");
+      if (overId.startsWith('droppable-')) {
+        const targetStatus = overId.replace('droppable-', '');
         setActiveColumn(targetStatus);
       }
     } else {
@@ -108,16 +102,16 @@ const CheckTypeByList = () => {
       const activeIndex = tasks.findIndex((task) => task.taskId === activeId);
 
       const droppableId = over.id;
-      const isOverDroppable = droppableId.startsWith("droppable-");
+      const isOverDroppable = droppableId.startsWith('droppable-');
       const isOverTask = tasks.some((task) => task.taskId === over.id);
 
       let targetStatusId;
       let targetStatus;
 
       if (isOverDroppable) {
-        targetStatusId = droppableId.replace("droppable-", "");
+        targetStatusId = droppableId.replace('droppable-', '');
         targetStatus = statusTasks.find(
-          (item) => item.statusTaskId === targetStatusId
+          (item) => item.statusTaskId === targetStatusId,
         )?.statusTaskName;
       } else if (isOverTask) {
         const overTask = tasks.find((task) => task.taskId === over.id);
@@ -147,7 +141,7 @@ const CheckTypeByList = () => {
                 statusTaskName: targetStatus,
               },
             }
-          : task
+          : task,
       );
 
       if (activeTask.statusTask.statusTaskId !== targetStatusId) {
@@ -161,30 +155,28 @@ const CheckTypeByList = () => {
         console.log(newTask);
         try {
           const response = await addTask(newTask, user?.token);
-          await axios.post("http://localhost:3000/notifications", {
+          await axios.post('http://localhost:3000/notifications', {
             id: Math.random().toString(16).slice(2, 6),
             title: `Thông báo môn ${newTask.taskTitle}`,
             author: {
               _id: Math.random(),
-              name: user.username || "Unknown",
+              name: user.username || 'Unknown',
               avatar:
                 user.avatar ||
-                "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+                'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
             },
-            createdAt: new Date().toISOString().split("T")[0],
+            createdAt: new Date().toISOString().split('T')[0],
             isRead: false,
             _id: Math.random(),
           });
         } catch (error) {
-          console.error("Failed to update task or send notification:", error);
+          console.error('Failed to update task or send notification:', error);
         }
       }
 
       if (isOverDroppable) {
         const targetTasks = tasks.filter(
-          (task) =>
-            task?.statusTask?.statusTaskId === targetStatusId &&
-            task.taskId !== activeId
+          (task) => task?.statusTask?.statusTaskId === targetStatusId && task.taskId !== activeId,
         );
         updatedTasks.splice(activeIndex, 1);
         updatedTasks.push({
@@ -217,7 +209,7 @@ const CheckTypeByList = () => {
       setTasks(updatedTasks);
       setActiveColumn(null);
     },
-    [tasks, activeColumn, statusTasks, addTask, user]
+    [tasks, activeColumn, statusTasks, addTask, user],
   );
 
   const handleFilterByPriority = () => {
@@ -267,20 +259,20 @@ const CheckTypeByList = () => {
         if (response && response.data) {
           setStatusTasks(response.data);
         } else {
-          console.warn("No status data returned");
+          console.warn('No status data returned');
         }
       } catch (e) {
-        console.error("Error fetching status:", e);
+        console.error('Error fetching status:', e);
       }
     },
-    [user.token]
+    [user.token],
   );
 
   const handleGetTasks = useCallback(
     async (groupId) => {
       try {
         const response = await getAllTask(user.token, groupId);
-        console.log("Tasks API response:", response);
+        console.log('Tasks API response:', response);
         if (response && response.data) {
           const normalizedTasks = response.data.map((task) => ({
             ...task,
@@ -293,13 +285,13 @@ const CheckTypeByList = () => {
           }));
           setTasks(normalizedTasks);
         } else {
-          console.warn("No tasks data returned");
+          console.warn('No tasks data returned');
         }
       } catch (e) {
-        console.error("Error fetching tasks:", e);
+        console.error('Error fetching tasks:', e);
       }
     },
-    [user.token]
+    [user.token],
   );
 
   const handleCloseAddSubtask = async () => {
@@ -311,11 +303,9 @@ const CheckTypeByList = () => {
     setStompClient(stompInstance);
     stompInstance.onmessage = (message) => {
       const data = JSON.parse(message.body);
-      if (data.type === "taskUpdate") {
+      if (data.type === 'taskUpdate') {
         setTasks((prevTasks) => {
-          const taskExists = prevTasks.some(
-            (task) => task.taskId === data.taskId
-          );
+          const taskExists = prevTasks.some((task) => task.taskId === data.taskId);
           if (taskExists) {
             return prevTasks.map((task) =>
               task.taskId === data.taskId
@@ -329,7 +319,7 @@ const CheckTypeByList = () => {
                         .replace(/\b\w/g, (c) => c.toUpperCase()),
                     },
                   }
-                : task
+                : task,
             );
           } else {
             return [
@@ -346,10 +336,8 @@ const CheckTypeByList = () => {
             ];
           }
         });
-      } else if (data.type === "taskDelete") {
-        setTasks((prevTasks) =>
-          prevTasks.filter((task) => task.taskId !== data.taskId)
-        );
+      } else if (data.type === 'taskDelete') {
+        setTasks((prevTasks) => prevTasks.filter((task) => task.taskId !== data.taskId));
       }
     };
     return () => {
@@ -363,25 +351,22 @@ const CheckTypeByList = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        await Promise.all([
-          handleGetStatusTask(group.groupsId),
-          handleGetTasks(group.groupsId),
-        ]);
+        await Promise.all([handleGetStatusTask(group.groupsId), handleGetTasks(group.groupsId)]);
       } catch (e) {
-        console.error("Error fetching data:", e.message);
+        console.error('Error fetching data:', e.message);
       } finally {
         setIsLoading(false);
       }
     };
     fetchData();
     const handleEscape = (e) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         setShowAddTask(null);
       }
     };
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener('keydown', handleEscape);
     return () => {
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, [handleGetStatusTask, handleGetTasks, group.groupsId]);
 
@@ -407,26 +392,21 @@ const CheckTypeByList = () => {
               status={item.statusTaskName}
               color={item.statusTaskColor}
               isLoading={isLoading}
-              tasks={tasks.filter(
-                (task) => task?.statusTask?.statusTaskId === item.statusTaskId
-              )}
+              tasks={tasks.filter((task) => task?.statusTask?.statusTaskId === item.statusTaskId)}
               members={members}
               onShowAddTask={() => handleShowAddTask(item)}
               onShowComment={handleShowComment}
               onShowAddSubTask={handleChooseTask}
             />
           ))}
-          {user.role === "LECTURER" || isLeader() ? (
-            <button
-              className="btn_add_status"
-              onClick={() => setShowAddColumn(!showAddColumn)}
-            >
+          {user.role === 'LECTURER' || isLeader() ? (
+            <button className="btn_add_status" onClick={() => setShowAddColumn(!showAddColumn)}>
               <i className="fa-solid fa-plus"></i>
               <span>Add Status</span>
             </button>
           ) : null}
         </div>
-        {user.role === "LECTURER" || isLeader()
+        {user.role === 'LECTURER' || isLeader()
           ? showAddTask && (
               <AddTask
                 status={showAddTask}
@@ -436,13 +416,9 @@ const CheckTypeByList = () => {
               />
             )
           : null}
-        {showCommentTask && (
-          <CommentTask task={showCommentTask} isClose={handleCloseComment} />
-        )}
+        {showCommentTask && <CommentTask task={showCommentTask} isClose={handleCloseComment} />}
         {showAddColumn && <AddColumn isClose={handleCloseAddStatus} />}
-        {showAddSubTask && (
-          <AddSubTask isClose={handleCloseAddSubtask} task={showAddSubTask} />
-        )}
+        {showAddSubTask && <AddSubTask isClose={handleCloseAddSubtask} task={showAddSubTask} />}
       </div>
       <DragOverlay dropAnimation={null}>
         {activeTask ? (

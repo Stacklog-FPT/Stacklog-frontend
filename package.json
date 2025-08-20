@@ -1,5 +1,5 @@
 {
-  "name": "trello-application-fe",
+  "name": "stacklog",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -68,5 +68,9 @@
     "redux-logger": "^3.0.6",
     "tailwindcss": "^4.1.3",
     "vite": "^6.2.0"
-  }
+  },
+  "main": "index.js",
+  "repository": "https://github.com/Stacklog-FPT/Stacklog-frontend.git",
+  "author": "Thanhtc003 <162295561+Thanhtc003@users.noreply.github.com>",
+  "license": "MIT"
 }

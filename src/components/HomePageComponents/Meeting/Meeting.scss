@@ -4,9 +4,16 @@ $bp-md: 768px;
 .meeting__container {
   width: 100%;
   display: grid;
-  grid-template-columns: 400px minmax(0, 1fr);
   gap: 16px;
   align-items: start;
+
+  &.with-project {
+    grid-template-columns: 400px minmax(0, 1fr);
+  }
+
+  &.no-project {
+    grid-template-columns: 1fr;
+  }
 }
 
 .meeting {
@@ -89,6 +96,7 @@ $bp-md: 768px;
   }
 }
 
+// responsive
 @media (max-width: $bp-lg) {
   .meeting__container {
     grid-template-columns: 1fr;
@@ -99,11 +107,49 @@ $bp-md: 768px;
   }
   .meeting__content {
     flex-direction: column;
+
+    .meeting__calendar,
+    .detail__meeting__container {
+      flex: 1 1 100%;
+    }
   }
 }
 
 @media (max-width: $bp-md) {
   .meeting {
     padding-bottom: 12px;
+  }
+}
+
+@media (max-width: $bp-lg) {
+  .meeting__container {
+    grid-template-columns: 1fr !important;
+    /* Đảm bảo các con chiếm 100% */
+    & > .overall__project,
+    & > .meeting {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+  }
+  .meeting {
+    height: auto;
+    padding-right: 12px;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  .overall__project {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin-bottom: 12px;
+  }
+  .meeting__content {
+    flex-direction: column;
+    .meeting__calendar,
+    .detail__meeting__container {
+      flex: 1 1 100%;
+    }
   }
 }

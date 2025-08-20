@@ -4,50 +4,48 @@ $color-text-heading: #8a8a8a;
 $color-border: #c8cad4;
 $color-hover: #045745;
 
-$hover-05: rgba($color-hover, 0.05);
-$hover-10: rgba($color-hover, 0.1);
-$hover-15: rgba($color-hover, 0.15);
 .semester-dropdown {
   position: relative;
   font-family: inherit;
+  width: 100%;
+  max-width: 350px;
+  margin-bottom: 18px;
 
   .sd-trigger {
     width: 100%;
-    height: 40px;
-    padding: 0 14px;
-    border: 1px solid $color-border;
-    background: var(--bg--nav);
-    color: $color-text;
-    border-radius: 10px;
+    // min-width: 120px;
+    height: 44px;
+    padding: 0 16px;
+    border: 1.5px solid #b0b7c3;
+    background: #fff;
+    color: #222;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 10px;
     cursor: pointer;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    font-size: 16px;
+    font-weight: 600;
+    transition: border-color 0.18s, box-shadow 0.18s;
 
-    &:hover {
-      border-color: $color-hover;
-      box-shadow: 0 0 0 3px $hover-10;
-    }
-
+    &:hover,
     &.open {
-      border-color: $color-hover;
-      box-shadow: 0 0 0 4px $hover-10;
+      border-color: #045745;
+      box-shadow: 0 2px 8px rgba(4, 87, 69, 0.08);
+      background: #f7faf9;
     }
-
     .sd-label {
-      font-size: 14px;
-      font-weight: 500;
+      flex: 1;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-size: 15px;
     }
-
     .sd-caret {
-      font-size: 12px;
-      color: $color-text;
-      transition: transform 0.2s ease;
+      font-size: 16px;
+      color: #045745;
+      transition: transform 0.2s;
       &.rotated {
         transform: rotate(180deg);
       }
@@ -56,66 +54,83 @@ $hover-15: rgba($color-hover, 0.15);
 
   .sd-menu {
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + 8px);
     left: 0;
-    right: 0;
-    max-height: 240px;
+    min-width: 220px;
+    max-width: 350px;
+    width: 100%;
+    max-height: 260px;
     overflow-y: auto;
-    border: 1px solid $color-border;
-    background: var(--bg--nav);
-    border-radius: 12px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-    padding: 6px;
-    z-index: 20;
+    border: 1.5px solid #b0b7c3;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(4, 87, 69, 0.13);
+    padding: 6px 0;
+    z-index: 1002;
   }
 
   .sd-empty {
-    padding: 12px;
-    font-size: 14px;
-    color: $color-text-heading;
+    padding: 14px;
+    font-size: 15px;
+    color: #888;
     text-align: center;
+    white-space: pre-line;
   }
 
   .sd-item {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px 18px;
     border: none;
     background: transparent;
-    border-radius: 10px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     gap: 10px;
     justify-content: space-between;
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
+    font-size: 15px;
+    transition: background 0.15s, color 0.15s;
 
-    &:hover {
-      background: $hover-05;
-    }
-
+    &:hover,
     &.active {
-      background: var(--bg--primary-color);
-
-      .sd-item-text {
-        color: #fff;
-      }
-
+      background: #045745;
+      color: #fff;
+      .sd-item-text,
       .sd-check {
         color: #fff;
       }
     }
-
     .sd-item-text {
-      font-size: 14px;
-      color: $color-text;
+      flex: 1;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-
     .sd-check {
+      font-size: 15px;
+      color: #045745;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .semester-dropdown {
+    max-width: 100%;
+    .sd-trigger {
+      font-size: 15px;
+      height: 40px;
+      padding: 0 10px;
+    }
+    .sd-menu {
       font-size: 14px;
-      color: $color-hover;
+      min-width: 90vw;
+      max-width: 98vw;
+      width: 90vw;
+      left: 0;
+    }
+    .sd-item {
+      padding: 10px 12px;
+      font-size: 14px;
     }
   }
 }

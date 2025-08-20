@@ -8,7 +8,7 @@ const normalizeSemesters = (arr = []) =>
     }))
     .filter((x) => Boolean(x.id));
 
-const SemesterDropdown = ({ semesters = [], value, onChange, placeholder = 'Select semester' }) => {
+const SemesterDropdown = ({ semesters = [], value, onChange, placeholder = 'Select semester', isSidebarOpen }) => {
   const items = useMemo(() => normalizeSemesters(semesters), [semesters]);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -32,6 +32,11 @@ const SemesterDropdown = ({ semesters = [], value, onChange, placeholder = 'Sele
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, []);
 
+  // Đóng menu khi sidebar đóng
+  useEffect(() => {
+    if (!isSidebarOpen) setOpen(false);
+  }, [isSidebarOpen]);
+
   return (
     <div className="semester-dropdown" ref={ref}>
       <button className={`sd-trigger ${open ? 'open' : ''}`} onClick={toggle} type="button">
@@ -39,7 +44,7 @@ const SemesterDropdown = ({ semesters = [], value, onChange, placeholder = 'Sele
         <i className={`fa-solid fa-chevron-down sd-caret ${open ? 'rotated' : ''}`} />
       </button>
 
-      {open && (
+      {open && isSidebarOpen && (
         <div className="sd-menu">
           {items.length === 0 ? (
             <div className="sd-empty">No semesters</div>

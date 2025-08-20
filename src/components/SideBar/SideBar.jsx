@@ -30,7 +30,16 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   const semesters = useSelector(selectSemesters);
   const currentSemesterId = useSelector(selectCurrentSemesterId);
   const [showClasses, setShowClasses] = useState(false);
-  const toggleSidebar = () => setIsOpen(!isOpen);
+
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 600 : false);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 600);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const toggleSidebar = () => setIsOpen((prev) => !prev);
+
 
   const handleChatClick = () => {
     toggleGroupChat();
@@ -51,87 +60,108 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   ];
 
   useEffect(() => {
-    fetchSemesters(user.token, dispatch);
-  }, []);
+    if (user?.token) dispatch(fetchSemesters(user.token));
+  }, [dispatch, user?.token]);
+
 
   useEffect(() => {
-    getClasses(currentSemesterId, user.token, dispatch);
-  }, [currentSemesterId]);
+    if (currentSemesterId && user?.token) getClasses(currentSemesterId, user.token, dispatch);
+  }, [currentSemesterId, user?.token, dispatch]);
+
+  const handleOverlayClick = () => setIsOpen(false);
 
   return (
-    <div className={`navbar-container ${isOpen ? 'open' : 'close'}`}>
-      <div className="wrapper_navbar">
-        <div className={`wrapper_navbar_header ${isOpen ? 'isOpen' : 'isClose'}`}>
-          <Link to="/">
-            {mode === 'light' ? (
-              <img
-                src={isOpen ? logo : logoClose}
-                className="wrapper_navbar_header_logo"
-                alt="Logo web"
-              />
-            ) : (
-              <img src={logoDark} className="wrapper_navbar_header_logo" alt="Logo web" />
-            )}
-          </Link>
-          <button className="wrapper_navbar_toggle" onClick={toggleSidebar}>
-            <i className={isOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'}></i>
-          </button>
-        </div>
+    <>
+      {isMobile && !isOpen && (
+        <button
+          className="mobile-sidebar-toggle"
+          onClick={() => setIsOpen(true)}
+          aria-label="Open sidebar"
+        >
+          <i className="fa-solid fa-bars" />
+        </button>
+      )}
 
-        <div className="semester__picker">
-          <label className="semester__label">Semester</label>
-          <SemesterDropdown
-            semesters={semesters}
-            value={currentSemesterId ?? null}
-            onChange={(id) => dispatch(selectSemester(id))}
-            placeholder="Select semester"
-          />
-        </div>
+      {isMobile && isOpen && (
+        <div className="sidebar-overlay" onClick={handleOverlayClick}></div>
+      )}
 
-        {/* DASHBOARD */}
-        <nav className="navbar-dashboard">
-          <h2 className="navbar-dashboard-heading">DashBoard</h2>
-          <ul>
-            {dashBoardItems.map((item, index) => (
-              <li key={index} className={item.name === 'Class' ? 'class-item' : ''}>
-                {item.name === 'Class' ? (
-                  <ClassDropdown showClasses={showClasses} setShowClasses={setShowClasses} />
-                ) : (
-                  <NavLink
-                    to={item.path}
-                    className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                    onClick={item.onClick}
-                  >
-                    <div className="nav-icon-container">
-                      {item.icon && <i className={item.icon}></i>}
-                      <span className="nav-icon-container-text">{item.name}</span>
-                    </div>
-                  </NavLink>
-                )}
+      <div
+        className={`navbar-container ${isOpen ? 'open' : 'close'}`}
+        onClick={isMobile ? (e) => e.stopPropagation() : undefined}
+      >
+        <div className="wrapper_navbar">
+          <div className={`wrapper_navbar_header ${isOpen ? 'isOpen' : 'isClose'}`}>
+            <Link to="/">
+              {mode === 'light' ? (
+                <img
+                  src={isOpen ? logo : logoClose}
+                  className="wrapper_navbar_header_logo"
+                  alt="Logo web"
+                />
+              ) : (
+                <img src={logoDark} className="wrapper_navbar_header_logo" alt="Logo web" />
+              )}
+            </Link>
+            <button className="wrapper_navbar_toggle" onClick={toggleSidebar}>
+              <i className={isOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'}></i>
+            </button>
+          </div>
+
+          <div className="semester__picker">
+            <label className="semester__label">Semester</label>
+            <SemesterDropdown
+              semesters={semesters}
+              value={currentSemesterId ?? null}
+              onChange={(id) => dispatch(selectSemester(id))}
+              placeholder="Select semester"
+              isSidebarOpen={isOpen}
+            />
+          </div>
+
+          <nav className="navbar-dashboard">
+            <h2 className="navbar-dashboard-heading">DashBoard</h2>
+            <ul>
+              {dashBoardItems.map((item, index) => (
+                <li key={index} className={item.name === 'Class' ? 'class-item' : ''}>
+                  {item.name === 'Class' ? (
+                    <ClassDropdown showClasses={showClasses} setShowClasses={setShowClasses} isSidebarOpen={isOpen} />
+                  ) : (
+                    <NavLink
+                      to={item.path}
+                      className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                      {...(item.onClick ? { onClick: item.onClick } : {})}
+                    >
+                      <div className="nav-icon-container">
+                        {item.icon && <i className={item.icon}></i>}
+                        <span className="nav-icon-container-text">{item.name}</span>
+                      </div>
+                    </NavLink>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <nav className="navbar-support">
+            <h2 className="navbar-support-heading">Support</h2>
+            <ul>
+              <li>
+                <NavLink
+                  to="/settings"
+                  className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                >
+                  <div className="nav-icon-container">
+                    <i className="fa-solid fa-gear"></i>
+                    <span className="nav-icon-container-text">Settings</span>
+                  </div>
+                </NavLink>
               </li>
-            ))}
-          </ul>
-        </nav>
-
-        {/* SUPPORT */}
-        <nav className="navbar-support">
-          <h2 className="navbar-support-heading">Support</h2>
-          <ul>
-            <li>
-              <NavLink
-                to="/settings"
-                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-              >
-                <div className="nav-icon-container">
-                  <i className="fa-solid fa-gear"></i>
-                  <span className="nav-icon-container-text">Settings</span>
-                </div>
-              </NavLink>
-            </li>
-          </ul>
-        </nav>
+            </ul>
+          </nav>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

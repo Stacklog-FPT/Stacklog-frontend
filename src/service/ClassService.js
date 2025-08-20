@@ -156,7 +156,7 @@ export const getClasses = async (semesterId, token, dispatch) => {
   try {
     dispatch(getClassesStart());
     const response = await axios(`http://localhost:3001/classes?semester_id=${semesterId}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      // headers: { Authorization: `Bearer ${token}` },
     });
 
     const data = response.data;

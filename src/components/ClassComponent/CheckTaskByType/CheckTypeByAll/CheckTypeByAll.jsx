@@ -18,7 +18,7 @@ import AddSubTask from '../../../Task/AddSubTask/AddSubTask';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTasks } from '../../../../redux/slice/taskSlice';
-import { getAllTask } from '../../../../service/TaskService';
+import { getAllTask, updateTaskApi } from '../../../../service/TaskService';
 import { getStatus } from '../../../../service/ColumnService';
 
 const CheckTypeByAll = () => {
@@ -27,6 +27,7 @@ const CheckTypeByAll = () => {
   const dispatch = useDispatch();
   const statuses = useSelector((s) => s.status.statuses);
   const tasks = useSelector((t) => t.task.tasks);
+  const groups = useSelector((g) => g.group.groups);
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
@@ -39,6 +40,10 @@ const CheckTypeByAll = () => {
 
   const isLeader = () => group.groupsLeaderId === user?.id;
 
+  const updateTaskStatus = async (taskId, taskData) => {
+    await updateTaskApi(taskId, taskData, user.token, dispatch);
+  };
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -49,15 +54,12 @@ const CheckTypeByAll = () => {
 
   const handleDragStart = (event) => {
     const { active } = event;
-    console.log('Drag start:', { activeId: active.id, tasks });
     const activeTask = tasks.find((task) => task.taskId === active.id);
-    console.log('Active task:', activeTask);
     setActiveTask(activeTask);
   };
 
   const handleDragOver = (event) => {
     const { over } = event;
-    console.log('Drag over:', { overId: over?.id });
     if (over) {
       const overId = over.id;
       if (overId.startsWith('droppable-')) {
@@ -72,7 +74,6 @@ const CheckTypeByAll = () => {
   const handleDragEnd = useCallback(
     (event) => {
       const { active, over } = event;
-      console.log('Drag end:', { activeId: active.id, overId: over?.id, statuses });
       setActiveTask(null);
       if (!over) {
         setActiveColumn(null);
@@ -86,7 +87,7 @@ const CheckTypeByAll = () => {
         return;
       }
 
-      let updatedTasks = [...tasks];
+      // let updatedTasks = [...tasks];
       const activeIndex = tasks.findIndex((task) => task.taskId === activeId);
 
       const droppableId = over.id;
@@ -117,39 +118,41 @@ const CheckTypeByAll = () => {
         return;
       }
 
-      console.log('Target:', { targetStatusId, targetStatus });
-
       if (!targetStatusId || !targetStatus) {
         console.log('Invalid target status:', { targetStatusId, targetStatus });
         setActiveColumn(null);
         return;
       }
-
       if (isOverDroppable) {
-        updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
-        updatedTasks.push({
+        const taskData = {
           ...activeTask,
           statusTaskId: targetStatusId,
-          statusTaskName: targetStatus,
-        });
+        };
+        updateTaskStatus(activeTask.id, taskData);
+        // updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
+        // updatedTasks.push({
+        //   ...activeTask,
+        //   statusTaskId: targetStatusId,
+        //   statusTaskName: targetStatus,
+        // });
       } else if (isOverTask) {
-        const overTask = tasks.find((task) => task.taskId === over.id);
-        const overIndex = tasks.findIndex((task) => task.taskId === over.id);
-        if (activeTask.statusTaskId === targetStatusId) {
-          updatedTasks.splice(activeIndex, 1);
-          updatedTasks.splice(overIndex, 0, activeTask);
-        } else {
-          updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
-          updatedTasks.splice(overIndex, 0, {
-            ...activeTask,
-            statusTaskId: targetStatusId,
-            statusTaskName: targetStatus,
-          });
-        }
       }
-
-      console.log('Updated tasks:', updatedTasks);
-      dispatch(setTasks(updatedTasks));
+      // } else if (isOverTask) {
+      //   const overTask = tasks.find((task) => task.taskId === over.id);
+      //   const overIndex = tasks.findIndex((task) => task.taskId === over.id);
+      //   if (activeTask.statusTaskId === targetStatusId) {
+      //     updatedTasks.splice(activeIndex, 1);
+      //     updatedTasks.splice(overIndex, 0, activeTask);
+      //   } else {
+      //     updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
+      //     updatedTasks.splice(overIndex, 0, {
+      //       ...activeTask,
+      //       statusTaskId: targetStatusId,
+      //       statusTaskName: targetStatus,
+      //     });
+      //   }
+      // }
+      // dispatch(setTasks(updatedTasks));
       setActiveColumn(null);
     },
     [tasks, statuses, dispatch],
@@ -186,36 +189,6 @@ const CheckTypeByAll = () => {
     setShowAddColumn(false);
   };
 
-  const handleColumnUpdated = useCallback(
-    (updatedColumn) => {
-      if (updatedColumn?.deleted) {
-        dispatch(
-          setTasks(tasks.filter((task) => task.statusTaskId !== updatedColumn.statusTaskId)),
-        );
-      } else if (updatedColumn) {
-        dispatch(setStatus([...statuses, updatedColumn]));
-      }
-    },
-    [dispatch, tasks, statuses],
-  );
-
-  const handleTaskUpdated = useCallback(
-    (updatedTask) => {
-      if (updatedTask?.deleted) {
-        dispatch(setTasks(tasks.filter((task) => task.taskId !== updatedTask.taskId)));
-      } else if (updatedTask) {
-        dispatch(
-          setTasks(
-            tasks.map((task) =>
-              task.taskId === updatedTask.taskId ? { ...task, ...updatedTask } : task,
-            ),
-          ),
-        );
-      }
-    },
-    [dispatch, tasks],
-  );
-
   const handleChooseTask = (task) => {
     setShowAddSubTask(task);
   };
@@ -223,48 +196,6 @@ const CheckTypeByAll = () => {
   const handleCloseAddSubtask = () => {
     setShowAddSubTask(null);
   };
-  // Comment các đoạn gọi API
-  // const handleGetStatusTask = useCallback(
-  //   async (groupId) => {
-  //     try {
-  //       setStatusTasks([]);
-  //       const response = await getAllStatus(user.token, groupId);
-  //       if (response) {
-  //         setStatusTasks(response.data);
-  //       }
-  //     } catch (e) {
-  //       console.error('Error fetching statuses:', e.message);
-  //     }
-  //   },
-  //   [user.token],
-  // );
-
-  // const handleGetTasks = useCallback(
-  //   async (groupId) => {
-  //     try {
-  //       const response = await getAllTask(user.token, groupId, dispatch);
-  //       if (response.data) {
-  //         const normalizedTasks = response.data.map((task) => ({
-  //           ...task,
-  //           subtasks: task.subtasks || [],
-  //           statusTaskName: statuses.find(
-  //             (status) => status.statusTaskId === task.statusTaskId
-  //           )?.statusTaskName || task.statusTaskName,
-  //         }));
-  //         console.log('normalizedTasks:', normalizedTasks);
-  //         dispatch(setTasks(normalizedTasks));
-  //       }
-  //     } catch (e) {
-  //       console.error('Error fetching tasks:', e.message);
-  //     }
-  //   },
-  //   [user.token, groupId, dispatch, statuses],
-  // );
-
-  // useEffect(() => {
-  //   handleGetStatusTask(groupId);
-  //   handleGetTasks(groupId);
-  // }, [groupId, handleGetStatusTask, handleGetTasks]);
 
   useEffect(() => {
     getStatus(user.token, groupId, dispatch);
@@ -298,7 +229,7 @@ const CheckTypeByAll = () => {
                 onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}
                 onShowAddSubTask={handleChooseTask}
-                onColumnUpdated={handleColumnUpdated}
+                // onColumnUpdated={handleColumnUpdated}
                 isLeader={isLeader}
               />
             ))}
@@ -324,10 +255,9 @@ const CheckTypeByAll = () => {
             <AddColumn
               status={showAddTask}
               onCancel={handleCloseAddStatus}
-              group={group}
               groupId={groupId}
               members={memberTask}
-              onColumnUpdated={handleColumnUpdated}
+              // onColumnUpdated={handleColumnUpdated}
             />
           )}
           {showAddSubTask && (
@@ -362,7 +292,6 @@ const CheckTypeByAll = () => {
             dueDate={activeTask.taskDueDate}
             onShowComment={handleShowComment}
             onShowAddSubTask={handleChooseTask}
-            onTaskUpdated={handleTaskUpdated}
             isDraggingOverlay
             task={activeTask}
           />

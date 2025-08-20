@@ -33,7 +33,7 @@
       "semester_id": "3b213vb2u",
       "groups": [
         {
-          "groups_id": "1",
+          "groups_id": "swp1",
           "created_at": "timestamp",
           "created_by": "user_id",
           "update_at": "timestamp",
@@ -78,7 +78,7 @@
           ]
         },
         {
-          "groups_id": "2",
+          "groups_id": "swp2",
           "created_at": "timestamp",
           "created_by": "user_id",
           "update_at": "timestamp",
@@ -326,7 +326,7 @@
   "task": [
     {
       "taskId": "123",
-      "taskTitle": "Thiết kế API cho task",
+      "taskTitle": "1",
       "taskDescription": "API lành mạnh và healthy",
       "groupId": "1",
       "documentId": "",
@@ -338,55 +338,35 @@
       "createdAt": "",
       "updateBy": "",
       "updateAt": "",
-      "statusTaskId": "123",
-      "review": [
-        "reviewid",
-        "reviewid"
-      ],
-      "parentTask": null,
-      "assignTo": [],
-      "subTasks": []
-    },
-    {
-      "id": "a538",
-      "taskId": "0.02872576146702488",
-      "group_id": "1",
-      "taskTitle": "Design common button submit",
-      "taskDescription": "Common button can scale and usable in all components",
       "statusTaskId": "125",
-      "documentId": "",
-      "taskPoint": 0,
-      "taskParentId": 0,
-      "taskStartTime": "2025-08-19T09:22:31",
-      "taskDueDate": "2025-08-20T09:22:31",
-      "createdBy": "hoaintt40",
-      "updatedBy": "",
-      "priority": "MEDIUM",
+      "review": ["reviewid", "reviewid"],
+      "parentTask": null,
       "assignTo": [],
       "subTasks": [
         {
-          "taskId": 0.06422422144296569,
-          "taskTitle": "Research useMemo",
-          "taskDescription": "Prevent to unnecessary re-render",
-          "priority": "",
-          "statusTaskId": "125",
-          "taskStartTime": "2025-08-19T11:12:31",
-          "taskDueDate": "2025-08-19T11:12:31",
+          "taskId": 0.49668218049291246,
+          "taskTitle": "subtask",
+          "taskDescription": "alo",
+          "priority": "HIGH",
+          "statusTaskId": "123",
+          "taskStartTime": "2025-08-21T19:22:11",
+          "taskDueDate": "2025-08-22T19:22:11",
           "listUserAssign": [],
-          "parentTaskId": "0.02872576146702488"
+          "parentTaskId": "123"
         }
       ],
-      "statusTaskName": "UAT"
+      "id": "73ca"
     },
     {
       "id": "6377",
       "taskId": "0.3012876117344242",
       "group_id": "2",
-      "taskTitle": "Thiết kế DB notification",
+      "taskTitle": "2",
       "taskDescription": "Design DB notification healthy và balance",
       "documentId": "",
       "taskPoint": 0,
       "taskParentId": 0,
+      "statusTaskId": "124",
       "taskStartTime": "2025-08-19T09:29:59",
       "taskDueDate": "2025-08-20T09:29:59",
       "createdBy": "hoaintt40",
@@ -396,73 +376,21 @@
       "subTasks": []
     },
     {
-      "id": "12e2",
-      "taskId": "0.7272000231475456",
+      "id": "5d60",
+      "taskId": "0.683116282942126",
       "group_id": "1",
-      "taskTitle": "Design Model User",
-      "taskDescription": "Design both ReactJs and Server (Java/ Nodejs)",
-      "statusTaskId": "124",
-      "documentId": "",
-      "taskPoint": 0,
-      "taskParentId": 0,
-      "taskStartTime": "2025-08-19T09:16:02",
-      "taskDueDate": "2025-08-20T09:16:02",
-      "createdBy": "hoaintt40",
-      "updatedBy": "",
-      "priority": "LOW",
-      "assignTo": [],
-      "subTasks": [
-        {
-          "taskId": 0.4437581131255264,
-          "taskTitle": "321",
-          "taskDescription": "123",
-          "priority": "MEDIUM",
-          "statusTaskId": "124",
-          "listUserAssign": [],
-          "parentTaskId": "0.7272000231475456"
-        },
-        {
-          "taskId": 0.6550758174993243,
-          "taskTitle": "SubTask",
-          "taskDescription": "123",
-          "priority": "HIGH",
-          "statusTaskId": "124",
-          "taskStartTime": "2025-08-19T11:06:31",
-          "taskDueDate": "2025-08-19T11:06:31",
-          "listUserAssign": [],
-          "parentTaskId": "0.7272000231475456"
-        }
-      ]
-    },
-    {
-      "id": "8243",
-      "taskId": "0.4830205803587273",
-      "group_id": "1",
-      "taskTitle": "Create user slice for manager state user",
-      "taskDescription": "Easy for manager state",
+      "taskTitle": "3",
+      "taskDescription": "Thiết kế DB healthy và balance",
       "statusTaskId": "123",
       "documentId": "",
       "taskPoint": 0,
       "taskParentId": 0,
-      "taskStartTime": "2025-08-19T11:16:16",
-      "taskDueDate": "2025-08-20T11:16:16",
+      "taskStartTime": "2025-08-20T13:54:15",
+      "taskDueDate": "2025-08-21T13:54:15",
       "createdBy": "hoaintt40",
       "updatedBy": "",
-      "priority": "HIGH",
-      "assignTo": [],
-      "subTasks": [
-        {
-          "taskId": 0.6048847529001584,
-          "taskTitle": "Research Redux",
-          "taskDescription": "Prevent to call state in other components",
-          "priority": "",
-          "statusTaskId": "123",
-          "taskStartTime": "2025-08-20T11:16:48",
-          "taskDueDate": "2025-08-21T11:16:48",
-          "listUserAssign": [],
-          "parentTaskId": "0.4830205803587273"
-        }
-      ]
+      "priority": "MEDIUM",
+      "assignTo": []
     }
   ]
 }

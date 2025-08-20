@@ -35,10 +35,22 @@ const tasksSlice = createSlice({
     setError: (state, action) => {
       state.error = action.payload;
     },
+
+    resetTasks: (state, action) => {
+      state.tasks = [];
+    },
   },
 });
 
-export const { setTasks, getTasks, setPending, setError, deleteTask, addTasks, updateTasks } =
-  tasksSlice.actions;
+export const {
+  setTasks,
+  getTasks,
+  setPending,
+  setError,
+  deleteTask,
+  addTasks,
+  updateTasks,
+  resetTasks,
+} = tasksSlice.actions;
 
 export default tasksSlice.reducer;

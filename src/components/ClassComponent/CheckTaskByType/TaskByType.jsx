@@ -1,11 +1,17 @@
-import React from "react";
-import "./TaskByType.scss";
-import { useAuth } from "../../../context/AuthProvider";
+import React from 'react';
+import './TaskByType.scss';
+import { useAuth } from '../../../context/AuthProvider';
 const TaskByType = ({ activeType, setActiveType }) => {
   const { user } = useAuth();
   const taskTypes = [
-    { type: "All", icon: "fa-solid fa-globe" },
-    { type: "Checklist", icon: "fa-solid fa-list" },
+    { type: 'All', icon: 'fa-solid fa-globe' },
+    { type: 'Checklist', icon: 'fa-solid fa-list' },
+    { type: 'Schedules', icon: 'fa-solid fa-list' },
+    { type: 'Classes', icon: 'fa-solid fa-users' },
+    { type: 'Documents', icon: 'fa-solid fa-folder-plus' },
+    { type: 'Plans', icon: 'fas fa-tasks' },
+    { type: 'Chat', icon: 'fa-solid fa-comment' },
+
     // { type: "By Status", icon: "fa-solid fa-chart-line" },
     // {
     //   type: user?.role === "LECTURER" ? "Class List" : "My Task",
@@ -18,9 +24,7 @@ const TaskByType = ({ activeType, setActiveType }) => {
       <ul className="task-by-type-list">
         {taskTypes.map((item, index) => (
           <li
-            className={`task-by-type-element ${
-              activeType === item.type ? "active" : ""
-            }`}
+            className={`task-by-type-element ${activeType === item.type ? 'active' : ''}`}
             onClick={() => setActiveType(item.type)}
             key={index}
           >

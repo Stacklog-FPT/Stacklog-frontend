@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import './ClassList.scss';
-import { useAuth } from '../../context/AuthProvider';
-import ClassService from '../../service/ClassService';
-import userApi from '../../service/UserService';
-import DetailStudent from './DetailStudent/DetailStudent';
-import decodeToken from '../../service/DecodeJwt';
-import PopupCreateClass from './PopupCreateClass/PopupCreateClass';
-import PopupCreateGroup from './PopupCreateGroup/PopupCreateGroup';
-import PopupInviteCode from './PopupInviteCode/PopupInviteCode';
+import './Classes.scss';
+import { useAuth } from '../../../context/AuthProvider';
+import ClassService from '../../../service/ClassService';
+import userApi from '../../../service/UserService';
+import DetailStudent from '../../ClassListComponent/DetailStudent/DetailStudent';
+import decodeToken from '../../../service/DecodeJwt';
+import PopupCreateClass from '../../ClassListComponent/PopupCreateClass/PopupCreateClass';
+import PopupCreateGroup from '../../ClassListComponent/PopupCreateGroup/PopupCreateGroup';
+import PopupInviteCode from '../../ClassListComponent/PopupInviteCode/PopupInviteCode';
 
 const {
   getClassesByRole,

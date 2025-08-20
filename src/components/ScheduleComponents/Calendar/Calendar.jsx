@@ -1,28 +1,24 @@
-import { useEffect, useState } from "react";
-import {
-  Calendar as RBCalendar,
-  momentLocalizer,
-  Views,
-} from "react-big-calendar";
-import moment from "moment";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import ScheduleService from "../../../service/ScheduleService";
-import { useAuth } from "../../../context/AuthProvider";
-import { addHours } from "date-fns";
-import Modal from "./SlotModal";
-import "./Calendar.scss";
+import { useEffect, useState } from 'react';
+import { Calendar as RBCalendar, momentLocalizer, Views } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import ScheduleService from '../../../service/ScheduleService';
+import { useAuth } from '../../../context/AuthProvider';
+import { addHours } from 'date-fns';
+import Modal from './SlotModal';
+import './Calendar.scss';
 
-import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const { updateScheduleSlot, deleteScheduleSlot } = ScheduleService();
 
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(RBCalendar);
 
-export default function CustomCalendar() {
+export default function Calendar() {
   const { getScheduleByUser, deleteScheduleSlot } = ScheduleService();
   const { user } = useAuth();
 
@@ -44,7 +40,7 @@ export default function CustomCalendar() {
         setEvents(formatted);
       }
     } catch (err) {
-      console.error("❌ Lỗi khi load lịch:", err);
+      console.error('❌ Lỗi khi load lịch:', err);
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +50,7 @@ export default function CustomCalendar() {
     const now = new Date();
 
     if (start < now) {
-      alert("⛔ Không thể di chuyển sự kiện về quá khứ!");
+      alert('⛔ Không thể di chuyển sự kiện về quá khứ!');
       return;
     }
 
@@ -68,22 +64,20 @@ export default function CustomCalendar() {
       const payload = {
         slotId: updatedEvent.id,
         slotTitle: updatedEvent.title,
-        slotDescription: updatedEvent.description || "",
+        slotDescription: updatedEvent.description || '',
         slotStarTime: new Date(start).toISOString(),
-        groupId: updatedEvent.groupId || "",
+        groupId: updatedEvent.groupId || '',
         userIdAssigns: updatedEvent.userIdAssigns || [],
       };
 
       await updateScheduleSlot(user.token, payload);
 
-      const updatedEvents = events.map((e) =>
-        e.id === event.id ? { ...e, start, end } : e
-      );
+      const updatedEvents = events.map((e) => (e.id === event.id ? { ...e, start, end } : e));
       setEvents(updatedEvents);
 
-      console.log("✅ Đã cập nhật sự kiện:", payload);
+      console.log('✅ Đã cập nhật sự kiện:', payload);
     } catch (error) {
-      console.error("❌ Lỗi khi cập nhật sự kiện:", error);
+      console.error('❌ Lỗi khi cập nhật sự kiện:', error);
     }
   };
 
@@ -92,32 +86,30 @@ export default function CustomCalendar() {
       const payload = {
         slotId: updatedEvent.id,
         slotTitle: updatedEvent.title,
-        slotDescription: updatedEvent.description || "",
+        slotDescription: updatedEvent.description || '',
         slotStarTime: new Date(updatedEvent.start).toISOString(),
-        groupId: updatedEvent.groupId || "",
+        groupId: updatedEvent.groupId || '',
         userIdAssigns: updatedEvent.userIdAssigns || [],
       };
 
       await updateScheduleSlot(user?.token, payload);
 
-      const updatedEvents = events.map((e) =>
-        e.id === updatedEvent.id ? updatedEvent : e
-      );
+      const updatedEvents = events.map((e) => (e.id === updatedEvent.id ? updatedEvent : e));
       setEvents(updatedEvents);
-      console.log("✅ Đã cập nhật slot:", payload);
+      console.log('✅ Đã cập nhật slot:', payload);
     } catch (err) {
-      console.error("❌ Lỗi khi update slot:", err);
+      console.error('❌ Lỗi khi update slot:', err);
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      window.confirm("Bạn có chắc chắn muốn xóa slot này?");
+      window.confirm('Bạn có chắc chắn muốn xóa slot này?');
       await deleteScheduleSlot(user?.token, id);
       setEvents((prev) => prev.filter((e) => e.id !== id));
       setSelectedEvent(null);
     } catch (err) {
-      console.error("❌ Xóa thất bại:", err);
+      console.error('❌ Xóa thất bại:', err);
     }
   };
 
@@ -134,7 +126,7 @@ export default function CustomCalendar() {
           events={events}
           startAccessor="start"
           endAccessor="end"
-          style={{ height: "80vh" }}
+          style={{ height: '80vh' }}
           onSelectEvent={(event) => setSelectedEvent(event)}
           draggableAccessor={() => true}
           onEventDrop={moveEvent}

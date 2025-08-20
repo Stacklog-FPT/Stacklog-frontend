@@ -18,9 +18,13 @@ const scheduleSlice = createSlice({
     setError: (state, action) => {
       state.error = action.payload;
     },
+
+    resetSchedule: (state, action) => {
+      state.schedules = [];
+    },
   },
 });
 
-export const { getSchedules, setPending, setError } = scheduleSlice.actions;
+export const { getSchedules, setPending, setError, resetSchedule } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

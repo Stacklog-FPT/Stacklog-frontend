@@ -1,10 +1,11 @@
-import axios from "axios";
+import axios from 'axios';
+import { getSchedules, setError, setPending, resetSchedule } from '../redux/slice/scheduleSlice';
 
-const SCHEDULE_API = "https://stacklog.id.vn/api/schedule";
+const SCHEDULE_API = 'https://stacklog.id.vn/api/schedule';
 const ScheduleService = () => {
   const getScheduleByUser = async (token) => {
     try {
-      if (!token) throw new Error("Token is missing!");
+      if (!token) throw new Error('Token is missing!');
       const response = await axios.get(`${SCHEDULE_API}/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -19,12 +20,12 @@ const ScheduleService = () => {
 
   const addCreateSlot = async (token, data) => {
     try {
-      if (!token) throw new Error("Token is missing!");
+      if (!token) throw new Error('Token is missing!');
 
       const response = await axios.post(`${SCHEDULE_API}/`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
@@ -36,12 +37,12 @@ const ScheduleService = () => {
 
   const updateScheduleSlot = async (token, data) => {
     try {
-      if (!token) throw new Error("Token is missing!");
+      if (!token) throw new Error('Token is missing!');
 
       const response = await axios.post(`${SCHEDULE_API}/`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
@@ -53,8 +54,8 @@ const ScheduleService = () => {
 
   const deleteScheduleSlot = async (token, slotId) => {
     try {
-      if (!token) throw new Error("Token is missing!");
-      if (!slotId) throw new Error("Slot ID is missing!");
+      if (!token) throw new Error('Token is missing!');
+      if (!slotId) throw new Error('Slot ID is missing!');
 
       const response = await axios.delete(`${SCHEDULE_API}/delete/${slotId}`, {
         headers: {
@@ -74,6 +75,26 @@ const ScheduleService = () => {
     updateScheduleSlot,
     deleteScheduleSlot,
   };
+};
+
+export const getScheduleByGroupId = async (token, groupId, dispatch) => {
+  try {
+    if (!token) dispatch(setError('The token is missing!'));
+    dispatch(setPending(true));
+    const response = await axios.get(`http://localhost:3001/schedule?groupId=${groupId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log('response: ', response);
+
+    dispatch(resetSchedule());
+    dispatch(getSchedules(response.data));
+    dispatch(setPending(false));
+  } catch (e) {
+    dispatch(setError(e.message));
+  }
 };
 
 export default ScheduleService;

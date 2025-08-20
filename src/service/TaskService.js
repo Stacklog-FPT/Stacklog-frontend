@@ -103,8 +103,6 @@ export const updateTaskApi = async (taskId, taskData, token, dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    console.log(response);
     dispatch(updateTasks(response.data));
     dispatch(setPending(false));
     return response;

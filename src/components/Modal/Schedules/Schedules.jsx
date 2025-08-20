@@ -3,10 +3,11 @@ import './Schedules.scss';
 import Calendar from '../../ScheduleComponents/Calendar/Calendar';
 import { FaPlus } from 'react-icons/fa';
 import AddScheduleForms from '../../ScheduleComponents/AddScheduleForm/AddScheduleForm';
-const Schedules = () => {
-  const [isShowAdd, setIsShowAdd] = useState(false);
-  const [slot, setSlot] = useState(null);
+import { useParams } from 'react-router-dom';
 
+const Schedules = () => {
+  const { groupId } = useParams();
+  const [isShowAdd, setIsShowAdd] = useState(false);
   const handleClose = () => {
     setIsShowAdd(false);
   };
@@ -34,7 +35,7 @@ const Schedules = () => {
             </button>
           </div>
         </div>
-        <Calendar />
+        <Calendar groupId={groupId} />
       </div>
 
       {isShowAdd && <AddScheduleForms onClose={handleClose} />}

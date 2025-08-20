@@ -338,8 +338,11 @@
       "createdAt": "",
       "updateBy": "",
       "updateAt": "",
-      "statusTaskId": "125",
-      "review": ["reviewid", "reviewid"],
+      "statusTaskId": "124",
+      "review": [
+        "reviewid",
+        "reviewid"
+      ],
       "parentTask": null,
       "assignTo": [],
       "subTasks": [
@@ -391,6 +394,32 @@
       "updatedBy": "",
       "priority": "MEDIUM",
       "assignTo": []
+    }
+  ],
+  "schedule": [
+    {
+      "slotId": "123",
+      "createdAt": "2025-08-20T10:00:00",
+      "createdBy": "",
+      "updateAt": "",
+      "updateBy": "",
+      "groupId": "1",
+      "slotDescription": "",
+      "slotStartTime": "2025-08-21T12:00:00",
+      "slotTittle": "Họp về đề tài",
+      "userId": "688e1238e4acb643f2bbc486"
+    },
+    {
+      "slotId": "123",
+      "createdAt": "2025-08-20T10:00:00",
+      "createdBy": "",
+      "updateAt": "",
+      "updateBy": "",
+      "groupId": "1",
+      "slotDescription": "",
+      "slotStartTime": "2025-08-21T12:00:00",
+      "slotTittle": "Họp về đề tài",
+      "userId": "688e1238e4acb643f2bbc486"
     }
   ]
 }

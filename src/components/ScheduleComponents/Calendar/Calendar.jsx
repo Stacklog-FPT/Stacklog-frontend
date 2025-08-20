@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Calendar as RBCalendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import ScheduleService from '../../../service/ScheduleService';
+import ScheduleService, { getScheduleByGroupId } from '../../../service/ScheduleService';
 import { useAuth } from '../../../context/AuthProvider';
 import { addHours } from 'date-fns';
 import Modal from './SlotModal';
@@ -12,20 +12,25 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const { updateScheduleSlot, deleteScheduleSlot } = ScheduleService();
 
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(RBCalendar);
 
-export default function Calendar() {
+export default function Calendar(groupId) {
   const { getScheduleByUser, deleteScheduleSlot } = ScheduleService();
   const { user } = useAuth();
-
-  const [events, setEvents] = useState([]);
+  const dispatch = useDispatch();
+  const schedules = useSelector((s) => s.schedule.schedules);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const formattedTime = async () => {
+    return schedules.map((item) => {});
+  };
   const fetchEvents = async () => {
     setIsLoading(true);
     try {
@@ -72,7 +77,7 @@ export default function Calendar() {
 
       await updateScheduleSlot(user.token, payload);
 
-      const updatedEvents = events.map((e) => (e.id === event.id ? { ...e, start, end } : e));
+      const updatedEvents = schedules.map((e) => (e.id === event.id ? { ...e, start, end } : e));
       setEvents(updatedEvents);
 
       console.log('✅ Đã cập nhật sự kiện:', payload);
@@ -94,7 +99,7 @@ export default function Calendar() {
 
       await updateScheduleSlot(user?.token, payload);
 
-      const updatedEvents = events.map((e) => (e.id === updatedEvent.id ? updatedEvent : e));
+      const updatedEvents = schedules.map((e) => (e.id === updatedEvent.id ? updatedEvent : e));
       setEvents(updatedEvents);
       console.log('✅ Đã cập nhật slot:', payload);
     } catch (err) {
@@ -114,8 +119,8 @@ export default function Calendar() {
   };
 
   useEffect(() => {
-    if (user?.token) fetchEvents();
-  }, [user]);
+    getScheduleByGroupId(user.token, groupId, dispatch);
+  }, [groupId]);
 
   return (
     <div className="calendar-wrapper">
@@ -123,7 +128,7 @@ export default function Calendar() {
       <DndProvider backend={HTML5Backend}>
         <DragAndDropCalendar
           localizer={localizer}
-          events={events}
+          events={schedules}
           startAccessor="start"
           endAccessor="end"
           style={{ height: '80vh' }}

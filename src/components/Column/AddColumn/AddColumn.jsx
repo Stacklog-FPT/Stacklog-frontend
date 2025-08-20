@@ -1,19 +1,21 @@
-import React, { useState } from "react";
-import "./AddColumn.scss";
-import statusApi from "../../../service/ColumnService";
-import { useAuth } from "../../../context/AuthProvider";
-import { toast } from "react-toastify";
+import React, { useState } from 'react';
+import './AddColumn.scss';
+import statusApi from '../../../service/ColumnService';
+import { useAuth } from '../../../context/AuthProvider';
+import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
 
-const AddColumn = ({ onCancel, group, onColumnUpdated }) => {
+const AddColumn = ({ onCancel, group, onColumnUpdated, groupId }) => {
   const { user } = useAuth();
-  const [color, setColor] = useState("#3498db");
+  const dispatch = useDispatch();
+  const [color, setColor] = useState('#3498db');
   const [columnData, setColumnData] = useState({
-    statusTaskName: "",
-    statusTaskColor: "" || color,
+    statusTaskName: '',
+    statusTaskColor: '' || color,
     groupId: group.groupsId,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { addStatus } = statusApi();
+  const { addStatuses } = statusApi();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -27,26 +29,20 @@ const AddColumn = ({ onCancel, group, onColumnUpdated }) => {
       const payload = {
         statusTaskName: columnData.statusTaskName,
         statusTaskColor: columnData.statusTaskColor || color,
-        groupId: group.groupsId,
+        groupId: groupId,
       };
 
-      const response = await addStatus(user?.token, payload);
+      const response = await addStatuses(user?.token, payload, groupId, dispatch);
 
-      setColumnData({
-        statusTaskName: "",
-        statusTaskColor: color,
-        groupId: group.groupsId,
-      });
-
-      if (response.data) {
+      if (response) {
         toast.success('Add status is successfully!');
-        onColumnUpdated(response.data);
+        // onColumnUpdated(response.data);
       }
 
       if (onCancel) onCancel();
     } catch (e) {
       toast.error('Something is wrong!');
-      console.error("Failed to add column:", e.message);
+      console.error('Failed to add column:', e.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -82,12 +78,8 @@ const AddColumn = ({ onCancel, group, onColumnUpdated }) => {
             />
           </div>
 
-          <button
-            className="btn__add__status"
-            type="submit"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Submitting..." : "Submit"}
+          <button className="btn__add__status" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </button>
         </div>
       </form>

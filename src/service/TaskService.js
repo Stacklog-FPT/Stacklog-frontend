@@ -1,88 +1,117 @@
-import SockJS from "sockjs-client";
-import { Stomp } from "@stomp/stompjs";
-import axios from "axios";
+import SockJS from 'sockjs-client';
+import { Stomp } from '@stomp/stompjs';
+import axios from 'axios';
+import {
+  getTasks,
+  setPending,
+  setError,
+  deleteTask,
+  setTasks,
+  addTasks,
+  updateTasks,
+  resetTasks,
+} from '../redux/slice/taskSlice';
 
-const API_TASK = "https://stacklog.id.vn/api/task";
-const SOCKET_URL = "https://stacklog.id.vn/ws/taskify";
+const API_TASK = 'https://stacklog.id.vn/api/task';
+const SOCKET_URL = 'https://stacklog.id.vn/ws/taskify';
+let stompClient = null;
 
-const taskService = () => {
-  let stompClient = null;
+export const setSocket = (token) => {
+  if (!token) {
+    throw new Error('Unauthorized!');
+  }
 
-  const setSocket = (token) => {
-    if (!token) {
-      throw new Error("Unauthorized!");
-    }
+  const socket = new SockJS(SOCKET_URL);
+  stompClient = Stomp.over(socket);
 
-    const socket = new SockJS(SOCKET_URL);
-    stompClient = Stomp.over(socket);
-
-    stompClient.connect(
-      { Authorization: `Bearer ${token}` },
-      () => {
-        stompClient.subscribe("/topic/taskservice", (message) => {
-          const data = JSON.parse(message.body);
-        });
-      },
-      (error) => {
-        console.error("STOMP connection error:", error);
-      }
-    );
-
-    return stompClient;
-  };
-
-  const getAllTask = async (token, groupId) => {
-    if (!token) {
-      throw new Error("Unauthorized!");
-    }
-    try {
-      const response = await axios.get(`${API_TASK}/task/${groupId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
+  stompClient.connect(
+    { Authorization: `Bearer ${token}` },
+    () => {
+      stompClient.subscribe('/topic/taskservice', (message) => {
+        const data = JSON.parse(message.body);
       });
-      return response;
-    } catch (e) {
-      throw new Error(e.message);
-    }
-  };
+    },
+    (error) => {
+      console.error('STOMP connection error:', error);
+    },
+  );
 
-  const addTask = async (taskData, token) => {
-    if (!token) {
-      throw new Error("Unauthorized!");
-    }
-    try {
-      const response = await axios.post(`${API_TASK}/task`, taskData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      return response;
-    } catch (e) {
-      throw new Error(e.message);
-    }
-  };
-
-  const deleteTask = async (token, taskId) => {
-    if (!token) {
-      throw new Error("Unauthorized!");
-    }
-
-    try {
-      const response = await axios.delete(`${API_TASK}/task/${taskId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response;
-    } catch (e) {
-      throw new Error(e.message);
-    }
-  };
-
-  return { getAllTask, addTask, deleteTask, setSocket };
+  return stompClient;
 };
 
-export default taskService;
+export const getAllTask = async (token, groupId, dispatch) => {
+  try {
+    if (!token) dispatch(setError('Token is not valid or missing!'));
+    dispatch(setPending(true));
+    dispatch(resetTasks());
+    const response = await axios.get(`http://localhost:3001/task?group_id=${groupId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    dispatch(getTasks(response.data));
+    dispatch(setPending(false));
+  } catch (e) {
+    dispatch(setError(err.message));
+    dispatch(setPending(false));
+  }
+};
+
+export const addTask = async (taskData, token, dispatch) => {
+  if (!token) {
+    throw new Error('Unauthorized!');
+  }
+  try {
+    const response = await axios.post(`http://localhost:3001/task`, taskData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    dispatch(addTasks(response.data));
+    return response;
+  } catch (e) {
+    dispatch(setError(err.message));
+    dispatch(setPending(false));
+    throw new Error(e.message);
+  }
+};
+
+export const deleteTaskApi = async (token, taskId, dispatch) => {
+  if (!token) {
+    throw new Error('Unauthorized!');
+  }
+  try {
+    const response = await axios.delete(`http://localhost:3001/task/${taskId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    dispatch(deleteTask(taskId));
+    return response;
+  } catch (e) {
+    dispatch(setError(err.message));
+    dispatch(setPending(false));
+    throw new Error(e.message);
+  }
+};
+
+export const updateTaskApi = async (taskId, taskData, token, dispatch) => {
+  try {
+    if (!token) dispatch(setError('The token is missing!'));
+    const response = await axios.put(`http://localhost:3001/task/${taskId}`, taskData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log(response);
+    dispatch(updateTasks(response.data));
+    dispatch(setPending(false));
+    return response;
+  } catch (e) {
+    dispatch(setError(e.message));
+    dispatch(setPending(false));
+    throw new Error(e.message);
+  }
+};

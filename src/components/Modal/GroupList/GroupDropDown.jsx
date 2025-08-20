@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import './GroupDropDown.scss';
 
-const GroupDropDown = ({ groups = [], onGroupClick }) => {
+const GroupDropDown = ({ groups = [] }) => {
   return (
     <ul className="group-dropdown">
       {groups.length === 0 ? (
@@ -10,9 +10,9 @@ const GroupDropDown = ({ groups = [], onGroupClick }) => {
         groups.map((g) => (
           <li key={g.groups_id}>
             <NavLink
+              to={`/tasks/${g.groups_id}`}
               type="button"
               className="group-item"
-              onClick={() => onGroupClick?.(g)}
               title={g.groups_name}
             >
               {g.groups_name}

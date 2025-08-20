@@ -1,27 +1,14 @@
-import React from "react";
-import Skeleton from "react-loading-skeleton";
-import adjustIcon from "../../../../../../assets/icon/checkTaskByList/adjust.png";
-import "./Subtask.scss";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import React from 'react';
+import Skeleton from 'react-loading-skeleton';
+import adjustIcon from '../../../../../../assets/icon/checkTaskByList/adjust.png';
+import './Subtask.scss';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
-const Subtask = ({
-  id,
-  title,
-  priority,
-  percent,
-  createdAt,
-  dueDate,
-  members = [],
-}) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+const Subtask = ({ id, title, priority, percent, createdAt, dueDate, members = [] }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -33,30 +20,25 @@ const Subtask = ({
   const extraCount = members?.length - visibleMembers.length;
 
   const formatDate = (date) => {
-    if (!date) return "";
+    if (!date) return '';
     const d = new Date(date);
-    if (isNaN(d)) return "";
-    return `${String(d.getDate()).padStart(2, "0")}/${String(
-      d.getMonth() + 1
-    ).padStart(2, "0")}/${d.getFullYear()}`;
+    if (isNaN(d)) return '';
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(
+      2,
+      '0',
+    )}/${d.getFullYear()}`;
   };
 
   const getColorByPercent = (percent) => {
-    if (percent >= 70) return "#4caf50";
-    if (percent >= 40) return "#ff9800";
-    return "#f44336";
+    if (percent >= 70) return '#4caf50';
+    if (percent >= 40) return '#ff9800';
+    return '#f44336';
   };
 
   const progressColor = getColorByPercent(percent);
 
   return (
-    <tr
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className="subtask_row"
-    >
+    <tr ref={setNodeRef} style={style} {...attributes} {...listeners} className="subtask_row">
       <td className="subtask-cell">
         <div className="task_list_head">
           <img src={adjustIcon} alt="Adjust Icon" />
@@ -73,7 +55,7 @@ const Subtask = ({
                 <img
                   src={
                     item.avatar ||
-                    "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                    'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
                   }
                   alt="avatar"
                 />

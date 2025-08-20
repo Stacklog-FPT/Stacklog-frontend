@@ -1,38 +1,33 @@
-import React, { useState, useEffect } from "react";
-import "./Column.scss";
-import iconMore from "../../../../../assets/icon/task/iconMoreTask.png";
-import iconVector from "../../../../../assets/icon/task/iconVector.png";
-import Task from "../Task/Task";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { useDroppable } from "@dnd-kit/core";
-import { useAuth } from "../../../../../context/AuthProvider";
-import ModalColumn from "../../../../ModalChange/ModalColumn/ModalColumn";
-import decodeToken from "../../../../../service/DecodeJwt";
+import React, { useState, useEffect } from 'react';
+import './Column.scss';
+import iconMore from '../../../../../assets/icon/task/iconMoreTask.png';
+import iconVector from '../../../../../assets/icon/task/iconVector.png';
+import Task from '../Task/Task';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
+import { useAuth } from '../../../../../context/AuthProvider';
+import ModalColumn from '../../../../ModalChange/ModalColumn/ModalColumn';
+import decodeToken from '../../../../../service/DecodeJwt';
+import { useSelector } from 'react-redux';
 
 const Column = ({
   color,
   statusId,
   status,
   tasks,
-  members,
   onShowAddTask,
   onShowComment,
   onShowAddSubTask,
   onTaskUpdated,
-  handleDeleteReRender,
   isLeader,
-  isLoading = false,
 }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: `droppable-${statusId}`,
   });
-
   const { user } = useAuth();
+  const { pending } = useSelector((s) => s.status.pending);
   const [openModalColumnId, setOpenModalColumnId] = useState(null);
   const handleIconMoreClick = () => {
     setOpenModalColumnId((prev) => (prev === statusId ? null : statusId));
@@ -40,23 +35,17 @@ const Column = ({
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (
-        !e.target.closest(".modal__column") &&
-        !e.target.closest(".prop-status-right")
-      ) {
+      if (!e.target.closest('.modal__column') && !e.target.closest('.prop-status-right')) {
         setOpenModalColumnId(null);
       }
     };
 
-    document.addEventListener("keydown", handleClickOutside);
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    document.addEventListener('keydown', handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
   return (
-    <div
-      className={`column-container ${isOver ? "over" : ""}`}
-      ref={setNodeRef}
-    >
+    <div className={`column-container ${isOver ? 'over' : ''}`} ref={setNodeRef}>
       <div className="column">
         <div className="prop-status" style={{ backgroundColor: color }}>
           <div className="prop-status-left">
@@ -64,13 +53,7 @@ const Column = ({
               <img src={iconVector} alt="vector icon" />
               <span>{status}</span>
               <span className="prop-status-text-total-task">
-                {isLoading ? (
-                  <Skeleton width={20} height={16} />
-                ) : tasks ? (
-                  tasks.length
-                ) : (
-                  0
-                )}
+                {pending ? <Skeleton width={20} height={16} /> : tasks ? tasks.length : 0}
               </span>
             </div>
           </div>
@@ -79,7 +62,7 @@ const Column = ({
               src={iconMore}
               alt="more icon"
               onClick={handleIconMoreClick}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: 'pointer' }}
             />
             {openModalColumnId === statusId && (
               <div className="modal-wrapper">
@@ -94,13 +77,9 @@ const Column = ({
           strategy={verticalListSortingStrategy}
         >
           <div className="column-task" data-status={statusId}>
-            {isLoading ? (
+            {pending ? (
               Array.from({ length: 3 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="task-skeleton"
-                  style={{ marginBottom: "10px" }}
-                >
+                <div key={index} className="task-skeleton" style={{ marginBottom: '10px' }}>
                   <Skeleton height={80} borderRadius={8} />
                 </div>
               ))
@@ -110,14 +89,12 @@ const Column = ({
                   key={task?.taskId}
                   id={task?.taskId}
                   title={task?.taskTitle}
-                  percent={task?.percentProgress}
                   members={task?.assigns}
-                  createdAt={task?.createdAt}
+                  createdAt={task?.taskStartTime}
                   dueDate={task?.taskDueDate}
                   onShowComment={onShowComment}
                   onShowAddSubTask={onShowAddSubTask}
                   onTaskUpdated={onTaskUpdated}
-                  handleDeleteReRender={handleDeleteReRender}
                   task={task}
                 />
               ))
@@ -127,9 +104,9 @@ const Column = ({
           </div>
         </SortableContext>
 
-        {user.role === "LECTURER" || isLeader() ? (
+        {user.role === 'LECTURER' || isLeader() ? (
           <div className="btn-add-task" onClick={onShowAddTask}>
-            <i className="fa-solid fa-plus" style={{color: '#000'}}></i>
+            <i className="fa-solid fa-plus" style={{ color: '#000' }}></i>
             <span>Add Task</span>
           </div>
         ) : null}

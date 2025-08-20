@@ -1,54 +1,53 @@
-import React, { useState } from "react";
-import "./AddSubTask.scss";
-import avatar_add_button from "../../../assets/icon/avatar_add_button.png";
-import assignUser from "../../../assets/task/assign-user.png";
-import iconPriority from "../../../assets/task/icon-priority.png";
-import iconSubTask from "../../../assets/task/icon-subtask.png";
-import trackTime from "../../../assets/task/icon-track-time.png";
-import { useAuth } from "../../../context/AuthProvider";
-import taskService from "../../../service/TaskService";
-import { toast } from "react-toastify";
-import axios from "axios";
-import decodeToken from "../../../service/DecodeJwt";
+import React, { useState } from 'react';
+import './AddSubTask.scss';
+import avatar_add_button from '../../../assets/icon/avatar_add_button.png';
+import assignUser from '../../../assets/task/assign-user.png';
+import iconPriority from '../../../assets/task/icon-priority.png';
+import iconSubTask from '../../../assets/task/icon-subtask.png';
+import trackTime from '../../../assets/task/icon-track-time.png';
+import { useAuth } from '../../../context/AuthProvider';
+import { addTask, updateTaskApi } from '../../../service/TaskService';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import decodeToken from '../../../service/DecodeJwt';
+import { useDispatch } from 'react-redux';
 
-const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
+const AddSubTask = ({ isClose, task, members }) => {
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
-  const notify = () => toast.success("Add task is successfully");
-  const notifyFailure = () => toast.error("Add task is failure");
-  const { addTask } = taskService();
-  const visibleMembers = task.assigns.slice(0, 3);
-  const extraCount = task.assigns.length - visibleMembers.length;
+  const dispatch = useDispatch();
+  const notify = () => toast.success('Add task is successfully');
+  const notifyFailure = () => toast.error('Add task is failure');
+  const visibleMembers = task?.assigns?.slice(0, 3);
+  const extraCount = task?.assigns?.length - visibleMembers?.length;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
   const [subTaskData, setSubTaskData] = useState({
-    taskId: "",
-    taskTitle: "",
-    taskDescription: "",
-    groupId: "",
-    documentId: "",
+    taskId: '',
+    taskTitle: '',
+    taskDescription: '',
+    groupId: '',
+    documentId: '',
     taskPoint: 5,
-    taskStartTime: "",
-    taskDueDate: "",
-    priority: "",
-    statusTaskId: "",
+    taskStartTime: '',
+    taskDueDate: '',
+    priority: '',
+    statusTaskId: '',
     listUserAssign: [],
-    parentTaskId: "",
+    parentTaskId: '',
   });
 
   const [colorPriority, setColorPriority] = useState([
-    { id: 1, color: "#FF6B6B", content: "HIGH", borderColor: "#DC2626" },
-    { id: 2, color: "#FFD60A", content: "MEDIUM", borderColor: "#D97706" },
-    { id: 3, color: "#22C55E", content: "LOW", borderColor: "#15803D" },
+    { id: 1, color: '#FF6B6B', content: 'HIGH', borderColor: '#DC2626' },
+    { id: 2, color: '#FFD60A', content: 'MEDIUM', borderColor: '#D97706' },
+    { id: 3, color: '#22C55E', content: 'LOW', borderColor: '#15803D' },
   ]);
-  const [selectedPriority, setSelectedPriority] = useState("HIGH");
+  const [selectedPriority, setSelectedPriority] = useState('HIGH');
   const selectedColor =
-    colorPriority.find((item) => item.content === selectedPriority)?.color ||
-    "#FFFFFF";
+    colorPriority.find((item) => item.content === selectedPriority)?.color || '#FFFFFF';
   const selectedBorderColor =
-    colorPriority.find((item) => item.content === selectedPriority)
-      ?.borderColor || "#000000";
+    colorPriority.find((item) => item.content === selectedPriority)?.borderColor || '#000000';
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -80,12 +79,12 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
 
   const validateForm = () => {
     if (!subTaskData.taskTitle.trim()) {
-      toast.error("Task title is required!");
+      toast.error('Task title is required!');
       return false;
     }
 
     if (!subTaskData.taskDescription.trim()) {
-      toast.error("Task description is required!");
+      toast.error('Task description is required!');
       return false;
     }
     const today = new Date();
@@ -94,7 +93,7 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
     if (subTaskData.taskStartTime) {
       const startDate = new Date(subTaskData.taskStartTime);
       if (startDate < today) {
-        toast.error("Start date must be today or later!");
+        toast.error('Start date must be today or later!');
         return false;
       }
     }
@@ -102,7 +101,7 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
     if (subTaskData.taskDueDate) {
       const dueDate = new Date(subTaskData.taskDueDate);
       if (dueDate < today) {
-        toast.error("Due date must be today or later!");
+        toast.error('Due date must be today or later!');
         return false;
       }
     }
@@ -111,7 +110,7 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
       const startDate = new Date(subTaskData.taskStartTime);
       const dueDate = new Date(subTaskData.taskDueDate);
       if (startDate > dueDate) {
-        toast.error("Start date must be before or equal to due date!");
+        toast.error('Start date must be before or equal to due date!');
         return false;
       }
     }
@@ -128,54 +127,56 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
     setIsSubmitting(true);
     try {
       const now = new Date();
-      const currentTime = now.toTimeString().split(" ")[0];
+      const currentTime = now.toTimeString().split(' ')[0];
       let formattedStartTime = subTaskData.taskStartTime
         ? `${subTaskData.taskStartTime}T${currentTime}`
-        : "";
+        : '';
 
       let formattedDueDate = subTaskData.taskDueDate
         ? `${subTaskData.taskDueDate}T${currentTime}`
-        : "";
+        : '';
       const payload = {
-        taskId: "",
-        taskTitle: subTaskData.taskTitle,
-        taskDescription: subTaskData.taskDescription,
-        groupId: subTaskData.groupId,
-        documentId: subTaskData.documentId,
-        taskPoint: 5,
-        taskStartTime: formattedStartTime,
-        taskDueDate: formattedDueDate,
-        priority: subTaskData.priority,
-        statusTaskId: task.statusTask.statusTaskId,
-        listUserAssign: subTaskData.listUserAssign,
-        parentTaskId: task.taskId,
+        ...task,
+        subTasks: [
+          ...(task.subTasks || []),
+          {
+            taskId: Math.random(),
+            taskTitle: subTaskData.taskTitle,
+            taskDescription: subTaskData.taskDescription,
+            priority: subTaskData.priority,
+            statusTaskId: task.statusTaskId,
+            taskStartTime: formattedStartTime,
+            taskDueDate: formattedDueDate,
+            listUserAssign: subTaskData.listUserAssign,
+            parentTaskId: task.taskId,
+          },
+        ],
       };
 
-      const response = await addTask(payload, user.token);
+      const response = await updateTaskApi(task.id, payload, user.token, dispatch);
       if (response.data) {
         notify();
-        await axios.post("http://localhost:3000/notifications", {
+        await axios.post('http://localhost:3000/notifications', {
           id: Math.random().toString(16).slice(2, 6),
           title: `Thông báo môn ${subTaskData.taskTitle}`,
           author: {
             _id: Math.random(),
-            name: user.username || userData?.username || "Unknown",
+            name: user.username || userData?.username || 'Unknown',
             avatar:
               user.avatar ||
-              "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+              'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
           },
-          createdAt: new Date().toISOString().split("T")[0],
+          createdAt: new Date().toISOString().split('T')[0],
           isRead: false,
           _id: Math.random(),
         });
-        if (onSubTaskAdded) onSubTaskAdded(response.data);
         isClose();
       }
     } catch (e) {
       console.error(
-        "Failed to add task:",
+        'Failed to add task:',
         e.response ? e.response.data : e.message,
-        e.response ? e.response.status : ""
+        e.response ? e.response.status : '',
       );
       notifyFailure();
       isClose();
@@ -218,9 +219,7 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
 
           <div className="assigned-users-list">
             {subTaskData.listUserAssign.map((userId) => {
-              const member = members.find(
-                (m) => String(m._id) === String(userId)
-              );
+              const member = members.find((m) => String(m._id) === String(userId));
               return member ? (
                 <div key={userId} className="assigned-user-card">
                   <div className="user-info">
@@ -231,16 +230,14 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
                         className="user-avatar"
                         onError={(e) =>
                           (e.target.src =
-                            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                            'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg')
                         }
                       />
                       <div className="check-icon">
                         <i className="fa-solid fa-check"></i>
                       </div>
                     </div>
-                    <span className="user-name">
-                      {member.name || member.userName}
-                    </span>
+                    <span className="user-name">{member.name || member.userName}</span>
                   </div>
                   <button
                     type="button"
@@ -260,10 +257,7 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
               className="add-member-btn"
               onClick={() => setShowAssignDropdown(!showAssignDropdown)}
             >
-              <img
-                src={avatar_add_button || "/placeholder.svg"}
-                alt="add_button_icon"
-              />
+              <img src={avatar_add_button || '/placeholder.svg'} alt="add_button_icon" />
               <span>Add Member</span>
             </button>
           </div>
@@ -282,18 +276,16 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
                       <img
                         src={
                           member.avatar ||
-                          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                          'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
                         }
                         alt={member.name || member.userName}
                         className="member-avatar"
                         onError={(e) =>
                           (e.target.src =
-                            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                            'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg')
                         }
                       />
-                      <span className="member-name">
-                        {member.name || member.userName}
-                      </span>
+                      <span className="member-name">{member.name || member.userName}</span>
                     </div>
                   </label>
                 ))}
@@ -303,7 +295,7 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
         </div>
         <div className="wrapper-priority">
           <div className="wrapper-priority-heading">
-            <img src={iconPriority || "/placeholder.svg"} alt="..." />
+            <img src={iconPriority || '/placeholder.svg'} alt="..." />
             <h2>Priority</h2>
           </div>
           <div className="priority-selector">
@@ -322,9 +314,7 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
               ></span>
               <span>{selectedPriority}</span>
               <i
-                className={`fa-solid ${
-                  showPriorityDropdown ? "fa-chevron-up" : "fa-chevron-down"
-                }`}
+                className={`fa-solid ${showPriorityDropdown ? 'fa-chevron-up' : 'fa-chevron-down'}`}
               ></i>
             </button>
             {showPriorityDropdown && (
@@ -333,7 +323,7 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
                   <div
                     key={item.id}
                     className={`priority-option ${
-                      selectedPriority === item.content ? "selected" : ""
+                      selectedPriority === item.content ? 'selected' : ''
                     }`}
                     onClick={() => handlePrioritySelect(item.content)}
                   >
@@ -376,7 +366,7 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
         </div>
         <div className="wrapper-track-time">
           <div className="wrapper-track-time-heading">
-            <img src={trackTime || "/placeholder.svg"} alt="...icon" />
+            <img src={trackTime || '/placeholder.svg'} alt="...icon" />
             <h2>Track time</h2>
           </div>
           <div className="wrapper-track-time-input">
@@ -387,7 +377,7 @@ const AddSubTask = ({ isClose, task, members, onSubTaskAdded }) => {
         </div>
         <div className="wrapper-btn-submit">
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit"}
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </button>
         </div>
       </form>

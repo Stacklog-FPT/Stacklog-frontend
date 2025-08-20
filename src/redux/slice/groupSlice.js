@@ -13,6 +13,9 @@ const groupSlice = createSlice({
     getGroups: (state, action) => {
       state.groups = action.payload;
     },
+    setGroups: (state, action) => {
+      state.groups = action.payload;
+    },
   },
 });
 export const { getGroups } = groupSlice.actions;

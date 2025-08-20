@@ -1,15 +1,15 @@
-import React from "react";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { FaPen, FaTrashAlt } from "react-icons/fa";
-import { CiCirclePlus } from "react-icons/ci";
-import Skeleton from "react-loading-skeleton";
-import Swal from "sweetalert2";
-import taskService from "../../../../../../service/TaskService";
-import iconDeadLine from "../../../../../../assets/icon/task/iconDeadLine.png";
-import addButton from "../../../../../../assets/icon/avatar_add_button.png";
-import "./SubTask.scss";
-import { useAuth } from "../../../../../../context/AuthProvider";
+import React from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { FaPen, FaTrashAlt } from 'react-icons/fa';
+import { CiCirclePlus } from 'react-icons/ci';
+import Skeleton from 'react-loading-skeleton';
+import Swal from 'sweetalert2';
+import iconDeadLine from '../../../../../../assets/icon/task/iconDeadLine.png';
+import addButton from '../../../../../../assets/icon/avatar_add_button.png';
+import './SubTask.scss';
+import { useAuth } from '../../../../../../context/AuthProvider';
+import { deleteTaskApi } from '../../../../../../service/TaskService';
 
 const SubTask = ({
   id,
@@ -22,32 +22,26 @@ const SubTask = ({
   handleDeleteReRender,
   subTaskId,
 }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition: transition || "transform 0.2s ease, opacity 0.2s ease",
+    transition: transition || 'transform 0.2s ease, opacity 0.2s ease',
     opacity: isDragging ? 0.6 : 1,
   };
 
-  const { deleteTask } = taskService();
   const { user } = useAuth();
 
   const visibleMembers = members?.slice(0, 3);
   const extraCount = members?.length - visibleMembers?.length;
 
   const formatDate = (date) => {
-    if (!date) return "";
+    if (!date) return '';
     const dateObj = new Date(date);
-    if (isNaN(dateObj)) return "";
-    const day = String(dateObj.getDate()).padStart(2, "0");
-    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    if (isNaN(dateObj)) return '';
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
     const year = dateObj.getFullYear();
     return `${day}/${month}/${year}`;
   };
@@ -68,9 +62,9 @@ const SubTask = ({
   };
 
   const getColorByPercent = (percent) => {
-    if (percent >= 70) return "#4caf50";
-    if (percent >= 40) return "#ff9800";
-    return "#f44336";
+    if (percent >= 70) return '#4caf50';
+    if (percent >= 40) return '#ff9800';
+    return '#f44336';
   };
 
   const percentSubTask = calculateRemainingPercent(startTime, dueDate);
@@ -78,34 +72,34 @@ const SubTask = ({
 
   const handleDeleteTask = async (taskId) => {
     if (!user?.token) {
-      Swal.fire("Error!", "User not authenticated.", "error");
+      Swal.fire('Error!', 'User not authenticated.', 'error');
       return;
     }
 
     const result = await Swal.fire({
-      title: "Are you sure to delete this task?",
+      title: 'Are you sure to delete this task?',
       text: "This action can't be undone!",
-      icon: "warning",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#045745",
-      cancelButtonColor: "#c8cad4",
-      confirmButtonText: "Delete",
-      cancelButtonText: "Cancel",
+      confirmButtonColor: '#045745',
+      cancelButtonColor: '#c8cad4',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
     });
 
     if (result.isConfirmed) {
       try {
-        const response = await deleteTask(user.token, taskId);
-        console.log("API response:", response);
-        if (response.data === "Delete success") {
+        const response = await deleteTaskApi(user.token, taskId);
+        console.log('API response:', response);
+        if (response.data === 'Delete success') {
           handleDeleteReRender(true);
-          Swal.fire("Deleted!", "Task was removed successfully.", "success");
+          Swal.fire('Deleted!', 'Task was removed successfully.', 'success');
         } else {
-          throw new Error("Unexpected response from server");
+          throw new Error('Unexpected response from server');
         }
       } catch (error) {
-        console.error("Delete failed:", error.message);
-        Swal.fire("Error!", "Something went wrong during deletion.", "error");
+        console.error('Delete failed:', error.message);
+        Swal.fire('Error!', 'Something went wrong during deletion.', 'error');
       }
     }
   };
@@ -114,16 +108,14 @@ const SubTask = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`subtask-container ${isDragging ? "dragging" : ""}`}
+      className={`subtask-container ${isDragging ? 'dragging' : ''}`}
       data-priority={priority}
     >
       <div className="subtask-content">
         <div className="subtask-content-head">
           <div className="drag-handle" {...attributes} {...listeners}>
             <span title={title}>
-              {title?.length > 5
-                ? `${title.slice(0, 5)}...`
-                : title || <Skeleton />}
+              {title?.length > 5 ? `${title.slice(0, 5)}...` : title || <Skeleton />}
             </span>
           </div>
           <div className="subtask-content-head-icon">
@@ -149,31 +141,27 @@ const SubTask = ({
             style={{
               width: `${percentSubTask}%`,
               backgroundColor: progressColor,
-              height: "5px",
+              height: '5px',
             }}
           ></div>
           <span>{percentSubTask}%</span>
         </div>
         <div className="subtask-content-deadline">
           <span>{formatDate(startTime) || <Skeleton />}</span>
-          <img
-            src={iconDeadLine}
-            alt="deadline icon"
-            style={{ width: "5px", height: "5px" }}
-          />
+          <img src={iconDeadLine} alt="deadline icon" style={{ width: '5px', height: '5px' }} />
           <span>{formatDate(dueDate) || <Skeleton />}</span>
         </div>
         <div className="subtask-content-members">
           <ul
             className="subtask-content-members-student-list"
-            data-extra-count={extraCount > 0 ? extraCount : ""}
+            data-extra-count={extraCount > 0 ? extraCount : ''}
           >
             {visibleMembers?.map((item, index) => (
               <li key={index}>
                 <img
                   src={
                     item.avatar ||
-                    "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                    'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
                   }
                   alt="Student Avatar"
                 />

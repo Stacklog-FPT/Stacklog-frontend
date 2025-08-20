@@ -18,6 +18,7 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
     setSelectedClassId(null);
   };
 
+
   return (
     <div className={`class-dropdown ${isSidebarOpen ? '' : 'sidebar-closed'}`}>
       <div
@@ -51,11 +52,7 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
                     {classItem.classes_name}
                   </div>
                   {selectedClassId === classItem.classes_id && (
-                    <GroupDropDown
-                      classId={classItem.classes_id}
-                      groups={classGroups}
-                      onGroupClick={handleGroupClick}
-                    />
+                    <GroupDropDown classId={classItem.classes_id} groups={classGroups} />
                   )}
                 </li>
               );

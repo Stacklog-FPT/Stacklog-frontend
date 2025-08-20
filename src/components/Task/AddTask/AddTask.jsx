@@ -1,61 +1,56 @@
-import React, { useState } from "react";
-import "./AddTask.scss";
-import avatar_add_button from "../../../assets/icon/avatar_add_button.png";
-import assignUser from "../../../assets/task/assign-user.png";
-import iconPriority from "../../../assets/task/icon-priority.png";
-import iconSubTask from "../../../assets/task/icon-subtask.png";
-import trackTime from "../../../assets/task/icon-track-time.png";
-import { useAuth } from "../../../context/AuthProvider";
-import taskService from "../../../service/TaskService";
-import { toast } from "react-toastify";
-import axios from "axios";
-import decodeToken from "../../../service/DecodeJwt";
-import Swal from "sweetalert2";
+import React, { useState } from 'react';
+import './AddTask.scss';
+import avatar_add_button from '../../../assets/icon/avatar_add_button.png';
+import assignUser from '../../../assets/task/assign-user.png';
+import iconPriority from '../../../assets/task/icon-priority.png';
+import { useAuth } from '../../../context/AuthProvider';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import decodeToken from '../../../service/DecodeJwt';
+import { addTask } from '../../../service/TaskService';
+import { useDispatch } from 'react-redux';
 
-const AddTask = ({
-  status,
-  onCancel,
-  group,
-  members,
-  onTaskAdded,
-  task = {},
-}) => {
+const AddTask = ({ status, onCancel, group, members }) => {
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
-  const notify = () => toast.success("Add task is successfully");
-  const notifyFailure = () => toast.error("Add task is failure");
-  const { addTask } = taskService();
+  const dispatch = useDispatch();
+  const notify = () => toast.success('Add task is successfully');
+  const notifyFailure = () => toast.error('Add task is failure');
   const visibleMembers = members.slice(0, 3);
   const extraCount = members.length - visibleMembers.length;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
   const [taskData, setTaskData] = useState({
-    taskId: "",
-    taskTitle: "",
-    taskDescription: "",
-    groupId: group.groupsId || "",
-    documentId: "",
-    taskPoint: 5,
-    taskStartTime: "",
-    taskDueDate: "",
-    priority: "",
+    taskId: '',
+    taskTitle: '',
+    taskDescription: '',
+    groupId: group,
+    documentId: '',
+    taskPoint: 0,
+    taskDueDate: '',
+    taskStartTime: '',
+    priority: '',
+    createdBy: '',
+    createdAt: '',
+    updateBy: '',
+    updateAt: '',
     statusTaskId: status.statusTaskId,
+    review: ['', ''],
+    parentTask: null,
     assignTo: [],
-    parentTaskId: "",
   });
+
   const [colorPriority, setColorPriority] = useState([
-    { id: 1, color: "#FF6B6B", content: "HIGH", borderColor: "#DC2626" },
-    { id: 2, color: "#FFD60A", content: "MEDIUM", borderColor: "#D97706" },
-    { id: 3, color: "#22C55E", content: "LOW", borderColor: "#15803D" },
+    { id: 1, color: '#FF6B6B', content: 'HIGH', borderColor: '#DC2626' },
+    { id: 2, color: '#FFD60A', content: 'MEDIUM', borderColor: '#D97706' },
+    { id: 3, color: '#22C55E', content: 'LOW', borderColor: '#15803D' },
   ]);
-  const [selectedPriority, setSelectedPriority] = useState("HIGH");
+  const [selectedPriority, setSelectedPriority] = useState('HIGH');
   const selectedColor =
-    colorPriority.find((item) => item.content === selectedPriority)?.color ||
-    "#FFFFFF";
+    colorPriority.find((item) => item.content === selectedPriority)?.color || '#FFFFFF';
   const selectedBorderColor =
-    colorPriority.find((item) => item.content === selectedPriority)
-      ?.borderColor || "#000000";
+    colorPriority.find((item) => item.content === selectedPriority)?.borderColor || '#000000';
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -87,12 +82,12 @@ const AddTask = ({
 
   const validateForm = () => {
     if (!taskData.taskTitle.trim()) {
-      toast.error("Task title is required!");
+      toast.error('Task title is required!');
       return false;
     }
 
     if (!taskData.taskDescription.trim()) {
-      toast.error("Task description is required!");
+      toast.error('Task description is required!');
       return false;
     }
 
@@ -102,7 +97,7 @@ const AddTask = ({
     if (taskData.taskStartTime) {
       const startDate = new Date(taskData.taskStartTime);
       if (startDate < today) {
-        toast.error("Start date must be today or later!");
+        toast.error('Start date must be today or later!');
         return false;
       }
     }
@@ -110,7 +105,7 @@ const AddTask = ({
     if (taskData.taskDueDate) {
       const dueDate = new Date(taskData.taskDueDate);
       if (dueDate < today) {
-        toast.error("Due date must be today or later!");
+        toast.error('Due date must be today or later!');
         return false;
       }
     }
@@ -119,7 +114,7 @@ const AddTask = ({
       const startDate = new Date(taskData.taskStartTime);
       const dueDate = new Date(taskData.taskDueDate);
       if (startDate > dueDate) {
-        toast.error("Start date must be before or equal to due date!");
+        toast.error('Start date must be before or equal to due date!');
         return false;
       }
     }
@@ -137,58 +132,54 @@ const AddTask = ({
     setIsSubmitting(true);
     try {
       const now = new Date();
-      const currentTime = now.toTimeString().split(" ")[0];
+      const currentTime = now.toTimeString().split(' ')[0];
       let formattedStartTime = taskData.taskStartTime
         ? `${taskData.taskStartTime}T${currentTime}`
-        : "";
+        : '';
 
-      let formattedDueDate = taskData.taskDueDate
-        ? `${taskData.taskDueDate}T${currentTime}`
-        : "";
+      let formattedDueDate = taskData.taskDueDate ? `${taskData.taskDueDate}T${currentTime}` : '';
 
       const payload = {
-        taskId: "",
-        groupId: taskData.groupId || "",
+        taskId: Math.random().toString(),
+        group_id: taskData.groupId,
         taskTitle: taskData.taskTitle,
         taskDescription: taskData.taskDescription,
         statusTaskId: taskData.statusTaskId,
-        documentId: "",
+        documentId: '',
         taskPoint: 0,
         taskParentId: 0,
         taskStartTime: formattedStartTime,
         taskDueDate: formattedDueDate,
-        createdBy: user?.userName || userData?.username || "Unknown",
-        updatedBy: "",
-        priority: taskData.priority || "HIGH",
-        listUserAssign: taskData.assignTo,
+        createdBy: user?.userName || userData?.username || 'Unknown',
+        updatedBy: '',
+        priority: taskData.priority || 'HIGH',
+        assignTo: taskData.assignTo,
       };
+      const response = await addTask(payload, user.token, dispatch);
 
-      console.log(payload)
-      const response = await addTask(payload, user.token);
       if (response.data) {
         notify();
-        await axios.post("http://localhost:3000/notifications", {
+        await axios.post('http://localhost:3000/notifications', {
           id: Math.random().toString(16).slice(2, 6),
           title: `Announce add task ${taskData.taskTitle} by ${user.username}`,
           author: {
             _id: Math.random(),
-            name: user.username || userData?.username || "Unknown",
+            name: user.username || userData?.username || 'Unknown',
             avatar:
               user.avatar ||
-              "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+              'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
           },
-          createdAt: new Date().toISOString().split("T")[0],
+          createdAt: new Date().toISOString().split('T')[0],
           isRead: false,
           _id: Math.random(),
         });
-        if (onTaskAdded) onTaskAdded(response.data);
       }
       onCancel();
     } catch (e) {
       console.error(
-        "Failed to add task:",
+        'Failed to add task:',
         e.response ? e.response.data : e.message,
-        e.response ? e.response.status : ""
+        e.response ? e.response.status : '',
       );
       notifyFailure();
       onCancel();
@@ -242,16 +233,14 @@ const AddTask = ({
                         className="user-avatar"
                         onError={(e) =>
                           (e.target.src =
-                            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                            'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg')
                         }
                       />
                       <div className="check-icon">
                         <i className="fa-solid fa-check"></i>
                       </div>
                     </div>
-                    <span className="user-name">
-                      {member.name || member.userName}
-                    </span>
+                    <span className="user-name">{member.name || member.userName}</span>
                   </div>
                   <button
                     type="button"
@@ -270,10 +259,7 @@ const AddTask = ({
               className="add-member-btn"
               onClick={() => setShowAssignDropdown(!showAssignDropdown)}
             >
-              <img
-                src={avatar_add_button || "/placeholder.svg"}
-                alt="add_button_icon"
-              />
+              <img src={avatar_add_button || '/placeholder.svg'} alt="add_button_icon" />
               <span>Add Member</span>
             </button>
           </div>
@@ -292,18 +278,16 @@ const AddTask = ({
                       <img
                         src={
                           member.avatar ||
-                          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                          'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
                         }
                         alt={member.name || member.userName}
                         className="member-avatar"
                         onError={(e) =>
                           (e.target.src =
-                            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                            'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg')
                         }
                       />
-                      <span className="member-name">
-                        {member.name || member.userName}
-                      </span>
+                      <span className="member-name">{member.name || member.userName}</span>
                     </div>
                   </label>
                 ))}
@@ -313,7 +297,7 @@ const AddTask = ({
         </div>
         <div className="wrapper-priority">
           <div className="wrapper-priority-heading">
-            <img src={iconPriority || "/placeholder.svg"} alt="..." />
+            <img src={iconPriority || '/placeholder.svg'} alt="..." />
             <h2>Priority</h2>
           </div>
           <div className="priority-selector">
@@ -332,9 +316,7 @@ const AddTask = ({
               ></span>
               <span>{selectedPriority}</span>
               <i
-                className={`fa-solid ${
-                  showPriorityDropdown ? "fa-chevron-up" : "fa-chevron-down"
-                }`}
+                className={`fa-solid ${showPriorityDropdown ? 'fa-chevron-up' : 'fa-chevron-down'}`}
               ></i>
             </button>
             {showPriorityDropdown && (
@@ -343,7 +325,7 @@ const AddTask = ({
                   <div
                     key={item.id}
                     className={`priority-option ${
-                      selectedPriority === item.content ? "selected" : ""
+                      selectedPriority === item.content ? 'selected' : ''
                     }`}
                     onClick={() => handlePrioritySelect(item.content)}
                   >
@@ -386,7 +368,7 @@ const AddTask = ({
         </div>
         <div className="wrapper-btn-submit">
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit"}
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </button>
         </div>
       </form>

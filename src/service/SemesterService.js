@@ -6,7 +6,7 @@ import {
   getSemestersFailure,
 } from '../redux/slice/semesterSlice';
 
-export const fetchSemesters = (token) => async (dispatch) => {
+export const fetchSemesters = async (token, dispatch) => {
   try {
     dispatch(getSemestersStart());
     if (!token) throw new Error('Missing token or Invalid Token');

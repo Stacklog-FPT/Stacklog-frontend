@@ -4,11 +4,14 @@ import './styles/main.scss';
 import App from './App.jsx';
 import Provides from './context/index.jsx';
 import { Provider } from 'react-redux';
-import store from './redux/store.js';
+import store, { persistor } from './redux/store.js';
+import { PersistGate } from 'redux-persist/integration/react';
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <Provides>
-      <App />
-    </Provides>
+    <PersistGate loading={null} persistor={persistor}>
+      <Provides>
+        <App />
+      </Provides>
+    </PersistGate>
   </Provider>,
 );

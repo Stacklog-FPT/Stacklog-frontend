@@ -1070,179 +1070,234 @@
       "createdAt": "2025-08-12",
       "isRead": false,
       "_id": 0.903088132806474
-    }
-  ],
-  "semester": [
-    {
-      "_id": "65n423jb65b3jb523",
-      "semesterName": "FA25",
-      "semesterClass": [
-        {
-          "_id": "5b235b2b52b5i3b5i",
-          "name": "SWP391c",
-          "groups": [
-            {
-              "_id": "b5n4j235b43b254b3i2b5",
-              "groupName": "Group 1",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b6",
-              "groupName": "Group 2",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b7",
-              "groupName": "Group 3",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b8",
-              "groupName": "Group 4",
-              "groupsStudent": []
-            }
-          ]
-        },
-        {
-          "_id": "5b235b2b52b5i3b6i",
-          "name": "SDN302c",
-          "groups": [
-            {
-              "_id": "b5n4j235b43b254b3i2b1",
-              "groupName": "Group 1",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b2",
-              "groupName": "Group 2",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b3",
-              "groupName": "Group 3",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b4",
-              "groupName": "Group 4",
-              "groupsStudent": []
-            }
-          ]
-        },
-        {
-          "_id": "5b235b2b52b5i3b7i",
-          "name": "MLN111",
-          "groups": [
-            {
-              "_id": "b5n4j235b43b254b3i2b9",
-              "groupName": "Group 1",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b10",
-              "groupName": "Group 2",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b11",
-              "groupName": "Group 3",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b12",
-              "groupName": "Group 4",
-              "groupsStudent": []
-            }
-          ]
-        },
-        {
-          "_id": "5b235b2b52b5i3b8i",
-          "name": "MLN122",
-          "groups": [
-            {
-              "_id": "b5n4j235b43b254b3i2b13",
-              "groupName": "Group 1",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b14",
-              "groupName": "Group 2",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b15",
-              "groupName": "Group 3",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b16",
-              "groupName": "Group 4",
-              "groupsStudent": []
-            }
-          ]
-        },
-        {
-          "_id": "5b235b2b52b5i3b8i1",
-          "name": "WDP301",
-          "groups": [
-            {
-              "_id": "b5n4j235b43b254b3i2b17",
-              "groupName": "Group 1",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b18",
-              "groupName": "Group 2",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b19",
-              "groupName": "Group 3",
-              "groupsStudent": []
-            },
-            {
-              "_id": "b5n4j235b43b254b3i2b20",
-              "groupName": "Group 4",
-              "groupsStudent": []
-            }
-          ]
-        }
-      ],
-      "id": "5f9a"
-    }
-  ],
-
-  "status": [
-    {
-      "statusTaskId": "j2kb1kb42",
-      "statusTaskName": "ToDo",
-      "groupId": "b5n4j235b43b254b3i2b5",
-      "statusTaskColor": "red"
-    },
-
-    {
-      "statusTaskId": "j2kb1kb42",
-      "statusTaskName": "Doing",
-      "groupId": "b5n4j235b43b254b3i2b5",
-      "statusTaskColor": "blue"
     },
     {
-      "statusTaskId": "j2kb1kb42",
-      "statusTaskName": "UAT",
-      "groupId": "b5n4j235b43b254b3i2b5",
-      "statusTaskColor": "yellow"
+      "id": "90ca",
+      "title": "Announce add task Design Model User by hoaintt40",
+      "author": {
+        "_id": 0.6438539690287297,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.35193460341863325
     },
     {
-      "statusTaskId": "j2kb1kb42",
-      "statusTaskName": "ToDo",
-      "groupId": "b5n4j235b43b254b3i2b6",
-      "statusTaskColor": "green"
+      "id": "b3a9",
+      "title": "Announce add task Design common button submit by hoaintt40",
+      "author": {
+        "_id": 0.7305439527748588,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.4187623726198302
     },
     {
-      "statusTaskId": "j2kb1kb42",
-      "statusTaskName": "Doing",
-      "groupId": "b5n4j235b43b254b3i2b6",
-      "statusTaskColor": "black"
+      "id": "24a1",
+      "title": "Announce add task Thiết kế DB notification by hoaintt40",
+      "author": {
+        "_id": 0.15351156089389528,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.46618407439879905
+    },
+    {
+      "id": "7849",
+      "title": "Thông báo môn 321",
+      "author": {
+        "_id": 0.3471401115200916,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.3761176172973656
+    },
+    {
+      "id": "716a",
+      "title": "Announce add task Create user slice for manager state user by hoaintt40",
+      "author": {
+        "_id": 0.13895072479487314,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.9823695018502513
+    },
+    {
+      "id": "a2d5",
+      "title": "Thông báo môn Research Redux",
+      "author": {
+        "_id": 0.4887967431820992,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.2320657840982735
+    },
+    {
+      "id": "bb1c",
+      "title": "Thông báo môn 321",
+      "author": {
+        "_id": 0.6605955725003352,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.8608813054783742
+    },
+    {
+      "id": "49b9",
+      "title": "Comment by hoaintt40",
+      "author": {
+        "_id": 0.9229554701787636,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.8675068001816193
+    },
+    {
+      "id": "cdbd",
+      "title": "Comment by hoaintt40",
+      "author": {
+        "_id": 0.7823151865984757,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.27472511104871566
+    },
+    {
+      "id": "8160",
+      "title": "Comment by hoaintt40",
+      "author": {
+        "_id": 0.5832718829482837,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.24910380502917528
+    },
+    {
+      "id": "9e3c",
+      "title": "Thông báo môn 234432",
+      "author": {
+        "_id": 0.6696883383284916,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.8256330369343101
+    },
+    {
+      "id": "7e38",
+      "title": "Comment by hoaintt40",
+      "author": {
+        "_id": 0.5369951358688542,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.8044595991701751
+    },
+    {
+      "id": "e65b",
+      "title": "Comment by hoaintt40",
+      "author": {
+        "_id": 0.19789965790785558,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.39575322793475165
+    },
+    {
+      "id": "5513",
+      "title": "Comment by hoaintt40",
+      "author": {
+        "_id": 0.5456186128373429,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.09222504921974617
+    },
+    {
+      "id": "45a0",
+      "title": "Comment by hoaintt40",
+      "author": {
+        "_id": 0.002227365394119274,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.1257281774279192
+    },
+    {
+      "id": "4523",
+      "title": "Comment by hoaintt40",
+      "author": {
+        "_id": 0.4143768532620177,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.7050050028136864
+    },
+    {
+      "id": "ad69",
+      "title": "Comment by hoaintt40",
+      "author": {
+        "_id": 0.42375357095225596,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.7879482547943468
+    },
+    {
+      "id": "275f",
+      "title": "Comment by hoaintt40",
+      "author": {
+        "_id": 0.912898778946455,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-19",
+      "isRead": false,
+      "_id": 0.3812453371749732
+    },
+    {
+      "id": "b6fd",
+      "title": "Thông báo môn subtask",
+      "author": {
+        "_id": 0.2948444497923618,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-20",
+      "isRead": false,
+      "_id": 0.6145415757017038
     }
   ]
 }

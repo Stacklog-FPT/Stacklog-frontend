@@ -28,9 +28,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const semesters = useSelector(selectSemesters);
-  const pending = useSelector(selectPending);
   const currentSemesterId = useSelector(selectCurrentSemesterId);
-  const error = useSelector(selectError);
   const [showClasses, setShowClasses] = useState(false);
 
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 600 : false);
@@ -41,6 +39,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   }, []);
 
   const toggleSidebar = () => setIsOpen((prev) => !prev);
+
 
   const handleChatClick = () => {
     toggleGroupChat();
@@ -63,6 +62,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   useEffect(() => {
     if (user?.token) dispatch(fetchSemesters(user.token));
   }, [dispatch, user?.token]);
+
 
   useEffect(() => {
     if (currentSemesterId && user?.token) getClasses(currentSemesterId, user.token, dispatch);

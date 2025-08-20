@@ -31,7 +31,9 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   const currentSemesterId = useSelector(selectCurrentSemesterId);
   const [showClasses, setShowClasses] = useState(false);
 
-  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 600 : false);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= 600 : false,
+  );
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 600);
     window.addEventListener('resize', handleResize);
@@ -39,7 +41,6 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   }, []);
 
   const toggleSidebar = () => setIsOpen((prev) => !prev);
-
 
   const handleChatClick = () => {
     toggleGroupChat();
@@ -49,20 +50,18 @@ const SideBar = ({ isOpen, setIsOpen }) => {
 
   const dashBoardItems = [
     { name: 'Home', path: '/', icon: 'fa-solid fa-house' },
-    { name: 'Task', path: '/tasks', icon: 'fa-solid fa-list-check' },
-    { name: 'Class', path: '/class', icon: 'fa-solid fa-users' },
     { name: 'Schedule', path: '/schedule', icon: 'fa-solid fa-calendar-days' },
     { name: 'Documents', path: '/documents', icon: 'fa-solid fa-folder-plus' },
     { name: 'Chat', path: '/chatbox', icon: 'fa-solid fa-comment', onClick: handleChatClick },
     { name: 'Grades', path: '/grades', icon: 'fa-solid fa-user-graduate' },
     { name: 'Plan', path: '/plan', icon: 'fas fa-tasks' },
-    { name: 'More', path: '/more', icon: 'fas fa-info-circle' },
+    { name: 'Task', path: '/tasks', icon: 'fa-solid fa-list-check' },
+    { name: 'Class', path: '/class', icon: 'fa-solid fa-users' },
   ];
 
   useEffect(() => {
-    if (user?.token) dispatch(fetchSemesters(user.token));
+    if (user?.token) fetchSemesters(user.token, dispatch);
   }, [dispatch, user?.token]);
-
 
   useEffect(() => {
     if (currentSemesterId && user?.token) getClasses(currentSemesterId, user.token, dispatch);
@@ -82,9 +81,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
         </button>
       )}
 
-      {isMobile && isOpen && (
-        <div className="sidebar-overlay" onClick={handleOverlayClick}></div>
-      )}
+      {isMobile && isOpen && <div className="sidebar-overlay" onClick={handleOverlayClick}></div>}
 
       <div
         className={`navbar-container ${isOpen ? 'open' : 'close'}`}
@@ -125,7 +122,11 @@ const SideBar = ({ isOpen, setIsOpen }) => {
               {dashBoardItems.map((item, index) => (
                 <li key={index} className={item.name === 'Class' ? 'class-item' : ''}>
                   {item.name === 'Class' ? (
-                    <ClassDropdown showClasses={showClasses} setShowClasses={setShowClasses} isSidebarOpen={isOpen} />
+                    <ClassDropdown
+                      showClasses={showClasses}
+                      setShowClasses={setShowClasses}
+                      isSidebarOpen={isOpen}
+                    />
                   ) : (
                     <NavLink
                       to={item.path}

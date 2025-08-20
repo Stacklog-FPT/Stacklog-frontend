@@ -1,13 +1,13 @@
-import React from "react";
-import "./ClassPage.scss";
-import TaskByType from "../../components/ClassComponent/CheckTaskByType/TaskByType";
-import CheckTypeByAll from "../../components/ClassComponent/CheckTaskByType/CheckTypeByAll/CheckTypeByAll";
-import CheckTypeByList from "../../components/ClassComponent/CheckTaskByType/CheckTypeByList/CheckTypeByList";
-import CheckTaskBySelf from "../../components/ClassComponent/CheckTaskByType/CheckTaskBySelf/CheckTaskBySelf";
-import CheckTaskByStatus from "../../components/ClassComponent/CheckTaskByType/CheckTaskByStatus/CheckTaskByStatus";
-import ClassList from "../../components/ClassComponent/CheckTaskByType/ClassList/ClassList";
+import React from 'react';
+import './ClassPage.scss';
+import TaskByType from '../../components/ClassComponent/CheckTaskByType/TaskByType';
+import CheckTypeByAll from '../../components/ClassComponent/CheckTaskByType/CheckTypeByAll/CheckTypeByAll';
+import CheckTypeByList from '../../components/ClassComponent/CheckTaskByType/CheckTypeByList/CheckTypeByList';
+import Schedules from '../../components/Modal/Schedules/Schedules';
+import ClassList from '../../components/ClassComponent/CheckTaskByType/ClassList/ClassList';
+import Classes from '../../components/Modal/Classes/Classes';
 const ClassPage = () => {
-  const [activeType, setActiveType] = React.useState("All");
+  const [activeType, setActiveType] = React.useState('All');
   return (
     <div className="class-page">
       <div className="class-page-overview">
@@ -15,11 +15,15 @@ const ClassPage = () => {
       </div>
       <TaskByType activeType={activeType} setActiveType={setActiveType} />
 
-      {activeType === "All" && <CheckTypeByAll />}
-      {activeType === "Checklist" && <CheckTypeByList />}
-      {activeType === "By Status" && <CheckTaskByStatus />}
-      {activeType === "My Task" && <CheckTaskBySelf />}
-      {activeType === "Class List" && <ClassList />}
+      <div className="class-page-container">
+        {activeType === 'All' && <CheckTypeByAll />}
+        {activeType === 'Checklist' && <CheckTypeByList />}
+        {activeType === 'Schedules' && <Schedules />}
+        {activeType === 'Classes' && <Classes />}
+        {activeType === 'Documents' && <ClassList />}
+        {activeType === 'Plans' && <ClassList />}
+        {activeType === 'Chat' && <ClassList />}
+      </div>
     </div>
   );
 };

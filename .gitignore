@@ -23,7 +23,3 @@ dist-ssr
 *.sln
 *.sw?
 
-# Ignore package and lock files
-yarn.lock
-package-lock.json
-package.json

@@ -8,14 +8,14 @@ const GroupDropDown = ({ groups = [] }) => {
         <li className="group-empty">No groups</li>
       ) : (
         groups.map((g) => (
-          <li key={g.groups_id}>
+          <li key={g.groupsId}>
             <NavLink
-              to={`/tasks/${g.groups_id}`}
+              to={`/tasks/${g.groupsId}`}
               type="button"
               className="group-item"
-              title={g.groups_name}
+              title={g.groupsName}
             >
-              {g.groups_name}
+              {g.groupsName}
             </NavLink>
           </li>
         ))

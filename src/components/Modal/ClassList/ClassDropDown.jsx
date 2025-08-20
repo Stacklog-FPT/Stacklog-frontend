@@ -39,20 +39,20 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
         <ul className="class-dropdown-menu">
           {classes.length > 0 ? (
             classes.map((classItem) => {
-              const classGroups = groups.filter(
-                (group) => group.classes_id === classItem.classes_id
-              );
+              // const classGroups = groups.filter(
+              //   (group) => group.classesId === classItem.classesId
+              // );
 
               return (
-                <li key={classItem.classes_id}>
+                <li key={classItem.classesId}>
                   <div
                     className="class-dropdown-item"
-                    onClick={() => handleClassClick(classItem.classes_id)}
+                    onClick={() => handleClassClick(classItem.classesId)}
                   >
-                    {classItem.classes_name}
+                    {classItem.classesName}
                   </div>
-                  {selectedClassId === classItem.classes_id && (
-                    <GroupDropDown classId={classItem.classes_id} groups={classGroups} />
+                  {selectedClassId === classItem.classesId && (
+                    <GroupDropDown classId={classItem.classesId} groups={classItem.groups} />
                   )}
                 </li>
               );

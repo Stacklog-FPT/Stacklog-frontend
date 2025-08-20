@@ -15,7 +15,6 @@ import { CSS } from '@dnd-kit/utilities';
 import { FaTrashAlt, FaPlus } from 'react-icons/fa';
 import { useAuth } from '../../../../../context/AuthProvider';
 import SubTask from './SubTask/SubTask';
-import ReviewService from '../../../../../service/ReviewService';
 import { useDispatch } from 'react-redux';
 import { deleteTaskApi } from '../../../../../service/TaskService';
 
@@ -26,9 +25,7 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
   });
   const { user } = useAuth();
   const [showSubTask, setShowSubTask] = useState(false);
-  const { getAllReview } = ReviewService();
   const dispatch = useDispatch();
-  const [commentLength, setCommentLength] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(props.task?.taskTitle || '');
   const [editedStartTime, setEditedStartTime] = useState(props.task?.taskStartTime || '');
@@ -37,15 +34,14 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
   const handleSubtaskDragEnd = (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const oldIndex = subtasks.findIndex(
+    const oldIndex = props.task?.subTasks.findIndex(
       (item) => `${props.task.taskId}-subtask-${item.taskId}` === active.id,
     );
-    const newIndex = subtasks.findIndex(
+    const newIndex = props.task?.subtasks.findIndex(
       (item) => `${props.task.taskId}-subtask-${item.taskId}` === over.id,
     );
     if (oldIndex !== -1 && newIndex !== -1) {
-      const newSubtasks = arrayMove(subtasks, oldIndex, newIndex);
-      setSubtasks(newSubtasks);
+      const newSubtasks = arrayMove(props.task?.subTasks, oldIndex, newIndex);
     }
   };
 
@@ -60,24 +56,6 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
     cursor: isDraggingOverlay ? 'grabbing' : isDragging ? 'grabbing' : 'grab',
     width: isDraggingOverlay ? '260px' : undefined,
   };
-
-  const fetchCommentLength = async (taskId) => {
-    try {
-      const response = await getAllReview(user.token, taskId);
-      if (response) {
-        setCommentLength(response.data.length);
-      }
-    } catch (e) {
-      console.error('Error fetching comment length:', e.message);
-      setCommentLength(0);
-    }
-  };
-
-  useEffect(() => {
-    if (props.task?.taskId) {
-      fetchCommentLength(props.task.taskId);
-    }
-  }, [props.task?.taskId]);
 
   const visibleMembers = props?.members?.slice(0, 3);
   const extraCount = props?.members?.length - visibleMembers?.length;
@@ -369,9 +347,9 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
               <div className="task-content-contact-left-element">
                 <i
                   className="fa-solid fa-comment"
-                  onClick={() => props.onShowComment(props.task?.taskId)}
+                  onClick={() => props.onShowComment(props.task)} // Change taskId when mockup with BE
                 ></i>
-                <span>{commentLength}</span>
+                <span>{props.task?.reviews?.length || 0}</span>
               </div>
               <div
                 className="task-content-contact-left-element"

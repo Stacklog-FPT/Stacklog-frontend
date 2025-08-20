@@ -9,6 +9,7 @@ import {
   setTasks,
   addTasks,
   updateTasks,
+  resetTasks,
 } from '../redux/slice/taskSlice';
 
 const API_TASK = 'https://stacklog.id.vn/api/task';
@@ -42,6 +43,7 @@ export const getAllTask = async (token, groupId, dispatch) => {
   try {
     if (!token) dispatch(setError('Token is not valid or missing!'));
     dispatch(setPending(true));
+    dispatch(resetTasks());
     const response = await axios.get(`http://localhost:3001/task?group_id=${groupId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -102,6 +104,8 @@ export const updateTaskApi = async (taskId, taskData, token, dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    console.log(response);
     dispatch(updateTasks(response.data));
     dispatch(setPending(false));
     return response;

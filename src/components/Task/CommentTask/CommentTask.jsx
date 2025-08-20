@@ -1,83 +1,73 @@
-import { useState, useEffect } from "react";
-import "./CommentTask.scss";
-import avatar from "../../../assets/ava-chat.png";
-import smileIcon from "../../../assets/commentIcon/smile_icon.png";
-import imageIcon from "../../../assets/commentIcon/image_icon.png";
-import tagIcon from "../../../assets/commentIcon/tag_icon.png";
-import ReviewService from "../../../service/ReviewService";
-import userApi from "../../../service/UserService";
-import { useAuth } from "../../../context/AuthProvider";
-import { FaPen, FaTrashAlt, FaCheck } from "react-icons/fa";
-import { BsFillSendFill } from "react-icons/bs";
-import decodeToken from "../../../service/DecodeJwt";
-import Swal from "sweetalert2";
-import axios from "axios";
+import { useState, useEffect, useRef } from 'react';
+import './CommentTask.scss';
+import smileIcon from '../../../assets/commentIcon/smile_icon.png';
+import imageIcon from '../../../assets/commentIcon/image_icon.png';
+import tagIcon from '../../../assets/commentIcon/tag_icon.png';
+import ReviewService from '../../../service/ReviewService';
+import userApi from '../../../service/UserService';
+import { useAuth } from '../../../context/AuthProvider';
+import { FaPen, FaTrashAlt, FaCheck } from 'react-icons/fa';
+import { BsFillSendFill } from 'react-icons/bs';
+import decodeToken from '../../../service/DecodeJwt';
+import Swal from 'sweetalert2';
+import axios from 'axios';
+import { createReview } from '../../../service/ReviewService';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-const CommentTask = ({ task, isClose, handleDeleteReRender }) => {
-  const [newComment, setNewComment] = useState("");
-  const [comments, setComments] = useState([]);
+const CommentTask = ({ task, isClose }) => {
+  const tasks = useSelector((t) => t.task.tasks);
+  const currentTask = tasks.find((t) => t.id === task.id); // Change taskId before mockup with BE
+  const reviews = currentTask?.reviews || [];
+  const [newComment, setNewComment] = useState('');
   const [editingCommentId, setEditingCommentId] = useState(null);
-  const [editedComment, setEditedComment] = useState("");
+  const [editedComment, setEditedComment] = useState('');
   const [userMap, setUserMap] = useState({});
   const { user } = useAuth();
   const decoded = decodeToken(user.token);
   const { getUserById } = userApi();
-  const { getAllReview, createReview, deleteReview } = ReviewService();
-  useEffect(() => {
-    if (task) handleGetCommentTask();
-  }, [task]);
-
+  const { deleteReview } = ReviewService();
+  const dispatch = useDispatch();
+  const ref = useRef();
   const formatDate = (date) => {
-    if (!date) return "";
+    if (!date) return '';
     const d = new Date(date);
-    if (isNaN(d)) return "";
-    return `${String(d.getDate()).padStart(2, "0")}/${String(
-      d.getMonth() + 1
-    ).padStart(2, "0")}/${d.getFullYear()}`;
-  };
-
-  const handleGetCommentTask = async () => {
-    try {
-      const res = await getAllReview(user?.token, task);
-      if (res?.data) {
-        const data = res.data;
-        setComments(data);
-
-        const userIds = [...new Set(data.map((c) => c.createdBy))];
-        const userResults = await Promise.all(
-          userIds.map((id) => getUserById(user.token, id))
-        );
-
-        const map = {};
-        userResults.forEach((u) => {
-          map[u._id] = u;
-        });
-        setUserMap(map);
-      }
-    } catch (err) {
-      console.error("Error fetching comments:", err.message);
-    }
+    if (isNaN(d)) return '';
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(
+      2,
+      '0',
+    )}/${d.getFullYear()}`;
   };
 
   const handleSendComment = async () => {
     if (!newComment.trim()) return;
     try {
-      const payload = { reviewContent: newComment, taskId: task };
-      const res = await createReview(user?.token, payload);
+      const payload = {
+        ...currentTask,
+        reviews: [
+          ...(reviews || []),
+          {
+            reviewId: Math.random(),
+            reviewContent: newComment,
+            taskId: task.taskId,
+            createBy: user._id,
+          },
+        ],
+      };
+      const res = await createReview(user?.token, task.id, payload, dispatch);
       if (res) {
-        setNewComment("");
-        handleGetCommentTask();
-        await axios.post("http://localhost:3000/notifications", {
+        setNewComment('');
+        await axios.post('http://localhost:3000/notifications', {
           id: Math.random().toString(16).slice(2, 6),
           title: `Comment by ${user.username}`,
           author: {
             _id: Math.random(),
-            name: user.username || "Unknown",
+            name: user.username || 'Unknown',
             avatar:
               user.avatar ||
-              "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+              'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
           },
-          createdAt: new Date().toISOString().split("T")[0],
+          createdAt: new Date().toISOString().split('T')[0],
           isRead: false,
           _id: Math.random(),
         });
@@ -89,21 +79,18 @@ const CommentTask = ({ task, isClose, handleDeleteReRender }) => {
 
   const handleDeleteComment = async (commentId) => {
     const result = await Swal.fire({
-      title: "Are you sure to delete this task?",
+      title: 'Are you sure to delete this task?',
       text: "This action can't completed!",
-      icon: "warning",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#045745",
-      cancelButtonColor: "#c8cad4",
-      confirmButtonText: "Delete",
-      cancelButtonText: "Cancel",
+      confirmButtonColor: '#045745',
+      cancelButtonColor: '#c8cad4',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
     });
     if (result.isConfirmed) {
       try {
         const response = await deleteReview(user.token, commentId);
-        if (response === "Delete success") {
-          handleGetCommentTask();
-        }
       } catch (e) {
         throw new Error(e.message);
       }
@@ -126,42 +113,59 @@ const CommentTask = ({ task, isClose, handleDeleteReRender }) => {
 
       const res = await createReview(user?.token, payload);
       setEditingCommentId(null);
-      setEditedComment("");
-      handleGetCommentTask();
+      setEditedComment('');
     } catch (e) {
-      console.error("Update failed:", e.message);
+      console.error('Update failed:', e.message);
     }
   };
 
-  comments.map((item) => {});
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        isClose();
+      }
+    };
+
+    const handleEscKey = (e) => {
+      if (e.key === 'Escape') {
+        isClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscKey);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [isClose]);
 
   return (
-    <div className="comment__task__container">
+    <div className="comment__task__container" ref={ref}>
       <div className="comment__task__header">
         <h2>Comment</h2>
         <i className="fa-solid fa-xmark close-icon" onClick={isClose}></i>
       </div>
 
       <div className="comment__task__body">
-        {comments.length > 0 ? (
-          comments.map((item, index) => (
+        {reviews?.length > 0 ? (
+          reviews?.map((item, index) => (
             <div className="comment__task__card" key={index}>
               <div className="comment__task__card__header">
                 <div className="infor__user">
                   <img
                     src={
                       item.avatar_link ||
-                      "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                      'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
                     }
                     alt="avatar"
                   />
                   <div>
                     <p className="infor__user__name">
-                      {userMap[item.createdBy]?.full_name || "User"}
+                      {userMap[item.createdBy]?.full_name || 'User'}
                     </p>
-                    <p className="infor__user__create">
-                      {formatDate(item.createdAt)}
-                    </p>
+                    <p className="infor__user__create">{formatDate(item.createdAt)}</p>
                   </div>
                 </div>
               </div>
@@ -211,7 +215,7 @@ const CommentTask = ({ task, isClose, handleDeleteReRender }) => {
       <div className="comment__task__footer">
         <img
           src={
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+            'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
           }
           alt="avatar"
         />

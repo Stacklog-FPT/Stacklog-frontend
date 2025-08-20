@@ -7,6 +7,7 @@ import statusReducer from './slice/statusSlice';
 import classesReducer from './slice/classSlice';
 import groupReducer from './slice/groupSlice';
 import taskReducer from './slice/taskSlice';
+import scheduleReducer from './slice/scheduleSlice';
 
 const rootReducer = combineReducers({
   semester: semesterReducer,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   status: statusReducer,
   group: groupReducer,
   task: taskReducer,
+  schedule: scheduleReducer,
 });
 
 const persistConfig = {

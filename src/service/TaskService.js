@@ -43,7 +43,6 @@ export const getAllTask = async (token, groupId, dispatch) => {
   try {
     if (!token) dispatch(setError('Token is not valid or missing!'));
     dispatch(setPending(true));
-    dispatch(resetTasks());
     const response = await axios.get(`http://localhost:3001/task?group_id=${groupId}`, {
       headers: {
         Authorization: `Bearer ${token}`,

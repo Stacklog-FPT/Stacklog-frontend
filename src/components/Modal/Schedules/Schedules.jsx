@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import './MainComponent.scss';
-import Calendar from './Calendar/Calendar';
+import './Schedules.scss';
+import Calendar from '../../ScheduleComponents/Calendar/Calendar';
 import { FaPlus } from 'react-icons/fa';
-import AddScheduleForms from './AddScheduleForm/AddScheduleForm';
-const MainComponent = () => {
+import AddScheduleForms from '../../ScheduleComponents/AddScheduleForm/AddScheduleForm';
+const Schedules = () => {
   const [isShowAdd, setIsShowAdd] = useState(false);
   const [slot, setSlot] = useState(null);
 
@@ -42,4 +42,4 @@ const MainComponent = () => {
   );
 };
 
-export default MainComponent;
+export default Schedules;

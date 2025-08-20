@@ -1,7 +1,7 @@
 .group-dropdown {
   list-style: none;
   width: 100%;
-  margin: 10px 0 8px 40px;
+  margin: 10px 0 8px 0;
   padding: 0;
 
   .group-empty {
@@ -15,29 +15,22 @@
   }
 
   .group-item {
-    width: 150px;
-    background: transparent;
+    background: #045745;
+    color: #fff;
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-size: 15px;
+    font-weight: 500;
     border: none;
     cursor: pointer;
-    padding: 6px 10px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition: background 0.15s, color 0.15s;
+    text-align: left;
+    margin: 0 8px;
     text-decoration: none;
-    .group-icon {
-      font-size: 14px;
-    }
-    .group-name {
-      font-size: 14px;
-      flex: 1;
-      text-align: left;
-    }
 
     &:hover,
     &.active {
-      background: #045745;
+      background: #018060;
       color: #fff;
     }
   }

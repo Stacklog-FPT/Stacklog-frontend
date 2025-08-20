@@ -10,7 +10,7 @@ const Meeting = () => {
 
   const isLecture = user?.role == "LECTURER";
   return (
-    <div className="meeting__container">
+    <div className={`meeting__container ${isLecture ? "with-project" : "no-project"}`}>
       {isLecture && <OverallProject />}
       <div className="meeting">
         <div className="meeting__title">

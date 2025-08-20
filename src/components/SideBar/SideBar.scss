@@ -372,3 +372,139 @@ $color-hover: #045745;
     }
   }
 }
+
+@media (max-width: 1024px) {
+  .navbar-container {
+    width: 200px;
+    &.close {
+      width: 56px;
+    }
+  }
+  .wrapper_navbar_header {
+    padding: 16px 10px;
+    &_logo {
+      width: 100px;
+      height: 32px;
+    }
+  }
+  .navbar-dashboard,
+  .navbar-support {
+    padding: 8px 10px;
+  }
+  .semester__picker {
+    padding: 10px 10px 4px;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-container {
+    width: 100vw;
+    min-width: 0;
+    max-width: 100vw;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 5000;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.08);
+    &.close {
+      width: 56px;
+      min-width: 56px;
+      max-width: 56px;
+      .wrapper_navbar_header_logo {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+  .wrapper_navbar_header {
+    padding: 12px 6px;
+    &_logo {
+      width: 80px;
+      height: 28px;
+    }
+  }
+  .navbar-dashboard,
+  .navbar-support {
+    padding: 8px 4px;
+    ul {
+      gap: 2px;
+    }
+    li > .nav-link {
+      height: 36px;
+      padding: 0 8px;
+      font-size: 14px;
+    }
+  }
+  .semester__picker {
+    padding: 8px 4px 2px;
+  }
+  .semester-dropdown,
+  .class-dropdown {
+    max-width: 100vw;
+    .sd-trigger,
+    .class-dropdown-toggle {
+      font-size: 15px;
+      height: 38px;
+      padding: 0 8px;
+      border-radius: 12px;
+    }
+    .sd-menu,
+    .class-dropdown-menu {
+      min-width: 90vw;
+      max-width: 98vw;
+      width: 90vw;
+      left: 0;
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-container.close {
+    left: -56px;
+    transition: left 0.3s;
+  }
+  .navbar-container.open {
+    left: 0;
+    transition: left 0.3s;
+  }
+}
+@media (max-width: 600px) {
+  .mobile-sidebar-toggle {
+    position: fixed;
+    top: 28px;
+    left: 10px;
+    z-index: 6000;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    i {
+      font-size: 20px;
+      color: #045745;
+    }
+  }
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.18);
+    z-index: 5999;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-container {
+    z-index: 6000;
+  }
+  .sidebar-overlay {
+    z-index: 5999;
+  }
+}
+

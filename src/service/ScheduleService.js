@@ -1,5 +1,13 @@
 import axios from 'axios';
-import { getSchedules, setError, setPending, resetSchedule } from '../redux/slice/scheduleSlice';
+import {
+  getSchedules,
+  setError,
+  setPending,
+  resetSchedule,
+  addSchedules,
+  deleteSchedules,
+  updateSchedules,
+} from '../redux/slice/scheduleSlice';
 
 const SCHEDULE_API = 'https://stacklog.id.vn/api/schedule';
 const ScheduleService = () => {
@@ -87,12 +95,68 @@ export const getScheduleByGroupId = async (token, groupId, dispatch) => {
       },
     });
 
-    console.log('response: ', response);
-
     dispatch(resetSchedule());
     dispatch(getSchedules(response.data));
     dispatch(setPending(false));
   } catch (e) {
+    dispatch(setError(e.message));
+  }
+};
+
+export const addSlotByGroup = async (token, data, dispatch) => {
+  try {
+    if (!token) throw new Error('Token is missing!');
+    dispatch(setPending(true));
+    const response = await axios.post(`http://localhost:3001/schedule`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    dispatch(addSchedules(response.data));
+    dispatch(setPending(false));
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
+export const updateScheduleSlot = async (token, slotId, slotData, dispatch) => {
+  try {
+    if (!token) throw new Error('Token is missing!');
+    dispatch(setPending(true));
+    const response = await axios.put(`http://localhost:3001/schedule/${slotId}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log('debug: ', response);
+    dispatch(updateSchedules(response.data));
+    dispatch(setPending(false));
+    return response;
+  } catch (e) {
+    dispatch(setError(e.message));
+  }
+};
+
+export const deleteScheduleSlot = async (token, slotId, dispatch) => {
+  try {
+    if (!token) throw new Error('Token is missing!');
+    if (!slotId) throw new Error('Slot ID is missing!');
+    dispatch(setPending(true));
+    const response = await axios.delete(`http://localhost:3001/schedule/${slotId}`, {
+      // Change slotId before mockup with BE
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    dispatch(deleteSchedules(slotId));
+    dispatch(setPending(false));
+    return response;
+  } catch (error) {
     dispatch(setError(e.message));
   }
 };

@@ -8,7 +8,13 @@ const normalizeSemesters = (arr = []) =>
     }))
     .filter((x) => Boolean(x.id));
 
-const SemesterDropdown = ({ semesters = [], value, onChange, placeholder = 'Select semester', isSidebarOpen }) => {
+const SemesterDropdown = ({
+  semesters = [],
+  value,
+  onChange,
+  placeholder = 'Select semester',
+  isSidebarOpen,
+}) => {
   const items = useMemo(() => normalizeSemesters(semesters), [semesters]);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -32,7 +38,6 @@ const SemesterDropdown = ({ semesters = [], value, onChange, placeholder = 'Sele
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, []);
 
-  // Đóng menu khi sidebar đóng
   useEffect(() => {
     if (!isSidebarOpen) setOpen(false);
   }, [isSidebarOpen]);

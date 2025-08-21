@@ -4,11 +4,18 @@ import Calendar from '../../ScheduleComponents/Calendar/Calendar';
 import { FaPlus } from 'react-icons/fa';
 import AddScheduleForms from '../../ScheduleComponents/AddScheduleForm/AddScheduleForm';
 import { useParams } from 'react-router-dom';
-
+import { Toaster, toast } from 'sonner';
 const Schedules = () => {
   const { groupId } = useParams();
   const [isShowAdd, setIsShowAdd] = useState(false);
+  const [isCreated, setIsCreated] = useState(false);
   const handleClose = () => {
+    setIsShowAdd(false);
+  };
+
+  const handleCreated = () => {
+    toast.success('Created Slot successfully!');
+    setIsCreated((v) => !v);
     setIsShowAdd(false);
   };
 
@@ -22,6 +29,7 @@ const Schedules = () => {
 
   return (
     <div className="main__component">
+      <Toaster position="bottom-right" richColors closeButton />
       <div className="main__component__container">
         <div className="main__component__container__heading">
           <div className="main__component__container__heading__title">
@@ -38,7 +46,14 @@ const Schedules = () => {
         <Calendar groupId={groupId} />
       </div>
 
-      {isShowAdd && <AddScheduleForms onClose={handleClose} />}
+      {isShowAdd && (
+        <AddScheduleForms
+          onClose={handleClose}
+          isCreated={isCreated}
+          setIsCreated={setIsCreated}
+          onSuccess={handleCreated}
+        />
+      )}
     </div>
   );
 };

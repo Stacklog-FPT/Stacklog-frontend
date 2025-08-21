@@ -31,24 +31,26 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
           </div>
         </div>
       </div>
+
       {showClasses && isSidebarOpen && (
         <ul className="class-dropdown-menu">
           {classes.length > 0 ? (
-            classes.map((classItem) => {
-              return (
-                <li key={classItem.classesId}>
-                  <div
-                    className="class-dropdown-item"
-                    onClick={() => handleClassClick(classItem.classesId)}
-                  >
-                    {classItem.classesName}
-                  </div>
-                  {selectedClassId === classItem.classesId && (
-                    <GroupDropDown classId={classItem.classesId} groups={classItem.groups} />
-                  )}
-                </li>
-              );
-            })
+            classes.map((classItem) => (
+              <li key={classItem.classesId}>
+                <div
+                  className="class-dropdown-item"
+                  onClick={() => handleClassClick(classItem.classesId)}
+                  title={classItem.classesName}
+                >
+                  <i className="fa-regular fa-folder class-icon" />
+                  <span className="class-name">{classItem.classesName}</span>
+                </div>
+
+                {selectedClassId === classItem.classesId && (
+                  <GroupDropDown classId={classItem.classesId} groups={classItem.groups} />
+                )}
+              </li>
+            ))
           ) : (
             <li className="class-dropdown-empty">No classes available</li>
           )}

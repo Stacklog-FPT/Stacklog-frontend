@@ -15,7 +15,6 @@ $color-hover: #045745;
   cursor: pointer;
   border-radius: 14px;
   background: #fff;
-  border: 1.5px solid #b0b7c3;
   font-size: 16px;
   font-weight: 600;
   transition: border-color 0.18s, background 0.18s;
@@ -40,10 +39,10 @@ $color-hover: #045745;
   }
   .nav-icon-container-text {
     font-size: 16px;
-    color: #045745;
+    color: #545454;
   }
   i {
-    color: #045745;
+    color: #545454;
     font-size: 16px;
   }
   .arrow-transition {
@@ -74,7 +73,7 @@ $color-hover: #045745;
   .class-dropdown-item {
     display: block;
     padding: 10px 20px;
-    color: #045745;
+    color: #545454;
     text-decoration: none;
     font-size: 15px;
     border-radius: 8px;
@@ -98,7 +97,6 @@ $color-hover: #045745;
   }
 }
 
-// Khi sidebar đóng, menu vẫn position: absolute, width: 260px, left: 0
 .class-dropdown.sidebar-closed .class-dropdown-menu {
   left: 0;
   min-width: 260px;
@@ -121,4 +119,88 @@ $color-hover: #045745;
     width: 90vw;
     left: 0;
   }
+}
+
+.class-dropdown .class-dropdown-menu {
+  position: static;
+  inset: auto;
+  width: 100%;
+  margin-top: 8px;
+  padding: 0 0 0 16px;
+
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+
+  max-height: none;
+  overflow: visible;
+}
+
+.class-dropdown.sidebar-closed .class-dropdown-menu {
+  left: auto;
+  right: auto;
+  min-width: 0;
+  max-width: none;
+  width: 100%;
+}
+
+.class-dropdown .class-dropdown-toggle {
+  line-height: 1.2;
+}
+
+.class-dropdown .class-dropdown-menu {
+  padding-left: 16px;
+  margin-top: 6px;
+}
+
+.class-dropdown .class-dropdown-menu li {
+  margin: 2px 0;
+}
+
+.class-dropdown .class-dropdown-menu .class-dropdown-item {
+  padding: 6px 0 6px 20px;
+  line-height: 1.25;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.class-dropdown .arrow-transition {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+}
+
+.class-dropdown .class-dropdown-toggle:focus-visible,
+.class-dropdown .class-dropdown-item:focus-visible {
+  outline: 2px solid rgba(4, 87, 69, 0.35);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.class-dropdown .class-dropdown-menu .class-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.class-dropdown .class-dropdown-menu .class-dropdown-item .class-icon {
+  font-size: 14px;
+  color: #545454;
+  flex-shrink: 0;
+}
+
+.class-dropdown .class-dropdown-menu .class-dropdown-item .class-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.class-dropdown .class-dropdown-menu .class-dropdown-item:hover .class-icon,
+.class-dropdown .class-dropdown-menu .class-dropdown-item.active .class-icon {
+  color: inherit;
 }

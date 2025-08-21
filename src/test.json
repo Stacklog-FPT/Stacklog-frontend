@@ -43,11 +43,8 @@
           "updateAt": "timestamp",
           "updateBy": "user_id",
           "groupStudent": [
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên"
+            "688e11c4e4acb643f2bbc484",
+            "688e11b2e4acb643f2bbc482"
           ]
         },
         {
@@ -61,11 +58,8 @@
           "updateAt": "timestamp",
           "updateBy": "user_id",
           "groupStudent": [
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên"
+            "688e11c4e4acb643f2bbc484",
+            "688e119fe4acb643f2bbc480"
           ]
         }
       ]
@@ -91,11 +85,8 @@
           "updateAt": "timestamp",
           "updateBy": "user_id",
           "groupStudent": [
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên"
+            "688e1182e4acb643f2bbc47e",
+            "688e110fe4acb643f2bbc47b"
           ]
         },
         {
@@ -109,11 +100,8 @@
           "updateAt": "timestamp",
           "updateBy": "user_id",
           "groupStudent": [
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên"
+            "688e1238e4acb643f2bbc486",
+            "688e11c4e4acb643f2bbc484"
           ]
         }
       ]
@@ -139,11 +127,8 @@
           "updateAt": "timestamp",
           "updateBy": "user_id",
           "groupStudent": [
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên"
+            "688e11c4e4acb643f2bbc484",
+            "688e1238e4acb643f2bbc486"
           ]
         },
         {
@@ -157,11 +142,8 @@
           "updateAt": "timestamp",
           "updateBy": "user_id",
           "groupStudent": [
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên",
-            "user_id_của_sinh_viên"
+            "688e110fe4acb643f2bbc47b",
+            "688e1182e4acb643f2bbc47e"
           ]
         }
       ]
@@ -234,7 +216,7 @@
       "group_id": "1",
       "taskTitle": "3",
       "taskDescription": "Thiết kế DB healthy và balance",
-      "statusTaskId": "123",
+      "statusTaskId": "125",
       "documentId": "",
       "taskPoint": 0,
       "taskParentId": 0,
@@ -271,29 +253,27 @@
   "schedule": [
     {
       "slotId": "123",
-      "createdAt": "2025-08-21T09:29:59",
+      "createdAt": "2025-08-20T10:00:00",
       "createdBy": "",
       "updateAt": "",
       "updateBy": "",
       "groupId": "1",
-      "slotDescription": "Họp vui vẻ thôi chi căng đâu",
-      "slotStartTime": "2025-08-21T09:29:59",
-      "slotTittle": "Ngồi đánh uno online tí ae",
-      "assignTo": [],
-      "id": "7c3b"
+      "slotDescription": "",
+      "slotStartTime": "2025-08-21T12:00:00",
+      "slotTittle": "Họp về đề tài",
+      "userId": "688e1238e4acb643f2bbc486"
     },
     {
       "slotId": "123",
-      "createdAt": "2025-08-23T09:29:59",
+      "createdAt": "2025-08-20T10:00:00",
       "createdBy": "",
       "updateAt": "",
       "updateBy": "",
       "groupId": "1",
-      "slotDescription": "Họp vui vẻ thôi chi căng đâu",
-      "slotStartTime": "2025-08-23T09:29:59",
-      "slotTittle": "Cần tìm ae nào biết đánh cờ vua",
-      "assignTo": [],
-      "id": "5b1a"
+      "slotDescription": "",
+      "slotStartTime": "2025-08-21T12:00:00",
+      "slotTittle": "Họp về đề tài",
+      "userId": "688e1238e4acb643f2bbc486"
     }
   ]
 }

@@ -18,19 +18,15 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
     setSelectedClassId(null);
   };
 
-
   return (
     <div className={`class-dropdown ${isSidebarOpen ? '' : 'sidebar-closed'}`}>
-      <div
-        className="class-dropdown-toggle"
-        onClick={() => setShowClasses(!showClasses)}
-      >
+      <div className="class-dropdown-toggle" onClick={() => setShowClasses(!showClasses)}>
         <div className="nav-icon-container">
           <div className="nav-icon-container-inner">
             <i className="fa-solid fa-users"></i>
             <span className="nav-icon-container-text">Class</span>
           </div>
-          <div className={`arrow-transition ${showClasses ? "rotated" : ""}`}>
+          <div className={`arrow-transition ${showClasses ? 'rotated' : ''}`}>
             <i className="fa-solid fa-chevron-down"></i>
           </div>
         </div>
@@ -39,10 +35,6 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
         <ul className="class-dropdown-menu">
           {classes.length > 0 ? (
             classes.map((classItem) => {
-              // const classGroups = groups.filter(
-              //   (group) => group.classesId === classItem.classesId
-              // );
-
               return (
                 <li key={classItem.classesId}>
                   <div

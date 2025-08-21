@@ -201,45 +201,15 @@
       "statusTaskName": "Up Coming",
       "statusTaskColor": "#9bc936",
       "groupId": "2"
+    },
+    {
+      "id": "7a39",
+      "statusTaskName": "To Do",
+      "statusTaskColor": "#98db33",
+      "groupId": "swp1"
     }
   ],
   "task": [
-    {
-      "taskId": "123",
-      "taskTitle": "1",
-      "taskDescription": "API lành mạnh và healthy",
-      "groupId": "1",
-      "documentId": "",
-      "taskPoint": 0,
-      "taskDueDate": "2025-08-24T08:30:00Z",
-      "taskStartTime": "2025-08-19T08:30:00Z",
-      "priority": "HIGH",
-      "createdBy": "",
-      "createdAt": "",
-      "updateBy": "",
-      "updateAt": "",
-      "statusTaskId": "124",
-      "review": [
-        "reviewid",
-        "reviewid"
-      ],
-      "parentTask": null,
-      "assignTo": [],
-      "subTasks": [
-        {
-          "taskId": 0.49668218049291246,
-          "taskTitle": "subtask",
-          "taskDescription": "alo",
-          "priority": "HIGH",
-          "statusTaskId": "123",
-          "taskStartTime": "2025-08-21T19:22:11",
-          "taskDueDate": "2025-08-22T19:22:11",
-          "listUserAssign": [],
-          "parentTaskId": "123"
-        }
-      ],
-      "id": "73ca"
-    },
     {
       "id": "6377",
       "taskId": "0.3012876117344242",
@@ -273,33 +243,57 @@
       "createdBy": "hoaintt40",
       "updatedBy": "",
       "priority": "MEDIUM",
-      "assignTo": []
+      "assignTo": [],
+      "reviews": [
+        {
+          "reviewId": 0.42457602088771085,
+          "reviewContent": "Hello",
+          "taskId": "0.683116282942126"
+        },
+        {
+          "reviewId": 0.5395189702117213,
+          "reviewContent": "Lo",
+          "taskId": "0.683116282942126"
+        },
+        {
+          "reviewId": 0.10407642705794307,
+          "reviewContent": "Hello cu",
+          "taskId": "0.683116282942126"
+        },
+        {
+          "reviewId": 0.7961391350010893,
+          "reviewContent": "Hello",
+          "taskId": "0.683116282942126"
+        }
+      ]
     }
   ],
   "schedule": [
     {
       "slotId": "123",
-      "createdAt": "2025-08-20T10:00:00",
+      "createdAt": "2025-08-21T09:29:59",
       "createdBy": "",
       "updateAt": "",
       "updateBy": "",
       "groupId": "1",
-      "slotDescription": "",
-      "slotStartTime": "2025-08-21T12:00:00",
-      "slotTittle": "Họp về đề tài",
-      "userId": "688e1238e4acb643f2bbc486"
+      "slotDescription": "Họp vui vẻ thôi chi căng đâu",
+      "slotStartTime": "2025-08-21T09:29:59",
+      "slotTittle": "Ngồi đánh uno online tí ae",
+      "assignTo": [],
+      "id": "7c3b"
     },
     {
       "slotId": "123",
-      "createdAt": "2025-08-20T10:00:00",
+      "createdAt": "2025-08-23T09:29:59",
       "createdBy": "",
       "updateAt": "",
       "updateBy": "",
       "groupId": "1",
-      "slotDescription": "",
-      "slotStartTime": "2025-08-21T12:00:00",
-      "slotTittle": "Họp về đề tài",
-      "userId": "688e1238e4acb643f2bbc486"
+      "slotDescription": "Họp vui vẻ thôi chi căng đâu",
+      "slotStartTime": "2025-08-23T09:29:59",
+      "slotTittle": "Cần tìm ae nào biết đánh cờ vua",
+      "assignTo": [],
+      "id": "5b1a"
     }
   ]
 }

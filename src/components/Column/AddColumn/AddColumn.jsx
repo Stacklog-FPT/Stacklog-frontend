@@ -5,14 +5,14 @@ import { useAuth } from '../../../context/AuthProvider';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 
-const AddColumn = ({ onCancel, group, onColumnUpdated, groupId }) => {
+const AddColumn = ({ onCancel, group, groupId }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
   const [color, setColor] = useState('#3498db');
   const [columnData, setColumnData] = useState({
     statusTaskName: '',
     statusTaskColor: '' || color,
-    groupId: group.groupsId,
+    groupId: groupId,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { addStatuses } = statusApi();

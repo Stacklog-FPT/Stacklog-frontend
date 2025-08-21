@@ -21,13 +21,13 @@ const tasksSlice = createSlice({
     },
     updateTasks: (state, action) => {
       const { id, ...changes } = action.payload;
-      const task = state.tasks.find((t) => t.id === id);
+      const task = state.tasks.find((t) => t.id === id); // Change taskId before mockup with BE
       if (task) {
         Object.assign(task, changes);
       }
     },
     deleteTask: (state, action) => {
-      state.tasks = state.tasks.filter((t) => t.id !== action.payload);
+      state.tasks = state.tasks.filter((t) => t.id !== action.payload); // Change taskId before mockup with BE
     },
     setPending: (state, action) => {
       state.pending = action.payload;

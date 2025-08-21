@@ -27,7 +27,6 @@ const CheckTypeByAll = () => {
   const dispatch = useDispatch();
   const statuses = useSelector((s) => s.status.statuses);
   const tasks = useSelector((t) => t.task.tasks);
-  // const groups = useSelector((g) => g.group.groups);
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
@@ -257,7 +256,6 @@ const CheckTypeByAll = () => {
               onCancel={handleCloseAddStatus}
               groupId={groupId}
               members={memberTask}
-              // onColumnUpdated={handleColumnUpdated}
             />
           )}
           {showAddSubTask && (
@@ -265,7 +263,6 @@ const CheckTypeByAll = () => {
               isClose={handleCloseAddSubtask}
               task={showAddSubTask}
               members={memberTask}
-              // onSubTaskAdded={() => handleGetTasks(groupId)}
             />
           )}
         </div>

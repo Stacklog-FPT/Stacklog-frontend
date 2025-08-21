@@ -22,6 +22,8 @@ import { useSelector } from 'react-redux';
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(RBCalendar);
 
+// ================= Làm alert thì làm theo  import { Toaster, toast } from 'sonner';
+// ================= Ví dụ làm có dính đến hỏi confirm thì làm với Swal có import ở trên
 export default function Calendar({ groupId }) {
   const { user } = useAuth();
   const dispatch = useDispatch();

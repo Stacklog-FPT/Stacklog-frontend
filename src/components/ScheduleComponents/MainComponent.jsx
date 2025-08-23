@@ -34,7 +34,7 @@ const MainComponent = () => {
             </button>
           </div>
         </div>
-        <Calendar />
+        <Calendar isPage={isPage} />
       </div>
 
       {isShowAdd && <AddScheduleForms onClose={handleClose} isPage={isPage} />}

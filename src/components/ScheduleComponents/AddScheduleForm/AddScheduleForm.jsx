@@ -112,7 +112,7 @@ const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess
     const payload = {
       ...scheduleData,
       slotStarTime: fullDateTime,
-      groupId: selectedGroup?.groupsId || groupId,
+      groupId: [selectedGroup?.groupsId || groupId],
       assignTo: selectedGroup?.groupStudent.map((s) => s) || getGroup().groupStudent,
     };
 

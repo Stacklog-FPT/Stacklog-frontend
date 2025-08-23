@@ -42,7 +42,10 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
+          "groupStudent": [
+            "688e11c4e4acb643f2bbc484",
+            "688e11b2e4acb643f2bbc482"
+          ]
         },
         {
           "groupsId": "swp2",
@@ -54,7 +57,10 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e119fe4acb643f2bbc480"]
+          "groupStudent": [
+            "688e11c4e4acb643f2bbc484",
+            "688e119fe4acb643f2bbc480"
+          ]
         }
       ],
       "id": "e401"
@@ -79,7 +85,10 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"]
+          "groupStudent": [
+            "688e1182e4acb643f2bbc47e",
+            "688e110fe4acb643f2bbc47b"
+          ]
         },
         {
           "groupsId": "2",
@@ -91,7 +100,10 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": ["688e1238e4acb643f2bbc486", "688e11c4e4acb643f2bbc484"]
+          "groupStudent": [
+            "688e1238e4acb643f2bbc486",
+            "688e11c4e4acb643f2bbc484"
+          ]
         }
       ],
       "id": "3103"
@@ -116,7 +128,10 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e1238e4acb643f2bbc486"]
+          "groupStudent": [
+            "688e11c4e4acb643f2bbc484",
+            "688e1238e4acb643f2bbc486"
+          ]
         },
         {
           "groupsId": "unique_id_for_group_2",
@@ -128,7 +143,10 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": ["688e110fe4acb643f2bbc47b", "688e1182e4acb643f2bbc47e"]
+          "groupStudent": [
+            "688e110fe4acb643f2bbc47b",
+            "688e1182e4acb643f2bbc47e"
+          ]
         }
       ],
       "id": "958d"
@@ -237,12 +255,31 @@
   ],
   "schedule": [
     {
-      "id": "af9a",
-      "slotTitle": "Họp nhóm lần 2",
-      "slotDescription": "Funny",
-      "slotStarTime": "2025-08-25T08:00:00",
-      "groupId": "1",
-      "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"]
+      "slotId": "55f9",
+      "slotTitle": "Họp bàn về design UI",
+      "slotDescription": "",
+      "slotStarTime": "2025-08-23T19:00:00.000Z",
+      "groupId": [
+        "1"
+      ],
+      "assignTo": [
+        "688e1182e4acb643f2bbc47e",
+        "688e110fe4acb643f2bbc47b"
+      ],
+      "id": "55f9"
+    },
+    {
+      "id": "3c56",
+      "slotTitle": "Họp nhóm lần 3",
+      "slotDescription": "Hehe",
+      "slotStarTime": "2025-08-28T08:00:00",
+      "groupId": [
+        "swp1"
+      ],
+      "assignTo": [
+        "688e11c4e4acb643f2bbc484",
+        "688e11b2e4acb643f2bbc482"
+      ]
     }
   ]
 }

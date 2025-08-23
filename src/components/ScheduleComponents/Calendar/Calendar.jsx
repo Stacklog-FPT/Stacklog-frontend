@@ -18,7 +18,7 @@ import { addHours } from 'date-fns';
 import { Toaster, toast } from 'sonner';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-
+import decodeToken from '../../../service/DecodeJwt';
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(RBCalendar);
 
@@ -27,9 +27,21 @@ export default function Calendar({ groupId, isPage }) {
   const dispatch = useDispatch();
   const { schedules, pending } = useSelector((s) => s.schedule);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const showingSchedule = () => {
+    let scheduleList = [];
+
+    if (isPage) {
+      scheduleList = schedules.filter((s) => s.assignTo.includes(decodeToken(user.token).id));
+    } else {
+      scheduleList = schedules.filter((s) => s.groupId.includes(groupId));
+    }
+
+    return scheduleList;
+  };
+
   const events = useMemo(() => {
-    if (!Array.isArray(schedules)) return [];
-    return schedules.map((e) => {
+    if (!Array.isArray(showingSchedule())) return [];
+    return showingSchedule().map((e) => {
       const id = e.slotId ?? e.id;
       const title = e.slotTitle ?? e.slotTittle ?? e.title ?? 'No title';
       const startISO = e.slotStartTime ?? e.slotStarTime ?? e.start;
@@ -57,9 +69,9 @@ export default function Calendar({ groupId, isPage }) {
       slotId: updatedEvent.id,
       slotTitle: updatedEvent.title,
       slotDescription: updatedEvent.description || '',
-      slotStarTime: new Date(start).toISOString(),
-      groupId: updatedEvent.groupId || '',
-      userIdAssigns: updatedEvent.userIdAssigns || [],
+      slotStarTime: new Date(updatedEvent.start).toISOString(),
+      groupId: updatedEvent.groupId || [],
+      assignTo: updatedEvent.assignTo || [],
     };
 
     await updateScheduleSlot(user.token, payload.slotId, payload, dispatch);
@@ -78,9 +90,9 @@ export default function Calendar({ groupId, isPage }) {
       };
 
       await updateScheduleSlot(user.token, payload.slotId, payload, dispatch);
-      console.log('✅ Đã cập nhật slot:', payload);
+      toast.success('Updated slot successfully!');
     } catch (err) {
-      console.error('❌ Lỗi khi update slot:', err);
+      toast.error(err);
     }
   };
 
@@ -102,8 +114,8 @@ export default function Calendar({ groupId, isPage }) {
   };
 
   useEffect(() => {
-    getScheduleByGroupId(user.token, groupId, dispatch);
-  }, [groupId]);
+    getScheduleByGroupId(user.token, dispatch);
+  }, []);
 
   return (
     <div className="calendar-wrapper">

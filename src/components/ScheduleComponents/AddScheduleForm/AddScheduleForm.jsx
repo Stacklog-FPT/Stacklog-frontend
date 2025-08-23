@@ -6,10 +6,13 @@ import { useSelector } from 'react-redux';
 import { addSlotByGroup } from '../../../service/ScheduleService';
 import { useDispatch } from 'react-redux';
 import { Toaster, toast } from 'sonner';
-const AddScheduleForms = ({ onClose, isCreated, setIsCreated, onSuccess }) => {
+import { isGroup } from '../../../helper/validateStudentGroup';
+const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess, isPage }) => {
   const { user } = useAuth();
-  const { groups } = useSelector((g) => g.group);
   const dispatch = useDispatch();
+  const { classes } = useSelector((state) => state.class);
+  const groupList = useSelector((state) => state.group.groups);
+  const [selectedClasses, setSelectedClasses] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
@@ -18,12 +21,31 @@ const AddScheduleForms = ({ onClose, isCreated, setIsCreated, onSuccess }) => {
     slotDescription: '',
     slotStarTime: '',
     groupId: '',
-    userIdAssigns: [],
+    assignTo: '',
   });
 
+  const getGroup = () => {
+    const group = groupList.find((g) => g.groupsId === groupId);
+    return group;
+  };
+  const handleSelectClass = (e) => {
+    const classId = e.target.value;
+    const classChoose = classes.find((c) => c.classesId === classId);
+    setSelectedClasses(classChoose);
+  };
+
   const handleSelectGroup = (e) => {
-    const groupId = e.target.value;
-    const group = groups.find((g) => g.groupsId === groupId);
+    const groupsId = e.target.value;
+
+    const classObj = classes.find(
+      (c) => String(c.classesId) === String(selectedClasses?.classesId),
+    );
+    if (!classObj) {
+      setSelectedGroup(null);
+      return;
+    }
+
+    const group = classObj.groups.find((g) => String(g.groupsId) === String(groupsId));
     setSelectedGroup(group);
   };
 
@@ -40,10 +62,7 @@ const AddScheduleForms = ({ onClose, isCreated, setIsCreated, onSuccess }) => {
   };
 
   const validateForm = () => {
-    if (!selectedGroup) {
-      toast.error('Please select a group!');
-      return false;
-    }
+    if (!isGroup(isPage, selectedGroup)) toast.error('Please selected group!');
 
     if (!scheduleData.slotTitle.trim()) {
       toast.error('Slot title is required!');
@@ -76,16 +95,16 @@ const AddScheduleForms = ({ onClose, isCreated, setIsCreated, onSuccess }) => {
     return true;
   };
 
+  // Submit for groups
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
-
-    if (!selectedGroup || !date || !time) {
+    if (!isGroup(isPage, selectedGroup)) toast.error('Please selected group!');
+    if (!date || !time) {
       toast.error('All input are required!');
-
       return;
     }
 
@@ -93,8 +112,8 @@ const AddScheduleForms = ({ onClose, isCreated, setIsCreated, onSuccess }) => {
     const payload = {
       ...scheduleData,
       slotStarTime: fullDateTime,
-      groupId: selectedGroup.groupsId,
-      userIdAssigns: selectedGroup.groupStudent.map((s) => s),
+      groupId: [selectedGroup?.groupsId || groupId],
+      assignTo: selectedGroup?.groupStudent.map((s) => s) || getGroup().groupStudent,
     };
 
     await addSlotByGroup(user.token, payload, dispatch);
@@ -102,6 +121,8 @@ const AddScheduleForms = ({ onClose, isCreated, setIsCreated, onSuccess }) => {
     onClose();
     setIsCreated(!isCreated);
   };
+
+  // Submit for current group
 
   return (
     <div className="modal-overlay">
@@ -114,15 +135,30 @@ const AddScheduleForms = ({ onClose, isCreated, setIsCreated, onSuccess }) => {
           <h3>Add new slot</h3>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <select value={selectedGroup?.groupsId || ''} onChange={handleSelectGroup} required>
-              <option value="">-- Choose Group --</option>
-              {groups.map((group) => (
-                <option key={group.groupsId} value={group.groupsId}>
-                  {group.groupsName}
-                </option>
-              ))}
-            </select>
-            {selectedGroup && (
+            {isPage && (
+              <div className="select-wrapper">
+                <select onChange={handleSelectClass}>
+                  <option>-- Choose Classes --</option>
+                  {classes.map((item) => {
+                    return (
+                      <option key={item.classesId} value={item.classesId}>
+                        {item.classesName}
+                      </option>
+                    );
+                  })}
+                </select>
+                <select value={selectedGroup?.groupsId || ''} onChange={handleSelectGroup} required>
+                  <option>-- Choose Group --</option>
+                  {selectedClasses?.groups.map((group) => (
+                    <option key={group.groupsId} value={group.groupsId}>
+                      {group.groupsName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {selectedGroup && isPage && (
               <button
                 type="button"
                 onClick={handleRemoveSelectedGroup}

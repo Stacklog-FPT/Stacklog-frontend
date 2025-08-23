@@ -20,6 +20,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setTasks } from '../../../../redux/slice/taskSlice';
 import { getAllTask, updateTaskApi } from '../../../../service/TaskService';
 import { getStatus } from '../../../../service/ColumnService';
+import { isLeader } from '../../../../helper/validateStudentGroup';
+import decodeToken from '../../../../service/DecodeJwt';
 
 const CheckTypeByAll = () => {
   const { user } = useAuth();
@@ -27,6 +29,7 @@ const CheckTypeByAll = () => {
   const dispatch = useDispatch();
   const statuses = useSelector((s) => s.status.statuses);
   const tasks = useSelector((t) => t.task.tasks);
+  const groupList = useSelector((state) => state.group.groups);
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
@@ -34,14 +37,8 @@ const CheckTypeByAll = () => {
   const [showAddColumn, setShowAddColumn] = useState(false);
   const [memberTask, setMemberTask] = useState([]);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
-  const [group, setGroup] = useState({});
   const [showAddSubTask, setShowAddSubTask] = useState(null);
-
-  const isLeader = () => group.groupsLeaderId === user?.id;
-
-  const updateTaskStatus = async (taskId, taskData) => {
-    await updateTaskApi(taskId, taskData, user.token, dispatch);
-  };
+  const checkRole = null;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -50,6 +47,19 @@ const CheckTypeByAll = () => {
       },
     }),
   );
+  const checkIsLeader = () => {
+    const currentGroup = groupList.find((g) => g.groupsId === groupId);
+    if (isLeader(currentGroup, decodeToken(user.token).id)) {
+      return true;
+    }
+
+    return false;
+  };
+
+  console.log(checkIsLeader());
+  const updateTaskStatus = async (taskId, taskData) => {
+    await updateTaskApi(taskId, taskData, user.token, dispatch);
+  };
 
   const handleDragStart = (event) => {
     const { active } = event;
@@ -213,7 +223,6 @@ const CheckTypeByAll = () => {
         <div className="check-task-by-all-content">
           <ClassAndMember
             onFilterByPriority={handleFilterByPriority}
-            setGroup={setGroup}
             setMemberTask={setMemberTask}
           />
           <div className="task-column-container">
@@ -229,17 +238,17 @@ const CheckTypeByAll = () => {
                 onShowComment={handleShowComment}
                 onShowAddSubTask={handleChooseTask}
                 // onColumnUpdated={handleColumnUpdated}
-                isLeader={isLeader}
+                isLeader={checkIsLeader}
               />
             ))}
-            {user.role === 'LECTURER' || isLeader() ? (
+            {user.role === 'LECTURER' || checkIsLeader() ? (
               <button className="btn_add_status" onClick={() => setShowAddColumn(!showAddColumn)}>
                 <i className="fa-solid fa-plus"></i>
                 <span>Add Status</span>
               </button>
             ) : null}
           </div>
-          {user.role === 'LECTURER' || isLeader()
+          {user.role === 'LECTURER' || checkIsLeader()
             ? showAddTask && (
                 <AddTask
                   status={showAddTask}

@@ -85,11 +85,11 @@ const ScheduleService = () => {
   };
 };
 
-export const getScheduleByGroupId = async (token, groupId, dispatch) => {
+export const getScheduleByGroupId = async (token, dispatch) => {
   try {
     if (!token) dispatch(setError('The token is missing!'));
     dispatch(setPending(true));
-    const response = await axios.get(`http://localhost:3001/schedule?groupId=${groupId}`, {
+    const response = await axios.get(`http://localhost:3001/schedule`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -125,7 +125,8 @@ export const updateScheduleSlot = async (token, slotId, slotData, dispatch) => {
   try {
     if (!token) throw new Error('Token is missing!');
     dispatch(setPending(true));
-    const response = await axios.put(`http://localhost:3001/schedule/${slotId}`, data, {
+    const response = await axios.put(`http://localhost:3001/schedule/${slotId}`, slotData, {
+      //change slotId in component before mockup
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',

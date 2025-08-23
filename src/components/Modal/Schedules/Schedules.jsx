@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import { Toaster, toast } from 'sonner';
 const Schedules = () => {
   const { groupId } = useParams();
+  const isPage = false;
   const [isShowAdd, setIsShowAdd] = useState(false);
   const [isCreated, setIsCreated] = useState(false);
   const handleClose = () => {
@@ -43,15 +44,17 @@ const Schedules = () => {
             </button>
           </div>
         </div>
-        <Calendar groupId={groupId} />
+        <Calendar groupId={groupId} isPage={isPage} />
       </div>
 
       {isShowAdd && (
         <AddScheduleForms
+          groupId={groupId}
           onClose={handleClose}
           isCreated={isCreated}
           setIsCreated={setIsCreated}
           onSuccess={handleCreated}
+          isPage={isPage}
         />
       )}
     </div>

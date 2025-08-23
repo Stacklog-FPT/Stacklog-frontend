@@ -1,26 +1,26 @@
 const decodeToken = (token) => {
   try {
     if (!token) {
-      throw new Error("No token provided");
+      throw new Error('No token provided');
     }
-    const base64Url = token.split(".")[1];
+    const base64Url = token.split('.')[1];
     if (!base64Url) {
-      throw new Error("Invalid token format");
+      throw new Error('Invalid token format');
     }
 
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const jsonPayload = decodeURIComponent(
       atob(base64)
-        .split("")
+        .split('')
         .map((c) => {
-          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         })
-        .join("")
+        .join(''),
     );
 
     return JSON.parse(jsonPayload);
   } catch (error) {
-    console.error("Error decoding token:", error);
+    console.error('Error decoding token:', error);
     return null;
   }
 };

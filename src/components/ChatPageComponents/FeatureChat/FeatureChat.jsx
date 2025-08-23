@@ -1,11 +1,12 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import "./FeatureChat.scss";
 import { ChatContext } from "../../../context/ChatContext";
 import { useAuth } from "../../../context/AuthProvider";
 import userApi from "../../../service/UserService";
 import defaulfAvatar from "../../../assets/logo-login.png";
+import { io } from "socket.io-client";
 
-const API_URL = "http://localhost:3001/groups";
+const SOCKET_URL = "http://localhost:3002";
 
 const USER_IDS = [
   "688e1182e4acb643f2bbc47e",
@@ -25,6 +26,30 @@ const FeatureChat = () => {
   const [userList, setUserList] = useState([]);
   const [usersToAdd, setUsersToAdd] = useState([]);
   const [showAddPopup, setShowAddPopup] = useState(false);
+
+  const socketRef = useRef(null);
+
+  // Kết nối socket
+  useEffect(() => {
+    socketRef.current = io(SOCKET_URL);
+
+    // Lắng nghe cập nhật group realtime
+    const handleGroupsUpdated = () => {
+      if (selectedBox?.id) {
+        socketRef.current.emit("getGroups", user?._id || user?.id, (groups) => {
+          const found = groups.find((g) => g.id === selectedBox.id);
+          if (found) setSelectedBox(found);
+        });
+      }
+    };
+    socketRef.current.on("groupsUpdated", handleGroupsUpdated);
+
+    return () => {
+      socketRef.current.off("groupsUpdated", handleGroupsUpdated);
+      socketRef.current.disconnect();
+    };
+    // eslint-disable-next-line
+  }, [selectedBox?.id, user]);
 
   // Lấy danh sách thành viên hiện tại (userList)
   useEffect(() => {
@@ -75,32 +100,30 @@ const FeatureChat = () => {
     // eslint-disable-next-line
   }, [selectedBox]);
 
-  const handleAddMember = async (userId) => {
+  // Thêm thành viên qua socket
+  const handleAddMember = (userId) => {
     if (!userId || !selectedBox) return;
     if (selectedBox.members.includes(userId)) return;
     const updatedGroup = {
       ...selectedBox,
       members: [...selectedBox.members, userId],
     };
-    await fetch(`${API_URL}/${selectedBox.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedGroup),
+    socketRef.current.emit("updateGroup", updatedGroup, (group) => {
+      setSelectedBox(group);
     });
-    setSelectedBox(updatedGroup);
+  };
+
+  // Xóa group qua socket
+  const handleDeleteChat = () => {
+    if (!selectedBox?.id) return;
+    if (!window.confirm("Bạn có chắc chắn muốn xóa group này?")) return;
+    socketRef.current.emit("deleteGroup", selectedBox.id, () => {
+      setSelectedBox(null);
+    });
   };
 
   const handleFeatureClick = (featureName) => {
     console.log(`${featureName} clicked`);
-  };
-
-  const handleDeleteChat = async () => {
-    if (!selectedBox?.id) return;
-    if (!window.confirm("Bạn có chắc chắn muốn xóa group này?")) return;
-    await fetch(`${API_URL}/${selectedBox.id}`, {
-      method: "DELETE",
-    });
-    setSelectedBox(null);
   };
 
   if (!isFeatureChatOpen) return null;

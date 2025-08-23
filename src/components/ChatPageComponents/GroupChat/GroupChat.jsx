@@ -1,11 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import avatar from "../../../assets/logo-login.png";
 import "./GroupChat.scss";
 import { ChatContext } from "../../../context/ChatContext";
 import { useAuth } from "../../../context/AuthProvider";
 import { jwtDecode } from "jwt-decode";
+import { io } from "socket.io-client";
 
-const API_URL = "http://localhost:3001/groups";
+const SOCKET_URL = "http://localhost:3002";
 
 const GroupChat = () => {
   const { setSelectedBox } = useContext(ChatContext);
@@ -14,7 +15,8 @@ const GroupChat = () => {
   const [newGroupName, setNewGroupName] = useState("");
   const [newGroupAvatar, setNewGroupAvatar] = useState(null);
   const [previewAvatar, setPreviewAvatar] = useState(null);
-  const [reload, setReload] = useState(false);
+
+  const socketRef = useRef(null);
 
   const { user } = useAuth();
   let currentUserId = "";
@@ -27,11 +29,28 @@ const GroupChat = () => {
     }
   }
 
+  // Kết nối socket và lấy group
   useEffect(() => {
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then((data) => setGroupChatDetails(data));
-  }, [reload]);
+    socketRef.current = io(SOCKET_URL);
+
+    // Lấy danh sách group của user
+    const fetchGroups = () => {
+      socketRef.current.emit("getGroups", currentUserId, (groups) => {
+        setGroupChatDetails(groups || []);
+      });
+    };
+
+    fetchGroups();
+
+    // Lắng nghe khi có group thay đổi
+    socketRef.current.on("groupsUpdated", fetchGroups);
+
+    return () => {
+      socketRef.current.off("groupsUpdated", fetchGroups);
+      socketRef.current.disconnect();
+    };
+    // eslint-disable-next-line
+  }, [currentUserId]);
 
   // Xử lý chọn ảnh và preview
   const handleAvatarChange = (e) => {
@@ -46,12 +65,12 @@ const GroupChat = () => {
     }
   };
 
-  const handleAddGroup = async (e) => {
+  // Tạo group mới qua socket
+  const handleAddGroup = (e) => {
     e.preventDefault();
     if (!newGroupName.trim()) return;
 
     let avaBoxUrl = avatar;
-    // Nếu có chọn ảnh, dùng base64 hoặc upload lên server rồi lấy url
     if (previewAvatar) {
       avaBoxUrl = previewAvatar;
     }
@@ -66,18 +85,15 @@ const GroupChat = () => {
       members: [currentUserId],
       messages: [],
     };
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newGroup),
+
+    socketRef.current.emit("createGroup", newGroup, (savedGroup) => {
+      setShowAddGroup(false);
+      setNewGroupName("");
+      setNewGroupAvatar(null);
+      setPreviewAvatar(null);
+      setSelectedBox(savedGroup);
+      // Không cần fetch lại, sẽ tự động cập nhật qua "groupsUpdated"
     });
-    const savedGroup = await res.json();
-    setShowAddGroup(false);
-    setNewGroupName("");
-    setNewGroupAvatar(null);
-    setPreviewAvatar(null);
-    setSelectedBox(savedGroup);
-    setReload((r) => !r);
   };
 
   const handleSelectGroup = (group) => {

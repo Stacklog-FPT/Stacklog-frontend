@@ -1,24 +1,25 @@
-import { useContext, useState, useRef, useEffect } from "react";
-import fileIcon from "../../../assets/chatPageIcon/file_open.png";
-import attachmentIcon from "../../../assets/chatPageIcon/attachment.png";
-import smileIcon from "../../../assets/chatPageIcon/smile.png";
-import avatarDefault from "../../../assets/ava-chat.png";
-import "./ChatWindow.scss";
+import React, { useEffect, useState, useRef, useContext } from "react";
+import useSocketChat from "../../../hooks/ueSocket";
 import { ChatContext } from "../../../context/ChatContext";
 import { useAuth } from "../../../context/AuthProvider";
 import { jwtDecode } from "jwt-decode";
+import avatarDefault from "../../../assets/ava-chat.png";
+import fileIcon from "../../../assets/chatPageIcon/file_open.png";
+import attachmentIcon from "../../../assets/chatPageIcon/attachment.png";
+import smileIcon from "../../../assets/chatPageIcon/smile.png";
 import userApi from "../../../service/UserService";
+import "./ChatWindow.scss";
 
-const API_URL = "http://localhost:3001/groups";
+const SOCKET_URL = "http://localhost:3002";
 
 const ChatWindow = () => {
-  const { selectedBox, setSelectedBox, toggleFeatureChat } =
-    useContext(ChatContext);
+  const { selectedBox, setSelectedBox, toggleFeatureChat } = useContext(ChatContext);
   const { user } = useAuth();
   const { getUserById } = userApi();
   const [myMessage, setMyMessage] = useState("");
   const [error, setError] = useState(null);
   const [userCache, setUserCache] = useState({});
+  const [messages, setMessages] = useState([]);
   const scrollRef = useRef(null);
 
   // Lấy id user hiện tại từ JWT token
@@ -32,8 +33,16 @@ const ChatWindow = () => {
     }
   }
 
-  // Gửi tin nhắn: chỉ lưu id thật vào createdBy
-  const onSend = async () => {
+  // Kết nối socket
+  const { sendMessage } = useSocketChat(
+    SOCKET_URL,
+    selectedBox?.id,
+    (msg) => setMessages((prev) => [...prev, msg]),
+    (msgs) => setMessages(msgs)
+  );
+
+  // Gửi tin nhắn qua socket
+  const onSend = () => {
     if (
       !myMessage.trim() ||
       !selectedBox?.id ||
@@ -46,59 +55,18 @@ const ChatWindow = () => {
       chatMessageContent: myMessage,
       createdBy: currentUserId || "anonymous",
       createdAt: now,
+      groupId: selectedBox.id,
     };
-
-    try {
-      // Lấy group hiện tại từ server
-      const response = await fetch(`${API_URL}/${selectedBox.id}`);
-      if (!response.ok) throw new Error("Không thể lấy dữ liệu");
-      const currentBox = await response.json();
-
-      currentBox.messages.push(myMsg);
-
-      // Lưu lại group mới
-      const saveResponse = await fetch(`${API_URL}/${selectedBox.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(currentBox),
-      });
-
-      if (saveResponse.ok) {
-        setSelectedBox(currentBox);
-        setMyMessage("");
-        setError(null);
-        setTimeout(() => {
-          if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-          }
-        }, 100);
-      } else {
-        throw new Error("Không thể lưu tin nhắn");
-      }
-    } catch (error) {
-      setError("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
-    }
+    sendMessage(myMsg);
+    setMyMessage("");
   };
-
-  // Polling để lấy tin nhắn mới
-  useEffect(() => {
-    if (!selectedBox?.id) return;
-    const interval = setInterval(async () => {
-      const res = await fetch(`${API_URL}/${selectedBox.id}`);
-      if (res.ok) {
-        const data = await res.json();
-        setSelectedBox(data);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [selectedBox?.id, setSelectedBox]);
 
   // Scroll xuống cuối khi có tin nhắn mới
   useEffect(() => {
-    if (selectedBox?.messages && scrollRef.current) {
+    if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [selectedBox?.messages]);
+  }, [messages]);
 
   // Lấy thông tin user thật từ API và cache lại
   const fetchUser = async (id) => {
@@ -116,11 +84,11 @@ const ChatWindow = () => {
 
   // Khi có tin nhắn mới, fetch thông tin user nếu chưa có
   useEffect(() => {
-    if (!selectedBox?.messages) return;
-    const ids = [...new Set(selectedBox.messages.map((msg) => msg.createdBy))];
+    if (!messages) return;
+    const ids = [...new Set(messages.map((msg) => msg.createdBy))];
     ids.forEach((id) => fetchUser(id));
     // eslint-disable-next-line
-  }, [selectedBox?.messages]);
+  }, [messages]);
 
   return (
     <div className="chat__window">
@@ -149,8 +117,8 @@ const ChatWindow = () => {
         )}
 
         <div className="chat__content--scroll" ref={scrollRef}>
-          {selectedBox?.messages && selectedBox.messages.length > 0 ? (
-            [...selectedBox.messages]
+          {messages && messages.length > 0 ? (
+            [...messages]
               .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
               .map((msg) => {
                 const isMe = msg.createdBy === currentUserId;

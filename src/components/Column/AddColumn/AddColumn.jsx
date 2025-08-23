@@ -5,7 +5,7 @@ import { useAuth } from '../../../context/AuthProvider';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 
-const AddColumn = ({ onCancel, group, groupId }) => {
+const AddColumn = ({ onCancel, groupId }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
   const [color, setColor] = useState('#3498db');

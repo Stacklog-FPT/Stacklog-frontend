@@ -44,7 +44,7 @@ const Schedules = () => {
             </button>
           </div>
         </div>
-        <Calendar groupId={groupId} />
+        <Calendar groupId={groupId} isPage={isPage} />
       </div>
 
       {isShowAdd && (

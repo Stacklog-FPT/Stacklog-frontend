@@ -10,7 +10,19 @@ export function canViewGroup(user, group) {
 }
 
 // Is Leader
-export const isLeader = (group) => group.groupsLeaderId === user?.id;
+export const isLeader = (group, userId) => group.groupsLeaderId === userId;
 
 // Is Lecture
 export const isLecutre = (user) => user.role === 'LECTURER';
+
+// Check group or self
+
+export const isGroup = (flag, selectedGroup = {}) => {
+  if (flag) {
+    if (!!selectedGroup) {
+      return false;
+    }
+  }
+
+  return true;
+};

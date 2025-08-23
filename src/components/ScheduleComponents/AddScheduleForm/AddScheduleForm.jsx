@@ -6,12 +6,12 @@ import { useSelector } from 'react-redux';
 import { addSlotByGroup } from '../../../service/ScheduleService';
 import { useDispatch } from 'react-redux';
 import { Toaster, toast } from 'sonner';
+import { isGroup } from '../../../helper/validateStudentGroup';
 const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess, isPage }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
   const { classes } = useSelector((state) => state.class);
   const groupList = useSelector((state) => state.group.groups);
-  console.log(groupList);
   const [selectedClasses, setSelectedClasses] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [date, setDate] = useState('');
@@ -21,7 +21,7 @@ const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess
     slotDescription: '',
     slotStarTime: '',
     groupId: '',
-    userIdAssigns: [],
+    assignTo: '',
   });
 
   const getGroup = () => {
@@ -62,10 +62,7 @@ const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess
   };
 
   const validateForm = () => {
-    if (!selectedGroup) {
-      toast.error('Please select a group!');
-      return false;
-    }
+    if (!isGroup(isPage, selectedGroup)) toast.error('Please selected group!');
 
     if (!scheduleData.slotTitle.trim()) {
       toast.error('Slot title is required!');
@@ -105,10 +102,9 @@ const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess
     if (!validateForm()) {
       return;
     }
-
-    if (!selectedGroup || !date || !time) {
+    if (!isGroup(isPage, selectedGroup)) toast.error('Please selected group!');
+    if (!date || !time) {
       toast.error('All input are required!');
-
       return;
     }
 
@@ -116,8 +112,8 @@ const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess
     const payload = {
       ...scheduleData,
       slotStarTime: fullDateTime,
-      groupId: selectedGroup.groupsId || groupId,
-      userIdAssigns: selectedGroup.groupStudent.map((s) => s) || getGroup(),
+      groupId: selectedGroup?.groupsId || groupId,
+      assignTo: selectedGroup?.groupStudent.map((s) => s) || getGroup().groupStudent,
     };
 
     await addSlotByGroup(user.token, payload, dispatch);

@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setTasks } from '../../../../redux/slice/taskSlice';
 import { getAllTask, updateTaskApi } from '../../../../service/TaskService';
 import { getStatus } from '../../../../service/ColumnService';
+import { isLeader } from '../../../../helper/validateStudentGroup';
 
 const CheckTypeByAll = () => {
   const { user } = useAuth();
@@ -36,8 +37,6 @@ const CheckTypeByAll = () => {
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const [group, setGroup] = useState({});
   const [showAddSubTask, setShowAddSubTask] = useState(null);
-
-  const isLeader = () => group.groupsLeaderId === user?.id;
 
   const updateTaskStatus = async (taskId, taskData) => {
     await updateTaskApi(taskId, taskData, user.token, dispatch);

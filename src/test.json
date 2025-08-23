@@ -42,10 +42,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e11c4e4acb643f2bbc484",
-            "688e11b2e4acb643f2bbc482"
-          ]
+          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
         },
         {
           "groupsId": "swp2",
@@ -57,10 +54,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e11c4e4acb643f2bbc484",
-            "688e119fe4acb643f2bbc480"
-          ]
+          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e119fe4acb643f2bbc480"]
         }
       ]
     },
@@ -84,10 +78,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e1182e4acb643f2bbc47e",
-            "688e110fe4acb643f2bbc47b"
-          ]
+          "groupStudent": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"]
         },
         {
           "groupsId": "2",
@@ -99,10 +90,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e1238e4acb643f2bbc486",
-            "688e11c4e4acb643f2bbc484"
-          ]
+          "groupStudent": ["688e1238e4acb643f2bbc486", "688e11c4e4acb643f2bbc484"]
         }
       ]
     },
@@ -126,10 +114,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e11c4e4acb643f2bbc484",
-            "688e1238e4acb643f2bbc486"
-          ]
+          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e1238e4acb643f2bbc486"]
         },
         {
           "groupsId": "unique_id_for_group_2",
@@ -141,10 +126,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e110fe4acb643f2bbc47b",
-            "688e1182e4acb643f2bbc47e"
-          ]
+          "groupStudent": ["688e110fe4acb643f2bbc47b", "688e1182e4acb643f2bbc47e"]
         }
       ]
     }
@@ -257,11 +239,11 @@
       "createdBy": "",
       "updateAt": "",
       "updateBy": "",
-      "groupId": "1",
+      "groupId": [],
       "slotDescription": "",
       "slotStartTime": "2025-08-21T12:00:00",
       "slotTittle": "Họp về đề tài",
-      "userId": "688e1238e4acb643f2bbc486"
+      "assignTo": []
     },
     {
       "slotId": "123",

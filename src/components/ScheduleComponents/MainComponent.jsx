@@ -6,7 +6,7 @@ import AddScheduleForms from './AddScheduleForm/AddScheduleForm';
 const MainComponent = () => {
   const [isShowAdd, setIsShowAdd] = useState(false);
   const [slot, setSlot] = useState(null);
-
+  const isPage = true;
   const handleClose = () => {
     setIsShowAdd(false);
   };
@@ -37,7 +37,7 @@ const MainComponent = () => {
         <Calendar />
       </div>
 
-      {isShowAdd && <AddScheduleForms onClose={handleClose} />}
+      {isShowAdd && <AddScheduleForms onClose={handleClose} isPage={isPage} />}
     </div>
   );
 };

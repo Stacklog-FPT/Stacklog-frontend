@@ -57,8 +57,8 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
     width: isDraggingOverlay ? '260px' : undefined,
   };
 
-  const visibleMembers = props?.members?.slice(0, 3);
-  const extraCount = props?.members?.length - visibleMembers?.length;
+  const visibleMembers = props.task?.assignTo?.slice(0, 3);
+  const extraCount = props.task?.assignTo?.length - visibleMembers?.length;
 
   const formatDate = (date) => {
     if (!date) return '';

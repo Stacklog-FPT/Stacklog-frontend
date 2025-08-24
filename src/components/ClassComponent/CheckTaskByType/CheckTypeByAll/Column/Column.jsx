@@ -89,7 +89,6 @@ const Column = ({
                   key={task?.taskId}
                   id={task?.taskId}
                   title={task?.taskTitle}
-                  members={task?.assigns}
                   createdAt={task?.taskStartTime}
                   dueDate={task?.taskDueDate}
                   onShowComment={onShowComment}

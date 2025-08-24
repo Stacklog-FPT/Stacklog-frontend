@@ -1,15 +1,12 @@
-import React, { useState } from "react";
-import "./Column.scss";
-import iconVector from "../../../../../assets/icon/task/iconVector.png";
-import add from "../../../../../assets/icon/checkTaskByList/add.png";
-import Task from "../Task/Task";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { useDroppable } from "@dnd-kit/core";
+import React, { useState } from 'react';
+import './Column.scss';
+import iconVector from '../../../../../assets/icon/task/iconVector.png';
+import add from '../../../../../assets/icon/checkTaskByList/add.png';
+import Task from '../Task/Task';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
 
 const Column = ({
   color,
@@ -48,11 +45,7 @@ const Column = ({
                   <th>Priority</th>
                   <th>Action</th>
                   <th>
-                    <img
-                      src={add}
-                      alt="add task"
-                      onClick={() => onShowAddTask(status)}
-                    />
+                    <img src={add} alt="add task" onClick={() => onShowAddTask(status)} />
                   </th>
                 </tr>
               </thead>

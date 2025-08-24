@@ -22,7 +22,6 @@ import { getAllTask, updateTaskApi } from '../../../../service/TaskService';
 import { getStatus } from '../../../../service/ColumnService';
 import { isLeader } from '../../../../helper/validateStudentGroup';
 import decodeToken from '../../../../service/DecodeJwt';
-import { toast } from 'sonner';
 
 const CheckTypeByAll = () => {
   const { user } = useAuth();
@@ -36,7 +35,6 @@ const CheckTypeByAll = () => {
   const [showAddTask, setShowAddTask] = useState(null);
   const [showCommentTask, setShowCommentTask] = useState(null);
   const [showAddColumn, setShowAddColumn] = useState(false);
-  const [memberTask, setMemberTask] = useState([]);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const [showAddSubTask, setShowAddSubTask] = useState(null);
 
@@ -47,6 +45,7 @@ const CheckTypeByAll = () => {
       },
     }),
   );
+
   const checkIsLeader = () => {
     const currentGroup = groupList.find((g) => g.groupsId === groupId);
     if (isLeader(currentGroup, decodeToken(user.token).id)) {
@@ -215,10 +214,7 @@ const CheckTypeByAll = () => {
     >
       <div className="check-task-by-all-container">
         <div className="check-task-by-all-content">
-          <ClassAndMember
-            onFilterByPriority={handleFilterByPriority}
-            setMemberTask={setMemberTask}
-          />
+          <ClassAndMember onFilterByPriority={handleFilterByPriority} />
           <div className="task-column-container">
             {statuses.map((item) => (
               <Column
@@ -229,7 +225,6 @@ const CheckTypeByAll = () => {
                 tasks={tasks.filter(
                   (task) => task?.statusTaskId.toString() === item.statusTaskId.toString(),
                 )}
-                members={memberTask}
                 onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}
                 onShowAddSubTask={handleChooseTask}
@@ -254,20 +249,9 @@ const CheckTypeByAll = () => {
             : null}
           {showCommentTask && <CommentTask task={showCommentTask} isClose={handleCloseComment} />}
           {showAddColumn && (
-            <AddColumn
-              status={showAddTask}
-              onCancel={handleCloseAddStatus}
-              groupId={groupId}
-              members={memberTask}
-            />
+            <AddColumn status={showAddTask} onCancel={handleCloseAddStatus} groupId={groupId} />
           )}
-          {showAddSubTask && (
-            <AddSubTask
-              isClose={handleCloseAddSubtask}
-              task={showAddSubTask}
-              members={memberTask}
-            />
-          )}
+          {showAddSubTask && <AddSubTask isClose={handleCloseAddSubtask} task={showAddSubTask} />}
         </div>
       </div>
       <DragOverlay

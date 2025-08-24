@@ -13,13 +13,14 @@ export function canViewGroup(user, group) {
 export const isLeader = (group, userId) => group.groupsLeaderId === userId;
 
 // Is Lecture
-export const isLecutre = (user) => user.role === 'LECTURER';
+export const isLecture = (user) => user.role === 'LECTURER';
 
 // Check group or self
 
 export const isGroup = (flag, selectedGroup = {}) => {
   if (flag) {
-    if (!!selectedGroup) {
+    if (!selectedGroup) {
+      console.log('debug find an error here');
       return false;
     }
   }

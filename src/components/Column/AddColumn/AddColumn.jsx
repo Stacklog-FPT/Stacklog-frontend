@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './AddColumn.scss';
 import statusApi from '../../../service/ColumnService';
 import { useAuth } from '../../../context/AuthProvider';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { useDispatch } from 'react-redux';
 
 const AddColumn = ({ onCancel, groupId }) => {
@@ -10,6 +10,7 @@ const AddColumn = ({ onCancel, groupId }) => {
   const dispatch = useDispatch();
   const [color, setColor] = useState('#3498db');
   const [columnData, setColumnData] = useState({
+    statusTaskId: '',
     statusTaskName: '',
     statusTaskColor: '' || color,
     groupId: groupId,
@@ -27,19 +28,16 @@ const AddColumn = ({ onCancel, groupId }) => {
     setIsSubmitting(true);
     try {
       const payload = {
+        statusTaskId: Math.random(),
         statusTaskName: columnData.statusTaskName,
         statusTaskColor: columnData.statusTaskColor || color,
         groupId: groupId,
       };
 
       const response = await addStatuses(user?.token, payload, groupId, dispatch);
+      toast.success('Add status is successfully!');
 
-      if (response) {
-        toast.success('Add status is successfully!');
-        // onColumnUpdated(response.data);
-      }
-
-      if (onCancel) onCancel();
+      onCancel();
     } catch (e) {
       toast.error('Something is wrong!');
       console.error('Failed to add column:', e.message);

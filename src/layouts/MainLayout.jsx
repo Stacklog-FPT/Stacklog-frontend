@@ -1,22 +1,18 @@
-import { useContext, useState, useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
-import Sidebar from "../components/SideBar/SideBar";
-import "./MainLayout.scss";
-import InputSearch from "../components/InputSearch/InputSearch";
-import Announcement from "../components/Announcement/Announcement";
-import { AnnouncementContext } from "../context/AnnoucementContext";
-import { ColorModeContext } from "../context/ColorModeContext";
-import {
-  GroupChatContext,
-  GroupChatProvider,
-} from "../context/GroupChatContext";
-import GroupComponent from "../components/ChatPageComponents/GroupComponent/GroupComponent";
-import { SidebarContext } from "../context/SideBarContext";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "../styles/main.scss";
-import { useAuth } from "../context/AuthProvider";
-import SideBarAdmin from "../components/SideBar/SideBarAdmin/SideBarAdmin";
+import { useContext, useState, useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import Sidebar from '../components/SideBar/SideBar';
+import './MainLayout.scss';
+import InputSearch from '../components/InputSearch/InputSearch';
+import Announcement from '../components/Announcement/Announcement';
+import { AnnouncementContext } from '../context/AnnoucementContext';
+import { ColorModeContext } from '../context/ColorModeContext';
+import { GroupChatContext, GroupChatProvider } from '../context/GroupChatContext';
+import GroupComponent from '../components/ChatPageComponents/GroupComponent/GroupComponent';
+import { SidebarContext } from '../context/SideBarContext';
+import { Toaster } from 'sonner';
+import '../styles/main.scss';
+import { useAuth } from '../context/AuthProvider';
+import SideBarAdmin from '../components/SideBar/SideBarAdmin/SideBarAdmin';
 
 const MainLayout = () => {
   const { user } = useAuth();
@@ -33,17 +29,17 @@ const MainLayout = () => {
     //   setIsLoading(false);
     // }, 3000);
 
-    if (location.pathname === "/chatbox") {
+    if (location.pathname === '/chatbox') {
       setIsShowGroupChat(true);
       setIsOpen(false);
     } else {
       setIsOpen(true);
     }
 
-    if (location.pathname === "/class") {
-      document.body.style.overflow = "hidden";
+    if (location.pathname === '/class') {
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto';
     }
 
     // return () => {
@@ -70,22 +66,12 @@ const MainLayout = () => {
         </div>
       )} */}
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
-      <div className="announcement-place">
-        {isAnnouncementVisible && <Announcement />}
-      </div>
-      {location.pathname === "/chatbox" && isShowGroupChat && (
-        <GroupComponent />
-      )}
-      <main
-        className={`main-content ${
-          location.pathname === "/class-page" ? "no-scroll" : ""
-        }`}
-      >
+      <div className="announcement-place">{isAnnouncementVisible && <Announcement />}</div>
+      {location.pathname === '/chatbox' && isShowGroupChat && <GroupComponent />}
+      <main className={`main-content ${location.pathname === '/class-page' ? 'no-scroll' : ''}`}>
         <InputSearch />
-        <ToastContainer />
-        <Outlet
-          className={`main-content-area ${mode === "light" ? "light" : "dark"}`}
-        />
+        <Toaster position="bottom-right" richColors duration={4000} closeButton />
+        <Outlet className={`main-content-area ${mode === 'light' ? 'light' : 'dark'}`} />
       </main>
     </div>
   );

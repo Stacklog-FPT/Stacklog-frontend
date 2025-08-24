@@ -3,7 +3,6 @@ import './Task.scss';
 import Skeleton from 'react-loading-skeleton';
 import iconDeadLine from '../../../../../assets/icon/task/iconDeadLine.png';
 import addButton from '../../../../../assets/icon/avatar_add_button.png';
-import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { FaPen } from 'react-icons/fa';
@@ -16,7 +15,7 @@ import { FaTrashAlt, FaPlus } from 'react-icons/fa';
 import { useAuth } from '../../../../../context/AuthProvider';
 import SubTask from './SubTask/SubTask';
 import { useDispatch } from 'react-redux';
-import { deleteTaskApi } from '../../../../../service/TaskService';
+import { deleteTaskApi, updateTaskApi } from '../../../../../service/TaskService';
 
 const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -71,31 +70,11 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
   };
 
   const handleEditPriority = async (task) => {
-    try {
-      const payload = {
-        taskId: task.taskId,
-        taskTitle: task.taskTitle,
-        taskDescription: task.taskDescription,
-        groupId: task.groupId,
-        documentId: task.documentId,
-        taskPoint: 5,
-        taskStartTime: task.taskStartTime,
-        taskDueDate: task.taskDueDate,
-        priority: 'HIGH',
-        statusTaskId: task.statusTask.statusTaskId,
-        listUserAssign: task.assigns.assignTo,
-        parentTaskId: '',
-      };
-
-      const response = await addTask(payload, user?.token);
-      if (response.status === 500) {
-      }
-      // toast.success("Priority is update!");
-    } catch (e) {
-      handleDeleteReRender(true);
-      // toast.error("Something is wrong!");
-      console.error('Error updating priority:', e.message);
-    }
+    const payload = {
+      ...task,
+      priority: 'HIGH',
+    };
+    await updateTaskApi(payload, user.token, dispatch);
   };
 
   const handleShowSubTask = () => {
@@ -149,22 +128,15 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
       }
 
       const payload = {
-        taskId: task.taskId,
+        ...task,
         taskTitle: editedTitle,
-        taskDescription: task.taskDescription,
-        groupId: task.groupId,
-        documentId: task.documentId,
-        taskPoint: 5,
         taskStartTime: formattedStartTime,
         taskDueDate: formattedDueDate,
-        priority: task.priority,
-        statusTaskId: task.statusTask.statusTaskId,
-        listUserAssign: task.assigns.assignTo,
-        parentTaskId: '',
       };
 
+      console.log(payload);
+      await updateTaskApi(payload, user.token, dispatch);
       setIsEditing(false);
-      const response = await addTask(payload, user.token);
     } catch (e) {
       throw new Error(e.message);
     }

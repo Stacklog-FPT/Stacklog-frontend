@@ -7,7 +7,7 @@ import { addSlotByGroup } from '../../../service/ScheduleService';
 import { useDispatch } from 'react-redux';
 import { Toaster, toast } from 'sonner';
 import { isGroup } from '../../../helper/validateStudentGroup';
-const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess, isPage }) => {
+const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
   const { classes } = useSelector((state) => state.class);
@@ -102,7 +102,7 @@ const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess
     if (!validateForm()) {
       return;
     }
-    if (!isGroup(isPage, selectedGroup)) toast.error('Please selected group!');
+    if (isGroup(isPage, selectedGroup)) toast.error('Please selected group!');
     if (!date || !time) {
       toast.error('All input are required!');
       return;
@@ -119,7 +119,6 @@ const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess
     await addSlotByGroup(user.token, payload, dispatch);
     onSuccess?.();
     onClose();
-    setIsCreated(!isCreated);
   };
 
   // Submit for current group

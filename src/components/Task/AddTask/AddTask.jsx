@@ -9,15 +9,18 @@ import axios from 'axios';
 import decodeToken from '../../../service/DecodeJwt';
 import { addTask } from '../../../service/TaskService';
 import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-const AddTask = ({ status, onCancel, group, members }) => {
+const AddTask = ({ status, onCancel, group }) => {
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
+  const groupList = useSelector((state) => state.group.groups);
+  const currentGroup = groupList.find((g) => g.groupsId === group);
   const dispatch = useDispatch();
   const notify = () => toast.success('Add task is successfully');
   const notifyFailure = () => toast.error('Add task is failure');
-  const visibleMembers = members.slice(0, 3);
-  const extraCount = members.length - visibleMembers.length;
+  const visibleMembers = currentGroup?.groupStudent.slice(0, 3);
+  const extraCount = currentGroup?.groupStudent.length - visibleMembers.length;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
@@ -35,18 +38,17 @@ const AddTask = ({ status, onCancel, group, members }) => {
     createdAt: '',
     updateBy: '',
     updateAt: '',
-    statusTaskId: status.statusTaskId,
-    review: ['', ''],
+    statusTaskId: status.statusTaskId, // change statusTaskId before mockUp with BE
+    review: [],
     parentTask: null,
     assignTo: [],
   });
-
   const [colorPriority, setColorPriority] = useState([
     { id: 1, color: '#FF6B6B', content: 'HIGH', borderColor: '#DC2626' },
     { id: 2, color: '#FFD60A', content: 'MEDIUM', borderColor: '#D97706' },
     { id: 3, color: '#22C55E', content: 'LOW', borderColor: '#15803D' },
   ]);
-  const [selectedPriority, setSelectedPriority] = useState('HIGH');
+  const [selectedPriority, setSelectedPriority] = useState('LOW');
   const selectedColor =
     colorPriority.find((item) => item.content === selectedPriority)?.color || '#FFFFFF';
   const selectedBorderColor =
@@ -155,6 +157,7 @@ const AddTask = ({ status, onCancel, group, members }) => {
         priority: taskData.priority || 'HIGH',
         assignTo: taskData.assignTo,
       };
+
       const response = await addTask(payload, user.token, dispatch);
 
       if (response.data) {
@@ -222,7 +225,7 @@ const AddTask = ({ status, onCancel, group, members }) => {
           </div>
           <div className="assigned-users-list">
             {taskData.assignTo.map((userId) => {
-              const member = members.find((m) => m._id === userId);
+              const member = currentGroup.groupStudent.find((m) => m === userId);
               return member ? (
                 <div key={userId} className="assigned-user-card">
                   <div className="user-info">
@@ -266,12 +269,12 @@ const AddTask = ({ status, onCancel, group, members }) => {
           {showAssignDropdown && (
             <div className="assign-dropdown">
               <div className="assign-checkbox-list">
-                {members.map((member) => (
-                  <label key={member._id} className="member-option">
+                {currentGroup.groupStudent.map((member) => (
+                  <label key={member} className="member-option">
                     <input
                       type="checkbox"
-                      value={member._id}
-                      checked={taskData.assignTo.includes(member._id)}
+                      value={member}
+                      checked={taskData.assignTo.includes(member)}
                       onChange={handleAssignChange}
                     />
                     <div className="member-info">

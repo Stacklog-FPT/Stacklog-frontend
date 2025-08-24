@@ -42,10 +42,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e11c4e4acb643f2bbc484",
-            "688e11b2e4acb643f2bbc482"
-          ]
+          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
         },
         {
           "groupsId": "swp2",
@@ -57,10 +54,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e11c4e4acb643f2bbc484",
-            "688e119fe4acb643f2bbc480"
-          ]
+          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e119fe4acb643f2bbc480"]
         }
       ],
       "id": "e401"
@@ -85,10 +79,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e1182e4acb643f2bbc47e",
-            "688e110fe4acb643f2bbc47b"
-          ]
+          "groupStudent": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"]
         },
         {
           "groupsId": "2",
@@ -100,10 +91,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e1238e4acb643f2bbc486",
-            "688e11c4e4acb643f2bbc484"
-          ]
+          "groupStudent": ["688e1238e4acb643f2bbc486", "688e11c4e4acb643f2bbc484"]
         }
       ],
       "id": "3103"
@@ -128,10 +116,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e11c4e4acb643f2bbc484",
-            "688e1238e4acb643f2bbc486"
-          ]
+          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e1238e4acb643f2bbc486"]
         },
         {
           "groupsId": "unique_id_for_group_2",
@@ -143,10 +128,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e110fe4acb643f2bbc47b",
-            "688e1182e4acb643f2bbc47e"
-          ]
+          "groupStudent": ["688e110fe4acb643f2bbc47b", "688e1182e4acb643f2bbc47e"]
         }
       ],
       "id": "958d"
@@ -154,103 +136,70 @@
   ],
   "status": [
     {
-      "id": "da2a",
-      "statusTaskName": "To do",
-      "statusTaskColor": "#2a8361",
-      "groupId": "1",
-      "statusTaskId": "123"
+      "id": "a8a0",
+      "statusTaskId": 0.35115915586210567,
+      "statusTaskName": "Alo",
+      "statusTaskColor": "#4d6575",
+      "groupId": "swp1"
     },
     {
-      "id": "9cf2",
+      "id": "912e",
+      "statusTaskId": 0.4757762393151468,
       "statusTaskName": "Doing",
-      "statusTaskColor": "#238553",
-      "groupId": "1",
-      "statusTaskId": "124"
-    },
-    {
-      "id": "0e33",
-      "statusTaskName": "UAT",
-      "statusTaskColor": "#88a92d",
-      "groupId": "1",
-      "statusTaskId": "125"
-    },
-    {
-      "id": "7457",
-      "statusTaskName": "Done ",
-      "statusTaskColor": "#f4b74e",
-      "groupId": "1",
-      "statusTaskId": "126"
-    },
-    {
-      "id": "83e3",
-      "statusTaskName": "Up Coming",
-      "statusTaskColor": "#9bc936",
-      "groupId": "2"
-    },
-    {
-      "id": "7a39",
-      "statusTaskName": "To Do",
-      "statusTaskColor": "#98db33",
+      "statusTaskColor": "#1c5f35",
       "groupId": "swp1"
     }
   ],
   "task": [
     {
-      "id": "6377",
-      "taskId": "0.3012876117344242",
-      "group_id": "2",
-      "taskTitle": "2",
-      "taskDescription": "Design DB notification healthy và balance",
+      "id": "d887",
+      "taskId": "0.726174414835098",
+      "group_id": "swp1",
+      "taskTitle": "Ủa rân ri",
+      "taskDescription": "123",
       "documentId": "",
       "taskPoint": 0,
       "taskParentId": 0,
-      "statusTaskId": "124",
-      "taskStartTime": "2025-08-19T09:29:59",
-      "taskDueDate": "2025-08-20T09:29:59",
-      "createdBy": "hoaintt40",
+      "taskStartTime": "2025-08-25T19:42:19",
+      "taskDueDate": "2025-08-26T19:42:19",
+      "createdBy": "de170537",
       "updatedBy": "",
       "priority": "HIGH",
-      "assignTo": [],
-      "subTasks": []
+      "assignTo": ["688e11c4e4acb643f2bbc484"]
     },
     {
-      "id": "5d60",
-      "taskId": "0.683116282942126",
-      "group_id": "1",
-      "taskTitle": "3",
-      "taskDescription": "Thiết kế DB healthy và balance",
-      "statusTaskId": "123",
+      "id": "46db",
+      "taskId": "0.4390269487005337",
+      "group_id": "swp1",
+      "taskTitle": "Hihi",
+      "taskDescription": "123",
+      "statusTaskId": 0.35115915586210567,
       "documentId": "",
       "taskPoint": 0,
       "taskParentId": 0,
-      "taskStartTime": "2025-08-20T13:54:15",
-      "taskDueDate": "2025-08-21T13:54:15",
-      "createdBy": "hoaintt40",
+      "taskStartTime": "2025-08-25T19:44:14",
+      "taskDueDate": "2025-08-26T19:44:14",
+      "createdBy": "de170537",
       "updatedBy": "",
       "priority": "MEDIUM",
-      "assignTo": [],
-      "reviews": [
-        {
-          "reviewId": 0.42457602088771085,
-          "reviewContent": "Hello",
-          "taskId": "0.683116282942126"
-        },
-        {
-          "reviewId": 0.5395189702117213,
-          "reviewContent": "Lo",
-          "taskId": "0.683116282942126"
-        },
-        {
-          "reviewId": 0.10407642705794307,
-          "reviewContent": "Hello cu",
-          "taskId": "0.683116282942126"
-        },
-        {
-          "reviewId": 0.7961391350010893,
-          "reviewContent": "Hello",
-          "taskId": "0.683116282942126"
-        }
-      ]
+      "assignTo": ["688e11c4e4acb643f2bbc484"]
+    },
+    {
+      "id": "258b",
+      "taskId": "0.029150267047676204",
+      "group_id": "swp1",
+      "taskTitle": "Design User Model",
+      "taskDescription": "123",
+      "statusTaskId": 0.4757762393151468,
+      "documentId": "",
+      "taskPoint": 0,
+      "taskParentId": 0,
+      "taskStartTime": "2025-08-26T19:45:56",
+      "taskDueDate": "2025-08-27T19:45:56",
+      "createdBy": "de170537",
+      "updatedBy": "",
+      "priority": "HIGH",
+      "assignTo": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
     }
   ],
   "schedule": [
@@ -259,13 +208,8 @@
       "slotTitle": "Họp bàn về design UI",
       "slotDescription": "",
       "slotStarTime": "2025-08-23T19:00:00.000Z",
-      "groupId": [
-        "1"
-      ],
-      "assignTo": [
-        "688e1182e4acb643f2bbc47e",
-        "688e110fe4acb643f2bbc47b"
-      ],
+      "groupId": ["1"],
+      "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
       "id": "55f9"
     },
     {
@@ -273,13 +217,8 @@
       "slotTitle": "Họp nhóm lần 3",
       "slotDescription": "Hehe",
       "slotStarTime": "2025-08-28T08:00:00",
-      "groupId": [
-        "swp1"
-      ],
-      "assignTo": [
-        "688e11c4e4acb643f2bbc484",
-        "688e11b2e4acb643f2bbc482"
-      ]
+      "groupId": ["swp1"],
+      "assignTo": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
     }
   ]
 }

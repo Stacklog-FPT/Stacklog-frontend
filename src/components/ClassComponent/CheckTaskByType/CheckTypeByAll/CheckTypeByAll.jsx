@@ -55,8 +55,6 @@ const CheckTypeByAll = () => {
 
     return false;
   };
-
-  console.log(checkIsLeader());
   const updateTaskStatus = async (taskId, taskData) => {
     await updateTaskApi(taskId, taskData, user.token, dispatch);
   };
@@ -89,30 +87,25 @@ const CheckTypeByAll = () => {
         return;
       }
       const activeId = active.id;
+
       const activeTask = tasks.find((task) => task.taskId === activeId);
       if (!activeTask) {
-        console.log('No active task found for ID:', activeId);
         setActiveColumn(null);
         return;
       }
 
       // let updatedTasks = [...tasks];
       const activeIndex = tasks.findIndex((task) => task.taskId === activeId);
-
       const droppableId = over.id;
       const isOverDroppable = droppableId.startsWith('droppable-');
-      const isOverTask = tasks.some((task) => task.taskId === over.id);
-
+      const isOverTask = tasks.some((task) => task.taskId === over.taskId);
       let targetStatusId;
       let targetStatus;
 
       if (isOverDroppable) {
         targetStatusId = droppableId.replace('droppable-', '');
-        targetStatus = statuses.find(
-          (item) => item.statusTaskId === targetStatusId,
-        )?.statusTaskName;
       } else if (isOverTask) {
-        const overTask = tasks.find((task) => task.taskId === over.id);
+        const overTask = tasks.find((task) => task.taskId === over.taskId);
         if (!overTask) {
           console.log('No over task found for ID:', over.id);
           setActiveColumn(null);
@@ -127,7 +120,7 @@ const CheckTypeByAll = () => {
         return;
       }
 
-      if (!targetStatusId || !targetStatus) {
+      if (!targetStatusId) {
         console.log('Invalid target status:', { targetStatusId, targetStatus });
         setActiveColumn(null);
         return;
@@ -137,7 +130,7 @@ const CheckTypeByAll = () => {
           ...activeTask,
           statusTaskId: targetStatusId,
         };
-        updateTaskStatus(activeTask.id, taskData);
+        updateTaskStatus(activeTask.taskId, taskData);
         // updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
         // updatedTasks.push({
         //   ...activeTask,
@@ -254,7 +247,6 @@ const CheckTypeByAll = () => {
                   status={showAddTask}
                   onCancel={() => setShowAddTask(null)}
                   group={groupId}
-                  members={memberTask}
                 />
               )
             : null}
@@ -293,7 +285,6 @@ const CheckTypeByAll = () => {
           <Task
             id={activeTask.taskId}
             title={activeTask.taskTitle}
-            members={memberTask}
             createdAt={activeTask.taskStartTime}
             dueDate={activeTask.taskDueDate}
             onShowComment={handleShowComment}

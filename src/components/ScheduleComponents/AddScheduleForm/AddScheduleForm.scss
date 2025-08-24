@@ -12,115 +12,243 @@
 }
 
 .modal-content {
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 12px;
-  width: 400px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #f8fafc 80%, #e0f7fa 100%) !important;
+  background-clip: padding-box;
+  padding: 36px 32px 32px 32px;
+  border-radius: 18px;
+  width: 440px;
+  max-width: 95vw;
+  box-shadow: 0 10px 32px 0 rgba(0,0,0,0.22), 0 2px 8px 0 rgba(0,0,0,0.10);
   position: relative;
+  z-index: 2100;
+  opacity: 1 !important;
+  filter: none !important;
+  border: 1.5px solid #e0e0e0;
+  transition: box-shadow 0.2s;
 }
 
 .close-btn {
   position: absolute;
-  top: 12px;
-  right: 16px;
-  background: transparent;
+  top: 16px;
+  right: 20px;
+  background: #f2f2f2;
   border: none;
-  font-size: 24px;
-  color: #555;
+  font-size: 26px;
+  color: #888;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.close-btn:hover {
+  background: #e0e0e0;
+  color: #d32f2f;
 }
 
 .add-schedule-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
 
   h3 {
-    margin-bottom: 10px;
-    font-size: 22px;
-    color: #333;
+    margin-bottom: 14px;
+    font-size: 25px;
+    color: #222;
     text-align: center;
+    font-weight: 700;
+    letter-spacing: 0.5px;
   }
 
   .form-group {
     display: flex;
     flex-direction: column;
+    gap: 4px;
 
     label {
-      font-size: 14px;
-      color: #333;
-      margin-bottom: 6px;
+      font-size: 15px;
+      color: #045745;
+      margin-bottom: 2px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
     }
 
-    input {
-      padding: 10px 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+    input, textarea {
+      padding: 11px 14px;
+      border: 1.5px solid #cfd8dc;
+      border-radius: 9px;
       font-size: 16px;
       outline: none;
-      transition: border-color 0.2s ease-in-out;
+      background: #fafdff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      resize: none;
+    }
 
-      &:focus {
-        border-color: #0c8b8b;
-      }
+    input:focus, textarea:focus {
+      border-color: #045745;
+      box-shadow: 0 0 0 2px #b2ebf2;
     }
   }
 
   .selected-group {
-    background-color: #eef6f9;
-    padding: 10px;
-    margin-top: 10px;
-    border-left: 4px solid #007bff;
+    background: linear-gradient(90deg, #e0f7fa 60%, #f8fafc 100%);
+    border-left: 4px solid #045745;
+    border-radius: 7px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    p {
-      margin: 0;
-    }
-
-    .remove-btn {
-      background: transparent;
-      color: #dc3545;
-      border: none;
-      cursor: pointer;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #045745;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    gap: 6px;
+    transition: box-shadow 0.2s;
+    min-height: 28px;
+    padding: 4px 8px 4px 10px;
+    margin-top: 2px;
+    margin-bottom: 0;
+    line-height: 1.2;
+  }
+  .selected-group .remove-btn {
+    margin-left: 6px;
+    width: 22px;
+    height: 22px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
   }
 
-  button {
+  .remove-btn {
+    background: #fff;
+    color: #d32f2f;
+    border: 1px solid #f5bdbd;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.1rem;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .remove-btn:hover {
+    background: #ffeaea;
+    color: #b71c1c;
+    border-color: #f44336;
+  }
+
+  button[type="submit"] {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background-color: #0c8b8b;
+    background: #045745;
     border: none;
     border-radius: 8px;
-    padding: 10px 15px;
+    padding: 12px 0;
     color: white;
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 17px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background 0.3s;
+    margin-top: 10px;
+    box-shadow: 0 2px 8px rgba(44, 183, 197, 0.08);
+    width: 100%;
+    letter-spacing: 0.5px;
+  }
+  button[type="submit"]:hover {
+    background: #045745;
+  }
 
-    &:hover {
-      background-color: #086666;
-    }
-
-    svg {
-      font-size: 14px;
-    }
+  svg {
+    font-size: 15px;
   }
 }
+
 
 .select-wrapper {
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-start;
-  gap: 20px;
+  gap: 14px;
+  margin-bottom: 0;
+}
+.select-wrapper select {
+  flex: 1 1 180px;
+  min-width: 150px;
+  max-width: 220px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #045745;
+  font-size: 15px;
+  background: #fafdff;
+  color: #045745;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.select-wrapper select:focus {
+  border-color: #045745;
+  box-shadow: 0 0 0 2px #b2ebf2;
+}
+.select-wrapper select:disabled {
+  background: #f0f0f0;
+  color: #bdbdbd;
+  cursor: not-allowed;
+}
+
+.add-schedule-form .selected-group {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  word-break: break-word;
+}
+
+@media (max-width: 600px) {
+  .modal-content {
+    width: 98vw;
+    padding: 18px 4vw 18px 4vw;
+  }
+  .add-schedule-form {
+    gap: 14px;
+  }
+  .select-wrapper {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .select-wrapper select {
+    min-width: 100px;
+    max-width: 100%;
+    width: 100%;
+    font-size: 14px;
+  }
+  .add-schedule-form .selected-group {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .modal-content {
+    width: 98vw;
+    padding: 18px 4vw 18px 4vw;
+  }
+  .add-schedule-form {
+    gap: 14px;
+  }
+  .select-wrapper select {
+    min-width: 110px;
+    font-size: 14px;
+  }
 }

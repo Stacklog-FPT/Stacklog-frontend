@@ -53,6 +53,11 @@ const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess
     setSelectedGroup(null);
   };
 
+  const handleRemoveSelectedClass = () => {
+    setSelectedClasses(null);
+    setSelectedGroup(null);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setScheduleData((prev) => ({
@@ -134,21 +139,19 @@ const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess
         <form className="add-schedule-form" onSubmit={handleSubmit}>
           <h3>Add new slot</h3>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexDirection: 'column' }}>
             {isPage && (
               <div className="select-wrapper">
-                <select onChange={handleSelectClass}>
-                  <option>-- Choose Classes --</option>
-                  {classes.map((item) => {
-                    return (
-                      <option key={item.classesId} value={item.classesId}>
-                        {item.classesName}
-                      </option>
-                    );
-                  })}
+                <select onChange={handleSelectClass} value={selectedClasses?.classesId || ''}>
+                  <option value="">-- Choose Classes --</option>
+                  {classes.map((item) => (
+                    <option key={item.classesId} value={item.classesId}>
+                      {item.classesName}
+                    </option>
+                  ))}
                 </select>
-                <select value={selectedGroup?.groupsId || ''} onChange={handleSelectGroup} required>
-                  <option>-- Choose Group --</option>
+                <select value={selectedGroup?.groupsId || ''} onChange={handleSelectGroup} required disabled={!selectedClasses}>
+                  <option value="">-- Choose Group --</option>
                   {selectedClasses?.groups.map((group) => (
                     <option key={group.groupsId} value={group.groupsId}>
                       {group.groupsName}
@@ -158,19 +161,24 @@ const AddScheduleForms = ({ groupId, onClose, isCreated, setIsCreated, onSuccess
               </div>
             )}
 
-            {selectedGroup && isPage && (
-              <button
-                type="button"
-                onClick={handleRemoveSelectedGroup}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'red',
-                }}
-              >
-                <FaTrash />
-              </button>
+            {/* Hiển thị lớp đã chọn */}
+            {isPage && selectedClasses && (
+              <div className="selected-group" style={{marginTop: 8}}>
+                <span>Class: <b>{selectedClasses.classesName}</b></span>
+                <button type="button" className="remove-btn" onClick={handleRemoveSelectedClass}>
+                  <FaTrash />
+                </button>
+              </div>
+            )}
+
+            {/* Hiển thị group đã chọn */}
+            {isPage && selectedGroup && (
+              <div className="selected-group" style={{marginTop: 8}}>
+                <span>Group: <b>{selectedGroup.groupsName}</b></span>
+                <button type="button" className="remove-btn" onClick={handleRemoveSelectedGroup}>
+                  <FaTrash />
+                </button>
+              </div>
             )}
           </div>
 

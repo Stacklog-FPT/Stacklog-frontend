@@ -1298,6 +1298,102 @@
       "createdAt": "2025-08-20",
       "isRead": false,
       "_id": 0.6145415757017038
+    },
+    {
+      "id": "c43f",
+      "title": "Announce add task Design Model User by de170481",
+      "author": {
+        "_id": 0.15431162785290953,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-24",
+      "isRead": false,
+      "_id": 0.620141803050708
+    },
+    {
+      "id": "9843",
+      "title": "Announce add task UI/UX đẹp by de170481",
+      "author": {
+        "_id": 0.883217298367773,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-24",
+      "isRead": false,
+      "_id": 0.9122807475849196
+    },
+    {
+      "id": "7025",
+      "title": "Announce add task Thiết kế DB notification by de170481",
+      "author": {
+        "_id": 0.43899379500745783,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-24",
+      "isRead": false,
+      "_id": 0.20253732223682597
+    },
+    {
+      "id": "48a6",
+      "title": "Thông báo môn Thiết kế với Hibernate",
+      "author": {
+        "_id": 0.14673835762575416,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-24",
+      "isRead": false,
+      "_id": 0.8373911061386093
+    },
+    {
+      "id": "4f28",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.6006183645974333,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-24",
+      "isRead": false,
+      "_id": 0.29378981789161895
+    },
+    {
+      "id": "3f4a",
+      "title": "Announce add task Hù hú  by de170481",
+      "author": {
+        "_id": 0.736173730069425,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-24",
+      "isRead": false,
+      "_id": 0.642294020267653
+    },
+    {
+      "id": "f0ba",
+      "title": "Announce add task Thiết kế DB notification by de170481",
+      "author": {
+        "_id": 0.9900935723776029,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-24",
+      "isRead": false,
+      "_id": 0.7149767553286399
+    },
+    {
+      "id": "71be",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.24787472672766486,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-24",
+      "isRead": false,
+      "_id": 0.06756965793943759
     }
   ]
 }

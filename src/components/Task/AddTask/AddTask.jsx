@@ -4,11 +4,11 @@ import avatar_add_button from '../../../assets/icon/avatar_add_button.png';
 import assignUser from '../../../assets/task/assign-user.png';
 import iconPriority from '../../../assets/task/icon-priority.png';
 import { useAuth } from '../../../context/AuthProvider';
-import { toast } from 'react-toastify';
 import axios from 'axios';
 import decodeToken from '../../../service/DecodeJwt';
 import { addTask } from '../../../service/TaskService';
 import { useDispatch } from 'react-redux';
+import { toast } from 'sonner';
 import { useSelector } from 'react-redux';
 
 const AddTask = ({ status, onCancel, group }) => {
@@ -17,8 +17,6 @@ const AddTask = ({ status, onCancel, group }) => {
   const groupList = useSelector((state) => state.group.groups);
   const currentGroup = groupList.find((g) => g.groupsId === group);
   const dispatch = useDispatch();
-  const notify = () => toast.success('Add task is successfully');
-  const notifyFailure = () => toast.error('Add task is failure');
   const visibleMembers = currentGroup?.groupStudent.slice(0, 3);
   const extraCount = currentGroup?.groupStudent.length - visibleMembers.length;
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -154,14 +152,14 @@ const AddTask = ({ status, onCancel, group }) => {
         taskDueDate: formattedDueDate,
         createdBy: user?.userName || userData?.username || 'Unknown',
         updatedBy: '',
-        priority: taskData.priority || 'HIGH',
+        priority: taskData.priority,
         assignTo: taskData.assignTo,
       };
 
       const response = await addTask(payload, user.token, dispatch);
 
       if (response.data) {
-        notify();
+        toast.success('Add Task successfully!');
         await axios.post('http://localhost:3000/notifications', {
           id: Math.random().toString(16).slice(2, 6),
           title: `Announce add task ${taskData.taskTitle} by ${user.username}`,
@@ -184,7 +182,7 @@ const AddTask = ({ status, onCancel, group }) => {
         e.response ? e.response.data : e.message,
         e.response ? e.response.status : '',
       );
-      notifyFailure();
+      toast.error('Add task failure');
       onCancel();
     } finally {
       setIsSubmitting(false);

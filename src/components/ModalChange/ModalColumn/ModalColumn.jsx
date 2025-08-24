@@ -1,8 +1,7 @@
-import React from "react";
-import "./ModalColumn.scss";
-import { FaPen } from "react-icons/fa";
-import { FaRegTrashCan } from "react-icons/fa6";
-import AddColumn from "../../Column/AddColumn/AddColumn";
+import React from 'react';
+import './ModalColumn.scss';
+import { FaPen } from 'react-icons/fa';
+import { FaRegTrashCan } from 'react-icons/fa6';
 const ModalColumn = (props) => {
   const [isShowColumn, setIsShowColumn] = React.useState(false);
   return (

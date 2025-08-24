@@ -95,15 +95,17 @@ export const deleteTaskApi = async (token, taskId, dispatch) => {
   }
 };
 
-export const updateTaskApi = async (taskId, taskData, token, dispatch) => {
+export const updateTaskApi = async (taskData, token, dispatch) => {
   try {
     if (!token) dispatch(setError('The token is missing!'));
-    const response = await axios.put(`http://localhost:3001/task?taskId=${taskId}`, taskData, {
+    const response = await axios.put(`http://localhost:3001/task/${taskData.id}`, taskData, {
       //Change taskIdw before mockup with BE
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    console.log('Call me');
     dispatch(updateTasks(response.data));
     dispatch(setPending(false));
     return response;

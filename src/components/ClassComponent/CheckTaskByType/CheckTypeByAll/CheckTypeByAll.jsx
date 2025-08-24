@@ -22,6 +22,7 @@ import { getAllTask, updateTaskApi } from '../../../../service/TaskService';
 import { getStatus } from '../../../../service/ColumnService';
 import { isLeader } from '../../../../helper/validateStudentGroup';
 import decodeToken from '../../../../service/DecodeJwt';
+import { toast } from 'sonner';
 
 const CheckTypeByAll = () => {
   const { user } = useAuth();
@@ -38,7 +39,6 @@ const CheckTypeByAll = () => {
   const [memberTask, setMemberTask] = useState([]);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const [showAddSubTask, setShowAddSubTask] = useState(null);
-  const checkRole = null;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -67,14 +67,15 @@ const CheckTypeByAll = () => {
 
   const handleDragOver = (event) => {
     const { over } = event;
-    if (over) {
-      const overId = over.id;
-      if (overId.startsWith('droppable-')) {
-        const targetStatus = overId.replace('droppable-', '');
-        setActiveColumn(targetStatus);
-      }
+    if (!over) return setActiveColumn(null);
+
+    const overId = String(over.id);
+    if (overId.startsWith('droppable-')) {
+      const targetStatusId = overId.replace('droppable-', '');
+      setActiveColumn(targetStatusId);
     } else {
-      setActiveColumn(null);
+      const overTask = tasks.find((t) => String(t.taskId) === overId);
+      setActiveColumn(overTask ? overTask.statusTaskId : null);
     }
   };
 
@@ -94,20 +95,19 @@ const CheckTypeByAll = () => {
         return;
       }
 
-      // let updatedTasks = [...tasks];
+      let updatedTasks = [...tasks];
       const activeIndex = tasks.findIndex((task) => task.taskId === activeId);
       const droppableId = over.id;
       const isOverDroppable = droppableId.startsWith('droppable-');
-      const isOverTask = tasks.some((task) => task.taskId === over.taskId);
       let targetStatusId;
       let targetStatus;
 
       if (isOverDroppable) {
         targetStatusId = droppableId.replace('droppable-', '');
-      } else if (isOverTask) {
-        const overTask = tasks.find((task) => task.taskId === over.taskId);
+      } else {
+        // Check if over is a task
+        const overTask = tasks.find((task) => task.taskId === droppableId);
         if (!overTask) {
-          console.log('No over task found for ID:', over.id);
           setActiveColumn(null);
           return;
         }
@@ -115,46 +115,47 @@ const CheckTypeByAll = () => {
         targetStatus = statuses.find(
           (item) => item.statusTaskId === targetStatusId,
         )?.statusTaskName;
-      } else {
+      }
+
+      if (!targetStatusId) {
         setActiveColumn(null);
         return;
       }
 
-      if (!targetStatusId) {
-        console.log('Invalid target status:', { targetStatusId, targetStatus });
-        setActiveColumn(null);
-        return;
-      }
+      // Prepare task data for update
+      const taskData = {
+        ...activeTask,
+        statusTaskId: targetStatusId,
+      };
+
       if (isOverDroppable) {
-        const taskData = {
+        updateTaskStatus(activeTask.taskId, taskData);
+        updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
+        updatedTasks.push({
           ...activeTask,
           statusTaskId: targetStatusId,
-        };
-        updateTaskStatus(activeTask.taskId, taskData);
-        // updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
-        // updatedTasks.push({
-        //   ...activeTask,
-        //   statusTaskId: targetStatusId,
-        //   statusTaskName: targetStatus,
-        // });
-      } else if (isOverTask) {
+          statusTaskName: targetStatus,
+        });
+      } else {
+        // Dropped on another task
+        const overTask = tasks.find((task) => task.taskId === droppableId);
+        const overIndex = tasks.findIndex((task) => task.taskId === droppableId);
+        if (activeTask.statusTaskId === targetStatusId) {
+          // Same column: Reorder tasks
+          updatedTasks.splice(activeIndex, 1);
+          updatedTasks.splice(overIndex, 0, activeTask);
+        } else {
+          updateTaskStatus(activeTask.taskId, taskData);
+          updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
+          updatedTasks.splice(overIndex, 0, {
+            ...activeTask,
+            statusTaskId: targetStatusId,
+            statusTaskName: targetStatus,
+          });
+        }
       }
-      // } else if (isOverTask) {
-      //   const overTask = tasks.find((task) => task.taskId === over.id);
-      //   const overIndex = tasks.findIndex((task) => task.taskId === over.id);
-      //   if (activeTask.statusTaskId === targetStatusId) {
-      //     updatedTasks.splice(activeIndex, 1);
-      //     updatedTasks.splice(overIndex, 0, activeTask);
-      //   } else {
-      //     updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
-      //     updatedTasks.splice(overIndex, 0, {
-      //       ...activeTask,
-      //       statusTaskId: targetStatusId,
-      //       statusTaskName: targetStatus,
-      //     });
-      //   }
-      // }
-      // dispatch(setTasks(updatedTasks));
+
+      dispatch(setTasks(updatedTasks));
       setActiveColumn(null);
     },
     [tasks, statuses, dispatch],
@@ -225,12 +226,13 @@ const CheckTypeByAll = () => {
                 statusId={item.statusTaskId}
                 status={item.statusTaskName}
                 color={item.statusTaskColor}
-                tasks={tasks.filter((task) => task?.statusTaskId === item.statusTaskId)}
+                tasks={tasks.filter(
+                  (task) => task?.statusTaskId.toString() === item.statusTaskId.toString(),
+                )}
                 members={memberTask}
                 onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}
                 onShowAddSubTask={handleChooseTask}
-                // onColumnUpdated={handleColumnUpdated}
                 isLeader={checkIsLeader}
               />
             ))}

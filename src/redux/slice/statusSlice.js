@@ -19,6 +19,13 @@ const statusSlice = createSlice({
     deleteStatus: (state, action) => {
       state.statuses = state.statuses.filter((status) => status.statusTaskId !== action.payload);
     },
+    updateStatus: (state, action) => {
+      const { id, ...changes } = action.payload;
+      const status = state.statuses.find((s) => s.id === id); // change before mockup with BE
+      if (status) {
+        Object.assign(status, changes);
+      }
+    },
     setPending: (state, action) => {
       state.pending = action.payload;
     },
@@ -28,5 +35,6 @@ const statusSlice = createSlice({
   },
 });
 
-export const { setStatus, setPending, setError, addStatus, deleteStatus } = statusSlice.actions;
+export const { setStatus, setPending, setError, addStatus, deleteStatus, updateStatus } =
+  statusSlice.actions;
 export default statusSlice.reducer;

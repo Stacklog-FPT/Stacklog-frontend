@@ -5,6 +5,7 @@ import {
   setError,
   addStatus,
   deleteStatus,
+  updateStatus,
 } from '../redux/slice/statusSlice';
 const API_STATUS = 'https://stacklog.id.vn/api/task';
 
@@ -80,9 +81,16 @@ export const deleteStatusApi = async (token, statusTaskId, dispatch) => {
 export const updateStatusApi = async (token, statusTaskId, statusData, dispatch) => {
   try {
     if (!token) dispatch(setError('The token is invalid'));
+    dispatch(setPending(true));
+    const response = await axios.put(`http://localhost:3001/status/${statusTaskId}`, statusData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    const response = await axios.put();
-
+    dispatch(updateStatus(response.data));
+    dispatch(setPending(false));
+    console.log(response);
     return response;
   } catch (e) {
     dispatch(setError(e.message));

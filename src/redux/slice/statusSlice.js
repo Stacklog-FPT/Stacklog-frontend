@@ -16,7 +16,7 @@ const statusSlice = createSlice({
     addStatus: (state, action) => {
       state.statuses.push(action.payload);
     },
-    deleteState: (state, action) => {
+    deleteStatus: (state, action) => {
       state.statuses = state.statuses.filter((status) => status.statusTaskId !== action.payload);
     },
     setPending: (state, action) => {
@@ -28,5 +28,5 @@ const statusSlice = createSlice({
   },
 });
 
-export const { setStatus, setPending, setError, addStatus, deleteState } = statusSlice.actions;
+export const { setStatus, setPending, setError, addStatus, deleteStatus } = statusSlice.actions;
 export default statusSlice.reducer;

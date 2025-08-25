@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Column.scss';
 import iconMore from '../../../../../assets/icon/task/iconMoreTask.png';
 import iconVector from '../../../../../assets/icon/task/iconVector.png';
@@ -9,7 +9,6 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core';
 import { useAuth } from '../../../../../context/AuthProvider';
 import ModalColumn from '../../../../ModalChange/ModalColumn/ModalColumn';
-import decodeToken from '../../../../../service/DecodeJwt';
 import { useSelector } from 'react-redux';
 
 const Column = ({
@@ -23,30 +22,36 @@ const Column = ({
   onTaskUpdated,
   isLeader,
 }) => {
-  const { setNodeRef, isOver } = useDroppable({
-    id: `droppable-${statusId}`,
-  });
+  const { setNodeRef, isOver } = useDroppable({ id: `droppable-${statusId}` });
   const { user } = useAuth();
-  const { pending } = useSelector((s) => s.status.pending);
+  const pending = useSelector((s) => s.status.pending);
   const [openModalColumnId, setOpenModalColumnId] = useState(null);
-  const handleIconMoreClick = () => {
+  const [modalAnchor, setModalAnchor] = useState({ top: 0, left: 0 });
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+  const columnRef = useRef(null);
+  const handleIconMoreClick = (e) => {
+    const btnRect = e.currentTarget.getBoundingClientRect();
+    const top = btnRect.bottom + window.scrollY + 8;
+    const left = btnRect.left + window.scrollX;
+    setModalAnchor({ top, left });
     setOpenModalColumnId((prev) => (prev === statusId ? null : statusId));
   };
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (!e.target.closest('.modal__column') && !e.target.closest('.prop-status-right')) {
-        setOpenModalColumnId(null);
-      }
-    };
+  const handleEditColumn = () => {
+    setIsEditFormOpen(true);
+    setOpenModalColumnId(null);
+  };
 
-    document.addEventListener('keydown', handleClickOutside);
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
+  useEffect(() => {
+    if (!openModalColumnId) return;
+    const onKey = (ev) => ev.key === 'Escape' && setOpenModalColumnId(null);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [openModalColumnId]);
+
   return (
     <div className={`column-container ${isOver ? 'over' : ''}`} ref={setNodeRef}>
-      <div className="column">
+      <div className="column" ref={columnRef}>
         <div className="prop-status" style={{ backgroundColor: color }}>
           <div className="prop-status-left">
             <div className="prop-status-left-text">
@@ -57,6 +62,7 @@ const Column = ({
               </span>
             </div>
           </div>
+
           <div className="prop-status-right">
             <img
               src={iconMore}
@@ -64,13 +70,18 @@ const Column = ({
               onClick={handleIconMoreClick}
               style={{ cursor: 'pointer' }}
             />
+
             {openModalColumnId === statusId && (
-              <div className="modal-wrapper">
-                <ModalColumn statusId={openModalColumnId} />
-              </div>
+              <ModalColumn
+                statusId={statusId}
+                onEdit={handleEditColumn}
+                onClose={() => setOpenModalColumnId(null)}
+                anchor={modalAnchor}
+              />
             )}
           </div>
         </div>
+
         <SortableContext
           id={statusId}
           items={tasks?.map((task) => task.taskId) || []}
@@ -103,12 +114,12 @@ const Column = ({
           </div>
         </SortableContext>
 
-        {user.role === 'LECTURER' || isLeader() ? (
+        {(user.role === 'LECTURER' || isLeader()) && (
           <div className="btn-add-task" onClick={onShowAddTask}>
-            <i className="fa-solid fa-plus" style={{ color: '#000' }}></i>
+            <i className="fa-solid fa-plus" style={{ color: '#000' }} />
             <span>Add Task</span>
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );

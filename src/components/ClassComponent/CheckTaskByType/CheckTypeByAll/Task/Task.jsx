@@ -134,7 +134,6 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
         taskDueDate: formattedDueDate,
       };
 
-      console.log(payload);
       await updateTaskApi(payload, user.token, dispatch);
       setIsEditing(false);
     } catch (e) {
@@ -156,7 +155,7 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
 
     if (result.isConfirmed) {
       try {
-        const response = await deleteTaskApi(user.token, task.id, dispatch);
+        const response = await deleteTaskApi(user.token, task.id, dispatch); // Change taskId before mockup with BE
         if (response.data === 'Delete success') {
           flag = true;
           setShowSubTask(false);
@@ -198,6 +197,7 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
         className={`task-container${isDraggingOverlay ? ' isDraggingOverlay' : ''}${
           isDragging && !isDraggingOverlay ? ' dragging' : ''
         }`}
+        onClick={() => console.log(props.task)}
       >
         <div className="task-content">
           <div className="task-content-head">

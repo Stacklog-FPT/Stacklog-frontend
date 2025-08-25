@@ -1,5 +1,12 @@
 import axios from 'axios';
-import { setPending, setStatus, setError, addStatus } from '../redux/slice/statusSlice';
+import {
+  setPending,
+  setStatus,
+  setError,
+  addStatus,
+  deleteStatus,
+  updateStatus,
+} from '../redux/slice/statusSlice';
 const API_STATUS = 'https://stacklog.id.vn/api/task';
 
 const statusApi = () => {
@@ -51,6 +58,42 @@ export const getStatus = async (token, groupId, dispatch) => {
   } catch (err) {
     dispatch(setError(err.message));
     dispatch(setPending(false));
+  }
+};
+
+export const deleteStatusApi = async (token, statusTaskId, dispatch) => {
+  try {
+    if (!token) dispatch(setError('The token is missing is invalid!'));
+    const response = await axios.delete(`http://localhost:3001/status/${statusTaskId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log(response);
+    dispatch(deleteStatus(statusTaskId));
+    return response;
+  } catch (e) {
+    dispatch(setError(e.message));
+  }
+};
+
+export const updateStatusApi = async (token, statusTaskId, statusData, dispatch) => {
+  try {
+    if (!token) dispatch(setError('The token is invalid'));
+    dispatch(setPending(true));
+    const response = await axios.put(`http://localhost:3001/status/${statusTaskId}`, statusData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    dispatch(updateStatus(response.data));
+    dispatch(setPending(false));
+    console.log(response);
+    return response;
+  } catch (e) {
+    dispatch(setError(e.message));
   }
 };
 

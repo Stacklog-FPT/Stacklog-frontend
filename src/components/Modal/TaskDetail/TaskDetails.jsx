@@ -204,8 +204,6 @@ const TaskDetails = ({ task, onClose }) => {
             <span>Comments</span>
             <span className="comments__count">{task?.reviews?.length || 0}</span>
           </button>
-
-          {/* Luôn mount, chỉ close/open bằng CSS */}
           <div
             id="comments-panel"
             className={`comments__content ${isCommentsOpen ? 'open' : ''}`}

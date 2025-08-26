@@ -16,6 +16,7 @@ import { useAuth } from '../../../../../context/AuthProvider';
 import SubTask from './SubTask/SubTask';
 import { useDispatch } from 'react-redux';
 import { deleteTaskApi, updateTaskApi } from '../../../../../service/TaskService';
+import TaskDetails from '../../../../Modal/TaskDetail/TaskDetails';
 
 const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -29,6 +30,7 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
   const [editedTitle, setEditedTitle] = useState(props.task?.taskTitle || '');
   const [editedStartTime, setEditedStartTime] = useState(props.task?.taskStartTime || '');
   const [editedDueDate, setEditedDueDate] = useState(props.task?.taskDueDate || '');
+  const [isShowDetail, setIsShowDetail] = useState(false);
   const sensors = useSensors(useSensor(PointerSensor));
   const handleSubtaskDragEnd = (event) => {
     const { active, over } = event;
@@ -197,7 +199,7 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
         className={`task-container${isDraggingOverlay ? ' isDraggingOverlay' : ''}${
           isDragging && !isDraggingOverlay ? ' dragging' : ''
         }`}
-        onClick={() => console.log(props.task)}
+        onClick={() => setIsShowDetail(!isShowDetail)}
       >
         <div className="task-content">
           <div className="task-content-head">
@@ -221,13 +223,17 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
                 <i
                   className="fa-solid fa-check"
                   style={{ cursor: 'pointer', color: '#000' }}
-                  onClick={() => handleUpdateTask(props.task)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleUpdateTask(props.task);
+                  }}
                 />
               ) : (
                 <FaPen
                   size={14}
                   style={{ cursor: 'pointer' }}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setIsEditing(true);
                   }}
                 />
@@ -238,17 +244,26 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
                   color: props?.task?.priority === 'HIGH' ? 'red' : 'inherit',
                   cursor: 'pointer',
                 }}
-                onClick={() => handleEditPriority(props.task)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditPriority(props.task);
+                }}
               />
               <FaPlus
                 size={12}
                 style={{ cursor: 'pointer' }}
-                onClick={() => props.onShowAddSubTask(props.task)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.onShowAddSubTask(props.task);
+                }}
               />
               <FaTrashAlt
                 size={12}
                 style={{ cursor: 'pointer' }}
-                onClick={() => handleDeleteTask(props.task.taskId, props.task)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteTask(props.task.taskId, props.task);
+                }}
               />
             </div>
           </div>
@@ -319,7 +334,10 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
               <div className="task-content-contact-left-element">
                 <i
                   className="fa-solid fa-comment"
-                  onClick={() => props.onShowComment(props.task)} // Change taskId when mockup with BE
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    props.onShowComment(props.task);
+                  }} // Change taskId when mockup with BE
                 ></i>
                 <span>{props.task?.reviews?.length || 0}</span>
               </div>
@@ -375,6 +393,9 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
             <h2>No available subtasks</h2>
           ))}
       </div>
+      {isShowDetail && (
+        <TaskDetails task={props.task} onClose={() => setIsShowDetail(!isShowDetail)} />
+      )}
     </>
   );
 };

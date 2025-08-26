@@ -1,43 +1,35 @@
 import { useState, useEffect, useRef } from 'react';
 import './CommentTask.scss';
-import smileIcon from '../../../assets/commentIcon/smile_icon.png';
-import imageIcon from '../../../assets/commentIcon/image_icon.png';
-import tagIcon from '../../../assets/commentIcon/tag_icon.png';
 import ReviewService from '../../../service/ReviewService';
-import userApi from '../../../service/UserService';
 import { useAuth } from '../../../context/AuthProvider';
-import { FaPen, FaTrashAlt, FaCheck } from 'react-icons/fa';
 import { BsFillSendFill } from 'react-icons/bs';
 import decodeToken from '../../../service/DecodeJwt';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { createReview } from '../../../service/ReviewService';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+
+import CommentTaskBody from './CommentBody';
+import CommentTaskFooter from './CommentFooter';
 
 const CommentTask = ({ task, isClose }) => {
   const tasks = useSelector((t) => t.task.tasks);
   const currentTask = tasks.find((t) => t.id === task.id); // Change taskId before mockup with BE
   const reviews = currentTask?.reviews || [];
+
   const [newComment, setNewComment] = useState('');
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState('');
   const [userMap, setUserMap] = useState({});
+
   const { user } = useAuth();
   const decoded = decodeToken(user.token);
-  const { getUserById } = userApi();
+  const decodedId = decoded?.id;
   const { deleteReview } = ReviewService();
   const dispatch = useDispatch();
-  const ref = useRef();
-  const formatDate = (date) => {
-    if (!date) return '';
-    const d = new Date(date);
-    if (isNaN(d)) return '';
-    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(
-      2,
-      '0',
-    )}/${d.getFullYear()}`;
-  };
+
+  //
+  const wrapperRef = useRef(null);
 
   const handleSendComment = async () => {
     if (!newComment.trim()) return;
@@ -49,8 +41,12 @@ const CommentTask = ({ task, isClose }) => {
           {
             reviewId: Math.random(),
             reviewContent: newComment,
-            taskId: task.taskId,
-            createBy: user._id,
+            taskId: task.taskId ?? task.id,
+            createdBy: user._id,
+            createdAt: new Date().toISOString(),
+            avatar_link:
+              user.avatar ||
+              'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
           },
         ],
       };
@@ -79,8 +75,8 @@ const CommentTask = ({ task, isClose }) => {
 
   const handleDeleteComment = async (commentId) => {
     const result = await Swal.fire({
-      title: 'Are you sure to delete this task?',
-      text: "This action can't completed!",
+      title: 'Are you sure to delete this comment?',
+      text: "This action can't be undone!",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#045745',
@@ -90,9 +86,10 @@ const CommentTask = ({ task, isClose }) => {
     });
     if (result.isConfirmed) {
       try {
-        const response = await deleteReview(user.token, commentId);
+        await deleteReview(user.token, commentId);
+        // tuỳ backend có trả list mới hay không, bạn có thể dispatch refetch ở đây nếu cần
       } catch (e) {
-        throw new Error(e.message);
+        console.error(e.message);
       }
     }
   };
@@ -107,13 +104,15 @@ const CommentTask = ({ task, isClose }) => {
     try {
       const payload = {
         reviewContent: editedComment,
-        taskId: task,
+        taskId: task.id,
         reviewId: editingCommentId,
       };
 
-      const res = await createReview(user?.token, payload);
-      setEditingCommentId(null);
-      setEditedComment('');
+      const res = await createReview(user?.token, task.id, payload, dispatch);
+      if (res) {
+        setEditingCommentId(null);
+        setEditedComment('');
+      }
     } catch (e) {
       console.error('Update failed:', e.message);
     }
@@ -134,7 +133,6 @@ const CommentTask = ({ task, isClose }) => {
 
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleEscKey);
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscKey);
@@ -142,101 +140,33 @@ const CommentTask = ({ task, isClose }) => {
   }, [isClose]);
 
   return (
-    <div className="comment__task__container" ref={ref}>
+    <div className="comment__task__container" ref={wrapperRef}>
       <div className="comment__task__header">
         <h2>Comment</h2>
         <i className="fa-solid fa-xmark close-icon" onClick={isClose}></i>
       </div>
 
-      <div className="comment__task__body">
-        {reviews?.length > 0 ? (
-          reviews?.map((item, index) => (
-            <div className="comment__task__card" key={index}>
-              <div className="comment__task__card__header">
-                <div className="infor__user">
-                  <img
-                    src={
-                      item.avatar_link ||
-                      'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
-                    }
-                    alt="avatar"
-                  />
-                  <div>
-                    <p className="infor__user__name">
-                      {userMap[item.createdBy]?.full_name || 'User'}
-                    </p>
-                    <p className="infor__user__create">{formatDate(item.createdAt)}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="comment__task__card__content">
-                <div className="comment__task__card__content__container">
-                  {editingCommentId === item.reviewId ? (
-                    <div className="comment__edit__container">
-                      <input
-                        value={editedComment}
-                        onChange={(e) => setEditedComment(e.target.value)}
-                        className="comment__edit__input"
-                      />
-                      <FaCheck
-                        size={14}
-                        className="comment-icon comment-icon-check"
-                        onClick={handleUpdateComment}
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      <p>{item.reviewContent}</p>
-                      {decoded.id === item.createdBy && (
-                        <div className="comment__task__card__content__container__feature">
-                          <FaPen
-                            size={12}
-                            className="comment-icon comment-icon-pen"
-                            onClick={() => handleEditComment(item)}
-                          />
-                          <FaTrashAlt
-                            size={12}
-                            className="comment-icon comment-icon-trash"
-                            onClick={() => handleDeleteComment(item.reviewId)}
-                          />
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <h2 className="no__content">No Comment for this task!</h2>
-        )}
-      </div>
+      <CommentTaskBody
+        reviews={reviews}
+        userMap={userMap}
+        decodedId={decodedId}
+        editingCommentId={editingCommentId}
+        editedComment={editedComment}
+        onEdit={handleEditComment}
+        onChangeEdited={setEditedComment}
+        onUpdate={handleUpdateComment}
+        onDelete={handleDeleteComment}
+      />
 
-      <div className="comment__task__footer">
-        <img
-          src={
-            'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
-          }
-          alt="avatar"
-        />
-        <div className="comment__task__create__content">
-          <textarea
-            placeholder="Enter comment"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-          ></textarea>
-          <div className="wrapper_icon_comment">
-            <div className="wrapper_icon_features">
-              <img src={smileIcon} alt="Smile icon" />
-              <img src={tagIcon} alt="Tag icon" />
-              <img src={imageIcon} alt="Image icon" />
-            </div>
-            <button className="send__comment" onClick={handleSendComment}>
-              <BsFillSendFill />
-            </button>
-          </div>
-        </div>
-      </div>
+      <CommentTaskFooter
+        avatar={
+          user.avatar ||
+          'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+        }
+        newComment={newComment}
+        onChangeNew={setNewComment}
+        onSend={handleSendComment}
+      />
     </div>
   );
 };

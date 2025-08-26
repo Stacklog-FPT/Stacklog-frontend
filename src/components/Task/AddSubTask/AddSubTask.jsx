@@ -11,15 +11,20 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import decodeToken from '../../../service/DecodeJwt';
 import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-const AddSubTask = ({ isClose, task, members }) => {
+const AddSubTask = ({ isClose, task }) => {
+  const { groupId } = useParams();
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
   const dispatch = useDispatch();
   const notify = () => toast.success('Add task is successfully');
   const notifyFailure = () => toast.error('Add task is failure');
-  const visibleMembers = task?.assigns?.slice(0, 3);
-  const extraCount = task?.assigns?.length - visibleMembers?.length;
+  const { groups } = useSelector((state) => state.group);
+  const currentGroup = groups.find((g) => g.groupsId === groupId);
+  const visibleMembers = currentGroup?.groupStudent?.slice(0, 3);
+  const extraCount = currentGroup?.groupStudent?.length - visibleMembers?.length;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
@@ -34,7 +39,7 @@ const AddSubTask = ({ isClose, task, members }) => {
     taskDueDate: '',
     priority: '',
     statusTaskId: '',
-    listUserAssign: [],
+    assignTo: [],
     parentTaskId: '',
   });
 
@@ -58,16 +63,16 @@ const AddSubTask = ({ isClose, task, members }) => {
     const { checked, value } = e.target;
     setSubTaskData((prev) => {
       const newAssigns = checked
-        ? [...prev.listUserAssign, value]
-        : prev.listUserAssign.filter((id) => id !== value);
-      return { ...prev, listUserAssign: newAssigns };
+        ? [...prev.assignTo, value]
+        : prev.assignTo.filter((id) => id !== value);
+      return { ...prev, assignTo: newAssigns };
     });
   };
 
   const handleRemoveAssign = (userId) => {
     setSubTaskData((prev) => ({
       ...prev,
-      listUserAssign: prev.listUserAssign.filter((id) => id !== userId),
+      assignTo: prev.assignTo.filter((id) => id !== userId),
     }));
   };
 
@@ -147,13 +152,13 @@ const AddSubTask = ({ isClose, task, members }) => {
             statusTaskId: task.statusTaskId,
             taskStartTime: formattedStartTime,
             taskDueDate: formattedDueDate,
-            listUserAssign: subTaskData.listUserAssign,
+            assignTo: subTaskData.assignTo,
             parentTaskId: task.taskId,
           },
         ],
       };
 
-      const response = await updateTaskApi(task.id, payload, user.token, dispatch);
+      const response = await updateTaskApi(payload, user.token, dispatch);
       if (response.data) {
         notify();
         await axios.post('http://localhost:3000/notifications', {
@@ -218,8 +223,8 @@ const AddSubTask = ({ isClose, task, members }) => {
           </div>
 
           <div className="assigned-users-list">
-            {subTaskData.listUserAssign.map((userId) => {
-              const member = members.find((m) => String(m._id) === String(userId));
+            {subTaskData.assignTo.map((userId) => {
+              const member = currentGroup.groupStudent.find((m) => m === userId);
               return member ? (
                 <div key={userId} className="assigned-user-card">
                   <div className="user-info">
@@ -264,15 +269,15 @@ const AddSubTask = ({ isClose, task, members }) => {
           {showAssignDropdown && (
             <div className="assign-dropdown">
               <div className="assign-checkbox-list">
-                {members.map((member) => (
-                  <label key={member._id} className="member-option">
+                {currentGroup.groupStudent?.map((member) => (
+                  <label key={member} className="member-option">
                     <input
                       type="checkbox"
-                      value={member._id}
-                      checked={subTaskData.listUserAssign.includes(member._id)}
+                      value={member}
+                      checked={subTaskData.assignTo.includes(member)}
                       onChange={handleAssignChange}
                     />
-                    <div className="member-info" key={member._id}>
+                    <div className="member-info">
                       <img
                         src={
                           member.avatar ||
@@ -362,17 +367,6 @@ const AddSubTask = ({ isClose, task, members }) => {
                 onChange={handleInputChange}
               />
             </div>
-          </div>
-        </div>
-        <div className="wrapper-track-time">
-          <div className="wrapper-track-time-heading">
-            <img src={trackTime || '/placeholder.svg'} alt="...icon" />
-            <h2>Track time</h2>
-          </div>
-          <div className="wrapper-track-time-input">
-            <input type="text" placeholder="Enter your date" />
-            <input type="text" placeholder="Enter your time" />
-            <input type="text" placeholder="Enter your time" />
           </div>
         </div>
         <div className="wrapper-btn-submit">

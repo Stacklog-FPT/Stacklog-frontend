@@ -10,6 +10,7 @@ import addButton from '../../../../../../assets/icon/avatar_add_button.png';
 import './SubTask.scss';
 import { useAuth } from '../../../../../../context/AuthProvider';
 import { deleteTaskApi } from '../../../../../../service/TaskService';
+import { useDispatch } from 'react-redux';
 
 const SubTask = ({
   id,
@@ -21,6 +22,7 @@ const SubTask = ({
   members,
   handleDeleteReRender,
   subTaskId,
+  idTamThoi,
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
@@ -32,7 +34,7 @@ const SubTask = ({
   };
 
   const { user } = useAuth();
-
+  const dispatch = useDispatch();
   const visibleMembers = members?.slice(0, 3);
   const extraCount = members?.length - visibleMembers?.length;
 
@@ -46,19 +48,14 @@ const SubTask = ({
     return `${day}/${month}/${year}`;
   };
 
-  const calculateRemainingPercent = (startTime, dueDate) => {
+  const calculateRemainingPercent = (start, due) => {
     const now = new Date();
-    const start = new Date(startTime);
-    const end = new Date(dueDate);
-
-    if (isNaN(start) || isNaN(end) || end <= start) return 0;
-
-    const totalDuration = end - start;
-    const remainingDuration = end - now;
-
-    const percent = (remainingDuration / totalDuration) * 100;
-
-    return Math.max(0, Math.min(100, Math.round(percent)));
+    const s = new Date(start);
+    const e = new Date(due);
+    if (isNaN(s) || isNaN(e) || e <= s) return 0;
+    const total = e - s;
+    const passed = Math.min(Math.max(now - s, 0), total);
+    return Math.round((passed / total) * 100);
   };
 
   const getColorByPercent = (percent) => {
@@ -89,7 +86,7 @@ const SubTask = ({
 
     if (result.isConfirmed) {
       try {
-        const response = await deleteTaskApi(user.token, taskId);
+        const response = await deleteTaskApi(user.token, taskId, dispatch);
         console.log('API response:', response);
         if (response.data === 'Delete success') {
           handleDeleteReRender(true);

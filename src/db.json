@@ -1394,6 +1394,138 @@
       "createdAt": "2025-08-24",
       "isRead": false,
       "_id": 0.06756965793943759
+    },
+    {
+      "id": "91f3",
+      "title": "Announce add task Thiết kế DB notification by de170481",
+      "author": {
+        "_id": 0.045276477068743715,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-25",
+      "isRead": false,
+      "_id": 0.9791467640552952
+    },
+    {
+      "id": "056e",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.02542278402962972,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.20736208137850376
+    },
+    {
+      "id": "1f83",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.7487535752113915,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.5856971991544735
+    },
+    {
+      "id": "d64c",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.15325783222464728,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.4614463482691489
+    },
+    {
+      "id": "e41a",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.6944797884299329,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.7785994496680476
+    },
+    {
+      "id": "ddf5",
+      "title": "Thông báo môn UI/UX đẹp",
+      "author": {
+        "_id": 0.9743538019931534,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.3386734063561958
+    },
+    {
+      "id": "abc5",
+      "title": "Announce add task Design UI/UX  by de170481",
+      "author": {
+        "_id": 0.17379327888215967,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.6289247454723464
+    },
+    {
+      "id": "7b53",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.4229720199102407,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.4089989064379317
+    },
+    {
+      "id": "0ed0",
+      "title": "Thông báo môn Design User Model",
+      "author": {
+        "_id": 0.7103304468777931,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.5173102912497393
+    },
+    {
+      "id": "5b1b",
+      "title": "Thông báo môn UI/UX đẹp",
+      "author": {
+        "_id": 0.7279341703411542,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.5042778702231901
+    },
+    {
+      "id": "9bbf",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.9738503106133896,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.06951158644141986
     }
   ]
 }

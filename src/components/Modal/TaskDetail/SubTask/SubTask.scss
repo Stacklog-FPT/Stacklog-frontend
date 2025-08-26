@@ -1,0 +1,197 @@
+.subtask__container.compact {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+
+  .subtask__card {
+    display: grid;
+    grid-template-columns: auto 1fr 120px;
+    align-items: center;
+    gap: 10px;
+
+    min-height: 52px;
+    padding: 8px 10px;
+    border-radius: 8px;
+
+    position: relative;
+    border: 1px solid #e7ebf0;
+    background: #fff;
+    background-clip: padding-box;
+    box-shadow: 0 1px 0 rgba(17, 24, 39, 0.04);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 6px;
+      width: 3px;
+      border-radius: 2px;
+      background: #e5e7eb;
+    }
+
+    &:hover {
+      border-color: #dfe3ea;
+      box-shadow: 0 4px 18px rgba(17, 24, 39, 0.08);
+      background-image: linear-gradient(transparent, rgba(17, 24, 39, 0.012));
+    }
+  }
+
+  .st__head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding-right: 12px;
+    border-right: 1px dashed #e8ecf3;
+  }
+  .st__title {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #111827;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  .st__priority {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 0.12rem 0.4rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+  }
+  .st__priority--high {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #fecaca;
+  }
+  .st__priority--medium {
+    background: #fff7ed;
+    color: #9a3412;
+    border-color: #ffedd5;
+  }
+  .st__priority--low {
+    background: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+  }
+  .st__priority--normal {
+    background: #eef2ff;
+    color: #3730a3;
+    border-color: #e0e7ff;
+  }
+
+  .st__meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0 12px;
+    border-right: 1px dashed #e8ecf3;
+
+    .st__meta__item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+
+      .label {
+        font-size: 0.64rem;
+        color: #6b7280;
+      }
+      .value {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #0f172a;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .st__meta__item + .st__meta__item {
+      border-left: 1px solid #f1f3f7;
+      padding-left: 10px;
+    }
+  }
+
+  .st__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .st__progress {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: 100%;
+  }
+  .st__progress__bar {
+    position: relative;
+    flex: 1 1 auto;
+    height: 4px;
+    background: #eef2f7;
+    border: 1px solid #e8ecf3;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .st__progress__fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+    transition: width 0.2s ease;
+    &.ok {
+      background: #10b981;
+    }
+    &.warn {
+      background: #f59e0b;
+    }
+    &.alert {
+      background: #ef4444;
+    }
+  }
+  .st__progress__label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #4b5563;
+    min-width: 1.8rem;
+    text-align: right;
+  }
+
+  /* ===== Accent bar theo priority (nếu browser hỗ trợ :has) ===== */
+  .subtask__card:has(.st__priority--high)::before {
+    background: #ef4444;
+  }
+  .subtask__card:has(.st__priority--medium)::before {
+    background: #f59e0b;
+  }
+  .subtask__card:has(.st__priority--low)::before {
+    background: #10b981;
+  }
+  .subtask__card:has(.st__priority--normal)::before {
+    background: #6366f1;
+  }
+}
+
+/* Mobile: xếp dọc bên trong card */
+@media (max-width: 640px) {
+  .subtask__container.compact .subtask__card {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .subtask__container.compact .st__head,
+  .subtask__container.compact .st__meta {
+    border-right: 0;
+    padding-right: 0;
+  }
+  .subtask__container.compact .st__meta .st__meta__item + .st__meta__item {
+    border-left: 0;
+    padding-left: 0;
+  }
+}

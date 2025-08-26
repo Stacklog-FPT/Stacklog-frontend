@@ -79,23 +79,14 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
     await updateTaskApi(payload, user.token, dispatch);
   };
 
-  const handleShowSubTask = () => {
-    setShowSubTask(!showSubTask);
-  };
-
-  const calculateRemainingPercent = (createdAt, dueDate) => {
+  const calculateRemainingPercent = (start, due) => {
     const now = new Date();
-    const start = new Date(createdAt);
-    const end = new Date(dueDate);
-
-    if (isNaN(start) || isNaN(end) || end <= start) return 0;
-
-    const totalDuration = end - start;
-    const remainingDuration = end - now;
-
-    const percent = (remainingDuration / totalDuration) * 100;
-
-    return Math.max(0, Math.min(100, Math.round(percent)));
+    const s = new Date(start);
+    const e = new Date(due);
+    if (isNaN(s) || isNaN(e) || e <= s) return 0;
+    const total = e - s;
+    const passed = Math.min(Math.max(now - s, 0), total);
+    return Math.round((passed / total) * 100);
   };
 
   const getColorByPercent = (percent) => {
@@ -344,7 +335,10 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
               <div
                 className="task-content-contact-left-element"
                 style={{ cursor: 'pointer' }}
-                onClick={handleShowSubTask}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowSubTask(!showSubTask);
+                }}
               >
                 <img src={iconDontKnow} alt="this is icon" />
                 <span>{props.task?.subTasks?.length || 0}</span>

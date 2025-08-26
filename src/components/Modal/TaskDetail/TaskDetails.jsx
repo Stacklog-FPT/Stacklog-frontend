@@ -12,10 +12,12 @@ import ReviewService from '../../../service/ReviewService';
 import decodeToken from '../../../service/DecodeJwt';
 import { FaChevronRight } from 'react-icons/fa';
 import Navbar from './Navbar/Navbar';
+import Checklist from './Checklist/Checklist';
+import SubTask from './SubTask/SubTask';
 
 const TaskDetails = ({ task, onClose }) => {
   const statuses = useSelector((state) => state.status.statuses);
-  const currentStatus = statuses.find((s) => s.statusTaskId === task.statusTaskId);
+  const currentStatus = statuses.find((s) => String(s.statusTaskId) === String(task.statusTaskId));
   const [newComment, setNewComment] = useState('');
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState('');
@@ -26,8 +28,8 @@ const TaskDetails = ({ task, onClose }) => {
   const decoded = decodeToken(user.token);
   const dispatch = useDispatch();
   const { deleteReview } = ReviewService();
-
-  const toggleComments = () => setIsCommentsOpen((v) => !v); // ⬅️ toggle
+  const [activeTab, setActiveTab] = useState('subtasks');
+  const toggleComments = () => setIsCommentsOpen((v) => !v);
 
   const handleSendComment = async () => {
     if (!newComment.trim()) return;
@@ -171,7 +173,22 @@ const TaskDetails = ({ task, onClose }) => {
         </section>
 
         {/* Navbar */}
-        <Navbar />
+        <Navbar
+          active={activeTab}
+          onChange={setActiveTab}
+          counts={{
+            subtasks: task?.subTasks?.length || 0,
+            checklists: (task?.checkList || []).length || 0,
+          }}
+        />
+
+        <section className="taskdetail__todo">
+          {activeTab === 'subtasks' ? (
+            <SubTask data={task?.subTasks} />
+          ) : (
+            <Checklist data={task?.checkList} />
+          )}
+        </section>
         {/* Comment Task */}
         <section className="taskdetail_comments">
           <button
@@ -188,35 +205,35 @@ const TaskDetails = ({ task, onClose }) => {
             <span className="comments__count">{task?.reviews?.length || 0}</span>
           </button>
 
+          {/* Luôn mount, chỉ close/open bằng CSS */}
           <div
             id="comments-panel"
-            className={`comments__panel ${isCommentsOpen ? 'open' : 'closed'}`}
+            className={`comments__content ${isCommentsOpen ? 'open' : ''}`}
+            aria-hidden={!isCommentsOpen}
           >
-            {isCommentsOpen && (
-              <>
-                <CommentBody
-                  reviews={task?.reviews}
-                  userMap={userMap}
-                  formatDate={(d) => formatDateUI(d)}
-                  decodedId={decoded?.id}
-                  editingCommentId={editingCommentId}
-                  editedComment={editedComment}
-                  onEdit={handleEditComment}
-                  onChangeEdited={setEditedComment}
-                  onUpdate={handleUpdateComment}
-                  onDelete={handleDeleteComment}
-                />
-                <CommentFooter
-                  avatar={
-                    user?.avatar ||
-                    'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
-                  }
-                  newComment={newComment}
-                  onChangeNew={setNewComment}
-                  onSend={handleSendComment}
-                />
-              </>
-            )}
+            <div className="comments__inner">
+              <CommentBody
+                reviews={task?.reviews}
+                userMap={{}}
+                formatDate={(d) => formatDateUI(d)}
+                decodedId={decoded?.id}
+                editingCommentId={editingCommentId}
+                editedComment={editedComment}
+                onEdit={handleEditComment}
+                onChangeEdited={setEditedComment}
+                onUpdate={handleUpdateComment}
+                onDelete={handleDeleteComment}
+              />
+              <CommentFooter
+                avatar={
+                  user?.avatar ||
+                  'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                }
+                newComment={newComment}
+                onChangeNew={setNewComment}
+                onSend={handleSendComment}
+              />
+            </div>
           </div>
         </section>
       </aside>

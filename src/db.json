@@ -1454,6 +1454,66 @@
       "createdAt": "2025-08-26",
       "isRead": false,
       "_id": 0.7785994496680476
+    },
+    {
+      "id": "ddf5",
+      "title": "Thông báo môn UI/UX đẹp",
+      "author": {
+        "_id": 0.9743538019931534,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.3386734063561958
+    },
+    {
+      "id": "abc5",
+      "title": "Announce add task Design UI/UX  by de170481",
+      "author": {
+        "_id": 0.17379327888215967,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.6289247454723464
+    },
+    {
+      "id": "7b53",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.4229720199102407,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.4089989064379317
+    },
+    {
+      "id": "0ed0",
+      "title": "Thông báo môn Design User Model",
+      "author": {
+        "_id": 0.7103304468777931,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.5173102912497393
+    },
+    {
+      "id": "5b1b",
+      "title": "Thông báo môn UI/UX đẹp",
+      "author": {
+        "_id": 0.7279341703411542,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-26",
+      "isRead": false,
+      "_id": 0.5042778702231901
     }
   ]
 }

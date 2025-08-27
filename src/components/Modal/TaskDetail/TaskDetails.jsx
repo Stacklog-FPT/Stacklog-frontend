@@ -14,14 +14,15 @@ import { FaChevronRight } from 'react-icons/fa';
 import Navbar from './Navbar/Navbar';
 import Checklist from './Checklist/Checklist';
 import SubTask from './SubTask/SubTask';
-
+import HoldDeleteButton from './ButtonDelete';
+import { deleteTaskApi } from '../../../service/TaskService';
+import { toast } from 'sonner';
 const TaskDetails = ({ task, onClose }) => {
   const statuses = useSelector((state) => state.status.statuses);
   const currentStatus = statuses.find((s) => String(s.statusTaskId) === String(task.statusTaskId));
   const [newComment, setNewComment] = useState('');
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState('');
-  const [userMap] = useState({});
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const panelRef = useRef(null);
   const { user } = useAuth();
@@ -106,6 +107,17 @@ const TaskDetails = ({ task, onClose }) => {
     }
   };
 
+  const handleDeleteTask = async () => {
+    const response = await deleteTaskApi(user.token, task.id, dispatch); // Change if before mock up
+
+    if (response.status === 200) {
+      toast.success('Delete task successfully!');
+      onClose();
+    } else {
+      toast.error('Oops, something went wrong!');
+    }
+  };
+
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose?.();
     window.addEventListener('keydown', onKey);
@@ -132,9 +144,13 @@ const TaskDetails = ({ task, onClose }) => {
             <span className="taskdetail__pill">{task?.priority || 'NORMAL'}</span>
             <h2 title={task?.taskTitle}>{task?.taskTitle || 'Untitled task'}</h2>
           </div>
-          <button className="taskdetail__close" onClick={onClose} aria-label="Close">
-            ×
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <HoldDeleteButton onConfirm={handleDeleteTask} />
+
+            <button className="taskdetail__close" onClick={onClose} aria-label="Close">
+              ×
+            </button>
+          </div>
         </header>
 
         <section className="taskdetail__meta">
@@ -186,7 +202,7 @@ const TaskDetails = ({ task, onClose }) => {
           {activeTab === 'subtasks' ? (
             <SubTask data={task?.subTasks} />
           ) : (
-            <Checklist data={task?.checkList} />
+            <Checklist checkList={task?.checkList} taskId={task.taskId} />
           )}
         </section>
         {/* Comment Task */}

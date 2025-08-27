@@ -1,16 +1,24 @@
 .ck {
-  --bd: #e7ebf0;
+  /* ===== design tokens ===== */
   --bg: #ffffff;
-  --muted: #6b7280;
-  --text: #111827;
+  --surface: #f8fafc;
+  --bd: #e7ebf0;
+  --text: #0f172a;
+  --muted: #64748b;
+  --primary: #6366f1; /* indigo */
+  --success: #10b981; /* emerald */
+  --ring-rgb: 99, 102, 241; /* for rgba(var(--ring-rgb), .xx) */
+  --radius: 12px;
+  --shadow-sm: 0 1px 2px rgba(2, 6, 23, 0.06), 0 1px 1px rgba(2, 6, 23, 0.04);
+  --shadow-md: 0 10px 30px rgba(2, 6, 23, 0.1);
 
+  /* ===== toolbar ===== */
   .ck__toolbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 8px 0 10px;
     border-bottom: 1px solid #f1f3f6;
-
     h3 {
       margin: 0;
       font-size: 16px;
@@ -34,13 +42,81 @@
   }
   .ck__bar__fill {
     height: 100%;
-    background: #6366f1;
+    background: var(--primary);
   }
   .ck__count {
     font-size: 13px;
     color: var(--muted);
   }
 
+  /* ===== inline create checklist (ClickUp style) ===== */
+  .ck__inlineCreate {
+    position: relative;
+    grid-row: auto;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
+    margin-top: 12px;
+    border: 1px dashed var(--bd);
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, #fff, #f9fbff);
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+
+    &:focus-within {
+      border-style: solid;
+      border-color: rgba(var(--ring-rgb), 0.55);
+      box-shadow: 0 0 0 4px rgba(var(--ring-rgb), 0.12);
+      background: #fff;
+    }
+
+    .ck__inlineIcon {
+      position: absolute;
+      left: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      background: #eef2ff;
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      border: 1px solid #e4e7ff;
+      pointer-events: none;
+    }
+
+    input {
+      width: 70%;
+      height: 44px;
+      padding: 10px 14px 10px 44px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      caret-color: var(--primary);
+
+      &::placeholder {
+        color: #94a3b8;
+      }
+      &:hover {
+        border-color: #d1d5db;
+      }
+      &:focus {
+        border-color: rgba(var(--ring-rgb), 0.55);
+        box-shadow: 0 0 0 3px rgba(var(--ring-rgb), 0.1);
+        outline: none;
+      }
+      &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  /* ===== list ===== */
   .ck__list {
     display: flex;
     flex-direction: column;
@@ -103,14 +179,14 @@
   }
   .ck__miniBar__fill {
     height: 100%;
-    background: #10b981;
+    background: var(--success);
   }
 
   .ck__body {
     display: grid;
     grid-template-rows: 0fr;
     transition: grid-template-rows 0.25s ease;
-    padding: 0 12px 8px;
+    padding: 0 12px 10px;
   }
   .ck__section.is-open .ck__body {
     grid-template-rows: 1fr;
@@ -125,7 +201,6 @@
     gap: 10px;
     padding: 8px 0;
     border-top: 1px solid #f3f4f6;
-
     &:first-child {
       border-top: 0;
     }
@@ -133,75 +208,180 @@
     input[type='checkbox'] {
       width: 16px;
       height: 16px;
-      accent-color: #4f46e5; /* tím */
+      accent-color: var(--primary);
       cursor: pointer;
     }
-
     &.is-done .ck__text {
       text-decoration: line-through;
       color: #9ca3af;
     }
   }
 
-  .ck__row.add {
-    color: var(--muted);
-    cursor: pointer;
-    background: transparent;
-    border: 0;
-    width: 100%;
-    text-align: left;
-  }
+  /* ===== add item inline (không nút) ===== */
+  .ck__addItem {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding-top: 8px;
 
-  .ck__plus {
-    width: 28px;
-    height: 28px;
-    display: inline-grid;
-    place-items: center;
-    border-radius: 4px;
-    border: 1px dashed #cdd3df;
-    color: var(--muted);
-    font-weight: 700;
-  }
-  .ck__muted {
-    color: var(--muted);
-  }
-
-  .ck__row.is-editing {
-    .ck__plus {
-      opacity: 0.8;
+    .ck__chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      min-height: 0;
     }
-    input[type='text'] {
-      flex: 1 1 auto;
-      padding: 6px 8px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
 
-      &:focus {
-        border-color: #d1d5db;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+    .ck__chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      border: 1px solid #e0e7ff;
+      font-size: 12px;
+      .ck__chipX {
+        border: 0;
+        background: transparent;
+        color: #6366f1;
+        cursor: pointer;
+        line-height: 1;
       }
     }
-  }
 
-  .ck__actions {
-    display: flex;
-    gap: 8px;
-    margin-left: auto;
-
-    .btn.small {
-      padding: 6px 10px;
-      border-radius: 8px;
+    .ck__addInput {
+      grid-column: 1 / span 1;
+      width: 100%;
+      height: 40px;
+      padding: 8px 12px;
       border: 1px solid #e5e7eb;
-      background: #111827;
-      color: #fff;
-      font-size: 13px;
-      cursor: pointer;
+      border-radius: 8px;
+      background: #fff;
+      color: #0f172a;
+      box-shadow: 0 1px 2px rgba(2, 6, 23, 0.06);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      &::placeholder {
+        color: #94a3b8;
+      }
+      &:hover {
+        border-color: #d1d5db;
+      }
+      &:focus {
+        border-color: rgba(99, 102, 241, 0.55);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        outline: none;
+      }
     }
-    .btn.small.ghost {
+
+    .ck__assignBtn {
+      grid-column: 2 / span 1;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
       background: #fff;
       color: #111827;
+      font-weight: 700;
+      box-shadow: 0 1px 2px rgba(2, 6, 23, 0.06);
+      cursor: pointer;
+      transition: transform 0.05s, box-shadow 0.2s, background 0.2s;
+      &:hover {
+        background: #f8fafc;
+        box-shadow: 0 10px 30px rgba(2, 6, 23, 0.1);
+      }
+      &:active {
+        transform: translateY(1px);
+      }
+    }
+
+    .ck__assigneePicker {
+      position: static; /* không absolute nữa */
+      grid-column: 1 / -1; /* chiếm cả 2 cột (input + nút +) */
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      z-index: 1; /* đủ để nổi trên nền, không cần quá cao */
+
+      /* ✅ Auto height theo số lượng item */
+      max-height: none;
+      overflow: visible;
+
+      /* Bố cục dạng lưới đẹp hơn khi nhiều thành viên */
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 8px;
+
+      .ck__assigneeEmpty {
+        grid-column: 1 / -1;
+        padding: 8px;
+        color: #6b7280;
+        font-size: 13px;
+      }
+
+      .ck__assigneeItem {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto auto;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        background: #fff;
+        border: 1px solid transparent;
+        cursor: pointer;
+        color: #0f172a;
+        text-align: left;
+        transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+
+        &:hover {
+          background: #f8fafc;
+          border-color: #eef2f7;
+        }
+        &.is-selected {
+          background: #eef2ff;
+          border-color: #e0e7ff;
+        }
+
+        .ck__avatar {
+          width: 28px;
+          height: 28px;
+          border-radius: 999px;
+          background: #e0e7ff;
+          color: #3730a3;
+          display: grid;
+          place-items: center;
+          font-size: 12px;
+          font-weight: 700;
+        }
+        .ck__assigneeName {
+          font-size: 13px;
+          color: #111827;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .ck__tag {
+          font-size: 11px;
+          padding: 2px 6px;
+          border-radius: 999px;
+          background: #ecfeff;
+          color: #0e7490;
+          border: 1px solid #ccfbf1;
+          justify-self: start;
+        }
+        .ck__check {
+          font-weight: 700;
+          color: #16a34a;
+        }
+      }
     }
   }
 
@@ -212,6 +392,7 @@
   }
 }
 
+/* responsive */
 @media (max-width: 640px) {
   .ck .ck__head {
     grid-template-columns: auto 1fr;

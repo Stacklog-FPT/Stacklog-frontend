@@ -1,0 +1,242 @@
+.plan__add-topic-form__center,
+.plan__add-topic-form__center-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0 auto 18px auto;
+}
+
+/* Nút mở modal */
+.plan__btn-add {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 8px;
+  &:hover {
+    background: #1256a3;
+  }
+  &:disabled {
+    background: #bdbdbd;
+    color: #fff;
+    cursor: not-allowed;
+  }
+}
+
+/* Overlay: có padding để tránh đụng mép màn nhỏ */
+.plan__add-topic-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 16px;
+  animation: fadeInBg 0.18s cubic-bezier(0.4, 1.4, 0.6, 1) 1;
+}
+
+@keyframes fadeInBg {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Card modal: cuộn nội dung khi dài, tránh vỡ */
+.plan__add-topic-card {
+  width: 100%;
+  max-width: 540px; /* cho rộng hơn chút vẫn gọn */
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  padding: 24px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  animation: modalPopIn 0.18s cubic-bezier(0.4, 1.4, 0.6, 1) 1;
+  max-height: 90vh; /* tránh tràn chiều dọc */
+  overflow: auto; /* cuộn bên trong */
+}
+
+.plan__add-topic-card--modal {
+  min-width: 0; /* tránh ép rộng trên mobile */
+}
+
+@keyframes modalPopIn {
+  0% {
+    transform: scale(0.96) translateY(16px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Nút đóng */
+.plan__add-topic-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 26px;
+  color: #888;
+  cursor: pointer;
+  z-index: 2;
+  transition: color 0.18s;
+  line-height: 1;
+  padding: 0 6px;
+  &:hover {
+    color: #1976d2;
+  }
+}
+
+/* Tiêu đề */
+.plan__add-topic-form__title {
+  margin: 6px 0 8px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1976d2;
+  text-align: center;
+}
+
+/* Form box: không ép min-width để khỏi vỡ layout */
+.plan__add-topic-form {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px #0000; /* bỏ shadow phụ trong modal */
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  border: 0;
+}
+
+/* Field group */
+.plan__add-topic-form__fields {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+/* Input/textarea */
+.plan__add-topic-form__input,
+.plan__add-topic-form__textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #d0d5dd;
+  font-size: 15px;
+  background: #f8fafc;
+  outline: none;
+  transition: border 0.2s, background 0.2s;
+  &:focus {
+    border: 1.5px solid #1976d2;
+    background: #fff;
+  }
+}
+
+.plan__add-topic-form__textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
+/* Meta info: classId/groupId */
+.plan__add-topic-form__meta {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  font-size: 14px;
+  .meta-key {
+    font-weight: 600;
+    color: #1976d2;
+  }
+  .meta-val {
+    font-weight: 500;
+    color: #333;
+    word-break: break-word;
+  }
+}
+
+/* Lỗi */
+.plan__error {
+  color: #d32f2f;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Actions */
+.plan__add-topic-form__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.plan__btn-save,
+.plan__btn-cancel {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s, background 0.2s;
+}
+
+.plan__btn-save {
+  background: #1976d2;
+  color: #fff;
+  &:hover {
+    filter: brightness(0.95);
+  }
+  &:disabled {
+    background: #bdbdbd;
+    cursor: not-allowed;
+  }
+}
+.plan__btn-cancel {
+  background: #e0e0e0;
+  color: #222;
+  &:hover {
+    filter: brightness(0.95);
+  }
+}
+
+/* Tablet trở lên: có thể hiển thị 2 cột gọn gàng */
+@media (min-width: 768px) {
+  .plan__add-topic-form__fields {
+    grid-template-columns: 1fr 1fr;
+  }
+  /* Cho title/abbr cùng hàng, và mô tả/mục tiêu mỗi cái full hàng */
+  .plan__add-topic-form__input[name="topicTitle"] {
+    grid-column: 1 / 2;
+  }
+  .plan__add-topic-form__input[name="topicAbbreviation"] {
+    grid-column: 2 / 3;
+  }
+  .plan__add-topic-form__textarea[name="topicDescription"],
+  .plan__add-topic-form__textarea[name="topicObjective"] {
+    grid-column: 1 / 3;
+  }
+  .plan__add-topic-form__meta {
+    grid-template-columns: auto auto;
+    column-gap: 16px;
+  }
+}

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import "./DetailTopicForm.scss";
+import { FiX, FiCheckCircle, FiXCircle, FiPaperclip } from "react-icons/fi";
 
 const DetailTopicForm = ({
   open,
@@ -15,136 +16,152 @@ const DetailTopicForm = ({
   onApprove,
   onReject,
 }) => {
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => {
+      if (e.key === "Escape" && !actionLoading) onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, actionLoading, onClose]);
+
   if (!open || !topic) return null;
 
+  const canAct = role === "LECTURER" && topic.status === "Pending";
+
   return (
-    <div className="plan__modal-overlay" role="dialog" aria-modal="true">
-      <div className="plan__modal-card">
+    <div
+      className="sl-modal"
+      role="dialog"
+      aria-modal="true"
+      onClick={() => !actionLoading && onClose()}
+    >
+      <div
+        className="sl-modal__card"
+        ref={cardRef}
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
-          className="plan__btn-close plan__modal-close-btn"
-          onClick={() => {
-            onClose();
-            setRejectReason && setRejectReason("");
-            setLocalError && setLocalError("");
-          }}
+          className="sl-modal__close"
+          onClick={() => !actionLoading && onClose()}
+          aria-label="Đóng"
+          disabled={actionLoading}
         >
-          Đóng
+          <FiX />
         </button>
 
-        <h2 className="plan__modal-title">
-          Đăng ký đề tài nhóm <span>{group?.groupsName || "-"}</span> – Lớp{" "}
+        <h3 className="sl-modal__title">
+          Nhóm <span>{group?.groupsName || "-"}</span> – Lớp{" "}
           {group?.className || "-"}
-        </h2>
+        </h3>
 
-        <div className="plan__modal-info-grid">
+        <div className="sl-grid">
           <div>
-            <span className="plan__modal-label">Nhóm:</span>{" "}
-            {group?.groupsName || "-"}
+            <div className="sl-label">Leader</div>
+            <div>{group?.groupsLeaderId || "-"}</div>
           </div>
           <div>
-            <span className="plan__modal-label">Leader:</span>{" "}
-            {group?.groupsLeaderId || "-"}
+            <div className="sl-label">Thành viên</div>
+            <div className="sl-muted">
+              {group?.groupStudent?.join(", ") || "-"}
+            </div>
           </div>
           <div>
-            <span className="plan__modal-label">Thành viên:</span>{" "}
-            {group?.groupStudent?.join(", ") || "-"}
+            <div className="sl-label">Tên đề tài</div>
+            <div className="sl-strong">{topic.topicTitle}</div>
           </div>
           <div>
-            <span className="plan__modal-label">Tên đề tài:</span>{" "}
-            {topic.topicTitle}
+            <div className="sl-label">Viết tắt</div>
+            <div className="sl-kbd">{topic.topicAbbreviation || "-"}</div>
+          </div>
+          <div style={{ gridColumn: "1 / -1" }}>
+            <div className="sl-label">Mô tả</div>
+            <div className="sl-preline">{topic.topicDescription || "-"}</div>
+          </div>
+          <div style={{ gridColumn: "1 / -1" }}>
+            <div className="sl-label">Mục tiêu</div>
+            <div className="sl-preline">{topic.topicObjective || "-"}</div>
           </div>
           <div>
-            <span className="plan__modal-label">Viết tắt:</span>{" "}
-            {topic.topicAbbreviation}
+            <div className="sl-label">Ngày đăng ký</div>
+            <div>
+              {topic.registerAt
+                ? new Date(topic.registerAt).toLocaleDateString()
+                : "-"}
+            </div>
           </div>
           <div>
-            <span className="plan__modal-label">Mô tả:</span>{" "}
-            {topic.topicDescription}
+            <div className="sl-label">Trạng thái</div>
+            <div className={`sl-badge sl-badge--${(topic.status || "").toLowerCase()}`}>
+              {topic.status}
+            </div>
           </div>
-          <div>
-            <span className="plan__modal-label">Mục tiêu:</span>{" "}
-            {topic.topicObjective}
-          </div>
-          <div>
-            <span className="plan__modal-label">Ngày đăng ký:</span>{" "}
-            {topic.registerAt
-              ? new Date(topic.registerAt).toLocaleDateString()
-              : "-"}
-          </div>
-          <div>
-            <span className="plan__modal-label">File đính kèm:</span>{" "}
-            {Array.isArray(topic.attachments) &&
-            topic.attachments.length > 0 ? (
-              <ul className="plan__modal-file-list">
-                {topic.attachments.map((file, idx) => (
-                  <li key={idx}>
-                    {file.fileName || file.name || `File ${idx + 1}`}{" "}
+
+          <div style={{ gridColumn: "1 / -1" }}>
+            <div className="sl-label">File đính kèm</div>
+            {Array.isArray(topic.attachments) && topic.attachments.length > 0 ? (
+              <ul className="sl-files">
+                {topic.attachments.map((f, i) => (
+                  <li key={i}>
+                    <FiPaperclip />
+                    <span title={f.fileName || f.name}>
+                      {f.fileName || f.name || `File ${i + 1}`}
+                    </span>
                     <a
-                      href={file.fileUrl || file.url || "#"}
+                      href={f.fileUrl || f.url || "#"}
                       download
-                      className="plan__modal-file-link"
+                      className="sl-link"
                     >
-                      Download
+                      Tải
                     </a>
                   </li>
                 ))}
               </ul>
             ) : (
-              "Không có"
+              <div className="sl-muted">Không có</div>
             )}
           </div>
-          <div>
-            <span className="plan__modal-label">Trạng thái đăng ký:</span>{" "}
-            <span
-              className={`plan__modal-status plan__modal-status--${(
-                topic.status || ""
-              ).toLowerCase()}`}
-            >
-              {topic.status}
-            </span>
-          </div>
+
           {topic.status === "Rejected" && (
-            <div>
-              <span className="plan__modal-label">Lý do từ chối:</span>{" "}
-              {topic.rejectReason}
+            <div style={{ gridColumn: "1 / -1" }}>
+              <div className="sl-label">Lý do từ chối</div>
+              <div className="sl-preline">{topic.rejectReason}</div>
             </div>
           )}
         </div>
 
-        {role === "LECTURER" && topic.status === "Pending" && (
-          <div className="plan__modal-action-row">
+        {canAct && (
+          <div className="sl-actions">
             <button
-              className="plan__btn-approve"
+              className="sl-btn sl-btn--success"
               disabled={actionLoading}
               onClick={onApprove}
             >
-              Approve
+              <FiCheckCircle />
+              Duyệt
             </button>
             <button
-              className="plan__btn-reject"
+              className="sl-btn sl-btn--danger"
               disabled={actionLoading}
               onClick={onReject}
             >
-              Reject
+              <FiXCircle />
+              Từ chối
             </button>
             <input
               type="text"
-              className="plan__modal-reject-input"
-              placeholder="Lý do từ chối..."
+              className="sl-input sl-input--inline"
+              placeholder="Nhập lý do từ chối…"
               value={rejectReason}
-              onChange={(e) =>
-                setRejectReason && setRejectReason(e.target.value)
-              }
+              onChange={(e) => setRejectReason && setRejectReason(e.target.value)}
               disabled={actionLoading}
             />
           </div>
         )}
 
-        {localError && (
-          <div className="plan__error" style={{ marginTop: 12 }}>
-            {localError}
-          </div>
-        )}
+        {localError && <div className="sl-alert sl-alert--danger">{localError}</div>}
       </div>
     </div>
   );

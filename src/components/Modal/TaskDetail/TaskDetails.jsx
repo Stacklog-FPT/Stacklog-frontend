@@ -186,7 +186,7 @@ const TaskDetails = ({ task, onClose }) => {
           {activeTab === 'subtasks' ? (
             <SubTask data={task?.subTasks} />
           ) : (
-            <Checklist data={task?.checkList} />
+            <Checklist checkList={task?.checkList} taskId={task.taskId} />
           )}
         </section>
         {/* Comment Task */}

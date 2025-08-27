@@ -1,38 +1,64 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './Checklist.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { useAuth } from '../../../../context/AuthProvider';
+import { updateTaskApi } from '../../../../service/TaskService';
+import { toast } from 'sonner';
+
+const genId = (prefix = 'id') =>
+  `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
 
 const normalize = (arr = []) =>
-  (Array.isArray(arr) ? arr : []).map((cl, idx) => ({
-    id: String(cl.checkListId ?? `cl_${idx}`) + `__${idx}`,
-    name: cl.checkListName ?? `Checklist ${idx + 1}`,
-    items: (cl.checkItem || []).map((it, j) => ({
-      id: String(it.checkItemId ?? `cli_${idx}_${j}`),
-      text: it.checkItemName ?? `Item ${j + 1}`,
-      done: Boolean(it.done || it.completed),
-    })),
-  }));
+  (Array.isArray(arr) ? arr : []).map((cl, idx) => {
+    const bid = cl.checkListId ?? `cl_${idx}`;
+    return {
+      id: `${String(bid)}__${idx}`,
+      bid: String(bid),
+      name: cl.checkListName ?? `Checklist ${idx + 1}`,
+      items: (cl.checkItem || []).map((it, j) => ({
+        id: String(it.checkItemId ?? `cli_${idx}_${j}`),
+        bid: String(it.checkItemId ?? `cli_${idx}_${j}`),
+        text: it.checkItemName ?? `Item ${j + 1}`,
+        done: Boolean(it.done || it.completed),
+      })),
+    };
+  });
 
-const Checklist = (props = {}) => {
-  const source = props.data || [];
-
+const Checklist = ({ checkList = [], taskId }) => {
+  const { user } = useAuth();
+  const dispatch = useDispatch();
+  const { tasks } = useSelector((state) => state.task);
+  const currentTask = tasks?.find((t) => String(t.taskId) === String(taskId)) || {};
+  const source = useMemo(() => checkList ?? [], [checkList]);
   const initial = useMemo(() => normalize(source), [source]);
   const [lists, setLists] = useState(initial);
   const [openMap, setOpenMap] = useState(() =>
     Object.fromEntries(initial.map((l) => [l.id, true])),
   );
-
+  const [newTitle, setNewTitle] = useState('');
+  const [creatingList, setCreatingList] = useState(false);
+  const [draftMap, setDraftMap] = useState({});
+  const setDraft = (listId, val) => setDraftMap((m) => ({ ...m, [listId]: val }));
   useEffect(() => {
     const n = normalize(source);
-    setLists(n);
+    if (JSON.stringify(lists) !== JSON.stringify(n)) setLists(n);
 
-    setOpenMap((prev) =>
-      n.reduce((acc, l) => {
-        acc[l.id] = prev[l.id] ?? true;
-        return acc;
-      }, {}),
-    );
+    setOpenMap((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const l of n)
+        if (!(l.id in next)) {
+          next[l.id] = true;
+          changed = true;
+        }
+      for (const k of Object.keys(next))
+        if (!n.some((l) => l.id === k)) {
+          delete next[k];
+          changed = true;
+        }
+      return changed ? next : prev;
+    });
   }, [source]);
-
   const totals = lists.reduce(
     (acc, l) => {
       acc.total += l.items.length;
@@ -43,13 +69,79 @@ const Checklist = (props = {}) => {
   );
   const overallPct = totals.total ? Math.round((totals.done / totals.total) * 100) : 0;
 
-  const toggleOpen = (listId) =>
-    setOpenMap((m) => ({
-      ...m,
-      [listId]: !m[listId],
-    }));
+  const toggleOpen = (listId) => setOpenMap((m) => ({ ...m, [listId]: !m[listId] }));
+  const serializeListsToPayload = (listsState) => ({
+    ...currentTask,
+    checkList: listsState.map((l) => ({
+      checkListId: l.bid ?? l.id.split('__')[0],
+      checkListName: l.name,
+      checkItem: l.items.map((it) => ({
+        checkItemId: it.bid ?? it.id,
+        checkItemName: it.text,
+      })),
+    })),
+  });
 
-  const toggleItem = (listId, itemId) =>
+  const commitCreateChecklist = async () => {
+    const title = newTitle.trim();
+    if (!title || creatingList) {
+      setNewTitle('');
+      return;
+    }
+
+    setCreatingList(true);
+
+    const newId = genId('cl');
+
+    const optimistic = { id: newId, bid: newId, name: title, items: [] };
+    setLists((prev) => [...prev, optimistic]);
+    setOpenMap((prev) => ({ ...prev, [newId]: true }));
+    setNewTitle('');
+
+    try {
+      const payload = serializeListsToPayload([...lists, optimistic]);
+      await updateTaskApi(payload, user?.token, dispatch);
+      toast.success('Checklist created successfully!');
+    } catch (e) {
+      setLists((prev) => prev.filter((l) => l.id !== newId));
+      toast.error('Something went wrong!');
+    } finally {
+      setCreatingList(false);
+    }
+  };
+
+  const commitCreateItem = async (listId) => {
+    const text = (draftMap[listId] || '').trim();
+    if (!text) return;
+
+    const newItemId = genId('cli');
+
+    const nextLists = lists.map((l) =>
+      l.id !== listId
+        ? l
+        : {
+            ...l,
+            items: [...l.items, { id: newItemId, bid: newItemId, text, done: false }],
+          },
+    );
+    setLists(nextLists);
+    setDraft(listId, '');
+
+    try {
+      const payload = serializeListsToPayload(nextLists);
+      await updateTaskApi(payload, user?.token, dispatch);
+      toast.success('Đã thêm mục');
+    } catch (e) {
+      setLists((prev) =>
+        prev.map((l) =>
+          l.id !== listId ? l : { ...l, items: l.items.filter((it) => it.id !== newItemId) },
+        ),
+      );
+      toast.error('Thêm mục thất bại');
+    }
+  };
+
+  const toggleItemDone = (listId, itemId) =>
     setLists((prev) =>
       prev.map((l) =>
         l.id !== listId
@@ -58,37 +150,8 @@ const Checklist = (props = {}) => {
       ),
     );
 
-  const [addingFor, setAddingFor] = useState(null);
-  const [draft, setDraft] = useState('');
-  const startAdd = (listId) => {
-    setAddingFor(listId);
-    setDraft('');
-  };
-  const cancelAdd = () => {
-    setAddingFor(null);
-    setDraft('');
-  };
-  const confirmAdd = () => {
-    if (!draft.trim()) return;
-    setLists((prev) =>
-      prev.map((l) =>
-        l.id !== addingFor
-          ? l
-          : {
-              ...l,
-              items: [
-                ...l.items,
-                { id: `cli_${l.id}_${Date.now()}`, text: draft.trim(), done: false },
-              ],
-            },
-      ),
-    );
-    cancelAdd();
-  };
-
   return (
     <div className="ck">
-      {/* Toolbar tổng */}
       <div className="ck__toolbar">
         <h3>Checklists</h3>
         <div className="ck__overall">
@@ -99,6 +162,20 @@ const Checklist = (props = {}) => {
             {totals.done}/{totals.total}
           </span>
         </div>
+      </div>
+
+      <div className="ck__inlineCreate">
+        <input
+          placeholder="New Check List"
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          onBlur={commitCreateChecklist}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') commitCreateChecklist();
+            if (e.key === 'Escape') setNewTitle('');
+          }}
+          disabled={creatingList}
+        />
       </div>
 
       {lists.length === 0 ? (
@@ -113,7 +190,6 @@ const Checklist = (props = {}) => {
 
             return (
               <section key={cl.id} className={`ck__section ${open ? 'is-open' : 'is-closed'}`}>
-                {/* Header checklist */}
                 <button className="ck__head" onClick={() => toggleOpen(cl.id)}>
                   <span className={`ck__chev ${open ? 'open' : ''}`}>›</span>
                   <strong className="ck__name" title={cl.name}>
@@ -127,7 +203,6 @@ const Checklist = (props = {}) => {
                   </div>
                 </button>
 
-                {/* Body checklist (accordion mượt) */}
                 <div className="ck__body" aria-hidden={!open}>
                   <div className="ck__rows">
                     {cl.items.map((it) => (
@@ -135,41 +210,25 @@ const Checklist = (props = {}) => {
                         <input
                           type="checkbox"
                           checked={it.done}
-                          onChange={() => toggleItem(cl.id, it.id)}
+                          onChange={() => toggleItemDone(cl.id, it.id)}
                         />
                         <span className="ck__text">{it.text}</span>
                       </label>
                     ))}
 
-                    {/* Add item */}
-                    {addingFor === cl.id ? (
-                      <div className="ck__row is-editing">
-                        <span className="ck__plus">+</span>
-                        <input
-                          value={draft}
-                          onChange={(e) => setDraft(e.target.value)}
-                          placeholder="New checklist item"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') confirmAdd();
-                            if (e.key === 'Escape') cancelAdd();
-                          }}
-                          autoFocus
-                        />
-                        <div className="ck__actions">
-                          <button className="btn small" onClick={confirmAdd}>
-                            Add
-                          </button>
-                          <button className="btn small ghost" onClick={cancelAdd}>
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <button className="ck__row add" onClick={() => startAdd(cl.id)}>
-                        <span className="ck__plus">+</span>
-                        <span className="ck__muted">New checklist item</span>
-                      </button>
-                    )}
+                    <div className="ck__addItem">
+                      <span className="ck__plusGhost">+</span>
+                      <input
+                        placeholder="New Check Item"
+                        value={draftMap[cl.id] || ''}
+                        onChange={(e) => setDraft(cl.id, e.target.value)}
+                        onBlur={() => commitCreateItem(cl.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') commitCreateItem(cl.id);
+                          if (e.key === 'Escape') setDraft(cl.id, '');
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </section>

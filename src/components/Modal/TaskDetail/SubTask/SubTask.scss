@@ -179,6 +179,13 @@
   }
 }
 
+.list__empty {
+  padding: 1rem;
+  color: #6b7280;
+  font-weight: 500;
+  font-size: 12px;
+}
+
 /* Mobile: xếp dọc bên trong card */
 @media (max-width: 640px) {
   .subtask__container.compact .subtask__card {

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 import {
   setPending,
@@ -7,17 +7,14 @@ import {
   updatePlan,
   addPlan,
   deletePlan,
-} from "../redux/slice/planSlice";
+} from '../redux/slice/planSlice';
 
 export const getPlansApi = async (dispatch, token) => {
   try {
     dispatch(setPending(true));
-    const response = await axios.get(
-      "http://localhost:3001/topicRegistrations",
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const response = await axios.get('http://localhost:3001/topicRegistrations', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     dispatch(setPlans(response.data));
     dispatch(setPending(false));
     return response.data;
@@ -28,31 +25,11 @@ export const getPlansApi = async (dispatch, token) => {
   }
 };
 
-export const approvePlanApi = async (topicId, token, dispatch) => {
+export const updatePlanApi = async (topicId, payload, token, dispatch) => {
   try {
     dispatch(setPending(true));
-    const response = await axios.patch(
+    const response = await axios.put(
       `http://localhost:3001/topicRegistrations/${topicId}`,
-      { status: "Approved", rejectReason: null },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    dispatch(updatePlan(response.data));
-    dispatch(setPending(false));
-    return response.data;
-  } catch (e) {
-    dispatch(setError(e.message));
-    dispatch(setPending(false));
-    throw new Error(e.message);
-  }
-};
-
-export const rejectPlanApi = async (topicId, reason, token, dispatch) => {
-  try {
-    dispatch(setPending(true));
-    const response = await axios.patch(
-      `http://localhost:3001/topicRegistrations/${topicId}`,
-      { status: "Rejected", rejectReason: reason },
-      { headers: { Authorization: `Bearer ${token}` } }
     );
     dispatch(updatePlan(response.data));
     dispatch(setPending(false));
@@ -67,14 +44,12 @@ export const rejectPlanApi = async (topicId, reason, token, dispatch) => {
 export const addPlanApi = async (planData, token, dispatch) => {
   try {
     dispatch(setPending(true));
-    const response = await axios.post(
-      `http://localhost:3001/topicRegistrations`,
-      planData,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    const response = await axios.post(`http://localhost:3001/topicRegistrations`, planData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     dispatch(addPlan(response.data));
     dispatch(setPending(false));
-    return response.data;     
+    return response.data;
   } catch (e) {
     dispatch(setError(e.message));
     dispatch(setPending(false));

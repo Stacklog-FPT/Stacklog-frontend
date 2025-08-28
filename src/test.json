@@ -42,10 +42,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e11c4e4acb643f2bbc484",
-            "688e11b2e4acb643f2bbc482"
-          ]
+          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
         },
         {
           "groupsId": "swp2",
@@ -57,9 +54,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e119fe4acb643f2bbc480"
-          ]
+          "groupStudent": ["688e119fe4acb643f2bbc480"]
         }
       ],
       "id": "e401"
@@ -84,10 +79,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e1182e4acb643f2bbc47e",
-            "688e110fe4acb643f2bbc47b"
-          ]
+          "groupStudent": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"]
         },
         {
           "groupsId": "2",
@@ -99,10 +91,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e1238e4acb643f2bbc486",
-            "688e11c4e4acb643f2bbc484"
-          ]
+          "groupStudent": ["688e1238e4acb643f2bbc486", "688e11c4e4acb643f2bbc484"]
         }
       ],
       "id": "3103"
@@ -127,10 +116,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e11c4e4acb643f2bbc484",
-            "688e1238e4acb643f2bbc486"
-          ]
+          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e1238e4acb643f2bbc486"]
         },
         {
           "groupsId": "unique_id_for_group_2",
@@ -142,10 +128,7 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": [
-            "688e110fe4acb643f2bbc47b",
-            "688e1182e4acb643f2bbc47e"
-          ]
+          "groupStudent": ["688e110fe4acb643f2bbc47b", "688e1182e4acb643f2bbc47e"]
         }
       ],
       "id": "958d"
@@ -176,6 +159,105 @@
   ],
   "task": [
     {
+      "id": "802c",
+      "taskId": "0.016612448345451614",
+      "group_id": "1",
+      "taskTitle": "Thiết kế DB notification",
+      "taskDescription": "Thiết kế DB ngon lành đẹp đẽ và healthy",
+      "statusTaskId": 0.6414002164481556,
+      "documentId": "",
+      "taskPoint": 0,
+      "taskParentId": 0,
+      "taskStartTime": "2025-08-25T17:07:43T09:20:44",
+      "taskDueDate": "2025-08-27T17:07:43T09:20:44",
+      "createdBy": "de170481",
+      "updatedBy": "",
+      "priority": "HIGH",
+      "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
+      "reviews": [
+        {
+          "reviewId": 0.7776176589676884,
+          "reviewContent": "Hello",
+          "taskId": "0.016612448345451614"
+        },
+        {
+          "reviewId": 0.6056008076845294,
+          "reviewContent": "Hello test task detail",
+          "taskId": "0.016612448345451614",
+          "createdAt": "2025-08-26T02:51:24.418Z",
+          "avatar_link": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+        },
+        {
+          "reviewId": 0.06967572158143565,
+          "reviewContent": "Thấy cũng thường",
+          "taskId": "0.016612448345451614",
+          "createdAt": "2025-08-26T02:57:53.773Z",
+          "avatar_link": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+        },
+        {
+          "reviewId": 0.8763190543945856,
+          "reviewContent": "Alo",
+          "taskId": "0.016612448345451614",
+          "createdAt": "2025-08-26T02:58:01.386Z",
+          "avatar_link": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+        },
+        {
+          "reviewId": 0.8880219605904649,
+          "reviewContent": "Lô cc",
+          "taskId": "0.016612448345451614",
+          "createdAt": "2025-08-26T09:17:21.843Z",
+          "avatar_link": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+        }
+      ],
+      "checkList": [
+        {
+          "checkListId": "b43214c",
+          "taskId": "0.016612448345451614",
+          "checkListName": "Nghiên cứu thiết kế clean DB",
+          "checkItem": [
+            {
+              "checkItemId": "b213bc",
+              "checkItemName": "Nghiên cứu về thiết kế DB chuẩn nè"
+            }
+          ]
+        },
+        {
+          "checkListId": "b43214c",
+          "taskId": "0.016612448345451614",
+          "checkItem": [
+            {
+              "checkItemId": "b213bc",
+              "checkItemName": "Nghiên cứu về thiết kế DB chuẩn nè"
+            }
+          ]
+        }
+      ],
+      "subTasks": [
+        {
+          "taskId": 0.24119759233208238,
+          "taskTitle": "UI/UX đẹp",
+          "taskDescription": "123",
+          "priority": "LOW",
+          "statusTaskId": 0.6414002164481556,
+          "taskStartTime": "2025-08-26T11:03:35",
+          "taskDueDate": "2025-08-27T11:03:35",
+          "assignTo": ["", "", "", "", "", "688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
+          "parentTaskId": "0.016612448345451614"
+        },
+        {
+          "taskId": 0.06372411811810097,
+          "taskTitle": "Design User Model",
+          "taskDescription": "1",
+          "priority": "MEDIUM",
+          "statusTaskId": 0.6414002164481556,
+          "taskStartTime": "2025-08-26T14:22:22",
+          "taskDueDate": "2025-08-28T14:22:22",
+          "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
+          "parentTaskId": "0.016612448345451614"
+        }
+      ]
+    },
+    {
       "id": "4e4e",
       "taskId": "0.2155823736157575",
       "group_id": "1",
@@ -190,9 +272,7 @@
       "createdBy": "de170481",
       "updatedBy": "",
       "priority": "MEDIUM",
-      "assignTo": [
-        "688e1182e4acb643f2bbc47e"
-      ],
+      "assignTo": ["688e1182e4acb643f2bbc47e"],
       "reviews": [
         {
           "reviewId": 0.4346567480634267,
@@ -211,10 +291,7 @@
           "statusTaskId": 0.2855054402499426,
           "taskStartTime": "2025-08-27T14:39:22",
           "taskDueDate": "2025-08-29T14:39:22",
-          "assignTo": [
-            "688e1182e4acb643f2bbc47e",
-            "688e110fe4acb643f2bbc47b"
-          ],
+          "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
           "parentTaskId": "0.2155823736157575"
         }
       ],
@@ -227,10 +304,7 @@
               "checkItemId": "cli_meuuanln_fuomh",
               "checkItemName": "Use Tailwindcss",
               "checkItemStatus": true,
-              "assignTo": [
-                "688e110fe4acb643f2bbc47b",
-                "688e1182e4acb643f2bbc47e"
-              ]
+              "assignTo": ["688e110fe4acb643f2bbc47b", "688e1182e4acb643f2bbc47e"]
             },
             {
               "checkItemId": "cli_meuuuqkr_9bbla",
@@ -248,14 +322,9 @@
       "slotId": "55f9",
       "slotTitle": "Họp bàn về design UI",
       "slotDescription": "",
-      "slotStarTime": "2025-08-30T19:00:00.000Z",
-      "groupId": [
-        "1"
-      ],
-      "assignTo": [
-        "688e1182e4acb643f2bbc47e",
-        "688e110fe4acb643f2bbc47b"
-      ],
+      "slotStarTime": "2025-08-25T19:00:00.000Z",
+      "groupId": ["1"],
+      "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
       "id": "55f9"
     },
     {
@@ -263,26 +332,16 @@
       "slotTitle": "Họp nhóm lần 3",
       "slotDescription": "Hehe",
       "slotStarTime": "2025-08-28T08:00:00",
-      "groupId": [
-        "swp1"
-      ],
-      "assignTo": [
-        "688e11c4e4acb643f2bbc484",
-        "688e11b2e4acb643f2bbc482"
-      ]
+      "groupId": ["swp1"],
+      "assignTo": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
     },
     {
       "slotId": "610f",
       "slotTitle": "Họp nhóm lần 2",
       "slotDescription": "",
       "slotStarTime": "2025-08-30T01:00:00.000Z",
-      "groupId": [
-        "1"
-      ],
-      "assignTo": [
-        "688e1182e4acb643f2bbc47e",
-        "688e110fe4acb643f2bbc47b"
-      ],
+      "groupId": ["1"],
+      "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
       "id": "610f"
     },
     {
@@ -290,40 +349,24 @@
       "slotTitle": "Họp nhóm lần test",
       "slotDescription": "123",
       "slotStarTime": "2025-08-25T08:00:00",
-      "groupId": [
-        "swp1"
-      ],
-      "assignTo": [
-        "688e11c4e4acb643f2bbc484",
-        "688e11b2e4acb643f2bbc482"
-      ]
+      "groupId": ["swp1"],
+      "assignTo": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
     },
     {
       "slotId": "919c",
       "slotTitle": "Họp nhóm test",
-      "slotDescription": "",
-      "slotStarTime": "2025-08-29T01:00:00.000Z",
-      "groupId": [
-        "1"
-      ],
-      "assignTo": [
-        "688e1182e4acb643f2bbc47e",
-        "688e110fe4acb643f2bbc47b"
-      ],
-      "id": "919c"
+      "slotDescription": "321",
+      "slotStarTime": "2025-08-25T08:00:00",
+      "groupId": ["1"],
+      "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"]
     },
     {
       "slotId": "553b",
       "slotTitle": "lô lô",
       "slotDescription": "",
       "slotStarTime": "2025-08-28T02:00:00.000Z",
-      "groupId": [
-        "1"
-      ],
-      "assignTo": [
-        "688e1182e4acb643f2bbc47e",
-        "688e110fe4acb643f2bbc47b"
-      ],
+      "groupId": ["1"],
+      "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
       "id": "553b"
     },
     {
@@ -331,54 +374,42 @@
       "slotTitle": "Họp nhóm lần 2",
       "slotDescription": "321",
       "slotStarTime": "2025-08-28T08:00:00",
-      "groupId": [
-        "swp1"
-      ],
-      "assignTo": [
-        "688e11c4e4acb643f2bbc484",
-        "688e11b2e4acb643f2bbc482"
-      ]
+      "groupId": ["swp1"],
+      "assignTo": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
     },
     {
       "id": "10b6",
       "slotTitle": "Test",
       "slotDescription": "123",
       "slotStarTime": "2025-08-25T08:00:00",
-      "groupId": [
-        "swp1"
-      ],
-      "assignTo": [
-        "688e11c4e4acb643f2bbc484",
-        "688e11b2e4acb643f2bbc482"
-      ]
+      "groupId": ["swp1"],
+      "assignTo": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
     },
     {
       "slotId": "9b99",
       "slotTitle": "123",
       "slotDescription": "",
-      "slotStarTime": "2025-09-01T01:00:00.000Z",
-      "groupId": [
-        "1"
-      ],
-      "assignTo": [
-        "688e1182e4acb643f2bbc47e",
-        "688e110fe4acb643f2bbc47b"
-      ],
+      "slotStarTime": "2025-08-27T01:00:00.000Z",
+      "groupId": ["1"],
+      "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
       "id": "9b99"
     }
   ],
   "topicRegistrations": [
     {
-      "topicId": "topic01",
+      "id": "topict8mfu6",
+      "topicTitle": "Lập trình WEB123",
+      "topicAbbreviation": "WEB2",
+      "topicDescription": "1232",
+      "topicObjective": "1232",
+      "attachments": [],
+      "topicId": "topict8mfu6",
       "classId": "1",
       "groupId": "swp1",
-      "topicTitle": "Quản lý khách sạn",
-      "topicAbbreviation": "HMS",
-      "topicDescription": "Hệ thống quản lý khách sạn với các chức năng đặt phòng, quản lý khách hàng, báo cáo doanh thu…",
-      "topicObjective": "Quản lý khách sạn hiệu quả, tăng doanh thu.",
+      "status": "Approved",
+      "allowEdit": false,
       "registerBy": "688e11c4e4acb643f2bbc484",
-      "registerAt": "2025-08-20T10:00:00Z",
-      "status": "Pending",
+      "registerAt": "2025-08-28T02:52:51.099Z",
       "rejectReason": null,
       "approvedBy": null,
       "approvedAt": null,

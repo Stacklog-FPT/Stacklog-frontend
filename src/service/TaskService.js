@@ -105,7 +105,7 @@ export const updateTaskApi = async (taskData, token, dispatch) => {
       },
     });
 
-    console.log('Call me');
+    console.log('Call me: ', response.data);
     dispatch(updateTasks(response.data));
     dispatch(setPending(false));
     return response;

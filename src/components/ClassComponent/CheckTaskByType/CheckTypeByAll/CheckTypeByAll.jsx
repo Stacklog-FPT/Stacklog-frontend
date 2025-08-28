@@ -55,7 +55,7 @@ const CheckTypeByAll = () => {
     return false;
   };
   const updateTaskStatus = async (taskId, taskData) => {
-    await updateTaskApi(taskId, taskData, user.token, dispatch);
+    await updateTaskApi(taskData, user.token, dispatch);
   };
 
   const handleDragStart = (event) => {

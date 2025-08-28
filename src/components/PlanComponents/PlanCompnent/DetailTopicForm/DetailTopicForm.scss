@@ -1,0 +1,260 @@
+.sl-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 3000;
+  animation: fadeIn 0.15s ease;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sl-modal__card {
+  width: 100%;
+  max-width: 80%;
+  min-width: 50%;
+  background: #fff;
+  border-radius: 18px;
+  padding: 22px 20px 20px 20px;
+  box-shadow: 0 20px 50px rgba(2, 6, 23, 0.22);
+  position: relative;
+
+  height: 90vh;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+.sl-modal__card--sm {
+  max-width: 560px;
+}
+
+.sl-modal__close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: 0;
+  background: #f1f5f9;
+  color: #0f172a;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.sl-modal__title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 12px;
+  span {
+    color: var(--sl-success);
+  }
+}
+
+.sl-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+.sl-label {
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+.sl-strong {
+  font-weight: 700;
+}
+.sl-muted {
+  color: #64748b;
+}
+.sl-preline {
+  white-space: pre-line;
+  line-height: 1.5;
+  word-break: break-word;
+  display: block;
+  max-width: 100%;
+  min-height: 1em;
+  background: #f8fafc;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  margin-bottom: 8px;
+  border: 1px solid #e6eaf0;
+}
+
+.sl-grid > div[style*="grid-column: 1 / -1"] {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  word-break: break-word;
+  display: block;
+  height: auto !important;
+  max-height: none !important;
+}
+
+.sl-modal__card,
+.sl-grid {
+}
+
+.sl-link {
+  color: var(--sl-primary);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.sl-files {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: #f8fafc;
+    border: 1px solid #e6eaf0;
+    border-radius: 10px;
+  }
+}
+
+.sl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 14px;
+}
+.sl-input {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #e6eaf0;
+  &:focus {
+    outline: none;
+    border-color: var(--sl-primary);
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
+  }
+}
+.sl-input--inline {
+  min-width: 260px;
+}
+
+.detail-title-main {
+  text-align: center;
+  margin-bottom: 2px;
+}
+.detail-title-topic {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #06605b;
+  letter-spacing: 0.5px;
+}
+.detail-title-sub {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #1976d2;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.detail-grid {
+  margin-top: 10px;
+  gap: 18px 24px;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 900px) {
+  .sl-modal__card {
+    max-width: 98vw;
+    min-width: 0;
+    padding: 16px 8px 16px 8px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 720px) {
+  .sl-modal__card {
+    max-width: 100vw;
+    min-width: 0;
+    height: 95vh;
+    padding: 10px 2vw 10px 2vw;
+    font-size: 14px;
+  }
+  .sl-modal__title {
+    font-size: 18px;
+    padding-bottom: 4px;
+  }
+  .sl-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .detail-title-topic {
+    font-size: 1.2rem;
+  }
+  .sl-preline {
+    font-size: 13px;
+    padding: 8px 6px;
+  }
+  .sl-files li {
+    font-size: 13px;
+    padding: 6px 6px;
+  }
+  .sl-actions {
+    gap: 8px;
+    margin-top: 10px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .sl-modal__card {
+    max-width: 100vw;
+    min-width: 0;
+    height: 100vh;
+    padding: 4px 0 4px 0;
+    border-radius: 0;
+  }
+  .sl-modal__close {
+    top: 6px;
+    right: 6px;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+  .sl-modal__title {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .sl-label {
+    font-size: 13px;
+  }
+  .sl-preline {
+    font-size: 12px;
+    padding: 6px 2px;
+  }
+}

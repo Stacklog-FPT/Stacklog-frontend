@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import "./DetailTopicForm.scss";
+import { FiX, FiCheckCircle, FiXCircle, FiPaperclip } from "react-icons/fi";
 
 const DetailTopicForm = ({
   open,
@@ -14,123 +15,370 @@ const DetailTopicForm = ({
   onClose,
   onApprove,
   onReject,
+  onUpdate,
+  onDelete,
 }) => {
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => {
+      if (e.key === "Escape" && !actionLoading) onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, actionLoading, onClose]);
+
+  const [editMode, setEditMode] = React.useState(false);
+  const [editForm, setEditForm] = React.useState({
+    topicTitle: topic?.topicTitle || "",
+    topicAbbreviation: topic?.topicAbbreviation || "",
+    topicDescription: topic?.topicDescription || "",
+    topicObjective: topic?.topicObjective || "",
+    attachments: topic?.attachments ? [...topic.attachments] : [],
+  });
+
+  const [localTopic, setLocalTopic] = React.useState(topic);
+
+  React.useEffect(() => {
+    setLocalTopic(topic);
+  }, [topic]);
+
+  React.useEffect(() => {
+    if (open && topic) {
+      setEditMode(false);
+      setEditForm({
+        topicTitle: topic.topicTitle || "",
+        topicAbbreviation: topic.topicAbbreviation || "",
+        topicDescription: topic.topicDescription || "",
+        topicObjective: topic.topicObjective || "",
+        attachments: topic.attachments ? [...topic.attachments] : [],
+      });
+    }
+  }, [open, topic]);
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    const newAtts = files.map((f) => ({
+      fileName: f.name,
+      fileUrl: URL.createObjectURL(f),
+      file: f,
+    }));
+    setEditForm((prev) => ({
+      ...prev,
+      attachments: [...prev.attachments, ...newAtts],
+    }));
+  };
+
+  const removeAttachment = (idx) => {
+    setEditForm((prev) => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== idx),
+    }));
+  };
+
   if (!open || !topic) return null;
 
+  const canAct = role === "LECTURER" && localTopic?.status === "Pending";
+
+  const canGrantEdit =
+    role === "LECTURER" &&
+    (localTopic?.status === "Approved" || localTopic?.status === "Rejected");
+
+  const canEdit =
+    role === "STUDENT" &&
+    localTopic?.status === "Pending" &&
+    localTopic?.allowEdit === true;
+
+  const handleGrant = () => {
+    if (!onUpdate) return;
+
+    setLocalTopic((t) => ({ ...t, allowEdit: true, status: "Pending" }));
+    onUpdate(topic.topicId, { allowEdit: true, status: "Pending" });
+  };
+
+  const handleApprove = () => {
+    if (!onApprove) return;
+
+    setLocalTopic((t) => ({ ...t, status: "Approved", allowEdit: false }));
+    onApprove(topic.topicId);
+  };
+
+  const handleReject = () => {
+    if (!onReject) return;
+
+    if (!rejectReason || !rejectReason.trim()) {
+      setLocalError && setLocalError("Vui lòng nhập lý do từ chối");
+      return;
+    }
+    setLocalError && setLocalError(null);
+    setLocalTopic((t) => ({
+      ...t,
+      status: "Rejected",
+      allowEdit: false,
+      rejectReason,
+    }));
+    onReject(topic.topicId, rejectReason);
+
+    setRejectReason && setRejectReason("");
+  };
+
+  const handleSaveEdit = () => {
+    if (!onUpdate) return;
+
+    setLocalTopic((t) => ({ ...t, ...editForm }));
+    setEditMode(false);
+    onUpdate(topic.topicId, editForm);
+  };
+
   return (
-    <div className="plan__modal-overlay" role="dialog" aria-modal="true">
-      <div className="plan__modal-card">
+    <div
+      className="sl-modal"
+      role="dialog"
+      aria-modal="true"
+      onClick={() => !actionLoading && onClose()}
+    >
+      <div
+        className="sl-modal__card"
+        ref={cardRef}
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
-          className="plan__btn-close plan__modal-close-btn"
-          onClick={() => {
-            onClose();
-            setRejectReason && setRejectReason("");
-            setLocalError && setLocalError("");
-          }}
+          className="sl-modal__close"
+          onClick={() => !actionLoading && onClose()}
+          aria-label="Đóng"
+          disabled={actionLoading}
         >
-          Đóng
+          <FiX />
         </button>
 
-        <h2 className="plan__modal-title">
-          Đăng ký đề tài nhóm <span>{group?.groupsName || "-"}</span> – Lớp{" "}
+        <h3 className="sl-modal__title">
+          Nhóm <span>{group?.groupsName || "-"}</span> – Lớp{" "}
           {group?.className || "-"}
-        </h2>
+        </h3>
 
-        <div className="plan__modal-info-grid">
+        <div className="sl-grid">
           <div>
-            <span className="plan__modal-label">Nhóm:</span>{" "}
-            {group?.groupsName || "-"}
+            <div className="sl-label">Leader</div>
+            <div>{group?.groupsLeaderId || "-"}</div>
           </div>
           <div>
-            <span className="plan__modal-label">Leader:</span>{" "}
-            {group?.groupsLeaderId || "-"}
+            <div className="sl-label">Thành viên</div>
+            <div className="sl-muted">
+              {group?.groupStudent?.join(", ") || "-"}
+            </div>
           </div>
+
           <div>
-            <span className="plan__modal-label">Thành viên:</span>{" "}
-            {group?.groupStudent?.join(", ") || "-"}
+            <div className="sl-label">Tên đề tài</div>
+            {editMode ? (
+              <input
+                className="sl-input"
+                value={editForm.topicTitle}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, topicTitle: e.target.value }))
+                }
+                disabled={actionLoading}
+                required
+              />
+            ) : (
+              <div className="sl-strong">{topic.topicTitle}</div>
+            )}
           </div>
+
           <div>
-            <span className="plan__modal-label">Tên đề tài:</span>{" "}
-            {topic.topicTitle}
+            <div className="sl-label">Viết tắt</div>
+            {editMode ? (
+              <input
+                className="sl-input"
+                value={editForm.topicAbbreviation}
+                onChange={(e) =>
+                  setEditForm((f) => ({
+                    ...f,
+                    topicAbbreviation: e.target.value,
+                  }))
+                }
+                disabled={actionLoading}
+              />
+            ) : (
+              <div className="sl-kbd">{topic.topicAbbreviation || "-"}</div>
+            )}
           </div>
-          <div>
-            <span className="plan__modal-label">Viết tắt:</span>{" "}
-            {topic.topicAbbreviation}
+
+          <div style={{ gridColumn: "1 / -1" }}>
+            <div className="sl-label">Mô tả</div>
+            {editMode ? (
+              <textarea
+                className="sl-textarea"
+                value={editForm.topicDescription}
+                onChange={(e) =>
+                  setEditForm((f) => ({
+                    ...f,
+                    topicDescription: e.target.value,
+                  }))
+                }
+                disabled={actionLoading}
+              />
+            ) : (
+              <div className="sl-preline">{topic.topicDescription || "-"}</div>
+            )}
           </div>
-          <div>
-            <span className="plan__modal-label">Mô tả:</span>{" "}
-            {topic.topicDescription}
+
+          <div style={{ gridColumn: "1 / -1" }}>
+            <div className="sl-label">Mục tiêu</div>
+            {editMode ? (
+              <textarea
+                className="sl-textarea"
+                value={editForm.topicObjective}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, topicObjective: e.target.value }))
+                }
+                disabled={actionLoading}
+              />
+            ) : (
+              <div className="sl-preline">{topic.topicObjective || "-"}</div>
+            )}
           </div>
+
           <div>
-            <span className="plan__modal-label">Mục tiêu:</span>{" "}
-            {topic.topicObjective}
+            <div className="sl-label">Ngày đăng ký</div>
+            <div>
+              {topic.registerAt
+                ? new Date(topic.registerAt).toLocaleDateString()
+                : "-"}
+            </div>
           </div>
+
           <div>
-            <span className="plan__modal-label">Ngày đăng ký:</span>{" "}
-            {topic.registerAt
-              ? new Date(topic.registerAt).toLocaleDateString()
-              : "-"}
+            <div className="sl-label">Trạng thái</div>
+            <div
+              className={`sl-badge sl-badge--${(
+                topic.status || ""
+              ).toLowerCase()}`}
+            >
+              {topic.status}
+            </div>
+            {localTopic?.allowEdit && localTopic?.status === "Pending" && (
+              <div className="sl-hint">
+                Đang mở quyền chỉnh sửa cho sinh viên
+              </div>
+            )}
           </div>
-          <div>
-            <span className="plan__modal-label">File đính kèm:</span>{" "}
-            {Array.isArray(topic.attachments) &&
-            topic.attachments.length > 0 ? (
-              <ul className="plan__modal-file-list">
-                {topic.attachments.map((file, idx) => (
-                  <li key={idx}>
-                    {file.fileName || file.name || `File ${idx + 1}`}{" "}
+
+          <div style={{ gridColumn: "1 / -1" }}>
+            <div className="sl-label">File đính kèm</div>
+            {editMode ? (
+              <>
+                <label className="sl-btn sl-btn--ghost">
+                  <FiPaperclip /> Chọn file
+                  <input
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
+                    disabled={actionLoading}
+                    hidden
+                  />
+                </label>
+                <div className="sl-upload__hint">
+                  Hỗ trợ nhiều file. Dung lượng lớn nên dùng link Drive.
+                </div>
+                {editForm.attachments.length > 0 && (
+                  <div className="sl-filechips">
+                    {editForm.attachments.map((att, idx) => (
+                      <div key={idx} className="sl-chip">
+                        <span className="sl-chip__label" title={att.fileName}>
+                          {att.fileName}
+                        </span>
+                        <a
+                          href={att.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="sl-chip__link"
+                        >
+                          Xem
+                        </a>
+                        <button
+                          type="button"
+                          className="sl-chip__remove"
+                          onClick={() => removeAttachment(idx)}
+                          disabled={actionLoading}
+                          aria-label={`Xoá ${att.fileName}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : Array.isArray(topic.attachments) &&
+              topic.attachments.length > 0 ? (
+              <ul className="sl-files">
+                {topic.attachments.map((f, i) => (
+                  <li key={i}>
+                    <FiPaperclip />
+                    <span title={f.fileName || f.name}>
+                      {f.fileName || f.name || `File ${i + 1}`}
+                    </span>
                     <a
-                      href={file.fileUrl || file.url || "#"}
+                      href={f.fileUrl || f.url || "#"}
                       download
-                      className="plan__modal-file-link"
+                      className="sl-link"
                     >
-                      Download
+                      Tải
                     </a>
                   </li>
                 ))}
               </ul>
             ) : (
-              "Không có"
+              <div className="sl-muted">Không có</div>
             )}
           </div>
-          <div>
-            <span className="plan__modal-label">Trạng thái đăng ký:</span>{" "}
-            <span
-              className={`plan__modal-status plan__modal-status--${(
-                topic.status || ""
-              ).toLowerCase()}`}
-            >
-              {topic.status}
-            </span>
-          </div>
+
           {topic.status === "Rejected" && (
-            <div>
-              <span className="plan__modal-label">Lý do từ chối:</span>{" "}
-              {topic.rejectReason}
+            <div style={{ gridColumn: "1 / -1" }}>
+              <div className="sl-label">Lý do từ chối</div>
+              <div className="sl-preline">{topic.rejectReason}</div>
             </div>
           )}
         </div>
 
-        {role === "LECTURER" && topic.status === "Pending" && (
-          <div className="plan__modal-action-row">
+        {/* === LECTURER: Cấp/thu hồi quyền === */}
+        {canGrantEdit && (
+          <div className="sl-actions" style={{ marginTop: 12 }}>
             <button
-              className="plan__btn-approve"
+              className="sl-btn sl-btn--primary"
               disabled={actionLoading}
-              onClick={onApprove}
+              onClick={handleGrant}
             >
-              Approve
+              Cấp quyền chỉnh sửa/xóa (đưa về Pending)
+            </button>
+          </div>
+        )}
+
+        {/* === LECTURER: Duyệt/Từ chối khi Pending & chưa mở quyền cho SV === */}
+        {canAct && (
+          <div className="sl-actions">
+            <button
+              className="sl-btn sl-btn--success"
+              disabled={actionLoading}
+              onClick={handleApprove}
+            >
+              <FiCheckCircle />
+              Duyệt
             </button>
             <button
-              className="plan__btn-reject"
+              className="sl-btn sl-btn--danger"
               disabled={actionLoading}
-              onClick={onReject}
+              onClick={handleReject}
             >
-              Reject
+              <FiXCircle />
+              Từ chối
             </button>
             <input
               type="text"
-              className="plan__modal-reject-input"
-              placeholder="Lý do từ chối..."
+              className="sl-input sl-input--inline"
+              placeholder="Nhập lý do từ chối…"
               value={rejectReason}
               onChange={(e) =>
                 setRejectReason && setRejectReason(e.target.value)
@@ -140,10 +388,56 @@ const DetailTopicForm = ({
           </div>
         )}
 
-        {localError && (
-          <div className="plan__error" style={{ marginTop: 12 }}>
-            {localError}
+        {/* === STUDENT: Cảnh báo khi không có quyền === */}
+        {role === "STUDENT" && !canEdit && (
+          <div className="sl-alert sl-alert--warning" style={{ marginTop: 12 }}>
+            Bạn hiện <b>không có quyền</b> cập nhật/xóa đề tài. Vui lòng liên hệ
+            giảng viên để được cấp quyền.
           </div>
+        )}
+
+        {/* === STUDENT: Nút cập nhật/xoá === */}
+        {canEdit && !editMode && (
+          <div className="sl-actions">
+            <button
+              className="sl-btn sl-btn--primary"
+              disabled={actionLoading}
+              onClick={() => setEditMode(true)}
+            >
+              Cập nhật
+            </button>
+            <button
+              className="sl-btn sl-btn--danger"
+              disabled={actionLoading}
+              onClick={() => onDelete && onDelete(topic.topicId)}
+            >
+              Xóa
+            </button>
+          </div>
+        )}
+
+        {/* === STUDENT: Đang chỉnh sửa === */}
+        {canEdit && editMode && (
+          <div className="sl-actions">
+            <button
+              className="sl-btn sl-btn--success"
+              disabled={actionLoading}
+              onClick={handleSaveEdit}
+            >
+              Lưu thay đổi
+            </button>
+            <button
+              className="sl-btn sl-btn--ghost"
+              disabled={actionLoading}
+              onClick={() => setEditMode(false)}
+            >
+              Hủy
+            </button>
+          </div>
+        )}
+
+        {localError && (
+          <div className="sl-alert sl-alert--danger">{localError}</div>
         )}
       </div>
     </div>

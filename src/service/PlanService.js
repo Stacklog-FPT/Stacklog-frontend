@@ -25,31 +25,11 @@ export const getPlansApi = async (dispatch, token) => {
   }
 };
 
-export const approvePlanApi = async (topicId, change, token, dispatch) => {
+export const updatePlanApi = async (topicId, payload, token, dispatch) => {
   try {
     dispatch(setPending(true));
-    const response = await axios.patch(
+    const response = await axios.put(
       `http://localhost:3001/topicRegistrations/${topicId}`,
-      { status: 'Approved', rejectReason: null },
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
-    dispatch(updatePlan(response.data));
-    dispatch(setPending(false));
-    return response.data;
-  } catch (e) {
-    dispatch(setError(e.message));
-    dispatch(setPending(false));
-    throw new Error(e.message);
-  }
-};
-
-export const rejectPlanApi = async (topicId, reason, token, dispatch) => {
-  try {
-    dispatch(setPending(true));
-    const response = await axios.patch(
-      `http://localhost:3001/topicRegistrations/${topicId}`,
-      { status: 'Rejected', rejectReason: reason },
-      { headers: { Authorization: `Bearer ${token}` } },
     );
     dispatch(updatePlan(response.data));
     dispatch(setPending(false));

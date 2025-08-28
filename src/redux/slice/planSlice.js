@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   pending: false,
@@ -7,7 +7,7 @@ const initialState = {
 };
 
 const planSlice = createSlice({
-  name: "plan",
+  name: 'plan',
   initialState,
   reducers: {
     setPlans: (state, action) => {
@@ -38,14 +38,7 @@ const planSlice = createSlice({
   },
 });
 
-export const {
-  setPlans,
-  addPlan,
-  updatePlan,
-  deletePlan,
-  setPending,
-  setError,
-  resetPlans,
-} = planSlice.actions;
+export const { setPlans, addPlan, updatePlan, deletePlan, setPending, setError, resetPlans } =
+  planSlice.actions;
 
 export default planSlice.reducer;

@@ -10,6 +10,7 @@ import { useDroppable } from '@dnd-kit/core';
 
 const Column = ({
   color,
+  statusId,
   status,
   tasks,
   onShowAddTask,
@@ -19,7 +20,7 @@ const Column = ({
 }) => {
   const [showAdd, setShowAdd] = useState(null);
   const { setNodeRef } = useDroppable({
-    id: `droppable-${status}`,
+    id: `droppable-${statusId}`,
   });
   return (
     <div className="column-list-container" ref={setNodeRef}>

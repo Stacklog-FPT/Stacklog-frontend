@@ -12,6 +12,8 @@ import { FaPlusCircle } from 'react-icons/fa';
 import Subtask from './Subtask/Subtask';
 import ReviewService from '../../../../../service/ReviewService';
 import { useAuth } from '../../../../../context/AuthProvider';
+import TaskDetails from '../../../../Modal/TaskDetail/TaskDetails';
+import { formatDateUI } from '../../../../../helper/formatDate';
 
 const Task = ({ ...props }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -27,62 +29,30 @@ const Task = ({ ...props }) => {
   const [showSubTask, setShowSubTask] = useState(false);
   const [commentLength, setCommentLength] = useState(0);
   const { getAllReview } = ReviewService();
-  const [subtasks, setSubtasks] = useState(props.task?.subtasks || []);
-  useEffect(() => {
-    setSubtasks(props.task?.subtasks || []);
-  }, [props.task?.subtasks]);
-
+  const [isDetail, setIsDetail] = useState(false);
   const sensors = useSensors(useSensor(PointerSensor));
 
-  const handleSubtaskDragEnd = (event) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const oldIndex = subtasks.findIndex(
-      (item) => `${props.task.taskId}-subtask-${item.taskId}` === active.id,
-    );
-    const newIndex = subtasks.findIndex(
-      (item) => `${props.task.taskId}-subtask-${item.taskId}` === over.id,
-    );
-    if (oldIndex !== -1 && newIndex !== -1) {
-      const newSubtasks = arrayMove(subtasks, oldIndex, newIndex);
-      setSubtasks(newSubtasks);
-      // TODO: Gọi API cập nhật thứ tự nếu muốn lưu lên server
-    }
+  const handleSubtaskDragEnd = () => {
+    // const { active, over } = event;
+    // if (!over || active.id === over.id) return;
+    // const oldIndex = subtasks.findIndex(
+    //   (item) => `${props.task.taskId}-subtask-${item.taskId}` === active.id,
+    // );
+    // const newIndex = subtasks.findIndex(
+    //   (item) => `${props.task.taskId}-subtask-${item.taskId}` === over.id,
+    // );
+    // if (oldIndex !== -1 && newIndex !== -1) {
+    //   const newSubtasks = arrayMove(subtasks, oldIndex, newIndex);
+    //   setSubtasks(newSubtasks);
+    // }
   };
 
   const handleToggleSubTask = () => {
     setShowSubTask(!showSubTask);
   };
 
-  const fetchCommentLength = async (taskId) => {
-    try {
-      const response = await getAllReview(user.token, taskId);
-      if (response) {
-        setCommentLength(response.data.length);
-      }
-    } catch (e) {
-      setCommentLength(0);
-    }
-  };
-
-  useEffect(() => {
-    if (props.task?.taskId) {
-      fetchCommentLength(props.task.taskId);
-    }
-  }, [props.task?.taskId]);
-
-  const handleFormatDate = (date) => {
-    if (!date) return 'No due date';
-    const dateObj = new Date(date);
-    if (isNaN(dateObj)) return 'Invalid date';
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const year = dateObj.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
-  const visibleMembers = props.members?.slice(0, 3) || [];
-  const extraCount = props.members?.length - visibleMembers.length;
+  const visibleMembers = props.task?.assignTo?.slice(0, 3) || [];
+  const extraCount = props.task?.assignTo?.length - visibleMembers?.length;
 
   const getColorByPercent = (percent) => {
     if (percent >= 70) return '#4caf50';
@@ -102,7 +72,10 @@ const Task = ({ ...props }) => {
     return Math.max(0, Math.min(100, Math.round(percent)));
   };
 
-  const percent = calculateRemainingPercent(props.createdAt, props.dueDate);
+  const percent = calculateRemainingPercent(
+    formatDateUI(props.createdAt),
+    formatDateUI(props.dueDate),
+  );
   const progressColor = getColorByPercent(percent);
 
   return (
@@ -113,6 +86,7 @@ const Task = ({ ...props }) => {
         {...attributes}
         {...listeners}
         className="task_list_container"
+        onClick={() => setIsDetail(true)}
       >
         <td>
           <div className="task_list_head">
@@ -169,14 +143,32 @@ const Task = ({ ...props }) => {
         </td>
         <td>
           <div className="feature">
-            <FaPlusCircle size={14} onClick={() => props.onShowAddSubTask(props.task)} />
+            <FaPlusCircle
+              size={14}
+              onClick={() => {
+                e.stopPropagation();
+                props.onShowAddSubTask(props.task);
+              }}
+            />
             <div className="comment__lenght">
-              <FaComment size={14} onClick={() => props.onShowComment(props.task?.taskId)} />
-              <span>{commentLength}</span>
+              <FaComment
+                size={14}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.onShowComment(props.task); // Change before mock up with BE
+                }}
+              />
+              <span>{props.task?.reviews?.length || 0}</span>
             </div>
             <div className="subtask_length">
-              <TbSubtask size={14} onClick={handleToggleSubTask} />
-              <span>{subtasks.length}</span>
+              <TbSubtask
+                size={14}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleSubTask();
+                }}
+              />
+              <span>{props.task?.subTasks?.length || 0}</span>
             </div>
           </div>
         </td>
@@ -189,12 +181,14 @@ const Task = ({ ...props }) => {
         >
           <SortableContext
             items={
-              subtasks.map((subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`) || []
+              props.task?.subTasks?.map(
+                (subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`,
+              ) || []
             }
             strategy={verticalListSortingStrategy}
           >
-            {subtasks.length > 0 ? (
-              subtasks.map((sub) => (
+            {props.task?.subTasks?.length > 0 ? (
+              props.task?.subTasks?.map((sub) => (
                 <Subtask
                   key={`${props.task.taskId}-subtask-${sub.taskId}`}
                   id={`${props.task.taskId}-subtask-${sub.taskId}`}
@@ -210,13 +204,16 @@ const Task = ({ ...props }) => {
             ) : (
               <tr>
                 <td colSpan={5}>
-                  <h2>No available subtasks</h2>
+                  <h2 style={{ fontSize: '15px', color: '#c8cad4', paddingLeft: '25px' }}>
+                    No available subtasks
+                  </h2>
                 </td>
               </tr>
             )}
           </SortableContext>
         </DndContext>
       )}
+      {isDetail && <TaskDetails task={props.task} onClose={() => setIsDetail(false)} />}
     </>
   );
 };

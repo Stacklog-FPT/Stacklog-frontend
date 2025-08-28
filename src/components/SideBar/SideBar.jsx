@@ -41,7 +41,6 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   }, []);
 
   const toggleSidebar = () => setIsOpen((prev) => !prev);
-
   const handleChatClick = () => {
     toggleGroupChat();
     setIsOpen(!isOpen);

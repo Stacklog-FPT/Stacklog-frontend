@@ -30,6 +30,7 @@ const CheckTypeByAll = () => {
   const statuses = useSelector((s) => s.status.statuses);
   const tasks = useSelector((t) => t.task.tasks);
   const groupList = useSelector((state) => state.group.groups);
+  const currentGroup = groupList.find((g) => g.groupsId === groupId);
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
@@ -37,7 +38,7 @@ const CheckTypeByAll = () => {
   const [showAddColumn, setShowAddColumn] = useState(false);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const [showAddSubTask, setShowAddSubTask] = useState(null);
-
+  const matchRole = isLeader(currentGroup, decodeToken(user.token).id);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -46,14 +47,6 @@ const CheckTypeByAll = () => {
     }),
   );
 
-  const checkIsLeader = () => {
-    const currentGroup = groupList.find((g) => g.groupsId === groupId);
-    if (isLeader(currentGroup, decodeToken(user.token).id)) {
-      return true;
-    }
-
-    return false;
-  };
   const updateTaskStatus = async (taskId, taskData) => {
     await updateTaskApi(taskData, user.token, dispatch);
   };
@@ -228,17 +221,17 @@ const CheckTypeByAll = () => {
                 onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}
                 onShowAddSubTask={handleChooseTask}
-                isLeader={checkIsLeader}
+                isLeader={matchRole}
               />
             ))}
-            {user.role === 'LECTURER' || checkIsLeader() ? (
+            {user.role === 'LECTURER' || matchRole ? (
               <button className="btn_add_status" onClick={() => setShowAddColumn(!showAddColumn)}>
                 <i className="fa-solid fa-plus"></i>
                 <span>Add Status</span>
               </button>
             ) : null}
           </div>
-          {user.role === 'LECTURER' || checkIsLeader()
+          {user.role === 'LECTURER' || matchRole
             ? showAddTask && (
                 <AddTask
                   status={showAddTask}

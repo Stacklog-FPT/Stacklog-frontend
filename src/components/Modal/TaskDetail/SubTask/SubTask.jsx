@@ -2,14 +2,6 @@ import React from 'react';
 import './SubTask.scss';
 import { formatDateUI } from '../../../../helper/formatDate';
 const SubTask = (data = []) => {
-  // const getInitials = (idOrName = '') => {
-  //   const s = String(idOrName || '').trim();
-  //   if (!s) return '•';
-  //   const parts = s.split(/\s+|[_\-\.]/).filter(Boolean);
-  //   if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  //   if (s.length >= 2) return s.slice(-2).toUpperCase();
-  //   return s[0].toUpperCase();
-  // };
   const timePercent = (start, due) => {
     const now = new Date();
     const s = new Date(start);

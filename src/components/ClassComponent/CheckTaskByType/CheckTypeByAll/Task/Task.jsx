@@ -62,16 +62,6 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
   const visibleMembers = props.task?.assignTo?.slice(0, 3);
   const extraCount = props.task?.assignTo?.length - visibleMembers?.length;
 
-  const formatDate = (date) => {
-    if (!date) return '';
-    const dateObj = new Date(date);
-    if (isNaN(dateObj)) return '';
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const year = dateObj.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
   const handleEditPriority = async (task) => {
     const payload = {
       ...task,
@@ -179,8 +169,8 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
   };
 
   const percent = calculateRemainingPercent(
-    formatDateUI(props?.task?.taskStartTime),
-    formatDateUI(props?.task?.taskDueDate),
+    formatDateUI(props.createdAt),
+    formatDateUI(props.dueDate),
   );
   const progressColor = getColorByPercent(percent);
 

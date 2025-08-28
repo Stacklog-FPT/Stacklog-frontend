@@ -6,7 +6,6 @@ import {
   DndContext,
   closestCorners,
   DragOverlay,
-  rectIntersection,
   defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
 import { useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
@@ -25,15 +24,6 @@ import { getStatus } from '../../../../service/ColumnService';
 import { isLeader } from '../../../../helper/validateStudentGroup';
 import decodeToken from '../../../../service/DecodeJwt';
 
-const customCollisionDetection = (args) => {
-  const droppableCollisions = rectIntersection(args) || [];
-  if (droppableCollisions.length > 0) {
-    return droppableCollisions;
-  }
-  const sortableCollisions = closestCorners(args) || [];
-  return sortableCollisions.length > 0 ? sortableCollisions : null;
-};
-
 const CheckTypeByList = () => {
   const { user } = useAuth();
   const { groupId } = useParams();
@@ -41,6 +31,7 @@ const CheckTypeByList = () => {
   const statuses = useSelector((s) => s.status.statuses);
   const tasks = useSelector((t) => t.task.tasks);
   const groupList = useSelector((state) => state.group.groups);
+  const currentGroup = groupList.find((g) => g.groupsId === groupId);
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(null);
@@ -48,173 +39,121 @@ const CheckTypeByList = () => {
   const [showAddColumn, setShowAddColumn] = useState(false);
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const [showAddSubTask, setShowAddSubTask] = useState(null);
-
+  const matchRole = isLeader(currentGroup, decodeToken(user.token).id);
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
+      activationConstraint: { distance: 10 },
     }),
   );
 
-  const checkIsLeader = () => {
-    const currentGroup = groupList.find((g) => g.groupsId === groupId);
-    if (isLeader(currentGroup, decodeToken(user.token).id)) {
-      return true;
-    }
-
-    return false;
-  };
-
-  const updateTaskStatus = async (taskId, taskData) => {
-    await updateTaskApi(taskId, taskData, user.token, dispatch);
+  const updateTaskStatus = async (payload) => {
+    await updateTaskApi(payload, user.token, dispatch);
   };
 
   const handleDragStart = (event) => {
     const { active } = event;
-    const activeTask = tasks.find((task) => task.taskId === active.id);
+    const activeTask = tasks.find((t) => t.taskId === active.id);
     setActiveTask(activeTask);
   };
 
-  const handleDragOver = (event) => {
-    const { over } = event;
+  const handleDragOver = ({ over }) => {
     if (!over) return setActiveColumn(null);
+    const overId = over.id;
 
-    const overId = String(over.id);
     if (overId.startsWith('droppable-')) {
-      const targetStatusId = overId.replace('droppable-', '');
-      setActiveColumn(targetStatusId);
+      setActiveColumn(overId.replace('droppable-', ''));
     } else {
-      const overTask = tasks.find((t) => String(t.taskId) === overId);
+      const overTask = tasks.find((t) => t.taskId === overId);
       setActiveColumn(overTask ? overTask.statusTaskId : null);
     }
   };
 
   const handleDragEnd = useCallback(
-    (event) => {
-      const { active, over } = event;
+    ({ active, over }) => {
       setActiveTask(null);
       if (!over) {
         setActiveColumn(null);
         return;
       }
-      const activeId = active.id;
 
-      const activeTask = tasks.find((task) => task.taskId === activeId);
-      if (!activeTask) {
+      const activeId = active.id;
+      const overId = over.id;
+      const current = tasks.find((t) => String(t.taskId) === activeId);
+      if (!current) {
         setActiveColumn(null);
         return;
       }
 
-      let updatedTasks = [...tasks];
-      const activeIndex = tasks.findIndex((task) => task.taskId === activeId);
-      const droppableId = over.id;
-      const isOverDroppable = droppableId.startsWith('droppable-');
-      let targetStatusId;
-      let targetStatus;
+      let targetStatusId = null;
 
-      if (isOverDroppable) {
-        targetStatusId = droppableId.replace('droppable-', '');
-        targetStatus = statuses.find(
-          (item) => item.statusTaskId === targetStatusId,
-        )?.statusTaskName;
+      if (overId.startsWith('droppable-')) {
+        targetStatusId = overId.replace('droppable-', '');
       } else {
-        const overTask = tasks.find((task) => task.taskId === droppableId);
+        const overTask = tasks.find((t) => String(t.taskId) === overId);
         if (!overTask) {
-          console.log('No over task found for ID:', droppableId);
           setActiveColumn(null);
           return;
         }
         targetStatusId = overTask.statusTaskId;
-        targetStatus = statuses.find(
-          (item) => item.statusTaskId === targetStatusId,
-        )?.statusTaskName;
       }
 
-      if (!targetStatusId) {
-        console.log('Invalid target status:', { targetStatusId, targetStatus });
-        setActiveColumn(null);
-        return;
-      }
+      const sameColumn = String(current.statusTaskId) === String(targetStatusId);
+      let updated = [...tasks];
+      const activeIndex = updated.findIndex((t) => String(t.taskId) === activeId);
 
-      const taskData = {
-        ...activeTask,
-        statusTaskId: targetStatusId,
-      };
-
-      if (isOverDroppable) {
-        // Dropped on empty column
-        updateTaskStatus(activeTask.taskId, taskData);
-        updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
-        updatedTasks.push({
-          ...activeTask,
-          statusTaskId: targetStatusId,
-          statusTaskName: targetStatus,
-        });
+      if (sameColumn) {
+        if (!overId.startsWith('droppable-')) {
+          const overIndex = updated.findIndex((t) => String(t.taskId) === overId);
+          updated = arrayMove(updated, activeIndex, overIndex);
+        }
       } else {
-        // Dropped on another task
-        const overTask = tasks.find((task) => task.taskId === droppableId);
-        const overIndex = tasks.findIndex((task) => task.taskId === droppableId);
-        if (activeTask.statusTaskId === targetStatusId) {
-          // Same column: Reorder tasks using arrayMove
-          updatedTasks = arrayMove(updatedTasks, activeIndex, overIndex);
-        } else {
-          // Different column: Update status and insert at overIndex
-          updateTaskStatus(activeTask.taskId, taskData);
-          updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
-          updatedTasks.splice(overIndex, 0, {
-            ...activeTask,
+        const payload = { ...current, statusTaskId: targetStatusId };
+        updateTaskStatus(payload);
+
+        updated.splice(activeIndex, 1);
+
+        if (!overId.startsWith('droppable-')) {
+          const overIndex = updated.findIndex((t) => String(t.taskId) === overId);
+          updated.splice(overIndex, 0, {
+            ...current,
             statusTaskId: targetStatusId,
-            statusTaskName: targetStatus,
+          });
+        } else {
+          updated.push({
+            ...current,
+            statusTaskId: targetStatusId,
           });
         }
       }
 
-      dispatch(setTasks(updatedTasks));
+      // dispatch(setTasks(updated));
       setActiveColumn(null);
     },
-    [tasks, statuses, dispatch],
+    [tasks, statuses, dispatch, user.token],
   );
 
   const handleFilterByPriority = () => {
     if (isSortedByPriority) {
-      getAllTask(user.token, groupId, dispatch); // Assuming handleGetTasks is getAllTask
+      getAllTask(user.token, groupId, dispatch);
       setIsSortedByPriority(false);
     } else {
       const priorityOrder = { HIGH: 1, MEDIUM: 2, LOW: 3 };
       const sortedTasks = [...tasks].sort((a, b) => {
-        const priorityA = priorityOrder[a.priority] || 4;
-        const priorityB = priorityOrder[b.priority] || 4;
-        return priorityA - priorityB;
+        const pa = priorityOrder[a.priority] || 4;
+        const pb = priorityOrder[b.priority] || 4;
+        return pa - pb;
       });
       dispatch(setTasks(sortedTasks));
       setIsSortedByPriority(true);
     }
   };
 
-  const handleShowAddTask = (status) => {
-    setShowAddTask(status);
-  };
-
-  const handleShowComment = (task) => {
-    setShowCommentTask(task);
-  };
-
-  const handleCloseComment = () => {
-    setShowCommentTask(null);
-  };
-
-  const handleCloseAddStatus = () => {
-    setShowAddColumn(false);
-  };
-
-  const handleChooseTask = (task) => {
-    setShowAddSubTask(task);
-  };
-
-  const handleCloseAddSubtask = () => {
-    setShowAddSubTask(null);
-  };
+  const handleShowAddTask = (status) => setShowAddTask(status);
+  const handleShowComment = (task) => setShowCommentTask(task);
+  const handleCloseComment = () => setShowCommentTask(null);
+  const handleCloseAddStatus = () => setShowAddColumn(false);
+  const handleChooseTask = (task) => setShowAddSubTask(task);
+  const handleCloseAddSubtask = () => setShowAddSubTask(null);
 
   useEffect(() => {
     getStatus(user.token, groupId, dispatch);
@@ -224,61 +163,64 @@ const CheckTypeByList = () => {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={customCollisionDetection}
+      collisionDetection={closestCorners}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <div className="check__task__by__list__container">
         <ClassAndMember onFilterByPriority={handleFilterByPriority} />
+
         <div className="check__task__by__list__column">
-          {statuses.map((item) => (
-            <SortableContext
-              key={item.statusTaskId}
-              items={tasks
-                .filter((task) => task?.statusTaskId === item.statusTaskId)
-                .map((task) => task.taskId)}
-              strategy={verticalListSortingStrategy}
-            >
-              <Column
+          {statuses.map((item) => {
+            const colTasks = tasks.filter(
+              (t) => String(t?.statusTaskId) === String(item.statusTaskId),
+            );
+            return (
+              <SortableContext
                 key={item.statusTaskId}
-                statusId={item.statusTaskId}
-                status={item.statusTaskName}
-                color={item.statusTaskColor}
-                tasks={tasks.filter((task) => task?.statusTaskId === item.statusTaskId)}
-                onShowAddTask={() => handleShowAddTask(item)}
-                onShowComment={handleShowComment}
-                onShowAddSubTask={handleChooseTask}
-                isLeader={checkIsLeader}
-              />
-            </SortableContext>
-          ))}
-          {user.role === 'LECTURER' || checkIsLeader() ? (
+                items={colTasks.map((t) => t.taskId)}
+                strategy={verticalListSortingStrategy}
+              >
+                <Column
+                  statusId={item.statusTaskId}
+                  status={item.statusTaskName}
+                  color={item.statusTaskColor}
+                  tasks={colTasks}
+                  onShowAddTask={() => handleShowAddTask(item)}
+                  onShowComment={handleShowComment}
+                  onShowAddSubTask={handleChooseTask}
+                  isLeader={matchRole}
+                />
+              </SortableContext>
+            );
+          })}
+
+          {(user.role === 'LECTURER' || matchRole) && (
             <button className="btn_add_status" onClick={() => setShowAddColumn(!showAddColumn)}>
-              <i className="fa-solid fa-plus"></i>
+              <i className="fa-solid fa-plus" />
               <span>Add Status</span>
             </button>
-          ) : null}
+          )}
         </div>
-        {user.role === 'LECTURER' || checkIsLeader()
-          ? showAddTask && (
-              <AddTask status={showAddTask} onCancel={() => setShowAddTask(null)} group={groupId} />
-            )
-          : null}
+
+        {(user.role === 'LECTURER' || matchRole) && showAddTask && (
+          <AddTask status={showAddTask} onCancel={() => setShowAddTask(null)} group={groupId} />
+        )}
+
         {showCommentTask && <CommentTask task={showCommentTask} isClose={handleCloseComment} />}
+
         {showAddColumn && <AddColumn onCancel={handleCloseAddStatus} groupId={groupId} />}
+
         {showAddSubTask && <AddSubTask isClose={handleCloseAddSubtask} task={showAddSubTask} />}
       </div>
+
       <DragOverlay
         dropAnimation={{
           duration: 250,
           easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
           sideEffects: defaultDropAnimationSideEffects({
-            styles: {
-              active: {
-                opacity: '1',
-              },
-            },
+            styles: { active: { opacity: '1' } },
           }),
         }}
       >

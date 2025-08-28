@@ -13,6 +13,7 @@ import CommentTaskBody from './CommentBody';
 import CommentTaskFooter from './CommentFooter';
 
 const CommentTask = ({ task, isClose }) => {
+  console.log(task);
   const tasks = useSelector((t) => t.task.tasks);
   const currentTask = tasks.find((t) => t.id === task.id); // Change taskId before mockup with BE
   const reviews = currentTask?.reviews || [];

@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { useSelector } from 'react-redux';
 
 const AddTask = ({ status, onCancel, group }) => {
+  console.log(status);
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
   const groupList = useSelector((state) => state.group.groups);
@@ -22,6 +23,8 @@ const AddTask = ({ status, onCancel, group }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
+  const [selectedPriority, setSelectedPriority] = useState('LOW');
+  console.log('selectedPriority: ', selectedPriority);
   const [taskData, setTaskData] = useState({
     taskId: '',
     taskTitle: '',
@@ -31,12 +34,12 @@ const AddTask = ({ status, onCancel, group }) => {
     taskPoint: 0,
     taskDueDate: '',
     taskStartTime: '',
-    priority: '',
+    priority: selectedPriority,
     createdBy: '',
     createdAt: '',
     updateBy: '',
     updateAt: '',
-    statusTaskId: status.statusTaskId, // change statusTaskId before mockUp with BE
+    statusTaskId: status.statusTaskId,
     review: [],
     parentTask: null,
     assignTo: [],
@@ -46,7 +49,7 @@ const AddTask = ({ status, onCancel, group }) => {
     { id: 2, color: '#FFD60A', content: 'MEDIUM', borderColor: '#D97706' },
     { id: 3, color: '#22C55E', content: 'LOW', borderColor: '#15803D' },
   ]);
-  const [selectedPriority, setSelectedPriority] = useState('LOW');
+
   const selectedColor =
     colorPriority.find((item) => item.content === selectedPriority)?.color || '#FFFFFF';
   const selectedBorderColor =

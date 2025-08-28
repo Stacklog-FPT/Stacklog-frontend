@@ -1526,6 +1526,54 @@
       "createdAt": "2025-08-26",
       "isRead": false,
       "_id": 0.06951158644141986
+    },
+    {
+      "id": "778a",
+      "title": "Announce add task Build FE with ReactJs by de170481",
+      "author": {
+        "_id": 0.24879897815365148,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-28",
+      "isRead": false,
+      "_id": 0.01919881106198351
+    },
+    {
+      "id": "958d",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.8516250262937797,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-28",
+      "isRead": false,
+      "_id": 0.7858364016966846
+    },
+    {
+      "id": "ef65",
+      "title": "Thông báo môn Model cai cang cot",
+      "author": {
+        "_id": 0.14455236587128129,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-28",
+      "isRead": false,
+      "_id": 0.8958608131868631
+    },
+    {
+      "id": "a924",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.35480808239852235,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-28",
+      "isRead": false,
+      "_id": 0.48999316175635765
     }
   ]
 }

@@ -76,9 +76,7 @@ const TaskDetails = ({ task, onClose }) => {
   const handleFormChange = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
   const handleToggleEdit = async () => {
-    console.log('Call bằng nút bấm nè ');
     if (!editTask) {
-      console.log('Dô if lụm nè');
       setEditTask(true);
       return;
     }

@@ -24,6 +24,7 @@ const Column = ({
   onTaskUpdated,
   isLeader,
 }) => {
+  console.log(isLeader);
   const { setNodeRef, isOver } = useDroppable({ id: `droppable-${statusId}` });
   const { user } = useAuth();
   const dispatch = useDispatch();
@@ -202,7 +203,7 @@ const Column = ({
           </div>
         </SortableContext>
 
-        {(user.role === 'LECTURER' || isLeader()) && (
+        {(user.role === 'LECTURER' || isLeader) && (
           <div className="btn-add-task" onClick={onShowAddTask}>
             <i className="fa-solid fa-plus" style={{ color: '#000' }} />
             <span>Add Task</span>

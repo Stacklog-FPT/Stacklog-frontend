@@ -99,7 +99,7 @@ export const updateTaskApi = async (taskData, token, dispatch) => {
   try {
     if (!token) dispatch(setError('The token is missing!'));
     const response = await axios.put(`http://localhost:3001/task/${taskData.id}`, taskData, {
-      //Change taskIdw before mockup with BE
+      //Change taskId before mockup with BE
       headers: {
         Authorization: `Bearer ${token}`,
       },

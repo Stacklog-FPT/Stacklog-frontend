@@ -1,9 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './Checklist.scss';
-import { useDispatch, useSelector } from 'react-redux';
-import { useAuth } from '../../../../context/AuthProvider';
-import { updateTaskApi } from '../../../../service/TaskService';
-import { toast } from 'sonner';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 const genId = (prefix = 'id') =>
@@ -20,31 +17,44 @@ const normalize = (arr = []) =>
         id: String(it.checkItemId ?? `cli_${idx}_${j}`),
         bid: String(it.checkItemId ?? `cli_${idx}_${j}`),
         text: it.checkItemName ?? `Item ${j + 1}`,
-        done: Boolean(it.done || it.completed),
+        done: Boolean(it.checkItemStatus === true),
+        assignTo: it.assignTo || [],
       })),
     };
   });
 
-const Checklist = ({ checkList = [], taskId }) => {
-  const { user } = useAuth();
+const toApiShape = (listsState) =>
+  listsState.map((l) => ({
+    checkListId: l.bid ?? l.id.split('__')[0],
+    checkListName: l.name,
+    checkItem: l.items.map((it) => ({
+      checkItemId: it.bid ?? it.id,
+      checkItemName: it.text,
+      checkItemStatus: !!it.done,
+      assignTo: it.assignTo || [],
+    })),
+  }));
+
+const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }) => {
   const { groupId } = useParams();
-  const dispatch = useDispatch();
-  const { tasks } = useSelector((state) => state.task);
   const { groups } = useSelector((state) => state.group);
   const currentGroup = groups?.find((g) => g.groupsId === groupId);
-  const currentTask = tasks?.find((t) => String(t.taskId) === String(taskId)) || {};
+  const groupMembers = currentGroup?.groupStudent || [];
+
   const source = useMemo(() => checkList ?? [], [checkList]);
   const initial = useMemo(() => normalize(source), [source]);
+
   const [lists, setLists] = useState(initial);
   const [openMap, setOpenMap] = useState(() =>
     Object.fromEntries(initial.map((l) => [l.id, true])),
   );
+
   const [newTitle, setNewTitle] = useState('');
-  const [creatingList, setCreatingList] = useState(false);
   const [draftMap, setDraftMap] = useState({});
   const getDraft = (listId) => draftMap[listId] || { text: '', assignees: [] };
   const setDraftText = (listId, text) =>
     setDraftMap((m) => ({ ...m, [listId]: { ...getDraft(listId), text } }));
+
   const [assigneeOpen, setAssigneeOpen] = useState({});
   const toggleAssigneePanel = (listId) => setAssigneeOpen((m) => ({ ...m, [listId]: !m[listId] }));
   const toggleAssignee = (listId, userId) =>
@@ -57,11 +67,9 @@ const Checklist = ({ checkList = [], taskId }) => {
       return { ...m, [listId]: { ...d, assignees: next } };
     });
 
-  const groupMembers = currentGroup?.groupStudent || [];
   useEffect(() => {
     const n = normalize(source);
-    if (JSON.stringify(lists) !== JSON.stringify(n)) setLists(n);
-
+    setLists(n);
     setOpenMap((prev) => {
       const next = { ...prev };
       let changed = false;
@@ -77,7 +85,10 @@ const Checklist = ({ checkList = [], taskId }) => {
         }
       return changed ? next : prev;
     });
+    setDraftMap({});
+    onDirtyChange?.(false);
   }, [source]);
+
   const totals = lists.reduce(
     (acc, l) => {
       acc.total += l.items.length;
@@ -89,48 +100,27 @@ const Checklist = ({ checkList = [], taskId }) => {
   const overallPct = totals.total ? Math.round((totals.done / totals.total) * 100) : 0;
 
   const toggleOpen = (listId) => setOpenMap((m) => ({ ...m, [listId]: !m[listId] }));
-  const serializeListsToPayload = (listsState) => ({
-    ...currentTask,
-    checkList: listsState.map((l) => ({
-      checkListId: l.bid ?? l.id.split('__')[0],
-      checkListName: l.name,
-      checkItem: l.items.map((it) => ({
-        checkItemId: it.bid ?? it.id,
-        checkItemName: it.text,
-        assignTo: it.assignTo || it.assignees || [],
-      })),
-    })),
-  });
 
-  const commitCreateChecklist = async () => {
-    const title = newTitle.trim();
-    if (!title || creatingList) {
-      setNewTitle('');
-      return;
-    }
-
-    setCreatingList(true);
-
-    const newId = genId('cl');
-
-    const optimistic = { id: newId, bid: newId, name: title, items: [] };
-    setLists((prev) => [...prev, optimistic]);
-    setOpenMap((prev) => ({ ...prev, [newId]: true }));
-    setNewTitle('');
-
-    try {
-      const payload = serializeListsToPayload([...lists, optimistic]);
-      await updateTaskApi(payload, user?.token, dispatch);
-      toast.success('Checklist created successfully!');
-    } catch (e) {
-      setLists((prev) => prev.filter((l) => l.id !== newId));
-      toast.error('Something went wrong!');
-    } finally {
-      setCreatingList(false);
-    }
+  const commitLocal = (nextLists) => {
+    setLists(nextLists);
+    onChange?.(toApiShape(nextLists));
+    onDirtyChange?.(true);
   };
 
-  const commitCreateItem = async (listId) => {
+  const commitCreateChecklist = () => {
+    if (!editTask) return;
+    const title = newTitle.trim();
+    if (!title) return;
+
+    const newId = genId('cl');
+    const optimistic = { id: newId, bid: newId, name: title, items: [] };
+    commitLocal([...lists, optimistic]);
+    setOpenMap((prev) => ({ ...prev, [newId]: true }));
+    setNewTitle('');
+  };
+
+  const commitCreateItem = (listId) => {
+    if (!editTask) return;
     const draft = getDraft(listId);
     const text = draft.text.trim();
     const assignees = draft.assignees || [];
@@ -148,31 +138,19 @@ const Checklist = ({ checkList = [], taskId }) => {
             ],
           },
     );
-    setLists(nextLists);
+    commitLocal(nextLists);
     setDraftMap((m) => ({ ...m, [listId]: { text: '', assignees: [] } }));
-
-    try {
-      const payload = serializeListsToPayload(nextLists);
-      await updateTaskApi(payload, user?.token, dispatch);
-      toast.success('Checkitem created successfully!');
-    } catch (e) {
-      setLists((prev) =>
-        prev.map((l) =>
-          l.id !== listId ? l : { ...l, items: l.items.filter((it) => it.id !== newItemId) },
-        ),
-      );
-      toast.error('Something went wrong!');
-    }
   };
 
-  const toggleItemDone = (listId, itemId) =>
-    setLists((prev) =>
-      prev.map((l) =>
-        l.id !== listId
-          ? l
-          : { ...l, items: l.items.map((i) => (i.id === itemId ? { ...i, done: !i.done } : i)) },
-      ),
+  const toggleItemDone = (listId, itemId) => {
+    if (!editTask) return;
+    const nextLists = lists.map((l) =>
+      l.id !== listId
+        ? l
+        : { ...l, items: l.items.map((i) => (i.id === itemId ? { ...i, done: !i.done } : i)) },
     );
+    commitLocal(nextLists);
+  };
 
   return (
     <div className="ck">
@@ -188,6 +166,7 @@ const Checklist = ({ checkList = [], taskId }) => {
         </div>
       </div>
 
+      {/* Inline create checklist (chỉ enable khi edit) */}
       <div className="ck__inlineCreate">
         <input
           placeholder="New Check List"
@@ -198,7 +177,7 @@ const Checklist = ({ checkList = [], taskId }) => {
             if (e.key === 'Enter') commitCreateChecklist();
             if (e.key === 'Escape') setNewTitle('');
           }}
-          disabled={creatingList}
+          disabled={!editTask}
         />
       </div>
 
@@ -235,11 +214,13 @@ const Checklist = ({ checkList = [], taskId }) => {
                           type="checkbox"
                           checked={it.done}
                           onChange={() => toggleItemDone(cl.id, it.id)}
+                          disabled={!editTask}
                         />
                         <span className="ck__text">{it.text}</span>
                       </label>
                     ))}
 
+                    {/* Add item row */}
                     <div className="ck__addItem">
                       <div className="ck__chips">
                         {(getDraft(cl.id).assignees || []).map((uid) => (
@@ -249,6 +230,7 @@ const Checklist = ({ checkList = [], taskId }) => {
                               className="ck__chipX"
                               onMouseDown={(e) => e.preventDefault()}
                               onClick={() => toggleAssignee(cl.id, uid)}
+                              disabled={!editTask}
                             >
                               ×
                             </button>
@@ -267,22 +249,24 @@ const Checklist = ({ checkList = [], taskId }) => {
                           if (e.key === 'Escape')
                             setDraftMap((m) => ({ ...m, [cl.id]: { text: '', assignees: [] } }));
                         }}
+                        disabled={!editTask}
                       />
 
                       <button
                         className="ck__assignBtn"
                         title="Choose assign"
                         onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => toggleAssigneePanel(cl.id)}
+                        onClick={() => editTask && toggleAssigneePanel(cl.id)}
+                        disabled={!editTask}
                       >
                         +
                       </button>
 
-                      {assigneeOpen[cl.id] && (
+                      {assigneeOpen[cl.id] && editTask && (
                         <div
                           className="ck__assigneePicker"
                           onMouseDown={(e) => e.preventDefault()}
-                          onTouchStart={(e) => e.preventDefault()} // ✅ chặn blur khi chạm
+                          onTouchStart={(e) => e.preventDefault()}
                         >
                           {groupMembers.length === 0 ? (
                             <div className="ck__assigneeEmpty">The members are empty</div>

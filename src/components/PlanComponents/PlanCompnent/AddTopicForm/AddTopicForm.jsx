@@ -13,7 +13,6 @@ const AddTopicForm = ({
   open: openProp,
   setOpen: setOpenProp,
 }) => {
-  // Nếu truyền prop open/setOpen thì dùng, không thì tự quản lý state
   const [openState, setOpenState] = useState(false);
   const open = typeof openProp === "boolean" ? openProp : openState;
   const setOpen = setOpenProp || setOpenState;
@@ -93,6 +92,7 @@ const AddTopicForm = ({
         classId,
         groupId,
         status: "Pending",
+        allowEdit: true,
         registerBy: userId,
         registerAt: new Date().toISOString(),
         rejectReason: null,

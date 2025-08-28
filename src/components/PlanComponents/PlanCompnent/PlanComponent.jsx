@@ -3,8 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import DetailTopicForm from "./DetailTopicForm/DetailTopicForm";
 import {
   getPlansApi,
-  approvePlanApi,
-  rejectPlanApi,
+  updatePlanApi,
+  deletePlanApi,
 } from "../../../service/PlanService";
 import "./PlanComponent.scss";
 import { useAuth } from "../../../context/AuthProvider";
@@ -39,20 +39,31 @@ const PlanComponent = () => {
   const dispatch = useDispatch();
   const { plans, pending } = useSelector((state) => state.plan);
 
-  // classes
+  const normalizedPlans = useMemo(() => {
+    const arr = Array.isArray(plans) ? plans : [];
+    return arr.map((p) => ({
+      ...p,
+
+      allowEdit:
+        typeof p.allowEdit === "boolean"
+          ? p.allowEdit
+          : p.status
+          ? p.status === "Pending"
+          : true,
+    }));
+  }, [plans]);
+
   const classesRaw = useSelector((state) => state.class?.classes || []);
   const [selectedClass, setSelectedClass] = useState("");
   const [currentGroupId, setCurrentGroupId] = useState("");
 
-  // modal/detail
   const [modal, setModal] = useState({ open: false, topic: null });
   const [rejectReason, setRejectReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
   const [localError, setLocalError] = useState("");
-  // Thêm state để mở modal AddTopicForm
+
   const [addOpen, setAddOpen] = useState(false);
 
-  // toolbar state
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [keyword, setKeyword] = useState("");
 
@@ -70,7 +81,6 @@ const PlanComponent = () => {
     }
   }, [currentSemesterId, token, dispatch]);
 
-  // role-based class list
   const classes = useMemo(() => {
     if (!Array.isArray(classesRaw)) return [];
     if (role === "LECTURER") {
@@ -86,7 +96,6 @@ const PlanComponent = () => {
     }
   }, [classesRaw, role, lecturerId, userId]);
 
-  // default/select class
   useEffect(() => {
     if (!selectedClass && classes.length > 0) {
       setSelectedClass(classes[0].classesId);
@@ -100,7 +109,6 @@ const PlanComponent = () => {
     }
   }, [classes, selectedClass]);
 
-  // resolve current group for STUDENT
   useEffect(() => {
     if (role !== "STUDENT" || !selectedClass || classes.length === 0) {
       setCurrentGroupId("");
@@ -117,7 +125,6 @@ const PlanComponent = () => {
     setCurrentGroupId(found?.groupsId || "");
   }, [role, selectedClass, classes, userId]);
 
-  // group map
   const groupMap = useMemo(() => {
     const map = {};
     classes.forEach((cls) => {
@@ -132,9 +139,8 @@ const PlanComponent = () => {
     return map;
   }, [classes]);
 
-  // filtered topics (class → status → keyword)
   const filteredTopics = useMemo(() => {
-    const safePlans = Array.isArray(plans) ? plans : [];
+    const safePlans = Array.isArray(normalizedPlans) ? normalizedPlans : [];
     if (!selectedClass) return [];
 
     let list =
@@ -165,7 +171,6 @@ const PlanComponent = () => {
       );
     }
 
-    // sort by registerAt desc
     return list.slice().sort((a, b) => {
       const ta = new Date(a.registerAt || 0).getTime();
       const tb = new Date(b.registerAt || 0).getTime();
@@ -173,7 +178,7 @@ const PlanComponent = () => {
     });
   }, [
     role,
-    plans,
+    normalizedPlans,
     groupMap,
     selectedClass,
     currentGroupId,
@@ -192,7 +197,7 @@ const PlanComponent = () => {
     setActionLoading(true);
     setLocalError("");
     try {
-      const oldPlan = plans.find((p) => p.topicId === topicId);
+      const oldPlan = normalizedPlans.find((p) => p.topicId === topicId);
       if (!oldPlan) {
         setLocalError("Không tìm thấy đề tài!");
         setActionLoading(false);
@@ -201,14 +206,72 @@ const PlanComponent = () => {
       const payload = {
         ...oldPlan,
         status: "Approved",
+
+        allowEdit: false,
         approvedBy: userId,
         approvedAt: new Date().toISOString(),
         rejectReason: null,
       };
-      await approvePlanApi(topicId, payload, token, dispatch);
+      await updatePlanApi(topicId, payload, token, dispatch);
       setModal({ open: false, topic: null });
     } catch {
       setLocalError("Lỗi phê duyệt đề tài");
+    }
+    setActionLoading(false);
+  };
+
+  const handleUpdate = async (topicId, updatedFields) => {
+    const oldPlan = normalizedPlans.find((p) => p.topicId === topicId);
+    if (!oldPlan) {
+      setLocalError("Không tìm thấy đề tài!");
+      return;
+    }
+
+    const isGrantAction =
+      Object.prototype.hasOwnProperty.call(updatedFields, "allowEdit") &&
+      updatedFields.allowEdit === true &&
+      updatedFields.status === "Pending";
+
+    if (!isGrantAction) {
+      if (!(oldPlan.status === "Pending" && oldPlan.allowEdit === true)) {
+        setLocalError(
+          "Bạn không có quyền chỉnh sửa đề tài. Vui lòng liên hệ giảng viên để được cấp quyền."
+        );
+        return;
+      }
+    }
+    setActionLoading(true);
+    setLocalError("");
+    try {
+      const payload = { ...oldPlan, ...updatedFields };
+      await updatePlanApi(topicId, payload, token, dispatch);
+      setModal({ open: false, topic: null });
+    } catch {
+      setLocalError("Lỗi cập nhật đề tài");
+    }
+    setActionLoading(false);
+  };
+
+  const handleDelete = async (topicId) => {
+    const oldPlan = normalizedPlans.find((p) => p.topicId === topicId);
+    if (!oldPlan) {
+      setLocalError("Không tìm thấy đề tài!");
+      return;
+    }
+
+    if (!(oldPlan.status === "Pending" && oldPlan.allowEdit === true)) {
+      setLocalError(
+        "Không thể xóa đề tài. Chỉ có thể xóa khi đề tài ở trạng thái Pending và có quyền chỉnh sửa."
+      );
+      return;
+    }
+    setActionLoading(true);
+    setLocalError("");
+    try {
+      await deletePlanApi(topicId, token, dispatch);
+      setModal({ open: false, topic: null });
+    } catch {
+      setLocalError("Lỗi xóa đề tài");
     }
     setActionLoading(false);
   };
@@ -221,7 +284,7 @@ const PlanComponent = () => {
     setActionLoading(true);
     setLocalError("");
     try {
-      const oldPlan = plans.find((p) => p.topicId === topicId);
+      const oldPlan = normalizedPlans.find((p) => p.topicId === topicId);
       if (!oldPlan) {
         setLocalError("Không tìm thấy đề tài!");
         setActionLoading(false);
@@ -230,11 +293,13 @@ const PlanComponent = () => {
       const payload = {
         ...oldPlan,
         status: "Rejected",
+
+        allowEdit: false,
         rejectReason,
         approvedBy: userId,
         approvedAt: new Date().toISOString(),
       };
-      await rejectPlanApi(topicId, payload, token, dispatch);
+      await updatePlanApi(topicId, payload, token, dispatch);
       setModal({ open: false, topic: null });
       setRejectReason("");
     } catch {
@@ -317,7 +382,6 @@ const PlanComponent = () => {
           token={token}
           dispatch={dispatch}
           disabled={pending}
-          // Điều khiển mở/đóng modal qua prop open/close
           open={addOpen}
           setOpen={setAddOpen}
         />
@@ -344,6 +408,8 @@ const PlanComponent = () => {
         onClose={() => setModal({ open: false, topic: null })}
         onApprove={() => handleApprove(modal.topic?.topicId)}
         onReject={() => handleReject(modal.topic?.topicId)}
+        onUpdate={handleUpdate}
+        onDelete={handleDelete}
       />
 
       <div className="sl-table-wrap">

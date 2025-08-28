@@ -15,7 +15,7 @@ export const getPlansApi = async (dispatch, token) => {
     const response = await axios.get(
       "http://localhost:3001/topicRegistrations",
       {
-        // headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
     dispatch(setPlans(response.data));
@@ -28,31 +28,13 @@ export const getPlansApi = async (dispatch, token) => {
   }
 };
 
-export const approvePlanApi = async (topicId, payload, token, dispatch) => {
+export const updatePlanApi = async (topicId, payload, token, dispatch) => {
   try {
     dispatch(setPending(true));
     const response = await axios.put(
       `http://localhost:3001/topicRegistrations/${topicId}`,
       payload,
-      // { headers: { Authorization: `Bearer ${token}` } }
-    );
-    dispatch(updatePlan(response.data));
-    dispatch(setPending(false));
-    return response.data;
-  } catch (e) {
-    dispatch(setError(e.message));
-    dispatch(setPending(false));
-    throw new Error(e.message);
-  }
-};
-
-export const rejectPlanApi = async (topicId, payload, token, dispatch) => {
-  try {
-    dispatch(setPending(true));
-    const response = await axios.put(
-      `http://localhost:3001/topicRegistrations/${topicId}`,
-      payload,
-      // { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
     dispatch(updatePlan(response.data));
     dispatch(setPending(false));
@@ -69,8 +51,8 @@ export const addPlanApi = async (planData, token, dispatch) => {
     dispatch(setPending(true));
     const response = await axios.post(
       `http://localhost:3001/topicRegistrations`,
-      planData
-      // { headers: { Authorization: `Bearer ${token}` } }
+      planData,
+      { headers: { Authorization: `Bearer ${token}` } }
     );
     dispatch(addPlan(response.data));
     dispatch(setPending(false));
@@ -86,7 +68,7 @@ export const deletePlanApi = async (topicId, token, dispatch) => {
   try {
     dispatch(setPending(true));
     await axios.delete(`http://localhost:3001/topicRegistrations/${topicId}`, {
-      // headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` },
     });
     dispatch(deletePlan(topicId));
     dispatch(setPending(false));

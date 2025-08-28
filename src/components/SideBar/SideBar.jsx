@@ -123,6 +123,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                 <li key={index} className={item.name === 'Class' ? 'class-item' : ''}>
                   {item.name === 'Class' ? (
                     <ClassDropdown
+                      currentSemester={currentSemesterId}
                       showClasses={showClasses}
                       setShowClasses={setShowClasses}
                       isSidebarOpen={isOpen}

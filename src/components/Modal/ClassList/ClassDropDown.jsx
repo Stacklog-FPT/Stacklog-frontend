@@ -4,8 +4,9 @@ import { NavLink } from 'react-router-dom';
 import GroupDropDown from '../GroupList/GroupDropDown';
 import './ClassDropdown.scss';
 
-const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
+const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen, currentSemester }) => {
   const classes = useSelector((state) => state.class.classes);
+  const currentClasses = classes.filter((cl) => cl.semesterId === currentSemester);
   const groups = useSelector((state) => state.group.groups);
   const [selectedClassId, setSelectedClassId] = useState(null);
 
@@ -34,8 +35,8 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
 
       {showClasses && isSidebarOpen && (
         <ul className="class-dropdown-menu">
-          {classes.length > 0 ? (
-            classes.map((classItem) => (
+          {currentClasses.length > 0 ? (
+            currentClasses.map((classItem) => (
               <li key={classItem.classesId}>
                 <div
                   className="class-dropdown-item"

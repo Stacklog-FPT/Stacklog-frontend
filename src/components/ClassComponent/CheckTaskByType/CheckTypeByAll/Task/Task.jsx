@@ -9,6 +9,7 @@ import { FaPen } from 'react-icons/fa';
 import iconDontKnow from '../../../../../assets/icon/task/iconDontKnow.png';
 import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { formatDateUI } from '../../../../../helper/formatDate';
 import { arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { FaTrashAlt, FaPlus } from 'react-icons/fa';
@@ -177,7 +178,10 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
     }
   };
 
-  const percent = calculateRemainingPercent(props?.task?.taskStartTime, props?.task?.taskDueDate);
+  const percent = calculateRemainingPercent(
+    formatDateUI(props?.task?.taskStartTime),
+    formatDateUI(props?.task?.taskDueDate),
+  );
   const progressColor = getColorByPercent(percent);
 
   return (
@@ -287,9 +291,9 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
               </>
             ) : (
               <>
-                <span>{formatDate(props?.task?.taskStartTime) || <Skeleton />}</span>
+                <span>{formatDateUI(props?.task?.taskStartTime) || <Skeleton />}</span>
                 <img src={iconDeadLine} alt="icon" />
-                <span>{formatDate(props?.task?.taskDueDate) || <Skeleton />}</span>
+                <span>{formatDateUI(props?.task?.taskDueDate) || <Skeleton />}</span>
               </>
             )}
           </div>

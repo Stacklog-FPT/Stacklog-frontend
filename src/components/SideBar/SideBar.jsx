@@ -54,7 +54,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
     { name: 'Chat', path: '/chatbox', icon: 'fa-solid fa-comment', onClick: handleChatClick },
     { name: 'Grades', path: '/grades', icon: 'fa-solid fa-user-graduate' },
     { name: 'Plan', path: '/plan', icon: 'fas fa-tasks' },
-    { name: 'Task', path: '/tasks', icon: 'fa-solid fa-list-check' },
+    { name: 'Task', path: '/tasks-self', icon: 'fa-solid fa-list-check' },
     { name: 'Class', path: '/class', icon: 'fa-solid fa-users' },
   ];
 

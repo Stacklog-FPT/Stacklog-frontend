@@ -19,6 +19,7 @@ import AdminDashBoard from '../pages/Admin/AdminDashBoard';
 import MorePage from '../pages/MorePage/MorePage';
 import LayoutAdmin from '../layouts/LayoutAdmin/LayoutAdmin';
 import JoinClass from '../pages/JoinClass/JoinClass';
+import TaskSelfPage from '../pages/TaskSelfPage/TaskSelfPage';
 
 const routes = [
   {
@@ -32,6 +33,7 @@ const routes = [
         element: <MainLayout />,
         children: [
           { path: '/', element: <Home /> },
+          { path: '/tasks-self/', element: <TaskSelfPage /> },
           { path: '/tasks/:groupId', element: <ClassPage /> }, // Task
           { path: '/class', element: <TaskPage /> }, // Class
           { path: '/schedule', element: <SchedulePage /> },

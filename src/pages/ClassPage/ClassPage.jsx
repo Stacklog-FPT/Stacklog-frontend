@@ -14,7 +14,6 @@ const ClassPage = () => {
         <h2>Team work overview</h2>
       </div>
       <TaskByType activeType={activeType} setActiveType={setActiveType} />
-
       <div className="class-page-container">
         {activeType === 'All' && <CheckTypeByAll />}
         {activeType === 'Checklist' && <CheckTypeByList />}

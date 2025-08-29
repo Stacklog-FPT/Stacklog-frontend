@@ -1,7 +1,6 @@
 import React from 'react';
 import './TaskSelfPage.scss';
 import { useAuth } from '../../context/AuthProvider';
-import { decodeToken } from '../../service/DecodeJwt';
 const TaskSelfPage = () => {
   const { user } = useAuth();
   return (

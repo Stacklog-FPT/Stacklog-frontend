@@ -115,3 +115,18 @@ export const updateTaskApi = async (taskData, token, dispatch) => {
     throw new Error(e.message);
   }
 };
+
+export const getTaskBySelf = async (token, userId, dispatch) => {
+  try {
+    if (!token) {
+      dispatch(setError('The token is invalid!'));
+      throw new Error('The token is invalid!');
+    }
+
+    dispatch(setPending(true));
+
+    const response = await axios.get(``);
+  } catch (e) {
+    dispatch(setError(e.message || 'Something went wrong!'));
+  }
+};

@@ -164,7 +164,6 @@ const AddTask = ({ status, onCancel, group }) => {
       if (response.data) {
         toast.success('Add Task successfully!');
         await axios.post('http://localhost:3000/notifications', {
-          id: Math.random().toString(16).slice(2, 6),
           title: `Announce add task ${taskData.taskTitle} by ${user.username}`,
           author: {
             _id: Math.random(),

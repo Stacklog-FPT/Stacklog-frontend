@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react";
-import "./ClassAndMember.scss";
-import avatar_add_button from "../../../assets/icon/avatar_add_button.png";
-import iconFilter from "../../../assets/icon/task/iconFilter.png";
-import iconMore from "../../../assets/icon/task/iconMore.png";
-import ClassService from "../../../service/ClassService";
-import GroupService from "../../../service/GroupService";
-import { useAuth } from "../../../context/AuthProvider";
-import useApi from "../../../service/UserService";
-import decodeToken from "../../../service/DecodeJwt";
-import { ClockLoader } from "react-spinners";
+import React, { useState, useEffect } from 'react';
+import './ClassAndMember.scss';
+import avatar_add_button from '../../../assets/icon/avatar_add_button.png';
+import iconFilter from '../../../assets/icon/task/iconFilter.png';
+import iconMore from '../../../assets/icon/task/iconMore.png';
+import ClassService from '../../../service/ClassService';
+import GroupService from '../../../service/GroupService';
+import { useAuth } from '../../../context/AuthProvider';
+import useApi from '../../../service/UserService';
+import decodeToken from '../../../service/DecodeJwt';
+import { ClockLoader } from 'react-spinners';
 
 const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
   const { user } = useAuth();
   const [classes, setClasses] = useState([]);
-  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedClass, setSelectedClass] = useState('');
   const [groups, setGroups] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState('');
   const [memberList, setMemberList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const visibleMembers = memberList?.slice(0, 3);
@@ -54,15 +54,15 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
     const foundClass = classes.find((c) => c.classesId === selectedClass);
     setGroups(foundClass ? foundClass.groups : []);
 
-    if (user.role !== "LECTURER" && foundClass) {
+    if (user.role !== 'LECTURER' && foundClass) {
       const userGroup = foundClass.groups.find((group) =>
-        group.groupStudents.some((stu) => stu.userId === decodeUser.id)
+        group.groupStudents.some((stu) => stu.userId === decodeUser.id),
       );
       if (userGroup) {
         setSelectedGroup(userGroup.groupsId);
       }
     } else {
-      setSelectedGroup("all");
+      setSelectedGroup('all');
     }
     setIsLoading(false);
   }, [selectedClass, classes]);
@@ -75,19 +75,17 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
     let userIds = [];
     if (foundClass) {
       setGroup(selectedGroup);
-      if (selectedGroup === "all") {
+      if (selectedGroup === 'all') {
         foundClass.groups.forEach((group) => {
           group.groupStudents.forEach((student) => {
             userIds.push(student.userId);
           });
         });
       } else {
-        const group = foundClass.groups.find(
-          (g) => g.groupsId === selectedGroup
-        );
+        const group = foundClass.groups.find((g) => g.groupsId === selectedGroup);
         if (group) {
           userIds = group.groupStudents.map((s) => s.userId);
-          setGroup(group)
+          setGroup(group);
         }
       }
     }
@@ -108,7 +106,7 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
             } catch {
               return null;
             }
-          })
+          }),
         );
         setMemberList(studentInfos.filter(Boolean));
         setMemberTask(studentInfos.filter(Boolean));
@@ -124,7 +122,7 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
     setSelectedClass(classId);
     const selected = classes.find((c) => c.classesId === classId);
     setGroups(selected ? selected.groups : []);
-    setSelectedGroup("");
+    setSelectedGroup('');
   };
 
   const handleGroupChange = (e) => {
@@ -133,7 +131,7 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
 
   return (
     <>
-      <div className={`spinner-overlay ${isLoading ? "open" : ""}`}>
+      <div className={`spinner-overlay ${isLoading ? 'open' : ''}`}>
         <ClockLoader
           loading={isLoading}
           size={200}
@@ -156,16 +154,12 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
             </select>
 
             <select value={selectedGroup} onChange={handleGroupChange}>
-              {user.role === "LECTURER" && (
-                <option value="all">All Groups</option>
-              )}
+              {user.role === 'LECTURER' && <option value="all">All Groups</option>}
               {groups
                 ?.filter(
                   (group) =>
-                    user.role === "LECTURER" ||
-                    group.groupStudents.some(
-                      (stu) => stu.userId === decodeUser.id
-                    )
+                    user.role === 'LECTURER' ||
+                    group.groupStudents.some((stu) => stu.userId === decodeUser.id),
                 )
                 .map((item) => (
                   <option key={item?.groupsId} value={item?.groupsId}>
@@ -177,7 +171,7 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
           <div className="class__and__member__content__member__student">
             <ul
               className="class__and__member__content__member__student__list"
-              data-extra-count={extraCount > 0 ? extraCount : ""}
+              data-extra-count={extraCount > 0 ? extraCount : ''}
             >
               {visibleMembers?.map((item) => (
                 <li key={item._id}>
@@ -187,7 +181,7 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
                     title={item.name}
                     onError={(e) =>
                       (e.target.src =
-                        "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                        'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg')
                     }
                   />
                 </li>
@@ -204,7 +198,7 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
                 src={iconFilter}
                 alt="filter_button_icon"
                 onClick={onFilterByPriority}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: 'pointer' }}
               />
               <img src={iconMore} alt="more_button_icon" />
             </div>

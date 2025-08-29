@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 import { deleteNotificationApi } from '../../../service/NotificationService';
 import { useDispatch } from 'react-redux';
-const TableList = ({ user }) => {
+const TableList = ({ active, user }) => {
   const notifications = useSelector((state) => state.notification.notifications);
   const dispatch = useDispatch();
   const [selected, setSelected] = useState(new Set());

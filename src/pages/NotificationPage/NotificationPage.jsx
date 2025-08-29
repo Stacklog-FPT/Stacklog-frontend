@@ -17,23 +17,9 @@ const NotificationPage = () => {
     { id: 4, label: 'Trash', icon: <FaTrashAlt /> },
   ];
 
-  // const ShowByFeature = ({ feature }) => {
-  //   switch (feature) {
-  //     case 'All':
-  //       return <div>1</div>;
-  //     case 'Starred':
-  //       return <div>2</div>;
-  //     case 'Mark as read':
-  //       return <div>3</div>;
-  //     default:
-  //       return <div>4</div>;
-  //   }
-  // };
-
   return (
     <div className="notification__page">
       <NavBar features={features} active={active} setActive={setActive} />
-      {/* <ShowByFeature feature={active} /> */}
       <TableList feature={active} user={user} />
     </div>
   );

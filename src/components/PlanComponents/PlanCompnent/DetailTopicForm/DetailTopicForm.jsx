@@ -1,6 +1,8 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./DetailTopicForm.scss";
 import { FiX, FiCheckCircle, FiXCircle, FiPaperclip } from "react-icons/fi";
+import { useAuth } from "../../../../context/AuthProvider";
+import userApi from "../../../../service/UserService";
 
 const DetailTopicForm = ({
   open,
@@ -39,10 +41,67 @@ const DetailTopicForm = ({
   });
 
   const [localTopic, setLocalTopic] = React.useState(topic);
+  const { user } = useAuth();
+  const token = user?.token;
+  const { getUserById } = userApi();
+  const [leaderName, setLeaderName] = useState(null);
+  const [memberNames, setMemberNames] = useState([]);
 
   React.useEffect(() => {
     setLocalTopic(topic);
   }, [topic]);
+
+  // fetch leader and member names when group changes
+  useEffect(() => {
+    let cancelled = false;
+    const fetchNames = async () => {
+      if (!group) {
+        setLeaderName(null);
+        setMemberNames([]);
+        return;
+      }
+
+      const leaderId = group.groupsLeaderId || group.groupsLeader || null;
+      const rawMembers = group.groupStudent || group.groupStudents || [];
+      const memberIds = rawMembers
+        .map((m) => (typeof m === "string" ? m : m.userId || m.id || ""))
+        .filter(Boolean);
+
+      if (leaderId) {
+        try {
+          const u = await getUserById(token, leaderId);
+          if (!cancelled)
+            setLeaderName(
+              u?.full_name || u?.fullName || u?.work_id || leaderId
+            );
+        } catch {
+          if (!cancelled) setLeaderName(leaderId);
+        }
+      } else {
+        setLeaderName(null);
+      }
+
+      if (memberIds.length > 0) {
+        const results = await Promise.all(
+          memberIds.map(async (id) => {
+            try {
+              const u = await getUserById(token, id);
+              return u?.full_name || u?.fullName || u?.work_id || id;
+            } catch {
+              return id;
+            }
+          })
+        );
+        if (!cancelled) setMemberNames(results);
+      } else {
+        setMemberNames([]);
+      }
+    };
+    fetchNames();
+    return () => {
+      cancelled = true;
+    };
+  }, [group, token]);
 
   React.useEffect(() => {
     if (open && topic) {
@@ -108,7 +167,7 @@ const DetailTopicForm = ({
     if (!onReject) return;
 
     if (!rejectReason || !rejectReason.trim()) {
-      setLocalError && setLocalError("Vui lòng nhập lý do từ chối");
+      setLocalError && setLocalError("Please enter a rejection reason");
       return;
     }
     setLocalError && setLocalError(null);
@@ -146,31 +205,36 @@ const DetailTopicForm = ({
         <button
           className="sl-modal__close"
           onClick={() => !actionLoading && onClose()}
-          aria-label="Đóng"
+          aria-label="Close"
           disabled={actionLoading}
         >
           <FiX />
         </button>
 
         <h3 className="sl-modal__title">
-          Nhóm <span>{group?.groupsName || "-"}</span> – Lớp{" "}
+          Group <span>{group?.groupsName || "-"}</span> – Class{" "}
           {group?.className || "-"}
         </h3>
 
         <div className="sl-grid">
           <div>
             <div className="sl-label">Leader</div>
-            <div>{group?.groupsLeaderId || "-"}</div>
+            <div>{leaderName || group?.groupsLeaderId || "-"}</div>
           </div>
           <div>
-            <div className="sl-label">Thành viên</div>
+            <div className="sl-label">Members</div>
             <div className="sl-muted">
-              {group?.groupStudent?.join(", ") || "-"}
+              {(memberNames &&
+                memberNames.length > 0 &&
+                memberNames.join(", ")) ||
+                (group?.groupStudent?.join
+                  ? group.groupStudent.join(", ")
+                  : "-")}
             </div>
           </div>
 
           <div>
-            <div className="sl-label">Tên đề tài</div>
+            <div className="sl-label">Topic title</div>
             {editMode ? (
               <input
                 className="sl-input"
@@ -187,7 +251,7 @@ const DetailTopicForm = ({
           </div>
 
           <div>
-            <div className="sl-label">Viết tắt</div>
+            <div className="sl-label">Abbreviation</div>
             {editMode ? (
               <input
                 className="sl-input"
@@ -206,7 +270,7 @@ const DetailTopicForm = ({
           </div>
 
           <div style={{ gridColumn: "1 / -1" }}>
-            <div className="sl-label">Mô tả</div>
+            <div className="sl-label">Description</div>
             {editMode ? (
               <textarea
                 className="sl-textarea"
@@ -225,7 +289,7 @@ const DetailTopicForm = ({
           </div>
 
           <div style={{ gridColumn: "1 / -1" }}>
-            <div className="sl-label">Mục tiêu</div>
+            <div className="sl-label">Objectives</div>
             {editMode ? (
               <textarea
                 className="sl-textarea"
@@ -241,7 +305,7 @@ const DetailTopicForm = ({
           </div>
 
           <div>
-            <div className="sl-label">Ngày đăng ký</div>
+            <div className="sl-label">Registered at</div>
             <div>
               {topic.registerAt
                 ? new Date(topic.registerAt).toLocaleDateString()
@@ -250,7 +314,7 @@ const DetailTopicForm = ({
           </div>
 
           <div>
-            <div className="sl-label">Trạng thái</div>
+            <div className="sl-label">Status</div>
             <div
               className={`sl-badge sl-badge--${(
                 topic.status || ""
@@ -259,18 +323,16 @@ const DetailTopicForm = ({
               {topic.status}
             </div>
             {localTopic?.allowEdit && localTopic?.status === "Pending" && (
-              <div className="sl-hint">
-                Đang mở quyền chỉnh sửa cho sinh viên
-              </div>
+              <div className="sl-hint">Edit access granted to students</div>
             )}
           </div>
 
           <div style={{ gridColumn: "1 / -1" }}>
-            <div className="sl-label">File đính kèm</div>
+            <div className="sl-label">Attachments</div>
             {editMode ? (
               <>
                 <label className="sl-btn sl-btn--ghost">
-                  <FiPaperclip /> Chọn file
+                  <FiPaperclip /> Select files
                   <input
                     type="file"
                     multiple
@@ -280,7 +342,7 @@ const DetailTopicForm = ({
                   />
                 </label>
                 <div className="sl-upload__hint">
-                  Hỗ trợ nhiều file. Dung lượng lớn nên dùng link Drive.
+                  Multiple files supported. For large files, use a Drive link.
                 </div>
                 {editForm.attachments.length > 0 && (
                   <div className="sl-filechips">
@@ -295,14 +357,14 @@ const DetailTopicForm = ({
                           rel="noopener noreferrer"
                           className="sl-chip__link"
                         >
-                          Xem
+                          View
                         </a>
                         <button
                           type="button"
                           className="sl-chip__remove"
                           onClick={() => removeAttachment(idx)}
                           disabled={actionLoading}
-                          aria-label={`Xoá ${att.fileName}`}
+                          aria-label={`Remove ${att.fileName}`}
                         >
                           ×
                         </button>
@@ -325,19 +387,19 @@ const DetailTopicForm = ({
                       download
                       className="sl-link"
                     >
-                      Tải
+                      Download
                     </a>
                   </li>
                 ))}
               </ul>
             ) : (
-              <div className="sl-muted">Không có</div>
+              <div className="sl-muted">None</div>
             )}
           </div>
 
           {topic.status === "Rejected" && (
             <div style={{ gridColumn: "1 / -1" }}>
-              <div className="sl-label">Lý do từ chối</div>
+              <div className="sl-label">Reject reason</div>
               <div className="sl-preline">{topic.rejectReason}</div>
             </div>
           )}
@@ -351,7 +413,7 @@ const DetailTopicForm = ({
               disabled={actionLoading}
               onClick={handleGrant}
             >
-              Cấp quyền chỉnh sửa/xóa (đưa về Pending)
+              Grant edit permissions
             </button>
           </div>
         )}
@@ -365,7 +427,7 @@ const DetailTopicForm = ({
               onClick={handleApprove}
             >
               <FiCheckCircle />
-              Duyệt
+              Approve
             </button>
             <button
               className="sl-btn sl-btn--danger"
@@ -373,12 +435,12 @@ const DetailTopicForm = ({
               onClick={handleReject}
             >
               <FiXCircle />
-              Từ chối
+              Reject
             </button>
             <input
               type="text"
               className="sl-input sl-input--inline"
-              placeholder="Nhập lý do từ chối…"
+              placeholder="Enter reject reason…"
               value={rejectReason}
               onChange={(e) =>
                 setRejectReason && setRejectReason(e.target.value)
@@ -391,8 +453,8 @@ const DetailTopicForm = ({
         {/* === STUDENT: Cảnh báo khi không có quyền === */}
         {role === "STUDENT" && !canEdit && (
           <div className="sl-alert sl-alert--warning" style={{ marginTop: 12 }}>
-            Bạn hiện <b>không có quyền</b> cập nhật/xóa đề tài. Vui lòng liên hệ
-            giảng viên để được cấp quyền.
+            You currently <b>do not have permission</b> to update/delete this
+            topic. Please contact the instructor to request access.
           </div>
         )}
 
@@ -404,14 +466,14 @@ const DetailTopicForm = ({
               disabled={actionLoading}
               onClick={() => setEditMode(true)}
             >
-              Cập nhật
+              Edit
             </button>
             <button
               className="sl-btn sl-btn--danger"
               disabled={actionLoading}
               onClick={() => onDelete && onDelete(topic.topicId)}
             >
-              Xóa
+              Delete
             </button>
           </div>
         )}
@@ -424,14 +486,14 @@ const DetailTopicForm = ({
               disabled={actionLoading}
               onClick={handleSaveEdit}
             >
-              Lưu thay đổi
+              Save changes
             </button>
             <button
               className="sl-btn sl-btn--ghost"
               disabled={actionLoading}
               onClick={() => setEditMode(false)}
             >
-              Hủy
+              Cancel
             </button>
           </div>
         )}

@@ -1,17 +1,22 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import DetailTopicForm from './DetailTopicForm/DetailTopicForm';
-import { getPlansApi, updatePlanApi, deletePlanApi } from '../../../service/PlanService';
-import './PlanComponent.scss';
-import { useAuth } from '../../../context/AuthProvider';
-import decodeToken from '../../../service/DecodeJwt';
-import AddTopicForm from './AddTopicForm/AddTopicForm';
-import { getClasses } from '../../../service/ClassService';
-import { FiFilter, FiSearch, FiRefreshCcw } from 'react-icons/fi';
+import React, { useEffect, useMemo, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import DetailTopicForm from "./DetailTopicForm/DetailTopicForm";
+import {
+  getPlansApi,
+  updatePlanApi,
+  deletePlanApi,
+} from "../../../service/PlanService";
+import "./PlanComponent.scss";
+import { useAuth } from "../../../context/AuthProvider";
+import decodeToken from "../../../service/DecodeJwt";
+import AddTopicForm from "./AddTopicForm/AddTopicForm";
+import { getClasses } from "../../../service/ClassService";
+import { FiFilter, FiSearch, FiRefreshCcw } from "react-icons/fi";
+import userApi from "../../../service/UserService";
 
 const StatusBadge = ({ status }) => {
-  const s = (status || '').toLowerCase();
-  return <span className={`sl-badge sl-badge--${s}`}>{status || '-'}</span>;
+  const s = (status || "").toLowerCase();
+  return <span className={`sl-badge sl-badge--${s}`}>{status || "-"}</span>;
 };
 
 const PlanComponent = () => {
@@ -20,15 +25,15 @@ const PlanComponent = () => {
   const role = user?.role;
   const token = user?.token || null;
 
-  let lecturerId = '';
-  let userId = user?.id || user?.username || '';
+  let lecturerId = "";
+  let userId = user?.id || user?.username || "";
   if (token) {
     const decoded = decodeToken(token);
     userId = decoded?.id || userId;
-    if (role === 'LECTURER') {
-      lecturerId = decoded?.id || user?.username || '';
+    if (role === "LECTURER") {
+      lecturerId = decoded?.id || user?.username || "";
     } else {
-      lecturerId = user?.username || user?.id || '';
+      lecturerId = user?.username || user?.id || "";
     }
   }
 
@@ -41,24 +46,32 @@ const PlanComponent = () => {
       ...p,
 
       allowEdit:
-        typeof p.allowEdit === 'boolean' ? p.allowEdit : p.status ? p.status === 'Pending' : true,
+        typeof p.allowEdit === "boolean"
+          ? p.allowEdit
+          : p.status
+          ? p.status === "Pending"
+          : true,
     }));
   }, [plans]);
-  const currentSemesterId = useSelector((state) => state.semester?.currentSemesterId);
+  const currentSemesterId = useSelector(
+    (state) => state.semester?.currentSemesterId
+  );
   const classesRaw = useSelector((state) => state.class?.classes || []);
-  const currentClass = classesRaw.filter((clr) => clr.semesterId === currentSemesterId);
-  const [selectedClass, setSelectedClass] = useState('');
-  const [currentGroupId, setCurrentGroupId] = useState('');
+  const currentClass = classesRaw.filter(
+    (clr) => clr.semesterId === currentSemesterId
+  );
+  const [selectedClass, setSelectedClass] = useState("");
+  const [currentGroupId, setCurrentGroupId] = useState("");
 
   const [modal, setModal] = useState({ open: false, topic: null });
-  const [rejectReason, setRejectReason] = useState('');
+  const [rejectReason, setRejectReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
-  const [localError, setLocalError] = useState('');
+  const [localError, setLocalError] = useState("");
 
   const [addOpen, setAddOpen] = useState(false);
 
-  const [statusFilter, setStatusFilter] = useState('ALL');
-  const [keyword, setKeyword] = useState('');
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [keyword, setKeyword] = useState("");
 
   useEffect(() => {
     getPlansApi(dispatch, token);
@@ -72,15 +85,15 @@ const PlanComponent = () => {
 
   const classes = useMemo(() => {
     if (!Array.isArray(currentClass)) return [];
-    if (role === 'LECTURER') {
+    if (role === "LECTURER") {
       return currentClass.filter((cls) => cls.lectureId === lecturerId);
     } else {
       return currentClass.filter((cls) =>
         (cls.groups || []).some(
           (gr) =>
             gr.groupsLeaderId === userId ||
-            (Array.isArray(gr.groupStudent) && gr.groupStudent.includes(userId)),
-        ),
+            (Array.isArray(gr.groupStudent) && gr.groupStudent.includes(userId))
+        )
       );
     }
   }, [currentClass, role, lecturerId, userId]);
@@ -99,19 +112,19 @@ const PlanComponent = () => {
   }, [classes, selectedClass]);
 
   useEffect(() => {
-    if (role !== 'STUDENT' || !selectedClass || classes.length === 0) {
-      setCurrentGroupId('');
+    if (role !== "STUDENT" || !selectedClass || classes.length === 0) {
+      setCurrentGroupId("");
       return;
     }
     const cls = classes.find((c) => c.classesId === selectedClass);
-    if (!cls) return setCurrentGroupId('');
+    if (!cls) return setCurrentGroupId("");
 
     const found = (cls.groups || []).find(
       (gr) =>
         gr.groupsLeaderId === userId ||
-        (Array.isArray(gr.groupStudent) && gr.groupStudent.includes(userId)),
+        (Array.isArray(gr.groupStudent) && gr.groupStudent.includes(userId))
     );
-    setCurrentGroupId(found?.groupsId || '');
+    setCurrentGroupId(found?.groupsId || "");
   }, [role, selectedClass, classes, userId]);
 
   const groupMap = useMemo(() => {
@@ -128,21 +141,43 @@ const PlanComponent = () => {
     return map;
   }, [classes]);
 
+  // user cache to avoid repeated network calls for names
+  const { getUserById } = userApi();
+  const [userCache, setUserCache] = useState({});
+
+  const fetchUserName = async (id) => {
+    if (!id) return '-';
+    if (userCache[id]) return userCache[id];
+    try {
+      const u = await getUserById(token, id);
+      const name = u?.full_name || u?.fullName || u?.work_id || id;
+      setUserCache((s) => ({ ...s, [id]: name }));
+      return name;
+    } catch (e) {
+      setUserCache((s) => ({ ...s, [id]: id }));
+      return id;
+    }
+  };
+
   const filteredTopics = useMemo(() => {
     const safePlans = Array.isArray(normalizedPlans) ? normalizedPlans : [];
     if (!selectedClass) return [];
 
     let list =
-      role === 'LECTURER'
-        ? safePlans.filter((t) => groupMap[t.groupId]?.classId === selectedClass)
+      role === "LECTURER"
+        ? safePlans.filter(
+            (t) => groupMap[t.groupId]?.classId === selectedClass
+          )
         : currentGroupId
         ? safePlans.filter(
-            (t) => t.groupId === currentGroupId && groupMap[t.groupId]?.classId === selectedClass,
+            (t) =>
+              t.groupId === currentGroupId &&
+              groupMap[t.groupId]?.classId === selectedClass
           )
         : [];
 
-    if (statusFilter !== 'ALL') {
-      list = list.filter((t) => (t.status || '') === statusFilter);
+    if (statusFilter !== "ALL") {
+      list = list.filter((t) => (t.status || "") === statusFilter);
     }
 
     if (keyword.trim()) {
@@ -152,7 +187,7 @@ const PlanComponent = () => {
           t.topicTitle?.toLowerCase().includes(k) ||
           t.topicDescription?.toLowerCase().includes(k) ||
           t.topicObjective?.toLowerCase().includes(k) ||
-          groupMap[t.groupId]?.groupsName?.toLowerCase().includes(k),
+          groupMap[t.groupId]?.groupsName?.toLowerCase().includes(k)
       );
     }
 
@@ -161,28 +196,76 @@ const PlanComponent = () => {
       const tb = new Date(b.registerAt || 0).getTime();
       return tb - ta;
     });
-  }, [role, normalizedPlans, groupMap, selectedClass, currentGroupId, statusFilter, keyword]);
+  }, [
+    role,
+    normalizedPlans,
+    groupMap,
+    selectedClass,
+    currentGroupId,
+    statusFilter,
+    keyword,
+  ]);
 
-  const getLeaderName = (groupId) => groupMap[groupId]?.groupsLeaderId || '-';
-  const getMemberNames = (groupId) =>
-    (groupMap[groupId]?.groupStudent || []).length
-      ? groupMap[groupId].groupStudent.join(', ')
-      : '-';
+  // synchronous helpers used in render: show cached name or id while fetching
+  const getLeaderName = (groupId) => {
+    const id = groupMap[groupId]?.groupsLeaderId;
+    return id ? userCache[id] || id : "-";
+  };
+
+  const getMemberNames = (groupId) => {
+    const arr = groupMap[groupId]?.groupStudent || [];
+    if (!arr.length) return "-";
+    return arr.map((s) => userCache[s] || s).join(', ');
+  };
+
+  // effect: prefetch names for groups currently shown in filteredTopics
+  useEffect(() => {
+    const ids = new Set();
+    filteredTopics.forEach((t) => {
+      const g = groupMap[t.groupId];
+      if (g) {
+        if (g.groupsLeaderId) ids.add(g.groupsLeaderId);
+        (g.groupStudent || []).forEach((s) => ids.add(s));
+      }
+    });
+    const missing = Array.from(ids).filter((i) => i && !userCache[i]);
+    if (missing.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const res = await Promise.all(
+        missing.map(async (id) => {
+          try {
+            const u = await getUserById(token, id);
+            return { id, name: u?.full_name || u?.fullName || u?.work_id || id };
+          } catch {
+            return { id, name: id };
+          }
+        }),
+      );
+      if (cancelled) return;
+      const map = {};
+      res.forEach((r) => (map[r.id] = r.name));
+      setUserCache((s) => ({ ...s, ...map }));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [filteredTopics, groupMap, token]);
   const getGroupName = (groupId) => groupMap[groupId]?.groupsName || groupId;
 
   const handleApprove = async (topicId) => {
     setActionLoading(true);
-    setLocalError('');
+    setLocalError("");
     try {
       const oldPlan = normalizedPlans.find((p) => p.topicId === topicId);
       if (!oldPlan) {
-        setLocalError('Không tìm thấy đề tài!');
+        setLocalError("Topic not found!");
         setActionLoading(false);
         return;
       }
       const payload = {
         ...oldPlan,
-        status: 'Approved',
+        status: "Approved",
 
         allowEdit: false,
         approvedBy: userId,
@@ -192,7 +275,7 @@ const PlanComponent = () => {
       await updatePlanApi(topicId, payload, token, dispatch);
       setModal({ open: false, topic: null });
     } catch {
-      setLocalError('Lỗi phê duyệt đề tài');
+      setLocalError("Failed to approve topic");
     }
     setActionLoading(false);
   };
@@ -200,31 +283,31 @@ const PlanComponent = () => {
   const handleUpdate = async (topicId, updatedFields) => {
     const oldPlan = normalizedPlans.find((p) => p.topicId === topicId);
     if (!oldPlan) {
-      setLocalError('Không tìm thấy đề tài!');
+      setLocalError("Topic not found!");
       return;
     }
 
     const isGrantAction =
-      Object.prototype.hasOwnProperty.call(updatedFields, 'allowEdit') &&
+      Object.prototype.hasOwnProperty.call(updatedFields, "allowEdit") &&
       updatedFields.allowEdit === true &&
-      updatedFields.status === 'Pending';
+      updatedFields.status === "Pending";
 
     if (!isGrantAction) {
-      if (!(oldPlan.status === 'Pending' && oldPlan.allowEdit === true)) {
+      if (!(oldPlan.status === "Pending" && oldPlan.allowEdit === true)) {
         setLocalError(
-          'Bạn không có quyền chỉnh sửa đề tài. Vui lòng liên hệ giảng viên để được cấp quyền.',
+          "You do not have permission to edit this topic. Please contact the lecturer to request edit rights."
         );
         return;
       }
     }
     setActionLoading(true);
-    setLocalError('');
+    setLocalError("");
     try {
       const payload = { ...oldPlan, ...updatedFields };
       await updatePlanApi(topicId, payload, token, dispatch);
       setModal({ open: false, topic: null });
     } catch {
-      setLocalError('Lỗi cập nhật đề tài');
+      setLocalError("Failed to update topic");
     }
     setActionLoading(false);
   };
@@ -232,44 +315,44 @@ const PlanComponent = () => {
   const handleDelete = async (topicId) => {
     const oldPlan = normalizedPlans.find((p) => p.topicId === topicId);
     if (!oldPlan) {
-      setLocalError('Không tìm thấy đề tài!');
+      setLocalError("Topic not found!");
       return;
     }
 
-    if (!(oldPlan.status === 'Pending' && oldPlan.allowEdit === true)) {
+    if (!(oldPlan.status === "Pending" && oldPlan.allowEdit === true)) {
       setLocalError(
-        'Không thể xóa đề tài. Chỉ có thể xóa khi đề tài ở trạng thái Pending và có quyền chỉnh sửa.',
+        "Cannot delete topic. Deletion allowed only when topic is Pending and editable."
       );
       return;
     }
     setActionLoading(true);
-    setLocalError('');
+    setLocalError("");
     try {
       await deletePlanApi(topicId, token, dispatch);
       setModal({ open: false, topic: null });
     } catch {
-      setLocalError('Lỗi xóa đề tài');
+      setLocalError("Failed to delete topic");
     }
     setActionLoading(false);
   };
 
   const handleReject = async (topicId) => {
     if (!rejectReason.trim()) {
-      setLocalError('Vui lòng nhập lý do từ chối.');
+      setLocalError("Please enter a rejection reason.");
       return;
     }
     setActionLoading(true);
-    setLocalError('');
+    setLocalError("");
     try {
       const oldPlan = normalizedPlans.find((p) => p.topicId === topicId);
       if (!oldPlan) {
-        setLocalError('Không tìm thấy đề tài!');
+        setLocalError("Topic not found!");
         setActionLoading(false);
         return;
       }
       const payload = {
         ...oldPlan,
-        status: 'Rejected',
+        status: "Rejected",
 
         allowEdit: false,
         rejectReason,
@@ -278,9 +361,9 @@ const PlanComponent = () => {
       };
       await updatePlanApi(topicId, payload, token, dispatch);
       setModal({ open: false, topic: null });
-      setRejectReason('');
+      setRejectReason("");
     } catch {
-      setLocalError('Lỗi từ chối đề tài');
+      setLocalError("Failed to reject topic");
     }
     setActionLoading(false);
   };
@@ -293,7 +376,7 @@ const PlanComponent = () => {
         <h2>Topic</h2>
         <div className="plan__actions">
           {/* Thay nút làm mới bằng nút đăng ký đề tài mới */}
-          {role === 'STUDENT' && currentGroupId && (
+          {role === "STUDENT" && currentGroupId && (
             <button
               className="sl-btn sl-btn--primary"
               onClick={() => setAddOpen(true)}
@@ -308,8 +391,11 @@ const PlanComponent = () => {
 
       <div className="plan__toolbar">
         <div className="plan__field">
-          <label>Lớp</label>
-          <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)}>
+          <label>Class</label>
+          <select
+            value={selectedClass}
+            onChange={(e) => setSelectedClass(e.target.value)}
+          >
             {classes.map((cls) => (
               <option key={cls.classesId} value={cls.classesId}>
                 {cls.classesName}
@@ -322,7 +408,10 @@ const PlanComponent = () => {
           <label></label>
           <div className="sl-select">
             <FiFilter className="sl-select__icon" />
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
               <option value="ALL">All</option>
               <option value="Pending">Pending</option>
               <option value="Approved">Approved</option>
@@ -341,12 +430,12 @@ const PlanComponent = () => {
         </div>
 
         <div className="plan__count">
-          {pending ? 'Đang tải…' : `${filteredTopics.length} kết quả`}
+          {pending ? "Loading…" : `${filteredTopics.length} results`}
         </div>
       </div>
 
       {/* STUDENT: Thêm mới đề tài */}
-      {role === 'STUDENT' && currentGroupId && (
+      {role === "STUDENT" && currentGroupId && (
         <AddTopicForm
           classId={selectedClass}
           groupId={currentGroupId}
@@ -356,12 +445,6 @@ const PlanComponent = () => {
           open={addOpen}
           setOpen={setAddOpen}
         />
-      )}
-      {role === 'STUDENT' && !currentGroupId && (
-        <div className="sl-alert sl-alert--danger">
-          Bạn không thuộc nhóm nào trong lớp này hoặc dữ liệu nhóm chưa đúng.
-          <div className="sl-alert__sub">(user id: {user?.id || user?.username})</div>
-        </div>
       )}
 
       <DetailTopicForm
@@ -385,13 +468,13 @@ const PlanComponent = () => {
         <table className="sl-table">
           <thead>
             <tr>
-              <th>Nhóm</th>
+              <th>Group</th>
               <th>Leader</th>
-              <th>Thành viên</th>
-              <th>Đề tài</th>
-              <th>Trạng thái</th>
-              <th>Lý do từ chối</th>
-              <th>Chi tiết</th>
+              <th>Members</th>
+              <th>Topic</th>
+              <th>Status</th>
+              <th>Reject reason</th>
+              <th>Details</th>
             </tr>
           </thead>
           <tbody>
@@ -406,22 +489,30 @@ const PlanComponent = () => {
             ) : filteredTopics.length === 0 ? (
               <tr>
                 <td colSpan={7}>
-                  <div className="sl-empty">Không có dữ liệu phù hợp bộ lọc hiện tại.</div>
+                  <div className="sl-empty">
+                    No data matches the current filters.
+                  </div>
                 </td>
               </tr>
             ) : (
               filteredTopics.map((item) => (
                 <tr key={item.topicId}>
-                  <td className="sl-cell-strong">{getGroupName(item.groupId)}</td>
+                  <td className="sl-cell-strong">
+                    {getGroupName(item.groupId)}
+                  </td>
                   <td>{getLeaderName(item.groupId)}</td>
-                  <td className="sl-cell-muted">{getMemberNames(item.groupId)}</td>
+                  <td className="sl-cell-muted">
+                    {getMemberNames(item.groupId)}
+                  </td>
                   <td>
                     <div className="sl-topic">
                       <div className="sl-topic__title">{item.topicTitle}</div>
                       {(item.topicAbbreviation || item.registerAt) && (
                         <div className="sl-topic__meta">
                           {item.topicAbbreviation && (
-                            <span className="sl-kbd">{item.topicAbbreviation}</span>
+                            <span className="sl-kbd">
+                              {item.topicAbbreviation}
+                            </span>
                           )}
                           {item.registerAt && (
                             <span className="sl-dot">
@@ -436,18 +527,18 @@ const PlanComponent = () => {
                     <StatusBadge status={item.status} />
                   </td>
                   <td className="sl-cell-muted">
-                    {item.status === 'Rejected' ? item.rejectReason : '—'}
+                    {item.status === "Rejected" ? item.rejectReason : "—"}
                   </td>
                   <td>
                     <button
                       className="sl-btn sl-btn--primary sl-btn--sm"
                       onClick={() => {
                         setModal({ open: true, topic: item });
-                        setRejectReason('');
-                        setLocalError('');
+                        setRejectReason("");
+                        setLocalError("");
                       }}
                     >
-                      Xem
+                      View
                     </button>
                   </td>
                 </tr>

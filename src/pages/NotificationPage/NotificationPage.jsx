@@ -5,7 +5,10 @@ import { FaStar } from 'react-icons/fa';
 import { FaBookmark } from 'react-icons/fa6';
 import { FaTrashAlt } from 'react-icons/fa';
 import NavBar from '../../components/NotificationComponents/NavBar/NavBar';
+import TableList from '../../components/NotificationComponents/TableList/TableList';
+import { useAuth } from '../../context/AuthProvider';
 const NotificationPage = () => {
+  const { user } = useAuth();
   const [active, setActive] = useState('All');
   const features = [
     { id: 1, label: 'All', icon: <RiLayoutHorizontalLine /> },
@@ -13,9 +16,25 @@ const NotificationPage = () => {
     { id: 3, label: 'Mark as read', icon: <FaBookmark /> },
     { id: 4, label: 'Trash', icon: <FaTrashAlt /> },
   ];
+
+  // const ShowByFeature = ({ feature }) => {
+  //   switch (feature) {
+  //     case 'All':
+  //       return <div>1</div>;
+  //     case 'Starred':
+  //       return <div>2</div>;
+  //     case 'Mark as read':
+  //       return <div>3</div>;
+  //     default:
+  //       return <div>4</div>;
+  //   }
+  // };
+
   return (
     <div className="notification__page">
       <NavBar features={features} active={active} setActive={setActive} />
+      {/* <ShowByFeature feature={active} /> */}
+      <TableList feature={active} user={user} />
     </div>
   );
 };

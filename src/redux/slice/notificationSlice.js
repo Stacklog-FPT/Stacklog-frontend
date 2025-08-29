@@ -26,10 +26,19 @@ const notificationSlice = createSlice({
         n.isRead = true;
       });
     },
+    deleteNotification: (state, action) => {
+      state.notifications = state.notifications.filter((nt) => nt.id !== action.payload);
+    },
   },
 });
 
-export const { setPending, setError, getNotifications, addNotifications, markAllRead } =
-  notificationSlice.actions;
+export const {
+  setPending,
+  setError,
+  getNotifications,
+  addNotifications,
+  markAllRead,
+  deleteNotification,
+} = notificationSlice.actions;
 
 export default notificationSlice.reducer;

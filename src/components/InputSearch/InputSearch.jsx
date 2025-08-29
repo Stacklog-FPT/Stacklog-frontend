@@ -1,16 +1,19 @@
-import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
-import "./InputSearch.scss";
-import ButtonMode from "../ButtonMode/ButtonMode";
-import { AnnouncementContext } from "../../context/AnnoucementContext";
-import { useAuth } from "../../context/AuthProvider";
+import { useContext, useState } from 'react';
+import { Link } from 'react-router-dom';
+import './InputSearch.scss';
+import ButtonMode from '../ButtonMode/ButtonMode';
+import { AnnouncementContext } from '../../context/AnnoucementContext';
+import { useAuth } from '../../context/AuthProvider';
+import { useSelector } from 'react-redux';
+import { FaBell } from 'react-icons/fa';
 
 const InputSearch = () => {
-  const [searchItem, setSearchItem] = useState("");
+  const [searchItem, setSearchItem] = useState('');
   const { isAnnouncementVisible } = useContext(AnnouncementContext);
   const { toggleAnnouncement } = useContext(AnnouncementContext);
   const { user } = useAuth();
-
+  const { notifications } = useSelector((state) => state.notification);
+  const isHaveUnread = notifications.some((nt) => !nt.isRead);
   const handleChange = (e) => {
     setSearchItem(e.target.value);
   };
@@ -24,26 +27,16 @@ const InputSearch = () => {
       </div>
       <div className="input-search-field">
         <i className="fa-solid fa-magnifying-glass"></i>
-        <input
-          type="text"
-          placeholder="Search"
-          value={searchItem}
-          onChange={handleChange}
-        />
+        <input type="text" placeholder="Search" value={searchItem} onChange={handleChange} />
       </div>
       <div className="input-search-user">
         <ButtonMode />
         <div className="input-search-user-bell" onClick={toggleAnnouncement}>
-          <i
-            style={{ color: "#000" }}
-            className={`fa-solid fa-bell ${
-              isAnnouncementVisible ? "active" : ""
-            }`}
-          ></i>
-          <span className="input-search-user-bell-total"></span>
+          <i className={`fa-solid fa-bell ${isAnnouncementVisible ? 'active' : ''}`}></i>
+          {isHaveUnread && <span className="input-search-user-bell-total"></span>}
         </div>
         <div className="input-search-user-avatar">
-          <Link to={"/user-detail"}>
+          <Link to={'/user-detail'}>
             {user?.avatar ? (
               user?.avatar
             ) : (

@@ -20,6 +20,7 @@ import MorePage from '../pages/MorePage/MorePage';
 import LayoutAdmin from '../layouts/LayoutAdmin/LayoutAdmin';
 import JoinClass from '../pages/JoinClass/JoinClass';
 import TaskSelfPage from '../pages/TaskSelfPage/TaskSelfPage';
+import NotificationPage from '../pages/NotificationPage/NotificationPage';
 
 const routes = [
   {
@@ -43,6 +44,7 @@ const routes = [
           { path: '/plan', element: <PlanPage /> },
           { path: '/user-detail', element: <Profile /> },
           { path: '/more', element: <MorePage /> },
+          { path: '/notification', element: <NotificationPage /> },
         ],
       },
     ],

@@ -9,6 +9,7 @@ import groupReducer from './slice/groupSlice';
 import taskReducer from './slice/taskSlice';
 import scheduleReducer from './slice/scheduleSlice';
 import planReducer from './slice/planSlice';
+import notificationReducer from './slice/notificationSlice';
 
 const rootReducer = combineReducers({
   semester: semesterReducer,
@@ -18,12 +19,13 @@ const rootReducer = combineReducers({
   task: taskReducer,
   schedule: scheduleReducer,
   plan: planReducer,
+  notification: notificationReducer,
 });
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['semester', 'class', 'status', 'group', 'task', 'plan'],
+  whitelist: ['semester', 'class', 'status', 'group', 'task', 'plan', 'notification'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

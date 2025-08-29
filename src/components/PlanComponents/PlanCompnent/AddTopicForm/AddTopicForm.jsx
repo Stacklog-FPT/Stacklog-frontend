@@ -69,8 +69,8 @@ const AddTopicForm = ({
   };
 
   const validate = () => {
-    if (!classId || !groupId) return "Thiếu classId hoặc groupId.";
-    if (!form.topicTitle.trim()) return "Vui lòng nhập tên đề tài.";
+  if (!classId || !groupId) return "Missing classId or groupId.";
+  if (!form.topicTitle.trim()) return "Please enter topic title.";
     return "";
   };
 
@@ -111,7 +111,7 @@ const AddTopicForm = ({
       });
       setOpen(false);
     } catch {
-      setError("Lỗi khi thêm đề tài");
+      setError("Failed to add topic");
     } finally {
       setLoading(false);
     }
@@ -134,7 +134,7 @@ const AddTopicForm = ({
         <button
           className="sl-modal__close"
           type="button"
-          aria-label="Đóng"
+          aria-label="Close"
           onClick={() => !loading && setOpen(false)}
           disabled={loading}
         >
@@ -150,7 +150,7 @@ const AddTopicForm = ({
             <input
               ref={firstInputRef}
               name="topicTitle"
-              placeholder="Tên đề tài *"
+              placeholder="Topic title *"
               value={form.topicTitle}
               onChange={handleChange}
               required
@@ -159,7 +159,7 @@ const AddTopicForm = ({
             />
             <input
               name="topicAbbreviation"
-              placeholder="Viết tắt (tuỳ chọn)"
+              placeholder="Abbreviation (optional)"
               value={form.topicAbbreviation}
               onChange={handleChange}
               className="sl-input"
@@ -167,7 +167,7 @@ const AddTopicForm = ({
             />
             <textarea
               name="topicDescription"
-              placeholder="Mô tả"
+              placeholder="Description"
               value={form.topicDescription}
               onChange={handleChange}
               className="sl-textarea"
@@ -175,7 +175,7 @@ const AddTopicForm = ({
             />
             <textarea
               name="topicObjective"
-              placeholder="Mục tiêu"
+              placeholder="Objectives"
               value={form.topicObjective}
               onChange={handleChange}
               className="sl-textarea"
@@ -183,11 +183,11 @@ const AddTopicForm = ({
             />
 
             <div className="sl-upload">
-              <label className="sl-label">File đính kèm</label>
+              <label className="sl-label">Attachments</label>
               <div className="sl-upload__row">
                 <label className="sl-btn sl-btn--ghost">
                   <FiPaperclip />
-                  Chọn file
+                  Select files
                   <input
                     type="file"
                     multiple
@@ -197,7 +197,7 @@ const AddTopicForm = ({
                   />
                 </label>
                 <div className="sl-upload__hint">
-                  Hỗ trợ nhiều file. Dung lượng lớn nên dùng link Drive.
+                  Multiple files supported. For large files, use a Drive link.
                 </div>
               </div>
 
@@ -214,14 +214,14 @@ const AddTopicForm = ({
                         rel="noopener noreferrer"
                         className="sl-chip__link"
                       >
-                        Xem
+                        View
                       </a>
                       <button
                         type="button"
                         className="sl-chip__remove"
                         onClick={() => removeAttachment(idx)}
                         disabled={loading}
-                        aria-label={`Xoá ${att.fileName}`}
+                        aria-label={`Remove ${att.fileName}`}
                       >
                         <FiTrash2 />
                       </button>
@@ -244,7 +244,7 @@ const AddTopicForm = ({
               className="sl-btn sl-btn--primary"
               disabled={loading || disabled}
             >
-              {loading ? "Đang lưu…" : "Lưu"}
+              {loading ? "Saving…" : "Save"}
             </button>
             <button
               type="button"
@@ -252,7 +252,7 @@ const AddTopicForm = ({
               onClick={() => !loading && setOpen(false)}
               disabled={loading}
             >
-              Huỷ
+              Cancel
             </button>
           </div>
         </form>

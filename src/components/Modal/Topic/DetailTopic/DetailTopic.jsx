@@ -1,10 +1,11 @@
 import React, { useRef, useEffect, useState } from "react";
-import "./DetailTopicForm.scss";
+import "./DetailTopic.scss";
 import { FiX, FiCheckCircle, FiXCircle, FiPaperclip } from "react-icons/fi";
 import { useAuth } from "../../../../context/AuthProvider";
 import userApi from "../../../../service/UserService";
+import decodeToken from "../../../../service/DecodeJwt";
 
-const DetailTopicForm = ({
+const DetailTopic = ({
   open,
   topic,
   group,
@@ -50,6 +51,12 @@ const DetailTopicForm = ({
   React.useEffect(() => {
     setLocalTopic(topic);
   }, [topic]);
+
+  let currentUserId = user?.id || user?.username || "";
+  if (token) {
+    const decoded = decodeToken(token);
+    currentUserId = decoded?.id || currentUserId;
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -144,7 +151,15 @@ const DetailTopicForm = ({
 
   const canGrantEdit = role === "LECTURER" && status === "Approved";
 
-  const canEdit = false;
+  const isLeader =
+    !!group &&
+    (String(group.groupsLeaderId) === String(currentUserId) ||
+      String(group.groupsLeader) === String(currentUserId));
+  const canEdit =
+    role === "STUDENT" &&
+    !!isLeader &&
+    localTopic &&
+    localTopic?.status !== "Approved";
 
   const handleGrant = () => {
     if (!onUpdate) return;
@@ -503,4 +518,4 @@ const DetailTopicForm = ({
   );
 };
 
-export default DetailTopicForm;
+export default DetailTopic;

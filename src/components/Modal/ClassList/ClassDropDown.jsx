@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectClass } from '../../../redux/slice/semesterSlice';
 import { NavLink } from 'react-router-dom';
 import GroupDropDown from '../GroupList/GroupDropDown';
 import './ClassDropdown.scss';
@@ -10,8 +11,11 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen, currentSeme
   const groups = useSelector((state) => state.group.groups);
   const [selectedClassId, setSelectedClassId] = useState(null);
 
+  const dispatch = useDispatch();
   const handleClassClick = (classId) => {
     setSelectedClassId(classId === selectedClassId ? null : classId);
+    // set the globally selected class so pages like ClassList read it
+    dispatch(selectClass(classId === selectedClassId ? null : classId));
   };
 
   const handleGroupClick = (group) => {

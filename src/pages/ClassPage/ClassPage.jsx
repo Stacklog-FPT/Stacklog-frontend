@@ -5,6 +5,7 @@ import CheckTypeByAll from '../../components/ClassComponent/CheckTaskByType/Chec
 import CheckTypeByList from '../../components/ClassComponent/CheckTaskByType/CheckTypeByList/CheckTypeByList';
 import Schedules from '../../components/Modal/Schedules/Schedules';
 import ClassList from '../../components/ClassComponent/CheckTaskByType/ClassList/ClassList';
+import Topic from '../../components/Modal/Topic/Topic';
 import Classes from '../../components/Modal/Classes/Classes';
 const ClassPage = () => {
   const [activeType, setActiveType] = React.useState('All');
@@ -20,7 +21,7 @@ const ClassPage = () => {
         {activeType === 'Schedules' && <Schedules />}
         {activeType === 'Classes' && <Classes />}
         {activeType === 'Documents' && <ClassList />}
-        {activeType === 'Plans' && <ClassList />}
+        {activeType === 'Plans' && <Topic/>}
         {activeType === 'Chat' && <ClassList />}
       </div>
     </div>

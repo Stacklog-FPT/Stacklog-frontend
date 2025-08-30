@@ -1,14 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import DetailTopicForm from "./DetailTopicForm/DetailTopicForm";
+import DetailTopic from "./DetailTopic/DetailTopic";
 import {
   getPlansApi,
   updatePlanApi,
   deletePlanApi,
 } from "../../../service/PlanService";
-import "./PlanComponent.scss";
+import "./Topic.scss";
 import { useAuth } from "../../../context/AuthProvider";
 import decodeToken from "../../../service/DecodeJwt";
+import AddTopic from "./AddTopic/AddTopic";
 import { getClasses } from "../../../service/ClassService";
 import { FiFilter, FiSearch, FiRefreshCcw } from "react-icons/fi";
 import userApi from "../../../service/UserService";
@@ -55,11 +57,14 @@ const PlanComponent = () => {
   const currentSemesterId = useSelector(
     (state) => state.semester?.currentSemesterId
   );
+  const globalSelectedClassId = useSelector(
+    (state) => state.semester?.currentClassId || null
+  );
   const classesRaw = useSelector((state) => state.class?.classes || []);
   const currentClass = classesRaw.filter(
     (clr) => clr.semesterId === currentSemesterId
   );
-  const [selectedClass, setSelectedClass] = useState("");
+  // local class selection removed; prefer globalSelectedClassId from sidebar
   const [currentGroupId, setCurrentGroupId] = useState("");
 
   const [modal, setModal] = useState({ open: false, topic: null });
@@ -67,7 +72,7 @@ const PlanComponent = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [localError, setLocalError] = useState("");
 
-  // Add topic UI removed from this page
+  const [addOpen, setAddOpen] = useState(false);
 
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [keyword, setKeyword] = useState("");
@@ -97,38 +102,24 @@ const PlanComponent = () => {
     }
   }, [currentClass, role, lecturerId, userId]);
 
+  // ensure group reset when global selection changes
   useEffect(() => {
-    if (!selectedClass && classes.length > 0) {
-      setSelectedClass(classes[0].classesId);
-    }
+    if (!globalSelectedClassId && classes.length === 0) return;
     if (
-      selectedClass &&
-      classes.length > 0 &&
-      !classes.some((cls) => cls.classesId === selectedClass)
+      globalSelectedClassId &&
+      !classes.some((cls) => cls.classesId === globalSelectedClassId)
     ) {
-      setSelectedClass(classes[0].classesId);
-    }
-  }, [classes, selectedClass]);
-
-  useEffect(() => {
-    if (role !== "STUDENT" || !selectedClass || classes.length === 0) {
       setCurrentGroupId("");
-      return;
     }
-    const cls = classes.find((c) => c.classesId === selectedClass);
-    if (!cls) return setCurrentGroupId("");
+  }, [classes, globalSelectedClassId]);
 
-    const found = (cls.groups || []).find(
-      (gr) =>
-        gr.groupsLeaderId === userId ||
-        (Array.isArray(gr.groupStudent) && gr.groupStudent.includes(userId))
-    );
-    setCurrentGroupId(found?.groupsId || "");
-  }, [role, selectedClass, classes, userId]);
+  const { groupId: paramGroupId } = useParams();
 
+  // map groups to their classes early from all classes in the semester
+  // so a groupId present in the URL can be resolved even before role filtering.
   const groupMap = useMemo(() => {
     const map = {};
-    classes.forEach((cls) => {
+    (currentClass || []).forEach((cls) => {
       (cls.groups || []).forEach((gr) => {
         map[gr.groupsId] = {
           ...gr,
@@ -138,7 +129,39 @@ const PlanComponent = () => {
       });
     });
     return map;
-  }, [classes]);
+  }, [currentClass]);
+
+  // prefer: group from URL (when user clicks a group) -> explicit global selection (sidebar) -> first available class
+  const effectiveClassId =
+    (paramGroupId && groupMap[paramGroupId]?.classId) ||
+    globalSelectedClassId ||
+    (classes[0] && classes[0].classesId);
+  const effectiveClassObj =
+    (currentClass || []).find((c) => c.classesId === effectiveClassId) || null;
+  const effectiveClassName = effectiveClassObj?.classesName || "";
+
+  useEffect(() => {
+    if (role !== "STUDENT" || !effectiveClassId || classes.length === 0) {
+      // if URL param group exists, still allow it
+      if (paramGroupId) {
+        setCurrentGroupId(paramGroupId);
+        return;
+      }
+      setCurrentGroupId("");
+      return;
+    }
+    const cls = classes.find((c) => c.classesId === effectiveClassId);
+    if (!cls) return setCurrentGroupId("");
+    // if URL param group provided, prefer it
+    if (paramGroupId) return setCurrentGroupId(paramGroupId);
+
+    const found = (cls.groups || []).find(
+      (gr) =>
+        gr.groupsLeaderId === userId ||
+        (Array.isArray(gr.groupStudent) && gr.groupStudent.includes(userId))
+    );
+    setCurrentGroupId(found?.groupsId || "");
+  }, [role, effectiveClassId, classes, userId, paramGroupId]);
 
   // user cache to avoid repeated network calls for names
   const { getUserById } = userApi();
@@ -160,18 +183,18 @@ const PlanComponent = () => {
 
   const filteredTopics = useMemo(() => {
     const safePlans = Array.isArray(normalizedPlans) ? normalizedPlans : [];
-    if (!selectedClass) return [];
+    if (!effectiveClassId) return [];
 
     let list =
       role === "LECTURER"
         ? safePlans.filter(
-            (t) => groupMap[t.groupId]?.classId === selectedClass
+            (t) => groupMap[t.groupId]?.classId === effectiveClassId
           )
         : currentGroupId
         ? safePlans.filter(
             (t) =>
               t.groupId === currentGroupId &&
-              groupMap[t.groupId]?.classId === selectedClass
+              groupMap[t.groupId]?.classId === effectiveClassId
           )
         : [];
 
@@ -199,7 +222,7 @@ const PlanComponent = () => {
     role,
     normalizedPlans,
     groupMap,
-    selectedClass,
+    effectiveClassId,
     currentGroupId,
     statusFilter,
     keyword,
@@ -295,7 +318,21 @@ const PlanComponent = () => {
       updatedFields.status === "Pending";
 
     if (!isGrantAction) {
-      if (!(oldPlan.status === "Pending" && oldPlan.allowEdit === true)) {
+      const leaderId = groupMap[oldPlan.groupId]?.groupsLeaderId;
+      const isLeader = String(leaderId) === String(userId);
+      let allowed = false;
+      if (role === "LECTURER") {
+        allowed = true;
+      } else if (role === "STUDENT") {
+        if (!isLeader) {
+          allowed = false;
+        } else {
+          if (oldPlan.status === "Rejected") allowed = true;
+          else if (oldPlan.status === "Pending" && oldPlan.allowEdit === true) allowed = true;
+          else allowed = false;
+        }
+      }
+      if (!allowed) {
         setLocalError(
           "You do not have permission to edit this topic. Please contact the lecturer to request edit rights."
         );
@@ -321,9 +358,20 @@ const PlanComponent = () => {
       return;
     }
 
-    if (!(oldPlan.status === "Pending" && oldPlan.allowEdit === true)) {
+    const leaderId = groupMap[oldPlan.groupId]?.groupsLeaderId;
+    const isLeader = String(leaderId) === String(userId);
+    let canDelete = false;
+    if (role === "LECTURER") {
+      canDelete = true;
+    } else if (role === "STUDENT") {
+      if (isLeader) {
+        if (oldPlan.status === "Rejected") canDelete = true;
+        else if (oldPlan.status === "Pending" && oldPlan.allowEdit === true) canDelete = true;
+      }
+    }
+    if (!canDelete) {
       setLocalError(
-        "Cannot delete topic. Deletion allowed only when topic is Pending and editable."
+        "Cannot delete topic. Deletion allowed only when topic is Pending and editable, or when rejected and you are the group leader."
       );
       return;
     }
@@ -378,23 +426,23 @@ const PlanComponent = () => {
         <h2>Topic</h2>
         <div className="plan__actions">
           {/* Thay nút làm mới bằng nút đăng ký đề tài mới */}
-          {/* Add topic handled via sidebar/modal - no inline add button here */}
+          {role === "STUDENT" && currentGroupId && (
+            <button
+              className="sl-btn sl-btn--primary"
+              onClick={() => setAddOpen(true)}
+              disabled={pending}
+              type="button"
+            >
+              <i class="fa-solid fa-plus"></i>Topic
+            </button>
+          )}
         </div>
       </div>
 
       <div className="plan__toolbar">
         <div className="plan__field">
           <label>Class</label>
-          <select
-            value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
-          >
-            {classes.map((cls) => (
-              <option key={cls.classesId} value={cls.classesId}>
-                {cls.classesName}
-              </option>
-            ))}
-          </select>
+          <div className="sl-select__readonly">{effectiveClassName || "—"}</div>
         </div>
 
         <div className="plan__field">
@@ -427,9 +475,20 @@ const PlanComponent = () => {
         </div>
       </div>
 
-      {/* AddTopicForm intentionally removed from this page */}
+      {/* STUDENT: Thêm mới đề tài */}
+      {role === "STUDENT" && currentGroupId && (
+        <AddTopic
+          classId={effectiveClassId}
+          groupId={currentGroupId}
+          token={token}
+          dispatch={dispatch}
+          disabled={pending}
+          open={addOpen}
+          setOpen={setAddOpen}
+        />
+      )}
 
-      <DetailTopicForm
+      <DetailTopic
         open={modal.open}
         topic={modal.topic}
         group={modal.topic ? groupMap[modal.topic.groupId] : null}

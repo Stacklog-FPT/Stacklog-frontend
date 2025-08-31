@@ -12,7 +12,7 @@ const Announcement = () => {
   const { user } = useAuth();
   const decodeId = decodeToken(user.token).id;
   const { notifications } = useSelector((state) => state.notification);
-  const notificationList = notifications.filter((nt) => nt.assignTo.includes(decodeId));
+  const notificationList = notifications.filter((nt) => nt.assignTo?.includes(decodeId));
   const sortedAnnouncements = [...notificationList].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
   );

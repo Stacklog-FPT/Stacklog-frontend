@@ -31,9 +31,9 @@ export default function Calendar({ groupId, isPage }) {
     let scheduleList = [];
 
     if (isPage) {
-      scheduleList = schedules.filter((s) => s.assignTo.includes(decodeToken(user.token).id));
+      scheduleList = schedules.filter((s) => s.assignTo?.includes(decodeToken(user.token).id));
     } else {
-      scheduleList = schedules.filter((s) => s.groupId.includes(groupId));
+      scheduleList = schedules.filter((s) => s.groupId?.includes(groupId));
     }
 
     return scheduleList;

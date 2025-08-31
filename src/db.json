@@ -244,7 +244,9 @@
       "archived": false,
       "starred": false,
       "groupId": "1",
-      "assignTo": ["688e1182e4acb643f2bbc47e"]
+      "assignTo": [
+        "688e1182e4acb643f2bbc47e"
+      ]
     },
     {
       "id": "a042",
@@ -259,7 +261,177 @@
       "archived": false,
       "starred": false,
       "groupId": "1",
-      "assignTo": ["688e1182e4acb643f2bbc47e"]
+      "assignTo": [
+        "688e1182e4acb643f2bbc47e"
+      ]
+    },
+    {
+      "id": "a043",
+      "title": "Lo schedule undefined by hoaintt40",
+      "author": {
+        "_id": 0.0574156181905503,
+        "name": "hoaintt40",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-29",
+      "isRead": false,
+      "archived": false,
+      "starred": false,
+      "groupId": "1",
+      "assignTo": [
+        "688e1182e4acb643f2bbc47e"
+      ]
+    },
+    {
+      "id": "c921",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.7585306055659382,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-29",
+      "isRead": false,
+      "_id": 0.31558052999009956
+    },
+    {
+      "id": "5f25",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.41954766122006615,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-29",
+      "isRead": false,
+      "_id": 0.029100799558118173
+    },
+    {
+      "id": "5439",
+      "title": "Announce add task hehe by de170481",
+      "author": {
+        "_id": 0.6166265258479462,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-29",
+      "isRead": false,
+      "_id": 0.9382776466742544
+    },
+    {
+      "id": "380b",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.5272287491505421,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-29",
+      "isRead": false,
+      "_id": 0.5011940294602306
+    },
+    {
+      "id": "6ec2",
+      "title": "Thông báo môn 123",
+      "author": {
+        "_id": 0.4144780360219815,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-29",
+      "isRead": false,
+      "_id": 0.5204676994554944
+    },
+    {
+      "id": "6bb8",
+      "title": "Comment by de170481",
+      "author": {
+        "_id": 0.6797218614216568,
+        "name": "de170481",
+        "avatar": "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+      },
+      "createdAt": "2025-08-29",
+      "isRead": false,
+      "_id": 0.9715621755509272
+    }
+  ],
+  "test": [
+    {
+      "To Do": [
+        {
+          "id": "c067",
+          "taskId": "0.9188961421132981",
+          "group_id": "1",
+          "taskTitle": "Thiết kế DB notification",
+          "taskDescription": "task description",
+          "statusTask": {
+            "id": "d970",
+            "statusTaskId": 0.6414002164481556,
+            "statusTaskName": "To do",
+            "statusTaskColor": "#1c6812",
+            "groupId": "1"
+          },
+          "documentId": "",
+          "taskPoint": 0,
+          "taskParentId": 0,
+          "taskStartTime": "2025-08-28T13:14:01",
+          "taskDueDate": "2025-08-30T13:14:01",
+          "createdBy": "de170481",
+          "updatedBy": "",
+          "priority": "",
+          "assignTo": [
+            "688e1182e4acb643f2bbc47e"
+          ]
+        },
+        {
+          "id": "c067",
+          "taskId": "0.9188961421132981",
+          "group_id": "1",
+          "taskTitle": "Thiết kế DB notification",
+          "taskDescription": "task description",
+          "statusTaskId": "0.6414002164481556",
+          "documentId": "",
+          "taskPoint": 0,
+          "taskParentId": 0,
+          "taskStartTime": "2025-08-28T13:14:01",
+          "taskDueDate": "2025-08-30T13:14:01",
+          "createdBy": "de170481",
+          "updatedBy": "",
+          "priority": "",
+          "assignTo": [
+            "688e1182e4acb643f2bbc47e"
+          ]
+        },
+        {
+          "id": "c067",
+          "taskId": "0.9188961421132981",
+          "group_id": "1",
+          "taskTitle": "Thiết kế DB notification",
+          "taskDescription": "task description",
+          "statusTaskId": "0.6414002164481556",
+          "documentId": "",
+          "taskPoint": 0,
+          "taskParentId": 0,
+          "taskStartTime": "2025-08-28T13:14:01",
+          "taskDueDate": "2025-08-30T13:14:01",
+          "createdBy": "de170481",
+          "updatedBy": "",
+          "priority": "",
+          "assignTo": [
+            "688e1182e4acb643f2bbc47e"
+          ]
+        }
+      ],
+      "Doing": [
+        {},
+        {},
+        {}
+      ],
+      "Done": [
+        {},
+        {},
+        {}
+      ]
     }
   ]
 }

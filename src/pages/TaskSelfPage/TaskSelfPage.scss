@@ -31,5 +31,11 @@
         color: var(--text--color-manage);
       }
     }
+
+    &__content {
+      width: 100%;
+      display: flex;
+      gap: 20px;
+    }
   }
 }

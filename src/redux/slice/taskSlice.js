@@ -4,6 +4,7 @@ const initialState = {
   pending: false,
   error: null,
   tasks: [],
+  personalTask: {},
 };
 
 const tasksSlice = createSlice({
@@ -29,6 +30,9 @@ const tasksSlice = createSlice({
     deleteTask: (state, action) => {
       state.tasks = state.tasks.filter((t) => t.id !== action.payload); // Change taskId before mockup with BE
     },
+    getPersonalTask: (state, action) => {
+      state.personalTask = action.payload;
+    },
     setPending: (state, action) => {
       state.pending = action.payload;
     },
@@ -51,6 +55,7 @@ export const {
   addTasks,
   updateTasks,
   resetTasks,
+  getPersonalTask,
 } = tasksSlice.actions;
 
 export default tasksSlice.reducer;

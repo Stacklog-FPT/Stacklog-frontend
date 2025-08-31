@@ -10,6 +10,7 @@ import {
   addTasks,
   updateTasks,
   resetTasks,
+  getPersonalTask,
 } from '../redux/slice/taskSlice';
 
 const API_TASK = 'https://stacklog.id.vn/api/task';
@@ -116,7 +117,7 @@ export const updateTaskApi = async (taskData, token, dispatch) => {
   }
 };
 
-export const getTaskBySelf = async (token, userId, dispatch) => {
+export const getPersonalTaskApi = async (token, dispatch) => {
   try {
     if (!token) {
       dispatch(setError('The token is invalid!'));
@@ -124,8 +125,14 @@ export const getTaskBySelf = async (token, userId, dispatch) => {
     }
 
     dispatch(setPending(true));
+    const response = await axios.get(`http://localhost:3001/personalTask`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    const response = await axios.get(``);
+    dispatch(getPersonalTask(response.data));
+    dispatch(setPending(false));
   } catch (e) {
     dispatch(setError(e.message || 'Something went wrong!'));
   }

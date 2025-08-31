@@ -122,7 +122,6 @@ const Column = ({
           <div className="prop-status-left">
             <div className="prop-status-left-text">
               <img src={iconVector} alt="vector icon" />
-
               {isEditing ? (
                 <input
                   ref={inputRef}

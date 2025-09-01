@@ -42,7 +42,10 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
+          "groupStudent": [
+            "688e11c4e4acb643f2bbc484",
+            "688e11b2e4acb643f2bbc482"
+          ]
         },
         {
           "groupsId": "swp2",
@@ -54,7 +57,9 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": ["688e119fe4acb643f2bbc480"]
+          "groupStudent": [
+            "688e119fe4acb643f2bbc480"
+          ]
         }
       ],
       "id": "e401"
@@ -79,7 +84,10 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"]
+          "groupStudent": [
+            "688e1182e4acb643f2bbc47e",
+            "688e110fe4acb643f2bbc47b"
+          ]
         },
         {
           "groupsId": "2",
@@ -91,7 +99,10 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": ["688e1238e4acb643f2bbc486", "688e11c4e4acb643f2bbc484"]
+          "groupStudent": [
+            "688e1238e4acb643f2bbc486",
+            "688e11c4e4acb643f2bbc484"
+          ]
         }
       ],
       "id": "3103"
@@ -116,7 +127,10 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": ["688e11c4e4acb643f2bbc484", "688e1238e4acb643f2bbc486"]
+          "groupStudent": [
+            "688e11c4e4acb643f2bbc484",
+            "688e1238e4acb643f2bbc486"
+          ]
         },
         {
           "groupsId": "unique_id_for_group_2",
@@ -128,7 +142,10 @@
           "createdBy": "user_id",
           "updateAt": "timestamp",
           "updateBy": "user_id",
-          "groupStudent": ["688e110fe4acb643f2bbc47b", "688e1182e4acb643f2bbc47e"]
+          "groupStudent": [
+            "688e110fe4acb643f2bbc47b",
+            "688e1182e4acb643f2bbc47e"
+          ]
         }
       ],
       "id": "958d"
@@ -164,7 +181,7 @@
       "group_id": "1",
       "taskTitle": "Thiết kế DB notification",
       "taskDescription": "task description",
-      "statusTaskId": "0.6414002164481556",
+      "statusTaskId": "0.2855054402499426",
       "documentId": "",
       "taskPoint": 0,
       "taskParentId": 0,
@@ -173,7 +190,9 @@
       "createdBy": "de170481",
       "updatedBy": "",
       "priority": "",
-      "assignTo": ["688e1182e4acb643f2bbc47e"],
+      "assignTo": [
+        "688e1182e4acb643f2bbc47e"
+      ],
       "reviews": [
         {
           "reviewId": 0.95113594174307,
@@ -199,7 +218,9 @@
           "statusTaskId": "0.6414002164481556",
           "taskStartTime": "2025-08-29T20:52:01",
           "taskDueDate": "2025-08-30T20:52:01",
-          "assignTo": ["688e1182e4acb643f2bbc47e"],
+          "assignTo": [
+            "688e1182e4acb643f2bbc47e"
+          ],
           "parentTaskId": "0.9188961421132981"
         }
       ],
@@ -233,7 +254,10 @@
       "createdBy": "de170481",
       "updatedBy": "",
       "priority": "HIGH",
-      "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
+      "assignTo": [
+        "688e1182e4acb643f2bbc47e",
+        "688e110fe4acb643f2bbc47b"
+      ],
       "checkList": [
         {
           "checkListId": "cl_mewwpuzx_gc0nv",
@@ -263,8 +287,13 @@
       "slotTitle": "Họp bàn về design UI",
       "slotDescription": "",
       "slotStarTime": "2025-09-03T19:00:00.000Z",
-      "groupId": ["1"],
-      "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
+      "groupId": [
+        "1"
+      ],
+      "assignTo": [
+        "688e1182e4acb643f2bbc47e",
+        "688e110fe4acb643f2bbc47b"
+      ],
       "id": "55f9"
     },
     {
@@ -272,15 +301,22 @@
       "slotTitle": "Họp nhóm lần 3",
       "slotDescription": "Hehe",
       "slotStarTime": "2025-08-28T08:00:00",
-      "groupId": ["swp1"],
-      "assignTo": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
+      "groupId": [
+        "swp1"
+      ],
+      "assignTo": [
+        "688e11c4e4acb643f2bbc484",
+        "688e11b2e4acb643f2bbc482"
+      ]
     },
     {
       "slotId": "610f",
       "slotTitle": "Hell0",
       "slotDescription": "",
       "slotStarTime": "2025-08-28T18:00:00.000Z",
-      "groupId": ["1"],
+      "groupId": [
+        "1"
+      ],
       "userIdAssigns": [],
       "id": "610f"
     },
@@ -289,16 +325,26 @@
       "slotTitle": "Họp nhóm lần test",
       "slotDescription": "123",
       "slotStarTime": "2025-08-25T08:00:00",
-      "groupId": ["swp1"],
-      "assignTo": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
+      "groupId": [
+        "swp1"
+      ],
+      "assignTo": [
+        "688e11c4e4acb643f2bbc484",
+        "688e11b2e4acb643f2bbc482"
+      ]
     },
     {
       "slotId": "84b9",
       "slotTitle": "Họp nhóm test",
       "slotDescription": "",
       "slotStarTime": "2025-09-01T01:00:00.000Z",
-      "groupId": ["1"],
-      "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
+      "groupId": [
+        "1"
+      ],
+      "assignTo": [
+        "688e1182e4acb643f2bbc47e",
+        "688e110fe4acb643f2bbc47b"
+      ],
       "id": "84b9"
     },
     {
@@ -306,8 +352,13 @@
       "slotTitle": "lô lô",
       "slotDescription": "",
       "slotStarTime": "2025-09-02T02:00:00.000Z",
-      "groupId": ["1"],
-      "assignTo": ["688e1182e4acb643f2bbc47e", "688e110fe4acb643f2bbc47b"],
+      "groupId": [
+        "1"
+      ],
+      "assignTo": [
+        "688e1182e4acb643f2bbc47e",
+        "688e110fe4acb643f2bbc47b"
+      ],
       "id": "553b"
     },
     {
@@ -315,16 +366,26 @@
       "slotTitle": "Họp nhóm lần 2",
       "slotDescription": "321",
       "slotStarTime": "2025-08-28T08:00:00",
-      "groupId": ["swp1"],
-      "assignTo": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
+      "groupId": [
+        "swp1"
+      ],
+      "assignTo": [
+        "688e11c4e4acb643f2bbc484",
+        "688e11b2e4acb643f2bbc482"
+      ]
     },
     {
       "id": "10b6",
       "slotTitle": "Test",
       "slotDescription": "123",
       "slotStarTime": "2025-08-25T08:00:00",
-      "groupId": ["swp1"],
-      "assignTo": ["688e11c4e4acb643f2bbc484", "688e11b2e4acb643f2bbc482"]
+      "groupId": [
+        "swp1"
+      ],
+      "assignTo": [
+        "688e11c4e4acb643f2bbc484",
+        "688e11b2e4acb643f2bbc482"
+      ]
     }
   ],
   "topic": [
@@ -415,7 +476,9 @@
         "createdBy": "de170481",
         "updatedBy": "",
         "priority": "",
-        "assignTo": ["688e1182e4acb643f2bbc47e"]
+        "assignTo": [
+          "688e1182e4acb643f2bbc47e"
+        ]
       },
       {
         "id": "c062",
@@ -438,7 +501,9 @@
         "createdBy": "de170481",
         "updatedBy": "",
         "priority": "",
-        "assignTo": ["688e1182e4acb643f2bbc47e"]
+        "assignTo": [
+          "688e1182e4acb643f2bbc47e"
+        ]
       },
       {
         "id": "c0632",
@@ -461,7 +526,9 @@
         "createdBy": "de170481",
         "updatedBy": "",
         "priority": "",
-        "assignTo": ["688e1182e4acb643f2bbc47e"]
+        "assignTo": [
+          "688e1182e4acb643f2bbc47e"
+        ]
       }
     ],
     "Doing": [
@@ -486,7 +553,9 @@
         "createdBy": "de170481",
         "updatedBy": "",
         "priority": "",
-        "assignTo": ["688e1182e4acb643f2bbc47e"]
+        "assignTo": [
+          "688e1182e4acb643f2bbc47e"
+        ]
       },
       {
         "id": "c069",
@@ -509,7 +578,9 @@
         "createdBy": "de170481",
         "updatedBy": "",
         "priority": "",
-        "assignTo": ["688e1182e4acb643f2bbc47e"]
+        "assignTo": [
+          "688e1182e4acb643f2bbc47e"
+        ]
       }
     ],
     "Done": [
@@ -534,7 +605,9 @@
         "createdBy": "de170481",
         "updatedBy": "",
         "priority": "",
-        "assignTo": ["688e1182e4acb643f2bbc47e"]
+        "assignTo": [
+          "688e1182e4acb643f2bbc47e"
+        ]
       },
       {
         "id": "c065",
@@ -557,7 +630,9 @@
         "createdBy": "de170481",
         "updatedBy": "",
         "priority": "",
-        "assignTo": ["688e1182e4acb643f2bbc47e"]
+        "assignTo": [
+          "688e1182e4acb643f2bbc47e"
+        ]
       },
       {
         "id": "c06124",
@@ -580,7 +655,9 @@
         "createdBy": "de170481",
         "updatedBy": "",
         "priority": "",
-        "assignTo": ["688e1182e4acb643f2bbc47e"]
+        "assignTo": [
+          "688e1182e4acb643f2bbc47e"
+        ]
       }
     ]
   }

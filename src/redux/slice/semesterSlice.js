@@ -36,10 +36,14 @@ const semesterSlice = createSlice({
     selectClass(state, action) {
       state.currentClassId = action.payload ?? null;
     },
+    setError(state, action) {
+      state.error = action.payload;
+    },
   },
 });
 
 export const {
+  setError,
   getSemestersStart,
   getSemestersSuccess,
   getSemestersFailure,

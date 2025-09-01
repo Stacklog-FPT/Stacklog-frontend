@@ -207,7 +207,7 @@ const CheckTypeByAll = () => {
     >
       <div className="check-task-by-all-container">
         <div className="check-task-by-all-content">
-          <ClassAndMember onFilterByPriority={handleFilterByPriority} />
+          {/* <ClassAndMember onFilterByPriority={handleFilterByPriority} /> */}
           <div className="task-column-container">
             {statuses.map((item) => (
               <Column

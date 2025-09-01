@@ -6,22 +6,20 @@ import GroupDropDown from '../GroupList/GroupDropDown';
 import './ClassDropdown.scss';
 
 const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen, currentSemester }) => {
-  const classes = useSelector((state) => state.class.classes);
-  const currentClasses = classes.filter((cl) => cl.semesterId === currentSemester);
+  const { classes } = useSelector((state) => state.class);
   const groups = useSelector((state) => state.group.groups);
   const [selectedClassId, setSelectedClassId] = useState(null);
 
   const dispatch = useDispatch();
   const handleClassClick = (classId) => {
     setSelectedClassId(classId === selectedClassId ? null : classId);
-    // set the globally selected class so pages like ClassList read it
     dispatch(selectClass(classId === selectedClassId ? null : classId));
   };
 
-  const handleGroupClick = (group) => {
-    setShowClasses(false);
-    setSelectedClassId(null);
-  };
+  // const handleGroupClick = (group) => {
+  //   setShowClasses(false);
+  //   setSelectedClassId(null);
+  // };
 
   return (
     <div className={`class-dropdown ${isSidebarOpen ? '' : 'sidebar-closed'}`}>
@@ -39,8 +37,8 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen, currentSeme
 
       {showClasses && isSidebarOpen && (
         <ul className="class-dropdown-menu">
-          {currentClasses.length > 0 ? (
-            currentClasses.map((classItem) => (
+          {classes.length > 0 ? (
+            classes.map((classItem) => (
               <li key={classItem.classesId}>
                 <div
                   className="class-dropdown-item"

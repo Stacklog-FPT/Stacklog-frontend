@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { getClassesStart, getClassesSuccess, getClassesFailure } from '../redux/slice/classSlice';
 import { getGroups } from '../redux/slice/groupSlice';
-const CLASS_URI = 'https://stacklog.id.vn/api/class';
+import { REACT_API_URL } from '../api/apiConfig';
+const CLASS_URI = REACT_API_URL + 'class/class/';
 
 const ClassService = () => {
   const getMembersInClass = async (token) => {
@@ -155,11 +156,12 @@ const ClassService = () => {
 export const getClasses = async (semesterId, token, dispatch) => {
   try {
     dispatch(getClassesStart());
-    const response = await axios(`http://localhost:3001/classes?semester_id=${semesterId}`, {
+    const response = await axios(`${CLASS_URI}/${semesterId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
     const data = response.data;
+    console.log(data);
     const allGroups = data.flatMap((c) => c.groups || []);
     dispatch(getClassesSuccess(data));
     dispatch(getGroups(allGroups));

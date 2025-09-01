@@ -1,10 +1,14 @@
 // Disable Hover Group
 export function canViewGroup(user, group) {
+  console.log('debug: ', group);
   if (!user || !group) return false;
   const role = user.role?.toLowerCase?.();
   if (role === 'lecturer') return true;
   if (role === 'student') {
-    return Array.isArray(group.groupStudent) && group.groupStudent.includes(user.userId);
+    return (
+      Array.isArray(group.groupStudents) &&
+      group.groupStudents?.filter((gr) => gr.userId === user.userId)
+    );
   }
   return false;
 }

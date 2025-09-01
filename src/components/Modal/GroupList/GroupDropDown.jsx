@@ -1,17 +1,19 @@
-import { NavLink } from "react-router-dom";
-import { useAuth } from "../../../context/AuthProvider";
-import { canViewGroup } from "../../../helper/validateStudentGroup";
-import decodeToken from "../../../service/DecodeJwt";
-import "./GroupDropDown.scss";
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthProvider';
+import { canViewGroup } from '../../../helper/validateStudentGroup';
+import decodeToken from '../../../service/DecodeJwt';
+import './GroupDropDown.scss';
 
 const GroupDropDown = ({ groups = [] }) => {
   const { user } = useAuth();
   let userId = null;
   if (user?.token) {
     const decoded = decodeToken(user.token);
-    userId = decoded?.id || decoded?._id || null;
+    userId = decoded?.id;
   }
+  console.log(groups);
   const userWithId = { ...user, userId };
+  console.log(userWithId);
 
   return (
     <ul className="group-dropdown">
@@ -23,11 +25,7 @@ const GroupDropDown = ({ groups = [] }) => {
           return (
             <li key={g.groupsId}>
               {canView ? (
-                <NavLink
-                  to={`/tasks/${g.groupsId}`}
-                  className="group-item"
-                  title={g.groupsName}
-                >
+                <NavLink to={`/tasks/${g.groupsId}`} className="group-item" title={g.groupsName}>
                   <i className="fa-solid fa-user-group group-icon"></i>
                   <span className="group-name">{g.groupsName}</span>
                 </NavLink>
@@ -38,9 +36,9 @@ const GroupDropDown = ({ groups = [] }) => {
                   tabIndex={-1}
                   aria-disabled="true"
                   style={{
-                    pointerEvents: "none",
+                    pointerEvents: 'none',
                     opacity: 0.5,
-                    cursor: "not-allowed",
+                    cursor: 'not-allowed',
                   }}
                 >
                   <i className="fa-solid fa-user-group group-icon"></i>

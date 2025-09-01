@@ -156,12 +156,11 @@ const ClassService = () => {
 export const getClasses = async (semesterId, token, dispatch) => {
   try {
     dispatch(getClassesStart());
-    const response = await axios(`${CLASS_URI}/${semesterId}`, {
+    const response = await axios(`${CLASS_URI}${semesterId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
     const data = response.data;
-    console.log(data);
     const allGroups = data.flatMap((c) => c.groups || []);
     dispatch(getClassesSuccess(data));
     dispatch(getGroups(allGroups));

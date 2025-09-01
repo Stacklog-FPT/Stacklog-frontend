@@ -1,6 +1,5 @@
 // Disable Hover Group
 export function canViewGroup(user, group) {
-  console.log('debug: ', group);
   if (!user || !group) return false;
   const role = user.role?.toLowerCase?.();
   if (role === 'lecturer') return true;

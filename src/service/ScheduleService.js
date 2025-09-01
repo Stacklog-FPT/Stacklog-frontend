@@ -132,8 +132,6 @@ export const updateScheduleSlot = async (token, slotId, slotData, dispatch) => {
         'Content-Type': 'application/json',
       },
     });
-
-    console.log('debug: ', response);
     dispatch(updateSchedules(response.data));
     dispatch(setPending(false));
     return response;

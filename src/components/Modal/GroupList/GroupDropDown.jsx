@@ -11,9 +11,7 @@ const GroupDropDown = ({ groups = [] }) => {
     const decoded = decodeToken(user.token);
     userId = decoded?.id;
   }
-  console.log(groups);
   const userWithId = { ...user, userId };
-  console.log(userWithId);
 
   return (
     <ul className="group-dropdown">

@@ -7,20 +7,17 @@ import {
   deleteStatus,
   updateStatus,
 } from '../redux/slice/statusSlice';
-const API_STATUS = 'https://stacklog.id.vn/api/task';
+import { REACT_API_URL } from '../api/apiConfig';
+const STATUS_API = REACT_API_URL + 'task/status-task/';
 
 const statusApi = () => {
   const addStatuses = async (token, statusData, groupId, dispatch) => {
     try {
-      const response = await axios.post(
-        `http://localhost:3001/status?groupId=${groupId}`,
-        statusData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await axios.post(`${STATUS_API}${groupId}`, statusData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       dispatch(addStatus(response.data));
       return response;
     } catch (e) {
@@ -30,7 +27,7 @@ const statusApi = () => {
 
   const getAllStatus = async (token, groupId) => {
     try {
-      const response = await axios.get(`${API_STATUS}/status-task/${groupId}`, {
+      const response = await axios.get(`${API_STATUS}${groupId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -47,12 +44,15 @@ const statusApi = () => {
 //
 export const getStatus = async (token, groupId, dispatch) => {
   try {
+    console.log('debug: ', groupId);
     dispatch(setPending(true));
-    const res = await axios.get(`http://localhost:3001/status?groupId=${groupId}`, {
+    const res = await axios.get(`${STATUS_API}${groupId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    console.log('debug status:', res.data);
     dispatch(setStatus(res.data));
     dispatch(setPending(false));
   } catch (err) {

@@ -6,7 +6,7 @@ export function canViewGroup(user, group) {
   if (role === 'student') {
     return (
       Array.isArray(group.groupStudents) &&
-      group.groupStudents?.filter((gr) => gr.userId === user.userId)
+      group.groupStudents?.find((gr) => gr.userId === user.userId)
     );
   }
   return false;

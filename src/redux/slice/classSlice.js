@@ -25,10 +25,23 @@ const classesSlice = createSlice({
       state.pending = false;
       state.error = action.payload || 'Load semesters failed';
     },
+    // Generic API state reducers (used by service functions)
+    apiStart(state) {
+      state.pending = true;
+      state.error = null;
+    },
+    apiSuccess(state) {
+      state.pending = false;
+      state.error = null;
+    },
+    apiFailure(state, action) {
+      state.pending = false;
+      state.error = action.payload || 'API request failed';
+    },
   },
 });
 
-export const { getClassesStart, getClassesSuccess, getClassesFailure } = classesSlice.actions;
+export const { getClassesStart, getClassesSuccess, getClassesFailure, apiStart, apiSuccess, apiFailure } = classesSlice.actions;
 
 export default classesSlice.reducer;
 

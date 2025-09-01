@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './ClassList.scss';
 import { useAuth } from '../../context/AuthProvider';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCurrentSemesterId } from '../../redux/slice/semesterSlice';
 import ClassService from '../../service/ClassService';
 import userApi from '../../service/UserService';
 import DetailStudent from './DetailStudent/DetailStudent';
@@ -10,7 +12,7 @@ import PopupCreateGroup from './PopupCreateGroup/PopupCreateGroup';
 import PopupInviteCode from './PopupInviteCode/PopupInviteCode';
 
 const {
-  getClassesByRole,
+  getClasses,
   createClass,
   craeteGroup,
   generateInviteCode,
@@ -21,6 +23,8 @@ const {
 
 const ClassList = ({ handleActivityAddClass }) => {
   const { user } = useAuth();
+  const dispatch = useDispatch();
+  const currentSemesterId = useSelector(selectCurrentSemesterId);
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
   const [groups, setGroups] = useState([]);
@@ -95,9 +99,13 @@ const ClassList = ({ handleActivityAddClass }) => {
     if (!user || !user.token) return;
     const fetchData = async () => {
       try {
-        const data = await getClassesByRole(user.token, user.role);
-        setClasses(data);
-        if (data.length > 0) {
+        let data = [];
+        if (currentSemesterId) {
+          data = await getClasses(currentSemesterId, user.token, dispatch);
+          console.log('getClasses data (initial fetch):', data);
+        }
+        setClasses(data || []);
+        if (data && data.length > 0) {
           setSelectedClass(data[0].classesId);
           setGroups(data[0].groups);
         }
@@ -108,6 +116,7 @@ const ClassList = ({ handleActivityAddClass }) => {
     };
     fetchData();
   }, [user]);
+   console.log('Fetched classes:', classes);
 
   useEffect(() => {
     if (!selectedClass) return;
@@ -210,8 +219,11 @@ const ClassList = ({ handleActivityAddClass }) => {
       await createClass(user.token, payload);
       setShowCreateClass(false);
       setNewClassName('');
-      const data = await getClassesByRole(user.token, user.role);
-      setClasses(data);
+      if (currentSemesterId) {
+        const data = await getClasses(currentSemesterId, user.token, dispatch);
+        console.log('getClasses data (after createClass):', data);
+        setClasses(data);
+      }
     } catch (err) {
       alert('Tạo lớp thất bại!');
     }
@@ -219,46 +231,68 @@ const ClassList = ({ handleActivityAddClass }) => {
   };
 
   const handleCreateGroup = async () => {
-    if (!groupName.trim() || !groupLeaderId.trim() || !selectedClass) return;
+    if (!groupName.trim() || !selectedClass) return;
     setIsCreatingGroup(true);
     try {
-      const payload = {
+        const payload = {
         groupsName: groupName,
         groupsDescriptions: groupDesc,
         groupsMaxMember: Number(groupMax) || 20,
         groupsAvgScore: 0,
-        groupsLeaderId: groupLeaderId,
         classId: selectedClass,
         groupUserUserIds: groupUserIds
           .split(',')
           .map((id) => id.trim())
           .filter((id) => id),
       };
-      await craeteGroup(user.token, payload);
-      setShowCreateGroup(false);
+  console.log("payload", payload);
+  const res = await craeteGroup(user.token, payload, dispatch);
+  console.log('createGroup response:', res);
+  setShowCreateGroup(false);
       setGroupName('');
       setGroupDesc('');
       setGroupMax(20);
       setGroupLeaderId('');
       setGroupUserIds('');
       // Reload lại danh sách lớp để cập nhật group mới
-      const data = await getClassesByRole(user.token, user.role);
-      setClasses(data);
+        if (currentSemesterId) {
+        const data = await getClasses(currentSemesterId, user.token, dispatch);
+        console.log('getClasses data (after createGroup):', data);
+        setClasses(data);
+      } else {
+        // no semester selected: try to append returned group to local classes state
+        try {
+          setClasses((prev) =>
+            prev.map((cls) =>
+              cls.classesId === selectedClass
+                ? { ...cls, groups: [...(cls.groups || []), res] }
+                : cls,
+            ),
+          );
+        } catch (e) {
+          console.warn('Failed to append group locally:', e);
+        }
+      }
     } catch (err) {
-      alert('Tạo group thất bại!');
+      console.error('Create group error:', err);
+      const msg = err.message || 'Failed to create group';
+      alert(`Failed to create group: ${msg}`);
     }
     setIsCreatingGroup(false);
   };
 
   const handleUpdateMemberToGroup = async (payload) => {
-    try {
-      await updateMemberToGroup(user.token, payload);
-      const data = await getClassesByRole(user.token, user.role);
-      setClasses(data);
-      alert('Thêm thành viên thành công!');
-    } catch (err) {
-      alert('Thêm thành viên thất bại!');
-    }
+      try {
+        await updateMemberToGroup(user.token, payload);
+        if (currentSemesterId) {
+          const data = await getClasses(currentSemesterId, user.token, dispatch);
+          console.log('getClasses data (after updateMemberToGroup):', data);
+          setClasses(data);
+        }
+        alert('Thêm thành viên thành công!');
+      } catch (err) {
+        alert('Thêm thành viên thất bại!');
+      }
   };
 
   const handleGenerateInviteCode = async () => {
@@ -302,8 +336,11 @@ const ClassList = ({ handleActivityAddClass }) => {
       };
 
       await leaveGroup(user.token, payload);
-      const data = await getClassesByRole(user.token, user.role);
-      setClasses(data);
+      if (currentSemesterId) {
+        const data = await getClasses(currentSemesterId, user.token, dispatch);
+        console.log('getClasses data (after leaveGroup):', data);
+        setClasses(data);
+      }
       alert('Rời nhóm thành công!');
     } catch (error) {
       alert('Rời nhóm thất bại!');
@@ -331,8 +368,11 @@ const ClassList = ({ handleActivityAddClass }) => {
         unassignedGroupId: unassignedGroup.groupsId,
       };
       await kickUserFromGroup(user.token, studentId, payload);
-      const data = await getClassesByRole(user.token, user.role);
-      setClasses(data);
+      if (currentSemesterId) {
+        const data = await getClasses(currentSemesterId, user.token, dispatch);
+        console.log('getClasses data (after kickUser):', data);
+        setClasses(data);
+      }
       alert('Kick thành công!');
     } catch (error) {
       alert('Kick thất bại!');
@@ -553,7 +593,7 @@ const ClassList = ({ handleActivityAddClass }) => {
       )}
 
       {showCreateGroup && (
-        <PopupCreateGroup
+          <PopupCreateGroup
           selectedGroup={selectedGroup}
           selectedClass={selectedClass}
           classes={classes}
@@ -564,8 +604,6 @@ const ClassList = ({ handleActivityAddClass }) => {
           setGroupDesc={setGroupDesc}
           groupMax={groupMax}
           setGroupMax={setGroupMax}
-          groupLeaderId={groupLeaderId}
-          setGroupLeaderId={setGroupLeaderId}
           groupUserIds={groupUserIds}
           setGroupUserIds={setGroupUserIds}
           handleCreateGroup={handleCreateGroup}

@@ -17,8 +17,8 @@ const GroupDropDown = ({ groups = [] }) => {
   // ensure groups is an array (props may pass null explicitly)
   const safeGroups = Array.isArray(groups) ? groups : [];
   console.log(safeGroups);
+
   const userWithId = { ...user, userId };
-  console.log(userWithId);
 
   return (
     <ul className="group-dropdown">

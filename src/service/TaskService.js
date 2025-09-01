@@ -12,8 +12,9 @@ import {
   resetTasks,
   getPersonalTask,
 } from '../redux/slice/taskSlice';
+import { REACT_API_URL } from '../api/apiConfig';
 
-const API_TASK = 'https://stacklog.id.vn/api/task';
+const API_TASK = REACT_API_URL + 'task/task';
 const SOCKET_URL = 'https://stacklog.id.vn/ws/taskify';
 let stompClient = null;
 
@@ -44,7 +45,7 @@ export const getAllTask = async (token, groupId, dispatch) => {
   try {
     if (!token) dispatch(setError('Token is not valid or missing!'));
     dispatch(setPending(true));
-    const response = await axios.get(`http://localhost:3001/task?group_id=${groupId}`, {
+    const response = await axios.get(`${API_TASK}/${groupId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -57,17 +58,18 @@ export const getAllTask = async (token, groupId, dispatch) => {
   }
 };
 
-export const addTask = async (taskData, token, dispatch) => {
+export const addTask = async (taskData, token, groupId, dispatch) => {
   if (!token) {
     throw new Error('Unauthorized!');
   }
   try {
-    const response = await axios.post(`http://localhost:3001/task`, taskData, {
+    const response = await axios.post(`${API_TASK}/${groupId}`, taskData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
+    console.log(response);
     dispatch(addTasks(response.data));
     return response;
   } catch (e) {

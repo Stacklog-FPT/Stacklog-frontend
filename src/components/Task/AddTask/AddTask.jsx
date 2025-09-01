@@ -12,19 +12,17 @@ import { toast } from 'sonner';
 import { useSelector } from 'react-redux';
 
 const AddTask = ({ status, onCancel, group }) => {
-  console.log(status);
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
   const groupList = useSelector((state) => state.group.groups);
   const currentGroup = groupList.find((g) => g.groupsId === group);
   const dispatch = useDispatch();
-  const visibleMembers = currentGroup?.groupStudent.slice(0, 3);
-  const extraCount = currentGroup?.groupStudent.length - visibleMembers.length;
+  const visibleMembers = currentGroup.groupStudents?.slice(0, 3);
+  const extraCount = currentGroup.groupStudents?.length - visibleMembers.length;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
   const [selectedPriority, setSelectedPriority] = useState('LOW');
-  console.log('selectedPriority: ', selectedPriority);
   const [taskData, setTaskData] = useState({
     taskId: '',
     taskTitle: '',
@@ -159,7 +157,7 @@ const AddTask = ({ status, onCancel, group }) => {
         assignTo: taskData.assignTo,
       };
 
-      const response = await addTask(payload, user.token, dispatch);
+      const response = await addTask(payload, user.token, group, dispatch);
 
       if (response.data) {
         toast.success('Add Task successfully!');
@@ -224,8 +222,8 @@ const AddTask = ({ status, onCancel, group }) => {
             <h2>Assign</h2>
           </div>
           <div className="assigned-users-list">
-            {taskData.assignTo.map((userId) => {
-              const member = currentGroup.groupStudent.find((m) => m === userId);
+            {taskData.assignTo?.map((userId) => {
+              const member = currentGroup.groupStudents?.find((m) => m.userId === userId);
               return member ? (
                 <div key={userId} className="assigned-user-card">
                   <div className="user-info">
@@ -269,12 +267,12 @@ const AddTask = ({ status, onCancel, group }) => {
           {showAssignDropdown && (
             <div className="assign-dropdown">
               <div className="assign-checkbox-list">
-                {currentGroup.groupStudent.map((member) => (
-                  <label key={member} className="member-option">
+                {currentGroup.groupStudents?.map((member) => (
+                  <label key={member.userId} className="member-option">
                     <input
                       type="checkbox"
-                      value={member}
-                      checked={taskData.assignTo.includes(member)}
+                      value={member.userId}
+                      checked={taskData.assignTo?.includes(member.userId)}
                       onChange={handleAssignChange}
                     />
                     <div className="member-info">
@@ -324,7 +322,7 @@ const AddTask = ({ status, onCancel, group }) => {
             </button>
             {showPriorityDropdown && (
               <div className="priority-dropdown">
-                {colorPriority.map((item) => (
+                {colorPriority?.map((item) => (
                   <div
                     key={item.id}
                     className={`priority-option ${

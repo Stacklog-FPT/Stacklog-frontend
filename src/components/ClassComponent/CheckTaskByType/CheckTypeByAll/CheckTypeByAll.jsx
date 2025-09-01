@@ -215,9 +215,7 @@ const CheckTypeByAll = () => {
                 statusId={item.statusTaskId}
                 status={item.statusTaskName}
                 color={item.statusTaskColor}
-                tasks={tasks.filter(
-                  (task) => task?.statusTaskId.toString() === item.statusTaskId.toString(),
-                )}
+                tasks={tasks.filter((task) => task?.statusTaskId === item.statusTaskId)}
                 onShowAddTask={() => handleShowAddTask(item)}
                 onShowComment={handleShowComment}
                 onShowAddSubTask={handleChooseTask}

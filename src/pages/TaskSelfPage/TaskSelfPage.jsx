@@ -1,8 +1,10 @@
 import React from 'react';
 import './TaskSelfPage.scss';
 import { useAuth } from '../../context/AuthProvider';
+import { useSelector } from 'react-redux';
 import { getPersonalTaskApi } from '../../service/TaskService';
-import { useDispatch, useSelector } from 'react-redux';
+import { selectCurrentSemesterId } from '../../redux/slice/semesterSlice';
+import { useDispatch } from 'react-redux';
 import Column from '../../components/ClassComponent/CheckTaskByType/CheckTypeByAll/Column/Column';
 
 const FALLBACK_COLOR = '#6b7280';
@@ -12,7 +14,7 @@ const normalize = (s) => (s ?? '').trim().toLowerCase();
 const TaskSelfPage = () => {
   const { user } = useAuth();
   const dispatch = useDispatch();
-
+  const currentSemesterId = useSelector(selectCurrentSemesterId);
   const { personalTask = {} } = useSelector((state) => state.task);
   const keyList = React.useMemo(() => Object.keys(personalTask), [personalTask]);
 
@@ -43,7 +45,7 @@ const TaskSelfPage = () => {
   }, [keyList, groupedByStatusName]);
 
   React.useEffect(() => {
-    getPersonalTaskApi(user.token, dispatch);
+    getPersonalTaskApi(user.token, currentSemesterId, dispatch);
   }, [user, dispatch]);
 
   return (

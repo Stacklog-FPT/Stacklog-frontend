@@ -28,14 +28,16 @@ const AddColumn = ({ onCancel, groupId }) => {
     setIsSubmitting(true);
     try {
       const payload = {
-        statusTaskId: Math.random(),
+        statusTaskId: '',
         statusTaskName: columnData.statusTaskName,
         statusTaskColor: columnData.statusTaskColor || color,
         groupId: groupId,
       };
 
-      const response = await addStatuses(user?.token, payload, groupId, dispatch);
-      toast.success('Add status is successfully!');
+      const response = await addStatuses(user?.token, payload, dispatch);
+      if (response.status === 200) {
+        toast.success('Add status is successfully!');
+      }
 
       onCancel();
     } catch (e) {

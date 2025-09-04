@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 const GAP = 8;
 
 const ModalColumn = ({ statusId, onEdit, onClose, anchor }) => {
+  console.log(statusId);
   const { user } = useAuth();
   const dispatch = useDispatch();
   const statuses = useSelector((s) => s.status?.statuses || []);
@@ -59,7 +60,7 @@ const ModalColumn = ({ statusId, onEdit, onClose, anchor }) => {
   const handleDelete = async () => {
     onClose?.();
 
-    if (!selectedStatus?.id) {
+    if (!statusId) {
       await Swal.fire({
         title: 'Cannot delete',
         text: 'Status not found or invalid id.',
@@ -82,14 +83,14 @@ const ModalColumn = ({ statusId, onEdit, onClose, anchor }) => {
 
     if (!result.isConfirmed) return;
 
-    try {
-      // Khuyến nghị: để deleteStatusApi throw error khi fail
-      await deleteStatusApi(user.token, selectedStatus.id, dispatch);
+    const response = await deleteStatusApi(user.token, statusId, dispatch);
+
+    if (response) {
       await Swal.fire('Deleted!', 'Status was removed successfully.', 'success');
-    } catch (err) {
+    } else {
       await Swal.fire({
         title: 'Delete failed',
-        text: err?.message || 'Something went wrong during deletion.',
+        text: 'Something went wrong during deletion.',
         icon: 'error',
         confirmButtonColor: '#045745',
       });

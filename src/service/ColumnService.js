@@ -11,9 +11,9 @@ import { REACT_API_URL } from '../api/apiConfig';
 const STATUS_API = REACT_API_URL + 'task/status-task/';
 
 const statusApi = () => {
-  const addStatuses = async (token, statusData, groupId, dispatch) => {
+  const addStatuses = async (token, statusData, dispatch) => {
     try {
-      const response = await axios.post(`${STATUS_API}${groupId}`, statusData, {
+      const response = await axios.post(`https://stacklog.id.vn/api/task/status-task`, statusData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -62,9 +62,10 @@ export const getStatus = async (token, groupId, dispatch) => {
 };
 
 export const deleteStatusApi = async (token, statusTaskId, dispatch) => {
+  console.log('debug service: ', statusTaskId);
   try {
     if (!token) dispatch(setError('The token is missing is invalid!'));
-    const response = await axios.delete(`http://localhost:3001/status/${statusTaskId}`, {
+    const response = await axios.delete(`${STATUS_API}${statusTaskId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

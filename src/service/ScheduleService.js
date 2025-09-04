@@ -8,8 +8,9 @@ import {
   deleteSchedules,
   updateSchedules,
 } from '../redux/slice/scheduleSlice';
+import { REACT_API_URL } from '../api/apiConfig';
 
-const SCHEDULE_API = 'https://stacklog.id.vn/api/schedule';
+const SCHEDULE_API = REACT_API_URL + 'schedule/group';
 const ScheduleService = () => {
   const getScheduleByUser = async (token) => {
     try {
@@ -85,11 +86,11 @@ const ScheduleService = () => {
   };
 };
 
-export const getScheduleByGroupId = async (token, dispatch) => {
+export const getScheduleByGroupId = async (token, groupId, dispatch) => {
   try {
     if (!token) dispatch(setError('The token is missing!'));
     dispatch(setPending(true));
-    const response = await axios.get(`http://localhost:3001/schedule`, {
+    const response = await axios.get(`${SCHEDULE_API}/${groupId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

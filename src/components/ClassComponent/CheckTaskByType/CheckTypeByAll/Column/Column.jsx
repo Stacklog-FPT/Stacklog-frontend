@@ -24,7 +24,6 @@ const Column = ({
   onTaskUpdated,
   isLeader,
 }) => {
-  console.log(isLeader);
   const { setNodeRef, isOver } = useDroppable({ id: `droppable-${statusId}` });
   const { user } = useAuth();
   const dispatch = useDispatch();

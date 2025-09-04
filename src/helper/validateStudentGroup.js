@@ -1,15 +1,18 @@
 // Disable Hover Group
 export function canViewGroup(user, group) {
   if (!user || !group) return false;
-  const role = user.role?.toLowerCase?.();
+
+  const role = (user.role || '').toLowerCase();
+
+  const uid = String(user.userId ?? user.id ?? user._id ?? user.sub ?? '');
+
+  if (!uid) return false;
+
   if (role === 'lecturer') return true;
-  if (role === 'student') {
-    return (
-      Array.isArray(group.groupStudents) &&
-      group.groupStudents?.find((gr) => gr.userId === user.userId)
-    );
-  }
-  return false;
+  if (role !== 'student') return false;
+
+  const students = Array.isArray(group.groupStudents) ? group.groupStudents : [];
+  return students.some((s) => String(s.userId) === uid);
 }
 
 // Is Leader

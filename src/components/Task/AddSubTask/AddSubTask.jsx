@@ -6,7 +6,7 @@ import iconPriority from '../../../assets/task/icon-priority.png';
 import iconSubTask from '../../../assets/task/icon-subtask.png';
 import trackTime from '../../../assets/task/icon-track-time.png';
 import { useAuth } from '../../../context/AuthProvider';
-import { addTask, updateTaskApi } from '../../../service/TaskService';
+import { addTask, createSubtaskApi, updateTaskApi } from '../../../service/TaskService';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import decodeToken from '../../../service/DecodeJwt';
@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 
 const AddSubTask = ({ isClose, task }) => {
   const { groupId } = useParams();
+  console.log(task.statusTaskId);
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
   const dispatch = useDispatch();
@@ -23,8 +24,8 @@ const AddSubTask = ({ isClose, task }) => {
   const notifyFailure = () => toast.error('Add task is failure');
   const { groups } = useSelector((state) => state.group);
   const currentGroup = groups.find((g) => g.groupsId === groupId);
-  const visibleMembers = currentGroup?.groupStudent?.slice(0, 3);
-  const extraCount = currentGroup?.groupStudent?.length - visibleMembers?.length;
+  const visibleMembers = currentGroup.groupStudents?.slice(0, 3);
+  const extraCount = currentGroup.groupStudents?.length - visibleMembers?.length;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
@@ -140,25 +141,27 @@ const AddSubTask = ({ isClose, task }) => {
       let formattedDueDate = subTaskData.taskDueDate
         ? `${subTaskData.taskDueDate}T${currentTime}`
         : '';
+
       const payload = {
-        ...task,
-        subTasks: [
-          ...(task.subTasks || []),
-          {
-            taskId: Math.random(),
-            taskTitle: subTaskData.taskTitle,
-            taskDescription: subTaskData.taskDescription,
-            priority: subTaskData.priority,
-            statusTaskId: task.statusTaskId,
-            taskStartTime: formattedStartTime,
-            taskDueDate: formattedDueDate,
-            assignTo: subTaskData.assignTo,
-            parentTaskId: task.taskId,
-          },
-        ],
+        taskId: '',
+        taskTitle: subTaskData.taskTitle,
+        taskDescription: subTaskData.taskDescription,
+        priority: subTaskData.priority,
+        statusTaskId: task.statusTaskId,
+        taskStartTime: formattedStartTime,
+        taskDueDate: formattedDueDate,
+        listUserAssign: subTaskData.assignTo,
+        groupId: task.groupId,
+        subTasks: [],
+        reviews: [],
+        checkLists: [],
+        parentTaskId: task.taskId,
       };
 
-      const response = await updateTaskApi(payload, user.token, dispatch);
+      console.log('payload: ', payload);
+
+      const response = await createSubtaskApi(payload, user.token, dispatch);
+      console.log(response);
       if (response.data) {
         notify();
         await axios.post('http://localhost:3000/notifications', {
@@ -223,8 +226,8 @@ const AddSubTask = ({ isClose, task }) => {
           </div>
 
           <div className="assigned-users-list">
-            {subTaskData.assignTo.map((userId) => {
-              const member = currentGroup.groupStudent.find((m) => m === userId);
+            {subTaskData.assignTo?.map((userId) => {
+              const member = currentGroup.groupStudents.find((m) => m.userId === userId);
               return member ? (
                 <div key={userId} className="assigned-user-card">
                   <div className="user-info">
@@ -269,12 +272,12 @@ const AddSubTask = ({ isClose, task }) => {
           {showAssignDropdown && (
             <div className="assign-dropdown">
               <div className="assign-checkbox-list">
-                {currentGroup.groupStudent?.map((member) => (
-                  <label key={member} className="member-option">
+                {currentGroup.groupStudents?.map((member) => (
+                  <label key={member.userId} className="member-option">
                     <input
                       type="checkbox"
-                      value={member}
-                      checked={subTaskData.assignTo.includes(member)}
+                      value={member.userId}
+                      checked={subTaskData.assignTo.includes(member.userId)}
                       onChange={handleAssignChange}
                     />
                     <div className="member-info">

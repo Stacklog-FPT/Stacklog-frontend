@@ -141,40 +141,48 @@ const AddTask = ({ status, onCancel, group }) => {
       let formattedDueDate = taskData.taskDueDate ? `${taskData.taskDueDate}T${currentTime}` : '';
 
       const payload = {
-        taskId: Math.random().toString(),
-        group_id: taskData.groupId,
+        taskId: '',
+        groupId: taskData.groupId,
         taskTitle: taskData.taskTitle,
         taskDescription: taskData.taskDescription,
         statusTaskId: taskData.statusTaskId,
         documentId: '',
         taskPoint: 0,
-        taskParentId: 0,
+        taskParentId: '',
         taskStartTime: formattedStartTime,
         taskDueDate: formattedDueDate,
-        createdBy: user?.userName || userData?.username || 'Unknown',
+        createdBy: userData?.id || 'Unknown',
         updatedBy: '',
         priority: taskData.priority,
-        assignTo: taskData.assignTo,
+        listUserAssign: taskData.assignTo,
+        subTasks: [],
+        reviews: [],
+        checkLists: [],
       };
 
-      const response = await addTask(payload, user.token, group, dispatch);
-
-      if (response.data) {
-        toast.success('Add Task successfully!');
-        await axios.post('http://localhost:3000/notifications', {
-          title: `Announce add task ${taskData.taskTitle} by ${user.username}`,
-          author: {
-            _id: Math.random(),
-            name: user.username || userData?.username || 'Unknown',
-            avatar:
-              user.avatar ||
-              'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
-          },
-          createdAt: new Date().toISOString().split('T')[0],
-          isRead: false,
-          _id: Math.random(),
-        });
+      console.log(payload);
+      const response = await addTask(payload, user.token, dispatch);
+      console.log(response);
+      if (response.status === 200) {
+        toast.success('Add task success');
       }
+
+      // if (response.data) {
+      //   toast.success('Add Task successfully!');
+      //   await axios.post('http://localhost:3000/notifications', {
+      //     title: `Announce add task ${taskData.taskTitle} by ${user.username}`,
+      //     author: {
+      //       _id: Math.random(),
+      //       name: user.username || userData?.username || 'Unknown',
+      //       avatar:
+      //         user.avatar ||
+      //         'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
+      //     },
+      //     createdAt: new Date().toISOString().split('T')[0],
+      //     isRead: false,
+      //     _id: Math.random(),
+      //   });
+      // }
       onCancel();
     } catch (e) {
       console.error(

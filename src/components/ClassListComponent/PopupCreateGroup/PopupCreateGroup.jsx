@@ -12,8 +12,6 @@ const PopupCreateGroup = ({
   setGroupDesc,
   groupMax,
   setGroupMax,
-  groupLeaderId,
-  setGroupLeaderId,
   groupUserIds,
   setGroupUserIds,
   handleCreateGroup,
@@ -22,7 +20,9 @@ const PopupCreateGroup = ({
   updateMemberToGroup,
 }) => {
 
-  console.log("groupLeaderId: ", groupLeaderId);
+  useEffect(() => {
+    console.log('PopupCreateGroup mounted/updated', { selectedGroup, selectedClass, students, groupName });
+  }, [selectedGroup, selectedClass, students, groupName]);
   // Khi chọn group, tự động điền thông tin group vào form
   useEffect(() => {
     if (selectedGroup !== "all" && selectedGroup !== "") {
@@ -36,7 +36,6 @@ const PopupCreateGroup = ({
         setGroupName(group.groupsName || "");
         setGroupDesc(group.groupsDescriptions || "");
         setGroupMax(group.groupsMaxMember || 20);
-        setGroupLeaderId(group.groupsLeaderId || "");
         setGroupUserIds(
           group.groupStudents
             .map((stu) => stu.userId)
@@ -50,7 +49,6 @@ const PopupCreateGroup = ({
       setGroupName("");
       setGroupDesc("");
       setGroupMax(20);
-      setGroupLeaderId("");
       setGroupUserIds("");
     }
     // eslint-disable-next-line
@@ -61,44 +59,32 @@ const PopupCreateGroup = ({
       <div className="popup-content">
         <h3>
           {selectedGroup !== "all" && selectedGroup !== ""
-            ? "Cập nhật thành viên nhóm"
-            : "Tạo nhóm mới"}
+            ? "Update group members"
+            : "Create new group"}
         </h3>
         {/* Form luôn hiển thị, dữ liệu tự động điền nếu đã chọn group */}
         <input
           type="text"
-          placeholder="Tên nhóm..."
+          placeholder="Group name..."
           value={groupName}
           onChange={(e) => setGroupName(e.target.value)}
-          disabled={selectedGroup !== "all"} // Không cho sửa tên nhóm khi cập nhật
+          disabled={selectedGroup !== "all"} // Do not allow editing group name when updating
         />
         <input
           type="text"
-          placeholder="Mô tả nhóm..."
+          placeholder="Group description..."
           value={groupDesc}
           onChange={(e) => setGroupDesc(e.target.value)}
         />
         <input
           type="number"
-          placeholder="Số thành viên tối đa"
+          placeholder="Max members"
           value={groupMax}
           min={1}
           onChange={(e) => setGroupMax(e.target.value)}
         />
-        <label>Chọn Leader nhóm:</label>
-        <select
-          value={groupLeaderId}
-          onChange={(e) => setGroupLeaderId(e.target.value)}
-          style={{ marginBottom: "10px" }}
-        >
-          <option value="">-- Chọn Leader --</option>
-          {students.map((student) => (
-            <option key={student._id} value={student._id}>
-              {student.name} ({student.email})
-            </option>
-          ))}
-        </select>
-        <label>Chọn thành viên nhóm:</label>
+  {/* Leader is assigned by backend (current user) — no need to select here */}
+  <label>Select group members:</label>
         <div className="group-members-list">
           {students.map((student) => (
             <div className="member-checkbox-row" key={student._id}>
@@ -123,11 +109,23 @@ const PopupCreateGroup = ({
             </div>
           ))}
         </div>
-        <div className="popup-actions">
+        <div className="popup-actions" onClick={(e) => console.log('popup-actions clicked', { target: e.target, selectedGroup, selectedClass })}>
+          {/* click on this wrapper will log attempts even if button is blocked */}
           <button
-            onClick={() => {
-              if (selectedGroup === "all") {
-                handleCreateGroup();
+              onClick={() => {
+              console.log('Confirm clicked', { selectedGroup, selectedClass, groupName, groupUserIds });
+              // validation (previously handled by disabled prop)
+              if (isCreatingGroup) return;
+                if (selectedGroup === "all") {
+                if (!groupName.trim()) {
+                  alert('Please enter group name');
+                  return;
+                }
+                if (!selectedClass) {
+                  alert('No class selected');
+                  return;
+                }
+                handleCreateGroup && handleCreateGroup();
               } else {
                 // Tạo payload cho updateMemberToGroup
                 const currentClass = classes.find(
@@ -143,38 +141,31 @@ const PopupCreateGroup = ({
                   groupsDescriptions: groupDesc,
                   groupsMaxMember: groupMax,
                   groupsAvgScore: group.groupsAvgScore,
-                  groupsLeaderId: groupLeaderId,
+                  groupsLeaderId: group.groupsLeaderId, // keep existing leader
                   classId: selectedClass,
                   groupUserUserIds: groupUserIds
                     .split(",")
                     .map((id) => id.trim())
                     .filter((id) => id),
                 };
-
                 console.log("Updating group with payload:", payload);
                 updateMemberToGroup && updateMemberToGroup(payload);
                 setShowCreateGroup(false);
               }
             }}
-            disabled={
-              isCreatingGroup ||
-              (!groupName.trim() && selectedGroup === "all") ||
-              !groupLeaderId.trim() ||
-              !selectedClass
-            }
             className="btn-confirm"
           >
             {isCreatingGroup
-              ? "Đang xử lý..."
+              ? "Processing..."
               : selectedGroup === "all"
-              ? "Group"
-              : "Member"}
+              ? "Create Group"
+              : "Update Members"}
           </button>
           <button
             onClick={() => setShowCreateGroup(false)}
             className="btn-cancel"
           >
-            Hủy
+            Cancel
           </button>
         </div>
       </div>

@@ -10,7 +10,7 @@ import {
 } from '../redux/slice/scheduleSlice';
 import { REACT_API_URL } from '../api/apiConfig';
 
-const SCHEDULE_API = REACT_API_URL + 'schedule/group';
+const SCHEDULE_API = REACT_API_URL + 'schedule';
 const ScheduleService = () => {
   const getScheduleByUser = async (token) => {
     try {
@@ -96,6 +96,7 @@ export const getScheduleByGroupId = async (token, groupId, dispatch) => {
       },
     });
 
+    console.log(response);
     dispatch(resetSchedule());
     dispatch(getSchedules(response.data));
     dispatch(setPending(false));
@@ -108,7 +109,7 @@ export const addSlotByGroup = async (token, data, dispatch) => {
   try {
     if (!token) throw new Error('Token is missing!');
     dispatch(setPending(true));
-    const response = await axios.post(`http://localhost:3001/schedule`, data, {
+    const response = await axios.post(`${SCHEDULE_API}/save`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',

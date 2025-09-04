@@ -35,13 +35,13 @@ const AddColumn = ({ onCancel, groupId }) => {
       };
 
       const response = await addStatuses(user?.token, payload, dispatch);
-      if (response.status === 200) {
+      if (responwse.status === 200) {
         toast.success('Add status is successfully!');
       }
 
       onCancel();
     } catch (e) {
-      toast.error('Something is wrong!');
+      toast.error('Something is rong!');
       console.error('Failed to add column:', e.message);
     } finally {
       setIsSubmitting(false);

@@ -17,7 +17,7 @@ const ModalColumn = ({ statusId, onEdit, onClose, anchor }) => {
   const dispatch = useDispatch();
   const statuses = useSelector((s) => s.status?.statuses || []);
   const selectedStatus = useMemo(
-    () => statuses.find((it) => String(it.statusTaskId) === String(statusId)),
+    () => statuses.find((it) => it.statusTaskId === statusId),
     [statuses, statusId],
   ); // Mì ăn liền
 

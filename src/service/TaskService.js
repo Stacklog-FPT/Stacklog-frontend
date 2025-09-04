@@ -93,6 +93,7 @@ export const deleteTaskApi = async (token, taskId, dispatch) => {
       },
     });
     dispatch(deleteTask(taskId));
+    dispatch(resetTasks());
     dispatch(setPending(false));
     return response;
   } catch (e) {

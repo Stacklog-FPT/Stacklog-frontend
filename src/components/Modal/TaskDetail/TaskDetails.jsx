@@ -185,7 +185,7 @@ const TaskDetails = ({ task, onClose }) => {
   };
 
   const handleDeleteTask = async () => {
-    const response = await deleteTaskApi(user.token, task.id, dispatch); // Change if before mock up
+    const response = await deleteTaskApi(user.token, task.taskId, dispatch);
     if (response?.status === 200) {
       toast.success('Delete task successfully!');
       onClose();

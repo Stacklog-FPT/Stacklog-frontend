@@ -17,6 +17,8 @@ export const fetchSemesters = async (token, dispatch) => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
+    console.log(response);
+
     const data = response.data;
     dispatch(getSemestersSuccess(data));
     return data;

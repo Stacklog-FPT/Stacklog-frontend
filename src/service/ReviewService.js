@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { setError, setPending, updateTasks } from '../redux/slice/taskSlice';
-
-const REVIEW_URL = 'https://stacklog.id.vn/api/task/review';
+import { REACT_API_URL } from '../api/apiConfig';
+// const REVIEW_URL = 'https://stacklog.id.vn/api/task/review';
+const REVIEW_URI = REACT_API_URL + 'task/review';
 const ReviewService = () => {
   const deleteReview = async (token, id) => {
     try {

@@ -116,7 +116,6 @@ const ClassList = ({ handleActivityAddClass }) => {
     };
     fetchData();
   }, [user]);
-   console.log('Fetched classes:', classes);
 
   useEffect(() => {
     if (!selectedClass) return;
@@ -234,7 +233,7 @@ const ClassList = ({ handleActivityAddClass }) => {
     if (!groupName.trim() || !selectedClass) return;
     setIsCreatingGroup(true);
     try {
-        const payload = {
+      const payload = {
         groupsName: groupName,
         groupsDescriptions: groupDesc,
         groupsMaxMember: Number(groupMax) || 20,
@@ -245,17 +244,17 @@ const ClassList = ({ handleActivityAddClass }) => {
           .map((id) => id.trim())
           .filter((id) => id),
       };
-  console.log("payload", payload);
-  const res = await craeteGroup(user.token, payload, dispatch);
-  console.log('createGroup response:', res);
-  setShowCreateGroup(false);
+      console.log('payload', payload);
+      const res = await craeteGroup(user.token, payload, dispatch);
+      console.log('createGroup response:', res);
+      setShowCreateGroup(false);
       setGroupName('');
       setGroupDesc('');
       setGroupMax(20);
       setGroupLeaderId('');
       setGroupUserIds('');
       // Reload lại danh sách lớp để cập nhật group mới
-        if (currentSemesterId) {
+      if (currentSemesterId) {
         const data = await getClasses(currentSemesterId, user.token, dispatch);
         console.log('getClasses data (after createGroup):', data);
         setClasses(data);
@@ -282,17 +281,17 @@ const ClassList = ({ handleActivityAddClass }) => {
   };
 
   const handleUpdateMemberToGroup = async (payload) => {
-      try {
-        await updateMemberToGroup(user.token, payload);
-        if (currentSemesterId) {
-          const data = await getClasses(currentSemesterId, user.token, dispatch);
-          console.log('getClasses data (after updateMemberToGroup):', data);
-          setClasses(data);
-        }
-        alert('Thêm thành viên thành công!');
-      } catch (err) {
-        alert('Thêm thành viên thất bại!');
+    try {
+      await updateMemberToGroup(user.token, payload);
+      if (currentSemesterId) {
+        const data = await getClasses(currentSemesterId, user.token, dispatch);
+        console.log('getClasses data (after updateMemberToGroup):', data);
+        setClasses(data);
       }
+      alert('Thêm thành viên thành công!');
+    } catch (err) {
+      alert('Thêm thành viên thất bại!');
+    }
   };
 
   const handleGenerateInviteCode = async () => {
@@ -593,7 +592,7 @@ const ClassList = ({ handleActivityAddClass }) => {
       )}
 
       {showCreateGroup && (
-          <PopupCreateGroup
+        <PopupCreateGroup
           selectedGroup={selectedGroup}
           selectedClass={selectedClass}
           classes={classes}

@@ -129,6 +129,7 @@ export const createSubtaskApi = async (taskData, token, dispatch) => {
       //Change taskId before mockup with BE
       headers: {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
     });
 

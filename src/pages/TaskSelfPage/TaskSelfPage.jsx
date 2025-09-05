@@ -16,33 +16,20 @@ const TaskSelfPage = () => {
   const dispatch = useDispatch();
   const currentSemesterId = useSelector(selectCurrentSemesterId);
   const { personalTask = {} } = useSelector((state) => state.task);
-  const keyList = React.useMemo(() => Object.keys(personalTask), [personalTask]);
-
-  const groupedByStatusName = React.useMemo(() => {
-    const acc = {};
-    Object.values(personalTask).forEach((arr) => {
-      (arr || []).forEach((t) => {
-        const k = normalize(t?.statusTask?.statusTaskName);
-        if (!acc[k]) acc[k] = [];
-        acc[k].push(t);
-      });
-    });
-    return acc;
-  }, [personalTask]);
 
   const columns = React.useMemo(() => {
-    return keyList.map((label) => {
-      const tasks = groupedByStatusName[normalize(label)] || [];
+    return Object.keys(personalTask || {}).map((label) => {
+      const tasks = personalTask[label] || [];
       const first = tasks[0];
 
       return {
         statusTaskName: label,
-        statusTaskId: first?.statusTask?.statusTaskId ?? label,
+        statusTaskId: first?.statusTaskId ?? label,
         statusTaskColor: first?.statusTask?.statusTaskColor ?? FALLBACK_COLOR,
         tasks,
       };
     });
-  }, [keyList, groupedByStatusName]);
+  }, [personalTask]);
 
   React.useEffect(() => {
     getPersonalTaskApi(user.token, currentSemesterId, dispatch);

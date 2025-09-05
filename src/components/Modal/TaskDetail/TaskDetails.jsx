@@ -45,7 +45,7 @@ const TaskDetails = ({ task, onClose }) => {
     description: task?.taskDescription || '',
     startLocal: toLocalInput(task?.taskStartTime),
     dueLocal: toLocalInput(task?.taskDueDate),
-    checkListDraft: Array.isArray(task?.checkList) ? task.checkLists : [],
+    checkListDraft: Array.isArray(task?.checkLists) ? task.checkLists : [],
   });
 
   // comment state
@@ -68,7 +68,7 @@ const TaskDetails = ({ task, onClose }) => {
       description: task?.taskDescription || '',
       startLocal: toLocalInput(task?.taskStartTime),
       dueLocal: toLocalInput(task?.taskDueDate),
-      checkListDraft: Array.isArray(task?.checkList) ? task.checkList : [],
+      checkListDraft: Array.isArray(task?.checkLists) ? task.checkLists : [],
     });
     setChecklistDirty(false);
   }, [task]);
@@ -349,13 +349,13 @@ const TaskDetails = ({ task, onClose }) => {
           onChange={setActiveTab}
           counts={{
             subtasks: task?.subTasks?.length || 0,
-            checklists: (task?.checkList || []).length || 0,
+            checklists: (form.checkListDraft || []).length || 0,
           }}
         />
 
         <section className="taskdetail__todo">
           {activeTab === 'subtasks' ? (
-            <SubTask data={task?.subtasks} />
+            <SubTask data={task?.subTasks} />
           ) : (
             <Checklist
               checkList={form.checkListDraft}

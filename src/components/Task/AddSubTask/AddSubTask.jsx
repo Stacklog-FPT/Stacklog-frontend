@@ -148,6 +148,7 @@ const AddSubTask = ({ isClose, task }) => {
         : '';
 
       const payload = {
+        taskId: '',
         taskTitle: subTaskData.taskTitle,
         taskDescription: subTaskData.taskDescription,
         priority: subTaskData.priority,
@@ -161,6 +162,8 @@ const AddSubTask = ({ isClose, task }) => {
         checkLists: [],
         parentTaskId: task.taskId,
       };
+
+      console.log(payload);
       const response = await createSubtaskApi(payload, user.token, dispatch);
       if (response.data) {
         notify();

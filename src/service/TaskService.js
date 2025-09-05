@@ -111,7 +111,7 @@ export const updateTaskApi = async (taskData, token, dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log('Call me: ', response.data);
+    console.log('Call me update task: ', response.data);
     dispatch(updateTasks(response.data));
     dispatch(setPending(false));
     return response;
@@ -129,11 +129,10 @@ export const createSubtaskApi = async (taskData, token, dispatch) => {
       //Change taskId before mockup with BE
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
       },
     });
 
-    console.log('Call me: ', response.data);
+    console.log('Call me subtask: ', response);
     dispatch(updateTasks(response.data));
     dispatch(setPending(false));
     return response;

@@ -45,7 +45,7 @@ const TaskDetails = ({ task, onClose }) => {
     description: task?.taskDescription || '',
     startLocal: toLocalInput(task?.taskStartTime),
     dueLocal: toLocalInput(task?.taskDueDate),
-    checkListDraft: Array.isArray(task?.checkList) ? task.checkList : [],
+    checkListDraft: Array.isArray(task?.checkList) ? task.checkLists : [],
   });
 
   // comment state
@@ -96,8 +96,10 @@ const TaskDetails = ({ task, onClose }) => {
       taskDescription: description || task.taskDescription,
       taskStartTime: startISO || task.taskStartTime,
       taskDueDate: dueISO || task.taskDueDate,
-      checkList: form.checkListDraft,
+      checkLists: form.checkListDraft,
     };
+
+    console.log(payload);
 
     const res = await updateTaskApi(payload, user.token, dispatch);
     if (res?.status === 200 || res?.data || res === true) {
@@ -353,7 +355,7 @@ const TaskDetails = ({ task, onClose }) => {
 
         <section className="taskdetail__todo">
           {activeTab === 'subtasks' ? (
-            <SubTask data={task?.subTasks} />
+            <SubTask data={task?.subtasks} />
           ) : (
             <Checklist
               checkList={form.checkListDraft}

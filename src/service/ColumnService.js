@@ -18,6 +18,7 @@ const statusApi = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log('response status: ', response.data);
       dispatch(addStatus(response.data));
       return response;
     } catch (e) {
@@ -65,7 +66,7 @@ export const deleteStatusApi = async (token, statusTaskId, dispatch) => {
   console.log('debug service: ', statusTaskId);
   try {
     if (!token) dispatch(setError('The token is missing is invalid!'));
-    const response = await axios.delete(`${STATUS_API}${statusTaskId}`, {
+    const response = await axios.delete(`${STATUS_API}/${statusTaskId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

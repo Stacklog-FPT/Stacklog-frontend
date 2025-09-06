@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AddSubTask.scss';
 import avatar_add_button from '../../../assets/icon/avatar_add_button.png';
 import assignUser from '../../../assets/task/assign-user.png';
@@ -6,28 +6,31 @@ import iconPriority from '../../../assets/task/icon-priority.png';
 import iconSubTask from '../../../assets/task/icon-subtask.png';
 import trackTime from '../../../assets/task/icon-track-time.png';
 import { useAuth } from '../../../context/AuthProvider';
-import { addTask, updateTaskApi } from '../../../service/TaskService';
+import { addTask, createSubtaskApi, updateTaskApi } from '../../../service/TaskService';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import decodeToken from '../../../service/DecodeJwt';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import userApi from '../../../service/UserService';
 
 const AddSubTask = ({ isClose, task }) => {
   const { groupId } = useParams();
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
+  const { getUserById } = userApi();
   const dispatch = useDispatch();
   const notify = () => toast.success('Add task is successfully');
   const notifyFailure = () => toast.error('Add task is failure');
   const { groups } = useSelector((state) => state.group);
   const currentGroup = groups.find((g) => g.groupsId === groupId);
-  const visibleMembers = currentGroup?.groupStudent?.slice(0, 3);
-  const extraCount = currentGroup?.groupStudent?.length - visibleMembers?.length;
+  const visibleMembers = currentGroup.groupStudents?.slice(0, 3);
+  const extraCount = currentGroup.groupStudents?.length - visibleMembers?.length;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
+  const [studentInformation, setStudentInformation] = useState([]);
   const [subTaskData, setSubTaskData] = useState({
     taskId: '',
     taskTitle: '',
@@ -42,6 +45,9 @@ const AddSubTask = ({ isClose, task }) => {
     assignTo: [],
     parentTaskId: '',
   });
+  const selectedMembers = studentInformation
+    ? studentInformation.filter((m) => subTaskData.assignTo.includes(m._id))
+    : [];
 
   const [colorPriority, setColorPriority] = useState([
     { id: 1, color: '#FF6B6B', content: 'HIGH', borderColor: '#DC2626' },
@@ -140,25 +146,25 @@ const AddSubTask = ({ isClose, task }) => {
       let formattedDueDate = subTaskData.taskDueDate
         ? `${subTaskData.taskDueDate}T${currentTime}`
         : '';
+
       const payload = {
-        ...task,
-        subTasks: [
-          ...(task.subTasks || []),
-          {
-            taskId: Math.random(),
-            taskTitle: subTaskData.taskTitle,
-            taskDescription: subTaskData.taskDescription,
-            priority: subTaskData.priority,
-            statusTaskId: task.statusTaskId,
-            taskStartTime: formattedStartTime,
-            taskDueDate: formattedDueDate,
-            assignTo: subTaskData.assignTo,
-            parentTaskId: task.taskId,
-          },
-        ],
+        taskId: '',
+        taskTitle: subTaskData.taskTitle,
+        taskDescription: subTaskData.taskDescription,
+        priority: subTaskData.priority,
+        statusTaskId: task.statusTaskId,
+        taskStartTime: formattedStartTime,
+        taskDueDate: formattedDueDate,
+        listUserAssign: subTaskData.assignTo,
+        groupId: task.groupId,
+        subTasks: [],
+        reviews: [],
+        checkLists: [],
+        parentTaskId: task.taskId,
       };
 
-      const response = await updateTaskApi(payload, user.token, dispatch);
+      console.log(payload);
+      const response = await createSubtaskApi(payload, user.token, dispatch);
       if (response.data) {
         notify();
         await axios.post('http://localhost:3000/notifications', {
@@ -189,6 +195,35 @@ const AddSubTask = ({ isClose, task }) => {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    let userId = [];
+    if (currentGroup) {
+      userId = currentGroup.groupStudents.map((item) => item.userId);
+    }
+    const fetchStudent = async () => {
+      const studentInfos = await Promise.all(
+        userId.map(async (id) => {
+          try {
+            const u = await getUserById(user.token, id);
+            return {
+              _id: u._id,
+              name: u.full_name,
+              email: u.email,
+              id: u.work_id,
+              avatar: u.avatar_link,
+            };
+          } catch {
+            return null;
+          }
+        }),
+      );
+
+      setStudentInformation(studentInfos);
+    };
+
+    fetchStudent();
+  }, [groupId]);
   return (
     <div className="add-task">
       <form className="add-task-container" onSubmit={handleSubmit}>
@@ -223,37 +258,37 @@ const AddSubTask = ({ isClose, task }) => {
           </div>
 
           <div className="assigned-users-list">
-            {subTaskData.assignTo.map((userId) => {
-              const member = currentGroup.groupStudent.find((m) => m === userId);
-              return member ? (
-                <div key={userId} className="assigned-user-card">
-                  <div className="user-info">
-                    <div className="avatar-container">
-                      <img
-                        src={member.avatar}
-                        alt={`${member.name || member.userName}'s Avatar`}
-                        className="user-avatar"
-                        onError={(e) =>
-                          (e.target.src =
-                            'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg')
-                        }
-                      />
-                      <div className="check-icon">
-                        <i className="fa-solid fa-check"></i>
-                      </div>
+            {selectedMembers.map((member) => (
+              <div key={member._id} className="assigned-user-card">
+                <div className="user-info">
+                  <div className="avatar-container">
+                    <img
+                      src={
+                        member.avatar ||
+                        'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                      }
+                      alt={`${member.name || member.userName}'s Avatar`}
+                      className="user-avatar"
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg';
+                      }}
+                    />
+                    <div className="check-icon">
+                      <i className="fa-solid fa-check"></i>
                     </div>
-                    <span className="user-name">{member.name || member.userName}</span>
                   </div>
-                  <button
-                    type="button"
-                    className="remove-user-btn"
-                    onClick={() => handleRemoveAssign(userId)}
-                  >
-                    <i className="fa-solid fa-xmark"></i>
-                  </button>
+                  <span className="user-name">{member.name || member.userName}</span>
                 </div>
-              ) : null;
-            })}
+                <button
+                  type="button"
+                  className="remove-user-btn"
+                  onClick={() => handleRemoveAssign(member._id)}
+                >
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            ))}
           </div>
 
           <div className="add-member-section">
@@ -269,12 +304,12 @@ const AddSubTask = ({ isClose, task }) => {
           {showAssignDropdown && (
             <div className="assign-dropdown">
               <div className="assign-checkbox-list">
-                {currentGroup.groupStudent?.map((member) => (
-                  <label key={member} className="member-option">
+                {studentInformation?.map((member) => (
+                  <label key={member._id} className="member-option">
                     <input
                       type="checkbox"
-                      value={member}
-                      checked={subTaskData.assignTo.includes(member)}
+                      value={member._id}
+                      checked={subTaskData.assignTo.includes(member._id)}
                       onChange={handleAssignChange}
                     />
                     <div className="member-info">

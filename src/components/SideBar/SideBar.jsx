@@ -107,7 +107,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
           <div className="semester__picker">
             <label className="semester__label">Semester</label>
             <SemesterDropdown
-              semesters={semesters}
+              semesters={semesters || []}
               value={currentSemesterId ?? null}
               onChange={(id) => dispatch(selectSemester(id))}
               placeholder="Select semester"

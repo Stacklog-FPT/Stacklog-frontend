@@ -11,11 +11,13 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import CommentTaskBody from './CommentBody';
 import CommentTaskFooter from './CommentFooter';
+import { useParams } from 'react-router';
+import { updateTaskApi } from '../../../service/TaskService';
 
 const CommentTask = ({ task, isClose }) => {
-  console.log(task);
+  const { groupId } = useParams();
   const tasks = useSelector((t) => t.task.tasks);
-  const currentTask = tasks.find((t) => t.id === task.id); // Change taskId before mockup with BE
+  const currentTask = tasks.find((t) => t.taskId === task.taskId);
   const reviews = currentTask?.reviews || [];
 
   const [newComment, setNewComment] = useState('');
@@ -38,20 +40,16 @@ const CommentTask = ({ task, isClose }) => {
       const payload = {
         ...currentTask,
         reviews: [
-          ...(reviews || []),
           {
-            reviewId: Math.random(),
             reviewContent: newComment,
-            taskId: task.taskId ?? task.id,
-            createdBy: user._id,
+            createdBy: decodedId,
             createdAt: new Date().toISOString(),
-            avatar_link:
-              user.avatar ||
-              'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
           },
         ],
       };
-      const res = await createReview(user?.token, task.id, payload, dispatch);
+
+      console.log(payload);
+      const res = await updateTaskApi(payload, user?.token, dispatch);
       if (res) {
         setNewComment('');
         await axios.post('http://localhost:3000/notifications', {

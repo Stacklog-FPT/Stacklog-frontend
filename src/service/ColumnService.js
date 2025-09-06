@@ -47,7 +47,7 @@ export const getStatus = async (token, groupId, dispatch) => {
   try {
     console.log('debug: ', groupId);
     dispatch(setPending(true));
-    const res = await axios.get(`${STATUS_API}${groupId}`, {
+    const res = await axios.get(`${STATUS_API}/${groupId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

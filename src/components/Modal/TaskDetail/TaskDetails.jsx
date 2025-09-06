@@ -17,7 +17,7 @@ import Navbar from './Navbar/Navbar';
 import Checklist from './Checklist/Checklist';
 import SubTask from './SubTask/SubTask';
 import HoldDeleteButton from './ButtonDelete';
-import { deleteTaskApi, updateTaskApi } from '../../../service/TaskService'; // <-- thêm update
+import { deleteTaskApi, updateTaskApi } from '../../../service/TaskService';
 import { toast } from 'sonner';
 
 const toLocalInput = (iso) => {
@@ -45,7 +45,7 @@ const TaskDetails = ({ task, onClose }) => {
     description: task?.taskDescription || '',
     startLocal: toLocalInput(task?.taskStartTime),
     dueLocal: toLocalInput(task?.taskDueDate),
-    checkListDraft: Array.isArray(task?.checkList) ? task.checkLists : [],
+    checkListDraft: Array.isArray(task?.checkLists) ? task.checkLists : [],
   });
 
   // comment state
@@ -68,7 +68,7 @@ const TaskDetails = ({ task, onClose }) => {
       description: task?.taskDescription || '',
       startLocal: toLocalInput(task?.taskStartTime),
       dueLocal: toLocalInput(task?.taskDueDate),
-      checkListDraft: Array.isArray(task?.checkList) ? task.checkList : [],
+      checkListDraft: Array.isArray(task?.checkLists) ? task.checkLists : [],
     });
     setChecklistDirty(false);
   }, [task]);
@@ -117,20 +117,14 @@ const TaskDetails = ({ task, onClose }) => {
       const payload = {
         ...task,
         reviews: [
-          ...(task.reviews || []),
           {
-            reviewId: Math.random(),
             reviewContent: newComment,
-            taskId: task.taskId ?? task.id,
-            createdBy: user._id,
+            createdBy: decoded._id,
             createdAt: new Date().toISOString(),
-            avatar_link:
-              user.avatar ||
-              'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
           },
         ],
       };
-      const res = await createReview(user?.token, task.id, payload, dispatch);
+      const res = await updateTaskApi(payload, user?.token, dispatch);
       if (res) {
         setNewComment('');
         await axios.post('http://localhost:3000/notifications', {
@@ -349,13 +343,13 @@ const TaskDetails = ({ task, onClose }) => {
           onChange={setActiveTab}
           counts={{
             subtasks: task?.subTasks?.length || 0,
-            checklists: (task?.checkList || []).length || 0,
+            checklists: (form.checkListDraft || []).length || 0,
           }}
         />
 
         <section className="taskdetail__todo">
           {activeTab === 'subtasks' ? (
-            <SubTask data={task?.subtasks} />
+            <SubTask data={task?.subTasks} />
           ) : (
             <Checklist
               checkList={form.checkListDraft}

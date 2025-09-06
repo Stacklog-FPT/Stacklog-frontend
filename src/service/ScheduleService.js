@@ -96,7 +96,6 @@ export const getScheduleByGroupId = async (token, groupId, dispatch) => {
       },
     });
 
-    console.log(response);
     dispatch(resetSchedule());
     dispatch(getSchedules(response.data));
     dispatch(setPending(false));

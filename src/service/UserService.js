@@ -21,7 +21,7 @@ const userApi = () => {
   const logout = async (token) => {
     try {
       const response = await axios.post(
-        '103.166.183.142:8080/api/auth/logout',
+        `${API_AUTH}auth/logout`,
         {},
         {
           headers: {

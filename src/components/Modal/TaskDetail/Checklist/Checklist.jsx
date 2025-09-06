@@ -10,37 +10,32 @@ const genId = (prefix = 'id') =>
 const normalize = (arr = []) =>
   (Array.isArray(arr) ? arr : []).map((cl, idx) => {
     const bid = cl.checkListId ?? `cl_${idx}`;
-    const itemsSrc = cl.checkItem ?? cl.listItems ?? [];
     return {
       id: `${String(bid)}__${idx}`,
       bid: String(bid),
       name: cl.checkListName ?? `Checklist ${idx + 1}`,
-      items: itemsSrc.map((it, j) => ({
+      items: (cl.checkItem || []).map((it, j) => ({
         id: String(it.checkItemId ?? `cli_${idx}_${j}`),
         bid: String(it.checkItemId ?? `cli_${idx}_${j}`),
-        text: it.checkItemName ?? it.text ?? `Item ${j + 1}`,
-        done: Boolean(it.checkItemStatus === true || it.done === true),
+        text: it.checkItemName ?? `Item ${j + 1}`,
+        done: Boolean(it.checkItemStatus === true),
         assignTo: it.assignTo || [],
       })),
     };
   });
 
-const toApiShape = (listsState, { includeIds = false } = {}) =>
-  (listsState || []).map((l) => {
-    const base = {
-      checkListName: l.name,
-      checkItem: (l.items || []).map((it) => {
-        const itemBase = {
-          checkItemName: it.text,
-          checkItemStatus: !!it.done,
-          assignTo: it.assignTo || [],
-        };
+const toApiShape = (listsState) =>
+  listsState.map((l) => ({
+    checkListId: l.bid ?? l.id.split('__')[0],
+    checkListName: l.name,
+    checkItem: l.items.map((it) => ({
+      checkItemId: it.bid ?? it.id,
+      checkItemName: it.text,
+      checkItemStatus: !!it.done,
+      assignTo: it.assignTo || [],
+    })),
+  }));
 
-        return includeIds && it.bid ? { checkItemId: it.bid, ...itemBase } : itemBase;
-      }),
-    };
-    return includeIds && l.bid ? { checkListId: l.bid, ...base } : base;
-  });
 // tiện key cho panel assign item
 const itemKey = (listId, itemId) => `${listId}::${itemId}`;
 
@@ -133,7 +128,7 @@ const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }
 
   const commitLocal = (nextLists) => {
     setLists(nextLists);
-    onChange?.(toApiShape(nextLists, { includeIds: false }));
+    onChange?.(toApiShape(nextLists));
     onDirtyChange?.(true);
   };
 

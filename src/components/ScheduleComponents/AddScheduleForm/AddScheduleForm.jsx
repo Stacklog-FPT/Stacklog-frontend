@@ -9,7 +9,6 @@ import { Toaster, toast } from 'sonner';
 import { isGroup } from '../../../helper/validateStudentGroup';
 const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
   const { user } = useAuth();
-  console.log(isPage);
   const dispatch = useDispatch();
   const { classes } = useSelector((state) => state.class);
   const groupList = useSelector((state) => state.group.groups);
@@ -118,11 +117,9 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
     const payload = {
       ...scheduleData,
       slotStarTime: fullDateTime,
-      groupId: selectedGroup?.groupsId || groupId,
-      userIdAssigns: selectedGroup?.groupStudents.map((s) => s) || getGroup().groupStudents,
+      groupId: [selectedGroup?.groupsId || groupId],
+      assignTo: selectedGroup?.groupStudent.map((s) => s) || getGroup().groupStudent,
     };
-
-    console.log(payload);
 
     await addSlotByGroup(user.token, payload, dispatch);
     onSuccess?.();
@@ -141,9 +138,7 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
         <form className="add-schedule-form" onSubmit={handleSubmit}>
           <h3>Add new slot</h3>
 
-          <div
-            style={{ display: 'flex', alignItems: 'center', gap: '8px', flexDirection: 'column' }}
-          >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexDirection: 'column' }}>
             {isPage && (
               <div className="select-wrapper">
                 <select onChange={handleSelectClass} value={selectedClasses?.classesId || ''}>
@@ -154,12 +149,7 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
                     </option>
                   ))}
                 </select>
-                <select
-                  value={selectedGroup?.groupsId || ''}
-                  onChange={handleSelectGroup}
-                  required
-                  disabled={!selectedClasses}
-                >
+                <select value={selectedGroup?.groupsId || ''} onChange={handleSelectGroup} required disabled={!selectedClasses}>
                   <option value="">-- Choose Group --</option>
                   {selectedClasses?.groups.map((group) => (
                     <option key={group.groupsId} value={group.groupsId}>
@@ -172,10 +162,8 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
 
             {/* Hiển thị lớp đã chọn */}
             {isPage && selectedClasses && (
-              <div className="selected-group" style={{ marginTop: 8 }}>
-                <span>
-                  Class: <b>{selectedClasses.classesName}</b>
-                </span>
+              <div className="selected-group" style={{marginTop: 8}}>
+                <span>Class: <b>{selectedClasses.classesName}</b></span>
                 <button type="button" className="remove-btn" onClick={handleRemoveSelectedClass}>
                   <FaTrash />
                 </button>
@@ -184,10 +172,8 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
 
             {/* Hiển thị group đã chọn */}
             {isPage && selectedGroup && (
-              <div className="selected-group" style={{ marginTop: 8 }}>
-                <span>
-                  Group: <b>{selectedGroup.groupsName}</b>
-                </span>
+              <div className="selected-group" style={{marginTop: 8}}>
+                <span>Group: <b>{selectedGroup.groupsName}</b></span>
                 <button type="button" className="remove-btn" onClick={handleRemoveSelectedGroup}>
                   <FaTrash />
                 </button>

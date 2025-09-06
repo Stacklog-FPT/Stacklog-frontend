@@ -1,10 +1,8 @@
 import React from 'react';
 import './TaskSelfPage.scss';
 import { useAuth } from '../../context/AuthProvider';
-import { useSelector } from 'react-redux';
 import { getPersonalTaskApi } from '../../service/TaskService';
-import { selectCurrentSemesterId } from '../../redux/slice/semesterSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Column from '../../components/ClassComponent/CheckTaskByType/CheckTypeByAll/Column/Column';
 
 const FALLBACK_COLOR = '#6b7280';
@@ -14,25 +12,38 @@ const normalize = (s) => (s ?? '').trim().toLowerCase();
 const TaskSelfPage = () => {
   const { user } = useAuth();
   const dispatch = useDispatch();
-  const currentSemesterId = useSelector(selectCurrentSemesterId);
+
   const { personalTask = {} } = useSelector((state) => state.task);
+  const keyList = React.useMemo(() => Object.keys(personalTask), [personalTask]);
+
+  const groupedByStatusName = React.useMemo(() => {
+    const acc = {};
+    Object.values(personalTask).forEach((arr) => {
+      (arr || []).forEach((t) => {
+        const k = normalize(t?.statusTask?.statusTaskName);
+        if (!acc[k]) acc[k] = [];
+        acc[k].push(t);
+      });
+    });
+    return acc;
+  }, [personalTask]);
 
   const columns = React.useMemo(() => {
-    return Object.keys(personalTask || {}).map((label) => {
-      const tasks = personalTask[label] || [];
+    return keyList.map((label) => {
+      const tasks = groupedByStatusName[normalize(label)] || [];
       const first = tasks[0];
 
       return {
         statusTaskName: label,
-        statusTaskId: first?.statusTaskId ?? label,
+        statusTaskId: first?.statusTask?.statusTaskId ?? label,
         statusTaskColor: first?.statusTask?.statusTaskColor ?? FALLBACK_COLOR,
         tasks,
       };
     });
-  }, [personalTask]);
+  }, [keyList, groupedByStatusName]);
 
   React.useEffect(() => {
-    getPersonalTaskApi(user.token, currentSemesterId, dispatch);
+    getPersonalTaskApi(user.token, dispatch);
   }, [user, dispatch]);
 
   return (

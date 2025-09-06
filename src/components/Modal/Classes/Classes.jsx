@@ -1,22 +1,16 @@
-import React, { useEffect, useState } from "react";
-import "./Classes.scss";
-import { useAuth } from "../../../context/AuthProvider";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  selectCurrentSemesterId,
-  selectCurrentClassId,
-  selectCurrentGroupId,
-} from "../../../redux/slice/semesterSlice";
-import ClassService from "../../../service/ClassService";
-import userApi from "../../../service/UserService";
-import DetailStudent from "../../ClassListComponent/DetailStudent/DetailStudent";
-import decodeToken from "../../../service/DecodeJwt";
-import PopupCreateClass from "../../ClassListComponent/PopupCreateClass/PopupCreateClass";
-import PopupCreateGroup from "../../ClassListComponent/PopupCreateGroup/PopupCreateGroup";
-import PopupInviteCode from "../../ClassListComponent/PopupInviteCode/PopupInviteCode";
+import React, { useEffect, useState } from 'react';
+import './Classes.scss';
+import { useAuth } from '../../../context/AuthProvider';
+import ClassService from '../../../service/ClassService';
+import userApi from '../../../service/UserService';
+import DetailStudent from '../../ClassListComponent/DetailStudent/DetailStudent';
+import decodeToken from '../../../service/DecodeJwt';
+import PopupCreateClass from '../../ClassListComponent/PopupCreateClass/PopupCreateClass';
+import PopupCreateGroup from '../../ClassListComponent/PopupCreateGroup/PopupCreateGroup';
+import PopupInviteCode from '../../ClassListComponent/PopupInviteCode/PopupInviteCode';
 
 const {
-  getClasses,
+  getClassesByRole,
   createClass,
   craeteGroup,
   generateInviteCode,
@@ -27,14 +21,10 @@ const {
 
 const ClassList = ({ handleActivityAddClass }) => {
   const { user } = useAuth();
-  const dispatch = useDispatch();
-  const currentSemesterId = useSelector(selectCurrentSemesterId);
-  const currentClassId = useSelector(selectCurrentClassId);
-  const currentGroupId = useSelector(selectCurrentGroupId);
   const [classes, setClasses] = useState([]);
-  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedClass, setSelectedClass] = useState('');
   const [groups, setGroups] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState("all");
+  const [selectedGroup, setSelectedGroup] = useState('all');
   const [students, setStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showDetail, setShowDetail] = useState(false);
@@ -46,20 +36,20 @@ const ClassList = ({ handleActivityAddClass }) => {
 
   // State cho popup tạo lớp mới
   const [showCreateClass, setShowCreateClass] = useState(false);
-  const [newClassName, setNewClassName] = useState("");
+  const [newClassName, setNewClassName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
   // State cho popup tạo group mới
   const [showCreateGroup, setShowCreateGroup] = useState(false);
-  const [groupName, setGroupName] = useState("");
-  const [groupDesc, setGroupDesc] = useState("");
+  const [groupName, setGroupName] = useState('');
+  const [groupDesc, setGroupDesc] = useState('');
   const [groupMax, setGroupMax] = useState(20);
-  const [groupLeaderId, setGroupLeaderId] = useState("");
-  const [groupUserIds, setGroupUserIds] = useState("");
+  const [groupLeaderId, setGroupLeaderId] = useState('');
+  const [groupUserIds, setGroupUserIds] = useState('');
   const [isCreatingGroup, setIsCreatingGroup] = useState(false);
 
   // State cho popup invite code
-  const [inviteCode, setInviteCode] = useState("");
+  const [inviteCode, setInviteCode] = useState('');
   const [showInvitePopup, setShowInvitePopup] = useState(false);
 
   const { getUserById } = userApi();
@@ -68,11 +58,11 @@ const ClassList = ({ handleActivityAddClass }) => {
     if (!selectedClass) return;
     const foundClass = classes.find((c) => c.classesId === selectedClass);
     setGroups(foundClass ? foundClass.groups : []);
-    setSelectedGroup("all");
+    setSelectedGroup('all');
 
     if (foundClass) {
       const unassignedGroup = foundClass.groups.find(
-        (g) => g.groupsName.toLowerCase() === "unassigned"
+        (g) => g.groupsName.toLowerCase() === 'unassigned',
       );
       let userIds = [];
       if (unassignedGroup) {
@@ -93,7 +83,7 @@ const ClassList = ({ handleActivityAddClass }) => {
             } catch {
               return null;
             }
-          })
+          }),
         );
         setUnassignedStudents(studentInfos.filter(Boolean));
       };
@@ -105,24 +95,11 @@ const ClassList = ({ handleActivityAddClass }) => {
     if (!user || !user.token) return;
     const fetchData = async () => {
       try {
-        // Prefer semester-aware getClasses; fall back to empty list if semester not selected
-        let data = [];
-        if (currentSemesterId) {
-          data = await getClasses(currentSemesterId, user.token, dispatch);
-        }
-        setClasses(data || []);
-        if (data && data.length > 0) {
-          const defaultClassId = currentClassId || data[0].classesId;
-          setSelectedClass(defaultClassId);
-          const found =
-            data.find((c) => c.classesId === defaultClassId) || data[0];
-          setGroups(found.groups || []);
-          const defaultGroupId =
-            currentGroupId ||
-            (found.groups && found.groups[0]
-              ? found.groups[0].groupsId
-              : "all");
-          setSelectedGroup(defaultGroupId || "all");
+        const data = await getClassesByRole(user.token, user.role);
+        setClasses(data);
+        if (data.length > 0) {
+          setSelectedClass(data[0].classesId);
+          setGroups(data[0].groups);
         }
       } catch (err) {
         setClasses([]);
@@ -130,29 +107,13 @@ const ClassList = ({ handleActivityAddClass }) => {
       }
     };
     fetchData();
-  }, [user, currentSemesterId, dispatch]);
-
-  // Sync selection when sidebar selection changes
-  useEffect(() => {
-    if (!classes || classes.length === 0) return;
-    if (currentClassId) {
-      const found = classes.find((c) => c.classesId === currentClassId);
-      if (found) {
-        setSelectedClass(found.classesId);
-        setGroups(found.groups || []);
-        if (currentGroupId) {
-          const g = found.groups.find((gg) => gg.groupsId === currentGroupId);
-          setSelectedGroup(g ? g.groupsId : "all");
-        }
-      }
-    }
-  }, [currentClassId, currentGroupId, classes]);
+  }, [user]);
 
   useEffect(() => {
     if (!selectedClass) return;
     const foundClass = classes.find((c) => c.classesId === selectedClass);
     setGroups(foundClass ? foundClass.groups : []);
-    setSelectedGroup("all");
+    setSelectedGroup('all');
   }, [selectedClass, classes]);
 
   useEffect(() => {
@@ -160,16 +121,14 @@ const ClassList = ({ handleActivityAddClass }) => {
     const foundClass = classes.find((c) => c.classesId === selectedClass);
     let userIds = [];
     if (foundClass) {
-      if (selectedGroup === "all") {
+      if (selectedGroup === 'all') {
         foundClass.groups.forEach((group) => {
           group.groupStudents.forEach((student) => {
             userIds.push(student.userId);
           });
         });
       } else {
-        const group = foundClass.groups.find(
-          (g) => g.groupsId === selectedGroup
-        );
+        const group = foundClass.groups.find((g) => g.groupsId === selectedGroup);
         if (group) {
           userIds = group.groupStudents.map((s) => s.userId);
         }
@@ -191,7 +150,7 @@ const ClassList = ({ handleActivityAddClass }) => {
           } catch {
             return null;
           }
-        })
+        }),
       );
       setStudents(studentInfos.filter(Boolean));
     };
@@ -217,11 +176,14 @@ const ClassList = ({ handleActivityAddClass }) => {
     setCurrentPage(1);
   };
 
+  const handleGroupChange = (e) => {
+    setSelectedGroup(e.target.value);
+    setCurrentPage(1);
+  };
+
   const handleShowDetail = (student) => {
     const studentClasses = classes.filter((cls) =>
-      cls.groups.some((group) =>
-        group.groupStudents.some((stu) => stu.userId === student._id)
-      )
+      cls.groups.some((group) => group.groupStudents.some((stu) => stu.userId === student._id)),
     );
     const classNames = studentClasses.map((cls) => cls.classesName);
 
@@ -241,31 +203,23 @@ const ClassList = ({ handleActivityAddClass }) => {
     if (!newClassName.trim()) return;
     setIsCreating(true);
     try {
-      if (!currentSemesterId) {
-        alert("Please select a semester before creating a class.");
-        setIsCreating(false);
-        return;
-      }
       const payload = {
         classesName: newClassName,
         lectureId: decodeUser.id,
       };
-      console.log("handleCreateClass", payload);
-      await createClass(currentSemesterId, user.token, payload, dispatch);
+      await createClass(user.token, payload);
       setShowCreateClass(false);
-      setNewClassName("");
-      if (currentSemesterId) {
-        const data = await getClasses(currentSemesterId, user.token, dispatch);
-        setClasses(data);
-      }
+      setNewClassName('');
+      const data = await getClassesByRole(user.token, user.role);
+      setClasses(data);
     } catch (err) {
-      alert("Failed to create class!");
+      alert('Tạo lớp thất bại!');
     }
     setIsCreating(false);
   };
 
   const handleCreateGroup = async () => {
-    if (!groupName.trim() || !selectedClass) return;
+    if (!groupName.trim() || !groupLeaderId.trim() || !selectedClass) return;
     setIsCreatingGroup(true);
     try {
       const payload = {
@@ -273,40 +227,37 @@ const ClassList = ({ handleActivityAddClass }) => {
         groupsDescriptions: groupDesc,
         groupsMaxMember: Number(groupMax) || 20,
         groupsAvgScore: 0,
+        groupsLeaderId: groupLeaderId,
         classId: selectedClass,
         groupUserUserIds: groupUserIds
-          .split(",")
+          .split(',')
           .map((id) => id.trim())
           .filter((id) => id),
       };
-      await craeteGroup(user.token, payload, dispatch);
+      await craeteGroup(user.token, payload);
       setShowCreateGroup(false);
-      setGroupName("");
-      setGroupDesc("");
+      setGroupName('');
+      setGroupDesc('');
       setGroupMax(20);
-      setGroupLeaderId("");
-      setGroupUserIds("");
+      setGroupLeaderId('');
+      setGroupUserIds('');
       // Reload lại danh sách lớp để cập nhật group mới
-      if (currentSemesterId) {
-        const data = await getClasses(currentSemesterId, user.token, dispatch);
-        setClasses(data);
-      }
+      const data = await getClassesByRole(user.token, user.role);
+      setClasses(data);
     } catch (err) {
-      alert("Failed to create group!");
+      alert('Tạo group thất bại!');
     }
     setIsCreatingGroup(false);
   };
 
   const handleUpdateMemberToGroup = async (payload) => {
     try {
-      await updateMemberToGroup(user.token, payload, dispatch);
-      if (currentSemesterId) {
-        const data = await getClasses(currentSemesterId, user.token, dispatch);
-        setClasses(data);
-      }
-      alert("Member added successfully!");
+      await updateMemberToGroup(user.token, payload);
+      const data = await getClassesByRole(user.token, user.role);
+      setClasses(data);
+      alert('Thêm thành viên thành công!');
     } catch (err) {
-      alert("Failed to add member!");
+      alert('Thêm thành viên thất bại!');
     }
   };
 
@@ -315,38 +266,34 @@ const ClassList = ({ handleActivityAddClass }) => {
     try {
       const res = await generateInviteCode(user.token, selectedClass);
 
-      let code = "";
+      let code = '';
       const match = res.match(/code=([A-Za-z0-9\-]+)/);
-      code = match ? match[1] : "";
+      code = match ? match[1] : '';
 
-      if (!code) throw new Error("Unable to retrieve invite code!");
+      if (!code) throw new Error('Không lấy được mã invite code!');
       setInviteCode(code);
       setShowInvitePopup(true);
     } catch (err) {
-      alert("Unable to get invite code!");
+      alert('Không thể lấy invite code!');
     }
   };
 
   const hanldeDeleteUserFromGroup = async () => {
     try {
-      if (!window.confirm("Do you want to leave this group?")) return;
+      if (!window.confirm('Bạn muốn rời khỏi nhóm này?')) return;
 
-      if (!user.token) throw new Error("Token is missing");
+      if (!user.token) throw new Error('Token is missing');
 
-      const currentClass = classes.find(
-        (cls) => cls.classesId === selectedClass
-      );
-      if (!currentClass) throw new Error("Class not found!");
+      const currentClass = classes.find((cls) => cls.classesId === selectedClass);
+      if (!currentClass) throw new Error('Không tìm thấy lớp!');
 
-      const oldGroup = currentClass.groups.find(
-        (g) => g.groupsId === selectedGroup
-      );
-      if (!oldGroup) throw new Error("Group not found!");
+      const oldGroup = currentClass.groups.find((g) => g.groupsId === selectedGroup);
+      if (!oldGroup) throw new Error('Không tìm thấy group!');
 
       const unassignedGroup = currentClass.groups.find(
-        (g) => g.groupsName.toLowerCase() === "unassigned"
+        (g) => g.groupsName.toLowerCase() === 'unassigned',
       );
-      if (!unassignedGroup) throw new Error("Unassigned group not found!");
+      if (!unassignedGroup) throw new Error('Không tìm thấy group unassigned!');
 
       const payload = {
         classId: currentClass.classesId,
@@ -354,50 +301,41 @@ const ClassList = ({ handleActivityAddClass }) => {
         unassignedGroupId: unassignedGroup.groupsId,
       };
 
-      await leaveGroup(user.token, payload, dispatch);
-      if (currentSemesterId) {
-        const data = await getClasses(currentSemesterId, user.token, dispatch);
-        setClasses(data);
-      }
-      alert("Left group successfully!");
+      await leaveGroup(user.token, payload);
+      const data = await getClassesByRole(user.token, user.role);
+      setClasses(data);
+      alert('Rời nhóm thành công!');
     } catch (error) {
-      alert("Failed to leave group!");
+      alert('Rời nhóm thất bại!');
     }
   };
 
   const handleKickUser = async (studentId) => {
     try {
-      if (!window.confirm("Do you want to kick this member from the group?"))
-        return;
+      if (!window.confirm('Bạn muốn kick thành viên này khỏi nhóm?')) return;
 
-      const currentClass = classes.find(
-        (cls) => cls.classesId === selectedClass
-      );
-      if (!currentClass) throw new Error("Class not found!");
+      const currentClass = classes.find((cls) => cls.classesId === selectedClass);
+      if (!currentClass) throw new Error('Không tìm thấy lớp!');
 
-      const group = currentClass.groups.find(
-        (g) => g.groupsId === selectedGroup
-      );
-      if (!group) throw new Error("Group not found!");
+      const group = currentClass.groups.find((g) => g.groupsId === selectedGroup);
+      if (!group) throw new Error('Không tìm thấy group!');
 
       const unassignedGroup = currentClass.groups.find(
-        (g) => g.groupsName.toLowerCase() === "unassigned"
+        (g) => g.groupsName.toLowerCase() === 'unassigned',
       );
-      if (!unassignedGroup) throw new Error("Unassigned group not found!");
+      if (!unassignedGroup) throw new Error('Không tìm thấy group unassigned!');
 
       const payload = {
         classId: currentClass.classesId,
         oldGroupId: group.groupsId,
         unassignedGroupId: unassignedGroup.groupsId,
       };
-      await kickUserFromGroup(user.token, studentId, payload, dispatch);
-      if (currentSemesterId) {
-        const data = await getClasses(currentSemesterId, user.token, dispatch);
-        setClasses(data);
-      }
-      alert("Kicked successfully!");
+      await kickUserFromGroup(user.token, studentId, payload);
+      const data = await getClassesByRole(user.token, user.role);
+      setClasses(data);
+      alert('Kick thành công!');
     } catch (error) {
-      alert("Failed to kick user!");
+      alert('Kick thất bại!');
     }
   };
 
@@ -406,46 +344,34 @@ const ClassList = ({ handleActivityAddClass }) => {
       <div className="grades__component__container">
         <div className="grades__component__container__filter__class">
           <div className="grades__component__container__filter__class__feature">
-            <div className="class-group-display">
-              <div className="class-item class-name">
-                <span className="label">Class:</span>
-                <span className="value">
-                  {(() => {
-                    const cls = classes.find(
-                      (c) => c.classesId === selectedClass
-                    );
-                    return cls ? cls.classesName : "-- No Class --";
-                  })()}
-                </span>
-              </div>
-              <div className="class-item group-name">
-                <span className="label">Group:</span>
-                <span className="value">
-                  {selectedGroup === "all"
-                    ? "All Member"
-                    : groups.find((g) => g.groupsId === selectedGroup)
-                        ?.groupsName || "All Member"}
-                </span>
-              </div>
-            </div>
-            {selectedGroup !== "all" &&
+            <select value={selectedClass} onChange={handleClassChange}>
+              <option>-- Choose Class --</option>
+              {classes.map((cls) => (
+                <option key={cls.classesId} value={cls.classesId}>
+                  {cls.classesName}
+                </option>
+              ))}
+            </select>
+            <select value={selectedGroup} onChange={handleGroupChange}>
+              <option value="all">All Member</option>
+              {groups.map((group) => (
+                <option key={group.groupsId} value={group.groupsId}>
+                  {group.groupsName}
+                </option>
+              ))}
+            </select>
+            {selectedGroup !== 'all' &&
               (() => {
                 const group = groups.find(
                   (g) =>
-                    g.groupsId === selectedGroup &&
-                    g.groupsName.toLowerCase() !== "unassigned"
+                    g.groupsId === selectedGroup && g.groupsName.toLowerCase() !== 'unassigned',
                 );
                 // Kiểm tra user hiện tại có trong group không
-                if (
-                  group &&
-                  group.groupStudents.some(
-                    (stu) => stu.userId === decodeUser.id
-                  )
-                ) {
+                if (group && group.groupStudents.some((stu) => stu.userId === decodeUser.id)) {
                   return (
                     <button
                       className="btn-leave-group"
-                      style={{ marginLeft: "12px" }}
+                      style={{ marginLeft: '12px' }}
                       onClick={hanldeDeleteUserFromGroup}
                     >
                       <i className="fa-solid fa-arrow-right-from-bracket"></i>
@@ -457,15 +383,12 @@ const ClassList = ({ handleActivityAddClass }) => {
               })()}
           </div>
           <div className="grades__component__container__filter__class__icon">
-            {(selectedGroup === "all" ||
-              groups
-                .find((g) => g.groupsId === selectedGroup)
-                ?.groupsName?.toLowerCase() === "unassigned") && (
+            {selectedGroup === 'all' && (
               <button
                 className="btn-add-member"
-                style={{ marginLeft: "12px" }}
+                style={{ marginLeft: '12px' }}
                 onClick={() => {
-                  setSelectedGroup("all");
+                  setSelectedGroup('all');
                   setShowCreateGroup(true);
                 }}
               >
@@ -475,26 +398,22 @@ const ClassList = ({ handleActivityAddClass }) => {
             )}
 
             {(() => {
-              const currentClass = classes.find(
-                (cls) => cls.classesId === selectedClass
-              );
+              const currentClass = classes.find((cls) => cls.classesId === selectedClass);
               if (!currentClass) return null;
-              const group = currentClass.groups.find(
-                (g) => g.groupsId === selectedGroup
-              );
-              const isLecturer = user.role === "LECTURER";
+              const group = currentClass.groups.find((g) => g.groupsId === selectedGroup);
+              const isLecturer = user.role === 'LECTURER';
               const isLeader = group && decodeUser.id === group.groupsLeaderId;
 
               if (
-                selectedGroup !== "all" &&
+                selectedGroup !== 'all' &&
                 group &&
-                group.groupsName.toLowerCase() !== "unassigned" &&
+                group.groupsName.toLowerCase() !== 'unassigned' &&
                 (isLecturer || isLeader)
               ) {
                 return (
                   <button
                     className="btn-add-member"
-                    style={{ marginLeft: "12px" }}
+                    style={{ marginLeft: '12px' }}
                     onClick={() => setShowCreateGroup(true)}
                   >
                     <i className="fa-solid fa-user-plus"></i>
@@ -504,19 +423,13 @@ const ClassList = ({ handleActivityAddClass }) => {
               }
               return null;
             })()}
-            {user.role === "LECTURER" && (
+            {user.role === 'LECTURER' && (
               <>
-                <button
-                  className="btn-create-class"
-                  onClick={() => setShowCreateClass(true)}
-                >
+                <button className="btn-create-class" onClick={() => setShowCreateClass(true)}>
                   <i className="fa-solid fa-plus"></i>
                   <span>Class</span>
                 </button>
-                <button
-                  className="btn-gen-link"
-                  onClick={handleGenerateInviteCode}
-                >
+                <button className="btn-gen-link" onClick={handleGenerateInviteCode}>
                   <i className="fa-solid fa-link"></i>
                   <span>Link</span>
                 </button>
@@ -538,13 +451,11 @@ const ClassList = ({ handleActivityAddClass }) => {
             <tbody>
               {currentItems.length > 0 ? (
                 currentItems
-                  .filter((item) => item._id !== "688e1238e4acb643f2bbc486") // Bỏ user này
+                  .filter((item) => item._id !== '688e1238e4acb643f2bbc486') // Bỏ user này
                   .map((item, index) => (
                     <tr key={item._id || index}>
                       <td>
-                        <p style={{ paddingTop: "15px" }}>
-                          {startIndex + index + 1}
-                        </p>
+                        <p style={{ paddingTop: '15px' }}>{startIndex + index + 1}</p>
                       </td>
                       <td>
                         <div className="name__ava">
@@ -559,44 +470,30 @@ const ClassList = ({ handleActivityAddClass }) => {
                         <p>{item.id}</p>
                       </td>
                       <td>
-                        <span onClick={() => handleShowDetail(item)}>
-                          Detail
-                        </span>
+                        <span onClick={() => handleShowDetail(item)}>Detail</span>
                         {(() => {
                           const currentClass = classes.find(
-                            (cls) => cls.classesId === selectedClass
+                            (cls) => cls.classesId === selectedClass,
                           );
                           if (!currentClass) return null;
                           const group = currentClass.groups.find(
-                            (g) => g.groupsId === selectedGroup
+                            (g) => g.groupsId === selectedGroup,
                           );
                           if (
                             !group ||
-                            selectedGroup === "all" ||
-                            group.groupsName.toLowerCase() === "unassigned"
+                            selectedGroup === 'all' ||
+                            group.groupsName.toLowerCase() === 'unassigned'
                           )
                             return null;
 
-                          // hide Kick button on the row representing the current user
-                          const isSelf =
-                            (item &&
-                              (item._id === decodeUser.id ||
-                                item.id === decodeUser.id)) ||
-                            (user &&
-                              (user._id === item._id ||
-                                user.id === item.id ||
-                                user.work_id === item.id));
-
                           if (
-                            (user.role === "LECTURER" ||
-                              (user.role === "STUDENT" &&
-                                decodeUser.id === group.groupsLeaderId)) &&
-                            !isSelf
+                            user.role === 'LECTURER' ||
+                            (user.role === 'STUDENT' && decodeUser.id === group.groupsLeaderId)
                           ) {
                             return (
                               <button
                                 className="btn-kick-user"
-                                style={{ marginLeft: "8px" }}
+                                style={{ marginLeft: '8px' }}
                                 onClick={() => handleKickUser(item._id)}
                               >
                                 <span>Kick</span>
@@ -610,7 +507,7 @@ const ClassList = ({ handleActivityAddClass }) => {
                   ))
               ) : (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: "center" }}>
+                  <td colSpan={5} style={{ textAlign: 'center' }}>
                     Oops! No students found.
                   </td>
                 </tr>
@@ -643,10 +540,7 @@ const ClassList = ({ handleActivityAddClass }) => {
         </div>
       </div>
       {showDetail && selectedStudent && (
-        <DetailStudent
-          student={selectedStudent}
-          handleActiveDetailStudent={handleCloseDetail}
-        />
+        <DetailStudent student={selectedStudent} handleActiveDetailStudent={handleCloseDetail} />
       )}
       {showCreateClass && (
         <PopupCreateClass
@@ -670,6 +564,8 @@ const ClassList = ({ handleActivityAddClass }) => {
           setGroupDesc={setGroupDesc}
           groupMax={groupMax}
           setGroupMax={setGroupMax}
+          groupLeaderId={groupLeaderId}
+          setGroupLeaderId={setGroupLeaderId}
           groupUserIds={groupUserIds}
           setGroupUserIds={setGroupUserIds}
           handleCreateGroup={handleCreateGroup}
@@ -680,10 +576,7 @@ const ClassList = ({ handleActivityAddClass }) => {
       )}
 
       {showInvitePopup && (
-        <PopupInviteCode
-          inviteCode={inviteCode}
-          setShowInvitePopup={setShowInvitePopup}
-        />
+        <PopupInviteCode inviteCode={inviteCode} setShowInvitePopup={setShowInvitePopup} />
       )}
     </div>
   );

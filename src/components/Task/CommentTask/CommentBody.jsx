@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react';
 import { FaPen, FaTrashAlt, FaCheck } from 'react-icons/fa';
 import { formatDateUI } from '../../../helper/formatDate';
-import userApi from '../../../service/UserService';
-import { useAuth } from '../../../context/AuthProvider';
 
 const CommentBody = ({
   reviews = [],
+  userMap = {},
   decodedId,
   editingCommentId,
   editedComment,
@@ -14,39 +12,6 @@ const CommentBody = ({
   onUpdate,
   onDelete,
 }) => {
-  console.log(reviews);
-  const { user } = useAuth();
-  const [userMap, setUserMap] = useState({});
-  console.log(userMap['688e1182e4acb643f2bbc47e']);
-  const { getUserById } = userApi();
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const uniqueUserIds = [...new Set(reviews.map((r) => r.createdBy))];
-      const newUserMap = {};
-      uniqueUserIds.map(async (id) => {
-        const user = await getUserById(user.token, id);
-        console.log('user debug:', user);
-      });
-
-      for (let id of uniqueUserIds) {
-        if (!id) continue;
-        try {
-          const user = await getUserById(user.token, id);
-          newUserMap[id] = user;
-        } catch (e) {
-          console.error(`Failed to fetch user ${id}`, e.message);
-        }
-      }
-
-      setUserMap((prev) => ({ ...prev, ...newUserMap }));
-    };
-
-    if (reviews.length > 0 && user.token) {
-      fetchUsers();
-    }
-  }, [reviews, user.token]);
-
   return (
     <div className="comment__task__body">
       {reviews?.length > 0 ? (

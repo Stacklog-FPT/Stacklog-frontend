@@ -12,9 +12,8 @@ import {
   resetTasks,
   getPersonalTask,
 } from '../redux/slice/taskSlice';
-import { REACT_API_URL } from '../api/apiConfig';
 
-const API_TASK = REACT_API_URL + 'task/task';
+const API_TASK = 'https://stacklog.id.vn/api/task';
 const SOCKET_URL = 'https://stacklog.id.vn/ws/taskify';
 let stompClient = null;
 
@@ -45,17 +44,15 @@ export const getAllTask = async (token, groupId, dispatch) => {
   try {
     if (!token) dispatch(setError('Token is not valid or missing!'));
     dispatch(setPending(true));
-    const response = await axios.get(`${API_TASK}/${groupId}`, {
+    const response = await axios.get(`http://localhost:3001/task?group_id=${groupId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    console.log(response);
     dispatch(getTasks(response.data));
     dispatch(setPending(false));
   } catch (e) {
-    dispatch(setError(e.message));
+    dispatch(setError(err.message));
     dispatch(setPending(false));
   }
 };
@@ -65,13 +62,12 @@ export const addTask = async (taskData, token, dispatch) => {
     throw new Error('Unauthorized!');
   }
   try {
-    const response = await axios.post(`${API_TASK}/save`, taskData, {
+    const response = await axios.post(`http://localhost:3001/task`, taskData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
-    console.log(response);
     dispatch(addTasks(response.data));
     return response;
   } catch (e) {
@@ -82,22 +78,20 @@ export const addTask = async (taskData, token, dispatch) => {
 };
 
 export const deleteTaskApi = async (token, taskId, dispatch) => {
+  if (!token) {
+    throw new Error('Unauthorized!');
+  }
   try {
-    if (!token) {
-      throw new Error('Unauthorized!');
-    }
-    dispatch(setPending(true));
-    const response = await axios.delete(`${API_TASK}/${taskId}`, {
+    const response = await axios.delete(`http://localhost:3001/task/${taskId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     dispatch(deleteTask(taskId));
-    dispatch(resetTasks());
-    dispatch(setPending(false));
     return response;
   } catch (e) {
-    dispatch(setError(e.message));
+    dispatch(setError(err.message));
+    dispatch(setPending(false));
     throw new Error(e.message);
   }
 };
@@ -105,13 +99,14 @@ export const deleteTaskApi = async (token, taskId, dispatch) => {
 export const updateTaskApi = async (taskData, token, dispatch) => {
   try {
     if (!token) dispatch(setError('The token is missing!'));
-    const response = await axios.post(`${API_TASK}/save`, taskData, {
+    const response = await axios.put(`http://localhost:3001/task/${taskData.id}`, taskData, {
       //Change taskId before mockup with BE
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log('Call me update task: ', response.data);
+
+    console.log('Call me: ', response.data);
     dispatch(updateTasks(response.data));
     dispatch(setPending(false));
     return response;
@@ -122,28 +117,7 @@ export const updateTaskApi = async (taskData, token, dispatch) => {
   }
 };
 
-export const createSubtaskApi = async (taskData, token, dispatch) => {
-  try {
-    if (!token) dispatch(setError('The token is missing!'));
-    const response = await axios.post(`${API_TASK}/subtask/save`, taskData, {
-      //Change taskId before mockup with BE
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    console.log('Call me subtask: ', response);
-    dispatch(updateTasks(response.data));
-    dispatch(setPending(false));
-    return response;
-  } catch (e) {
-    dispatch(setError(e.message));
-    dispatch(setPending(false));
-    throw new Error(e.message);
-  }
-};
-
-export const getPersonalTaskApi = async (token, semesterId, dispatch) => {
+export const getPersonalTaskApi = async (token, dispatch) => {
   try {
     if (!token) {
       dispatch(setError('The token is invalid!'));
@@ -151,12 +125,12 @@ export const getPersonalTaskApi = async (token, semesterId, dispatch) => {
     }
 
     dispatch(setPending(true));
-    const response = await axios.get(`${API_TASK}/personal-task?semesterId=${semesterId}`, {
+    const response = await axios.get(`http://localhost:3001/personalTask`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log('Personal Task: ', response);
+
     dispatch(getPersonalTask(response.data));
     dispatch(setPending(false));
   } catch (e) {

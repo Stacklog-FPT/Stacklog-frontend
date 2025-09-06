@@ -8,9 +8,8 @@ import {
   deleteSchedules,
   updateSchedules,
 } from '../redux/slice/scheduleSlice';
-import { REACT_API_URL } from '../api/apiConfig';
 
-const SCHEDULE_API = REACT_API_URL + 'schedule';
+const SCHEDULE_API = 'https://stacklog.id.vn/api/schedule';
 const ScheduleService = () => {
   const getScheduleByUser = async (token) => {
     try {
@@ -86,11 +85,11 @@ const ScheduleService = () => {
   };
 };
 
-export const getScheduleByGroupId = async (token, groupId, dispatch) => {
+export const getScheduleByGroupId = async (token, dispatch) => {
   try {
     if (!token) dispatch(setError('The token is missing!'));
     dispatch(setPending(true));
-    const response = await axios.get(`${SCHEDULE_API}/${groupId}`, {
+    const response = await axios.get(`http://localhost:3001/schedule`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -108,7 +107,7 @@ export const addSlotByGroup = async (token, data, dispatch) => {
   try {
     if (!token) throw new Error('Token is missing!');
     dispatch(setPending(true));
-    const response = await axios.post(`${SCHEDULE_API}/save`, data, {
+    const response = await axios.post(`http://localhost:3001/schedule`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -133,6 +132,8 @@ export const updateScheduleSlot = async (token, slotId, slotData, dispatch) => {
         'Content-Type': 'application/json',
       },
     });
+
+    console.log('debug: ', response);
     dispatch(updateSchedules(response.data));
     dispatch(setPending(false));
     return response;

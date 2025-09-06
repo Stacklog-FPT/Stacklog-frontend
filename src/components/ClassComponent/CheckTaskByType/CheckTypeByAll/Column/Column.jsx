@@ -24,6 +24,7 @@ const Column = ({
   onTaskUpdated,
   isLeader,
 }) => {
+  console.log(isLeader);
   const { setNodeRef, isOver } = useDroppable({ id: `droppable-${statusId}` });
   const { user } = useAuth();
   const dispatch = useDispatch();
@@ -32,7 +33,7 @@ const Column = ({
   const statuses = useSelector((s) => s.status.statuses || []);
 
   const selectedStatus = statuses.find((it) => String(it.statusTaskId) === String(statusId)); // Mì ăn liền
-  const statusItemId = selectedStatus?.statusTaskId; // Mì ăn liền
+  const statusItemId = selectedStatus?.id; // Mì ăn liền
 
   const [openModalColumnId, setOpenModalColumnId] = useState(null);
   const [modalAnchor, setModalAnchor] = useState({ top: 0, left: 0 });
@@ -63,7 +64,6 @@ const Column = ({
   };
 
   const endEditing = async (commit) => {
-    console.log('Call me!');
     if (!isEditing) return;
     setIsEditing(false);
 
@@ -80,7 +80,7 @@ const Column = ({
       statusTaskName: newName,
     };
 
-    const response = await updateStatusApi(user.token, payload, dispatch);
+    const response = await updateStatusApi(user.token, statusItemId, payload, dispatch);
     if (response.status === 200) {
       toast.success('Column updated successfully!');
     } else {

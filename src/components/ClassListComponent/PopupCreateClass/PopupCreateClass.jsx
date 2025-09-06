@@ -10,10 +10,10 @@ const PopupCreateClass = ({
 }) => (
   <div className="popup-create-class">
     <div className="popup-content">
-      <h3>Create new class</h3>
+      <h3>Tạo lớp mới</h3>
       <input
         type="text"
-        placeholder="Enter class name..."
+        placeholder="Nhập tên lớp..."
         value={newClassName}
         onChange={(e) => setNewClassName(e.target.value)}
       />
@@ -23,13 +23,13 @@ const PopupCreateClass = ({
           disabled={isCreating || !newClassName.trim()}
           className="btn-confirm"
         >
-          {isCreating ? "Creating..." : "Create"}
+          {isCreating ? "Đang tạo..." : "Tạo"}
         </button>
         <button
           onClick={() => setShowCreateClass(false)}
           className="btn-cancel"
         >
-          Cancel
+          Hủy
         </button>
       </div>
     </div>

@@ -36,14 +36,14 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
   const handleSubtaskDragEnd = (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const oldIndex = props.task?.subtasks.findIndex(
+    const oldIndex = props.task?.subTasks.findIndex(
       (item) => `${props.task.taskId}-subtask-${item.taskId}` === active.id,
     );
     const newIndex = props.task?.subtasks.findIndex(
       (item) => `${props.task.taskId}-subtask-${item.taskId}` === over.id,
     );
     if (oldIndex !== -1 && newIndex !== -1) {
-      const newSubtasks = arrayMove(props.task?.subtasks, oldIndex, newIndex);
+      const newSubtasks = arrayMove(props.task?.subTasks, oldIndex, newIndex);
     }
   };
 
@@ -139,29 +139,28 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
 
     if (result.isConfirmed) {
       try {
-        const response = await deleteTaskApi(user.token, task.taskId, dispatch); // Change taskId before mockup with BE
-        console.log(response);
+        const response = await deleteTaskApi(user.token, task.id, dispatch); // Change taskId before mockup with BE
         if (response.data === 'Delete success') {
-          //   flag = true;
-          //   setShowSubTask(false);
+          flag = true;
+          setShowSubTask(false);
 
-          //   await axios.post('http://localhost:3000/notifications', {
-          //     id: Math.random().toString(16).slice(2, 6),
-          //     title: `Delete task ${task.task_title} by ${user.username}`,
-          //     author: {
-          //       _id: Math.random(),
-          //       name: user.username || 'Unknown',
-          //       avatar:
-          //         user.avatar ||
-          //         'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
-          //     },
-          //     createdAt: new Date().toISOString().split('T')[0],
-          //     isRead: false,
-          //     _id: Math.random(),
-          //   });
-          // }
-          Swal.fire('Deleted!', 'Task was removed successfully.', 'success');
+          await axios.post('http://localhost:3000/notifications', {
+            id: Math.random().toString(16).slice(2, 6),
+            title: `Delete task ${task.task_title} by ${user.username}`,
+            author: {
+              _id: Math.random(),
+              name: user.username || 'Unknown',
+              avatar:
+                user.avatar ||
+                'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
+            },
+            createdAt: new Date().toISOString().split('T')[0],
+            isRead: false,
+            _id: Math.random(),
+          });
         }
+
+        Swal.fire('Deleted!', 'Task was removed successfully.', 'success');
       } catch (error) {
         console.error('Delete failed:', error);
         Swal.fire('Error!', 'Something went wrong during deletion.', 'error');
@@ -336,7 +335,7 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
                 }}
               >
                 <img src={iconDontKnow} alt="this is icon" />
-                <span>{props.task?.subtasks?.length || 0}</span>
+                <span>{props.task?.subTasks?.length || 0}</span>
               </div>
             </div>
             <div className="task-content-contact-right"></div>
@@ -345,20 +344,20 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
       </div>
       <div className="task-content-subtask">
         {showSubTask &&
-          (props.task?.subtasks?.length > 0 ? (
+          (props.task?.subTasks?.length > 0 ? (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={handleSubtaskDragEnd}
             >
               <SortableContext
-                items={props.task?.subtasks?.map(
+                items={props.task?.subTasks?.map(
                   (subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`,
                 )}
                 strategy={verticalListSortingStrategy}
               >
                 <div className="subtask-list">
-                  {props.task?.subtasks?.map((item) => (
+                  {props.task?.subTasks?.map((item) => (
                     <SubTask
                       key={`${props.task.taskId}-subtask-${item.taskId}`}
                       id={`${props.task.taskId}-subtask-${item.taskId}`}

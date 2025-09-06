@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import api from '../axios/index';
+import { useState, useCallback } from "react";
+import api from "../axios/index";
 
 const usePostApi = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +16,9 @@ const usePostApi = () => {
       setData(response.data);
       return response.data;
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'An error occurred');
+      setError(
+        err.response?.data?.message || err.message || "An error occurred"
+      );
       throw err;
     } finally {
       setIsLoading(false);

@@ -17,7 +17,7 @@ import Navbar from './Navbar/Navbar';
 import Checklist from './Checklist/Checklist';
 import SubTask from './SubTask/SubTask';
 import HoldDeleteButton from './ButtonDelete';
-import { deleteTaskApi, updateTaskApi } from '../../../service/TaskService'; // <-- thêm update
+import { deleteTaskApi, updateTaskApi } from '../../../service/TaskService';
 import { toast } from 'sonner';
 
 const toLocalInput = (iso) => {
@@ -117,20 +117,14 @@ const TaskDetails = ({ task, onClose }) => {
       const payload = {
         ...task,
         reviews: [
-          ...(task.reviews || []),
           {
-            reviewId: Math.random(),
             reviewContent: newComment,
-            taskId: task.taskId ?? task.id,
-            createdBy: user._id,
+            createdBy: decoded._id,
             createdAt: new Date().toISOString(),
-            avatar_link:
-              user.avatar ||
-              'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
           },
         ],
       };
-      const res = await createReview(user?.token, task.id, payload, dispatch);
+      const res = await updateTaskApi(payload, user?.token, dispatch);
       if (res) {
         setNewComment('');
         await axios.post('http://localhost:3000/notifications', {

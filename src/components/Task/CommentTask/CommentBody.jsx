@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { FaPen, FaTrashAlt, FaCheck } from 'react-icons/fa';
-import { formatDateUI } from '../../../helper/formatDate';
-import userApi from '../../../service/UserService';
-import { useAuth } from '../../../context/AuthProvider';
+import { useState, useEffect } from "react";
+import { FaPen, FaTrashAlt, FaCheck } from "react-icons/fa";
+import { formatDateUI } from "../../../helper/formatDate";
+import userApi from "../../../service/UserService";
+import { useAuth } from "../../../context/AuthProvider";
 
 const CommentBody = ({
   reviews = [],
@@ -14,58 +14,75 @@ const CommentBody = ({
   onUpdate,
   onDelete,
 }) => {
-  console.log(reviews);
   const { user } = useAuth();
   const [userMap, setUserMap] = useState({});
-  console.log(userMap['688e1182e4acb643f2bbc47e']);
   const { getUserById } = userApi();
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const uniqueUserIds = [...new Set(reviews.map((r) => r.createdBy))];
-      const newUserMap = {};
-      uniqueUserIds.map(async (id) => {
-        const user = await getUserById(user.token, id);
-        console.log('user debug:', user);
-      });
+      if (!user?.token) return;
+      const uniqueUserIds = [
+        ...new Set(reviews.map((r) => r.createdBy).filter(Boolean)),
+      ];
+      if (uniqueUserIds.length === 0) return;
 
-      for (let id of uniqueUserIds) {
-        if (!id) continue;
-        try {
-          const user = await getUserById(user.token, id);
-          newUserMap[id] = user;
-        } catch (e) {
-          console.error(`Failed to fetch user ${id}`, e.message);
-        }
+      try {
+        const responses = await Promise.all(
+          uniqueUserIds.map((id) =>
+            getUserById(user.token, id).catch((err) => {
+              console.error(`Failed to fetch user ${id}:`, err?.message || err);
+              return null;
+            })
+          )
+        );
+
+        const newUserMap = {};
+        uniqueUserIds.forEach((id, idx) => {
+          const u = responses[idx];
+          if (u) newUserMap[id] = u;
+        });
+
+        setUserMap((prev) => ({ ...prev, ...newUserMap }));
+      } catch (e) {
+        console.error("Failed to fetch comment users", e.message || e);
       }
-
-      setUserMap((prev) => ({ ...prev, ...newUserMap }));
     };
 
-    if (reviews.length > 0 && user.token) {
-      fetchUsers();
-    }
-  }, [reviews, user.token]);
+    fetchUsers();
+  }, [reviews, user?.token, getUserById]);
+
+  const sortedReviews = Array.isArray(reviews)
+    ? [...reviews].sort((a, b) => {
+        const aTime = new Date(a.createdAt || a.updateAt || 0).getTime();
+        const bTime = new Date(b.createdAt || b.updateAt || 0).getTime();
+        return bTime - aTime;
+      })
+    : [];
 
   return (
     <div className="comment__task__body">
-      {reviews?.length > 0 ? (
-        reviews.map((item, index) => (
+      {sortedReviews?.length > 0 ? (
+        sortedReviews.map((item, index) => (
           <div className="comment__task__card" key={item.reviewId ?? index}>
             <div className="comment__task__card__header">
               <div className="infor__user">
                 <img
                   src={
                     item.avatar_link ||
-                    'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                    "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
                   }
                   alt="avatar"
                 />
+                {console.log("item:", item)}
                 <div>
                   <p className="infor__user__name">
-                    {userMap[item.createdBy]?.full_name || item.authorName || 'User'}
+                    {userMap[item.createdBy]?.full_name ||
+                      item.authorName ||
+                      "User"}
                   </p>
-                  <p className="infor__user__create">{formatDateUI?.(item.createdAt)}</p>
+                  <p className="infor__user__create">
+                    {formatDateUI?.(item.createdAt)}
+                  </p>
                 </div>
               </div>
             </div>

@@ -108,25 +108,64 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
     if (!validateForm()) {
       return;
     }
-    if (isGroup(isPage, selectedGroup)) toast.error('Please selected group!');
+    // ensure group selected when required
+    if (!isGroup(isPage, selectedGroup)) {
+      toast.error('Please select a group!');
+      return;
+    }
     if (!date || !time) {
       toast.error('All input are required!');
       return;
     }
 
     const fullDateTime = `${date}T${time}:00`;
-    const payload = {
-      ...scheduleData,
-      slotStarTime: fullDateTime,
-      groupId: selectedGroup?.groupsId || groupId,
-      userIdAssigns: selectedGroup?.groupStudents.map((s) => s) || getGroup().groupStudents,
+
+    // normalize userIdAssigns similar to ScheduleService
+    const normalizeUserIdAssigns = (input) => {
+      if (Array.isArray(input)) {
+        return input
+          .map((u) => {
+            if (!u) return null;
+            if (typeof u === 'string') return u;
+            return u.userId || u._id || u.id || u.work_id || null;
+          })
+          .filter(Boolean);
+      }
+      if (typeof input === 'string' && input.length) {
+        return input.split(',').map((s) => s.trim()).filter(Boolean);
+      }
+      return [];
     };
 
-    console.log(payload);
+    const fallbackGroup = getGroup();
+    const studentObjs = selectedGroup?.groupStudents ?? fallbackGroup?.groupStudents ?? [];
+    const idsFromStudents = studentObjs
+      .map((s) => (typeof s === 'string' ? s : s.userId || s._id || s.id || s.work_id))
+      .filter(Boolean);
 
-    await addSlotByGroup(user.token, payload, dispatch);
-    onSuccess?.();
-    onClose();
+    const idsFromForm = normalizeUserIdAssigns(scheduleData.userIdAssigns || scheduleData.assignTo);
+
+    const userIdAssigns = idsFromForm.length ? idsFromForm : idsFromStudents;
+
+    const payload = {
+      slotTitle: scheduleData.slotTitle || '',
+      slotDescription: scheduleData.slotDescription || '',
+      slotStartTime: scheduleData.slotStartTime || fullDateTime || scheduleData.slotStarTime || '',
+      groupId: scheduleData.groupId || selectedGroup?.groupsId || groupId || '',
+      userIdAssigns,
+    };
+
+    console.log('AddSchedule payload:', payload);
+    try {
+      const res = await addSlotByGroup(user.token, payload, dispatch);
+      console.log('AddSchedule response:', res);
+      toast.success('Added slot successfully!');
+      onSuccess?.();
+      onClose();
+    } catch (err) {
+      console.error('Failed to add slot', err);
+      toast.error(err?.message || 'Failed to add slot');
+    }
   };
 
   // Submit for current group

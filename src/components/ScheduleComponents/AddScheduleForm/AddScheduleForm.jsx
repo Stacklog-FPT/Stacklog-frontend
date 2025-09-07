@@ -9,7 +9,6 @@ import { Toaster, toast } from 'sonner';
 import { isGroup } from '../../../helper/validateStudentGroup';
 const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
   const { user } = useAuth();
-  console.log(isPage);
   const dispatch = useDispatch();
   const { classes } = useSelector((state) => state.class);
   const groupList = useSelector((state) => state.group.groups);
@@ -132,7 +131,10 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
           .filter(Boolean);
       }
       if (typeof input === 'string' && input.length) {
-        return input.split(',').map((s) => s.trim()).filter(Boolean);
+        return input
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
       }
       return [];
     };

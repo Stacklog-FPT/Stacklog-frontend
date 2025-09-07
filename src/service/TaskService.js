@@ -11,6 +11,7 @@ import {
   updateTasks,
   resetTasks,
   getPersonalTask,
+  updateReview,
 } from '../redux/slice/taskSlice';
 import { REACT_API_URL } from '../api/apiConfig';
 
@@ -161,5 +162,26 @@ export const getPersonalTaskApi = async (token, semesterId, dispatch) => {
     dispatch(setPending(false));
   } catch (e) {
     dispatch(setError(e.message || 'Something went wrong!'));
+  }
+};
+
+export const updateReviewApi = async (token, groupId, data, dispatch) => {
+  try {
+    if (!token) dispatch(setError('The token is invalid!'));
+    dispatch(setPending(true));
+
+    const response = await axios.post(`${API_TASK}/save`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log(response);
+    dispatch(updateReview(response.data));
+    dispatch(setPending(false));
+    return response;
+  } catch (e) {
+    dispatch(setError(e.message));
   }
 };

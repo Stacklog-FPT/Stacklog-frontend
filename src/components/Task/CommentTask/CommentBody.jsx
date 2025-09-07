@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { FaPen, FaTrashAlt, FaCheck } from "react-icons/fa";
-import { formatDateUI } from "../../../helper/formatDate";
-import userApi from "../../../service/UserService";
-import { useAuth } from "../../../context/AuthProvider";
+import { useState, useEffect } from 'react';
+import { FaPen, FaTrashAlt, FaCheck } from 'react-icons/fa';
+import { formatDateUI } from '../../../helper/formatDate';
+import userApi from '../../../service/UserService';
+import { useAuth } from '../../../context/AuthProvider';
 
 const CommentBody = ({
   reviews = [],
@@ -21,9 +21,7 @@ const CommentBody = ({
   useEffect(() => {
     const fetchUsers = async () => {
       if (!user?.token) return;
-      const uniqueUserIds = [
-        ...new Set(reviews.map((r) => r.createdBy).filter(Boolean)),
-      ];
+      const uniqueUserIds = [...new Set(reviews.map((r) => r.createdBy).filter(Boolean))];
       if (uniqueUserIds.length === 0) return;
 
       try {
@@ -32,8 +30,8 @@ const CommentBody = ({
             getUserById(user.token, id).catch((err) => {
               console.error(`Failed to fetch user ${id}:`, err?.message || err);
               return null;
-            })
-          )
+            }),
+          ),
         );
 
         const newUserMap = {};
@@ -44,12 +42,12 @@ const CommentBody = ({
 
         setUserMap((prev) => ({ ...prev, ...newUserMap }));
       } catch (e) {
-        console.error("Failed to fetch comment users", e.message || e);
+        console.error('Failed to fetch comment users', e.message || e);
       }
     };
 
     fetchUsers();
-  }, [reviews, user?.token, getUserById]);
+  }, [user?.token]);
 
   const sortedReviews = Array.isArray(reviews)
     ? [...reviews].sort((a, b) => {
@@ -69,20 +67,16 @@ const CommentBody = ({
                 <img
                   src={
                     item.avatar_link ||
-                    "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                    'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
                   }
                   alt="avatar"
                 />
-                {console.log("item:", item)}
+                {console.log('item:', item)}
                 <div>
                   <p className="infor__user__name">
-                    {userMap[item.createdBy]?.full_name ||
-                      item.authorName ||
-                      "User"}
+                    {userMap[item.createdBy]?.full_name || item.authorName || 'User'}
                   </p>
-                  <p className="infor__user__create">
-                    {formatDateUI?.(item.createdAt)}
-                  </p>
+                  <p className="infor__user__create">{formatDateUI?.(item.createdAt)}</p>
                 </div>
               </div>
             </div>

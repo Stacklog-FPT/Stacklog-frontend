@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import CommentTaskBody from './CommentBody';
 import CommentTaskFooter from './CommentFooter';
 import { useParams } from 'react-router';
-import { updateTaskApi } from '../../../service/TaskService';
+import { updateTaskApi, updateReviewApi } from '../../../service/TaskService';
 
 const CommentTask = ({ task, isClose }) => {
   const { groupId } = useParams();
@@ -23,8 +23,6 @@ const CommentTask = ({ task, isClose }) => {
   const [newComment, setNewComment] = useState('');
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState('');
-  const [userMap, setUserMap] = useState({});
-
   const { user } = useAuth();
   const decoded = decodeToken(user.token);
   const decodedId = decoded?.id;
@@ -47,8 +45,6 @@ const CommentTask = ({ task, isClose }) => {
           },
         ],
       };
-
-      console.log(payload);
       const res = await updateTaskApi(payload, user?.token, dispatch);
       if (res) {
         setNewComment('');
@@ -102,13 +98,24 @@ const CommentTask = ({ task, isClose }) => {
     if (!editedComment.trim()) return;
     try {
       const payload = {
-        reviewContent: editedComment,
-        taskId: task.id,
-        reviewId: editingCommentId,
+        ...currentTask,
+        reviews: [
+          [
+            ...(currentTask.reviews || []),
+            {
+              reviewContent: editedComment,
+              createdBy: decodedId,
+              createdAt: new Date().toISOString(),
+              reviewId: editingCommentId,
+            },
+          ],
+        ],
       };
 
-      const res = await createReview(user?.token, task.id, payload, dispatch);
-      if (res) {
+      console.log(payload);
+
+      const res = await updateReviewApi(user?.token, currentTask.groupId, payload, dispatch);
+      if (res.status === 200) {
         setEditingCommentId(null);
         setEditedComment('');
       }
@@ -147,7 +154,6 @@ const CommentTask = ({ task, isClose }) => {
 
       <CommentTaskBody
         reviews={reviews}
-        userMap={userMap}
         decodedId={decodedId}
         editingCommentId={editingCommentId}
         editedComment={editedComment}

@@ -4,9 +4,10 @@ import { REACT_API_URL } from '../api/apiConfig';
 const REVIEW_URI = REACT_API_URL + 'task/review';
 const ReviewService = () => {
   const deleteReview = async (token, id) => {
+    console.log('Call me delete review: ', id);
     try {
       if (!token) throw new Error('Token is missing!');
-      const response = await axios.delete(`${REVIEW_URI}/delete/${id}`, {
+      const response = await axios.delete(`${REVIEW_URI}/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -54,5 +55,4 @@ export const createReview = async (token, groupId, data, dispatch) => {
     throw new Error(e.message || 'Failed to create review!');
   }
 };
-
 export default ReviewService;

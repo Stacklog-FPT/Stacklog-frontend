@@ -29,6 +29,18 @@ const tasksSlice = createSlice({
     deleteTask: (state, action) => {
       state.tasks = state.tasks.filter((t) => t.taskId !== action.payload);
     },
+
+    updateReview: (state, action) => {
+      const { reviewId, taskId } = action.payload;
+      const task = state.tasks.filter((t) => t.taskId === taskId);
+      if (task) {
+        const review = task?.reviews.find((rv) => rv.reviewId === reviewId);
+
+        if (review) {
+          Object.assign(review, action.payload);
+        }
+      }
+    },
     getPersonalTask: (state, action) => {
       state.personalTask = action.payload;
     },
@@ -55,6 +67,7 @@ export const {
   updateTasks,
   resetTasks,
   getPersonalTask,
+  updateReview,
 } = tasksSlice.actions;
 
 export default tasksSlice.reducer;

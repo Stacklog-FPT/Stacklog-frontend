@@ -11,84 +11,44 @@ import {
 import { REACT_API_URL } from '../api/apiConfig';
 
 const SCHEDULE_API = REACT_API_URL + 'schedule';
-const ScheduleService = () => {
-  // const getScheduleByUser = async (token) => {
-  //   try {
-  //     if (!token) throw new Error('Token is missing!');
-  //     const response = await axios.get(`${SCHEDULE_API}/user`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
 
-  //     return response;
-  //   } catch (e) {
-  //     throw new Error(e.message);
-  //   }
-  // };
+// Helper: normalize various forms of user assignments into an array of id strings
+const normalizeUserIdAssigns = (maybeIds) => {
+  if (!maybeIds) return [];
+  if (Array.isArray(maybeIds)) {
+    return maybeIds
+      .map((u) => {
+        if (!u) return null;
+        if (typeof u === 'string') return u;
+        // common id fields
+        return u.userId || u._id || u.id || u.work_id || null;
+      })
+      .filter(Boolean);
+  }
 
-  // const addCreateSlot = async (token, data) => {
-  //   try {
-  //     if (!token) throw new Error('Token is missing!');
+  if (typeof maybeIds === 'string') {
+    // comma separated string
+    return maybeIds
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
 
-  //     const response = await axios.post(`${SCHEDULE_API}/`, data, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         'Content-Type': 'application/json',
-  //       },
-  //     });
+  // single object
+  if (typeof maybeIds === 'object') {
+    return [maybeIds.userId || maybeIds._id || maybeIds.id || maybeIds.work_id].filter(Boolean);
+  }
 
-  //     return response;
-  //   } catch (e) {
-  //     throw new Error(e.message);
-  //   }
-  // };
-
-  const updateScheduleSlot = async (token, data) => {
-    try {
-      if (!token) throw new Error('Token is missing!');
-
-      const response = await axios.post(`${SCHEDULE_API}/`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      return response;
-    } catch (e) {
-      throw new Error(e.message);
-    }
-  };
-
-  const deleteScheduleSlot = async (token, slotId) => {
-    try {
-      if (!token) throw new Error('Token is missing!');
-      if (!slotId) throw new Error('Slot ID is missing!');
-
-      const response = await axios.delete(`${SCHEDULE_API}/delete/${slotId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      return response.data;
-    } catch (error) {
-      throw new Error(`Failed to delete schedule slot: ${error.message}`);
-    }
-  };
-
-  return {
-    // getScheduleByUser,
-    // addCreateSlot,
-    updateScheduleSlot,
-    deleteScheduleSlot,
-  };
+  return [];
 };
 
+// Public API
 export const getScheduleByGroupId = async (token, groupId, dispatch) => {
   try {
-    if (!token) dispatch(setError('The token is missing!'));
+    if (!token) {
+      dispatch(setError('The token is missing!'));
+      return;
+    }
     dispatch(setPending(true));
     const response = await axios.get(`${SCHEDULE_API}/${groupId}`, {
       headers: {
@@ -98,10 +58,14 @@ export const getScheduleByGroupId = async (token, groupId, dispatch) => {
 
     console.log(response);
     dispatch(resetSchedule());
+    // backend expected to return array of schedules
     dispatch(getSchedules(response.data));
     dispatch(setPending(false));
+    return response.data;
   } catch (e) {
-    dispatch(setError(e.message));
+    dispatch(setPending(false));
+    dispatch(setError(e.message || 'Failed to fetch schedules'));
+    throw e;
   }
 };
 
@@ -110,27 +74,19 @@ export const addSlotByGroup = async (token, data, dispatch) => {
     if (!token) throw new Error('Token is missing!');
     dispatch(setPending(true));
 
-    // Normalize incoming data to backend contract
-    const userIdAssigns = Array.isArray(data.userIdAssigns)
-      ? data.userIdAssigns
-          .map((u) => {
-            if (!u) return null;
-            if (typeof u === 'string') return u;
-            return u.userId || u._id || u.id || u.work_id || null;
-          })
-          .filter(Boolean)
-      : typeof data.userIdAssigns === 'string' && data.userIdAssigns.length
-      ? data.userIdAssigns
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [];
+    const userIdAssigns = normalizeUserIdAssigns(
+      data.userIdAssigns || data.assignTo || data.userAssigns,
+    );
 
     const payload = {
-      slotTitle: data.slotTitle || '',
-      slotDescription: data.slotDescription || '',
-      slotStartTime: data.slotStartTime || data.slotStarTime || '',
-      groupId: data.groupId || '',
+      slotTitle: data.slotTitle || data.title || '',
+      slotDescription: data.slotDescription || data.description || '',
+      // accept slotStartTime, legacy slotStarTime, or Date objects
+      slotStartTime:
+        data.slotStartTime ||
+        data.slotStarTime ||
+        (data.start ? new Date(data.start).toISOString() : ''),
+      groupId: data.groupId || data.group || '',
       userIdAssigns,
     };
 
@@ -141,6 +97,7 @@ export const addSlotByGroup = async (token, data, dispatch) => {
       },
     });
 
+    // assume backend returns created/updated slot(s)
     dispatch(addSchedules(response.data));
     dispatch(setPending(false));
     return response.data;
@@ -155,18 +112,37 @@ export const updateScheduleSlot = async (token, slotId, slotData, dispatch) => {
   try {
     if (!token) throw new Error('Token is missing!');
     dispatch(setPending(true));
-    const response = await axios.put(`http://localhost:3001/schedule/${slotId}`, slotData, {
-      //change slotId in component before mockup
+
+    const userIdAssigns = normalizeUserIdAssigns(
+      slotData.userIdAssigns || slotData.assignTo || slotData.userAssigns,
+    );
+
+    const payload = {
+      slotId: slotId || slotData.slotId || slotData.id || '',
+      slotTitle: slotData.slotTitle || slotData.title || '',
+      slotDescription: slotData.slotDescription || slotData.description || '',
+      slotStartTime:
+        slotData.slotStartTime ||
+        slotData.slotStarTime ||
+        (slotData.start ? new Date(slotData.start).toISOString() : ''),
+      groupId: slotData.groupId || slotData.group || '',
+      userIdAssigns,
+    };
+
+    const response = await axios.post(`${SCHEDULE_API}/save`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
+
     dispatch(updateSchedules(response.data));
     dispatch(setPending(false));
-    return response;
+    return response.data;
   } catch (e) {
-    dispatch(setError(e.message));
+    dispatch(setPending(false));
+    dispatch(setError(e.message || 'Failed to update slot'));
+    throw e;
   }
 };
 
@@ -175,8 +151,8 @@ export const deleteScheduleSlot = async (token, slotId, dispatch) => {
     if (!token) throw new Error('Token is missing!');
     if (!slotId) throw new Error('Slot ID is missing!');
     dispatch(setPending(true));
-    const response = await axios.delete(`http://localhost:3001/schedule/${slotId}`, {
-      // Change slotId before mockup with BE
+
+    const response = await axios.delete(`${SCHEDULE_API}/delete/${slotId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -184,10 +160,20 @@ export const deleteScheduleSlot = async (token, slotId, dispatch) => {
 
     dispatch(deleteSchedules(slotId));
     dispatch(setPending(false));
-    return response;
-  } catch (error) {
-    dispatch(setError(e.message));
+    return response.data;
+  } catch (e) {
+    dispatch(setPending(false));
+    dispatch(setError(e.message || 'Failed to delete slot'));
+    throw e;
   }
 };
+
+// default export for compatibility with existing imports
+const ScheduleService = () => ({
+  getScheduleByGroupId,
+  addSlotByGroup,
+  updateScheduleSlot,
+  deleteScheduleSlot,
+});
 
 export default ScheduleService;

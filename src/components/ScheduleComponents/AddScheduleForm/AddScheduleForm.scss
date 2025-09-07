@@ -9,22 +9,25 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  overflow: auto;
 }
 
 .modal-content {
   background: linear-gradient(135deg, #f8fafc 80%, #e0f7fa 100%) !important;
   background-clip: padding-box;
-  padding: 36px 32px 32px 32px;
+  padding: 30px 28px 28px 28px;
   border-radius: 18px;
-  width: 440px;
+  width: 520px;
   max-width: 95vw;
-  box-shadow: 0 10px 32px 0 rgba(0,0,0,0.22), 0 2px 8px 0 rgba(0,0,0,0.10);
+  box-shadow: 0 10px 32px 0 rgba(0, 0, 0, 0.22), 0 2px 8px 0 rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 2100;
   opacity: 1 !important;
   filter: none !important;
   border: 1.5px solid #e0e0e0;
   transition: box-shadow 0.2s;
+  height: 100%;
+  overflow: auto;
 }
 
 .close-btn {
@@ -76,7 +79,8 @@
       letter-spacing: 0.2px;
     }
 
-    input, textarea {
+    input,
+    textarea {
       padding: 11px 14px;
       border: 1.5px solid #cfd8dc;
       border-radius: 9px;
@@ -84,13 +88,166 @@
       outline: none;
       background: #fafdff;
       transition: border-color 0.2s, box-shadow 0.2s;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
       resize: none;
     }
 
-    input:focus, textarea:focus {
+    input:focus,
+    textarea:focus {
       border-color: #045745;
       box-shadow: 0 0 0 2px #b2ebf2;
+    }
+  }
+
+  .students-checklist {
+    .students-label {
+      display: block;
+      font-size: 15px;
+      color: #045745;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .students-label {
+      cursor: pointer;
+      user-select: none;
+    }
+    .students-label:hover { text-decoration: underline; }
+    .students-controls-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+
+      .selected-members {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+        flex: 1 1 auto;
+        max-width: 100%;
+      }
+
+      .no-selected {
+        color: #6b6b6b;
+        font-size: 14px;
+      }
+
+      .member-pill {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f3fff6;
+        border: 1px solid #e1f3e6;
+        padding: 8px 10px;
+        border-radius: 10px;
+        color: #045745;
+        font-weight: 600;
+        min-width: 180px;
+      }
+      .member-pill img {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .pill-remove {
+        background: transparent;
+        border: none;
+        margin-left: 6px;
+        color: #045745;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .add-member-box {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 2px dashed #cfd8dc;
+        background: transparent;
+        color: #6b6b6b;
+        cursor: pointer;
+      }
+      .add-member-box .plus {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid #cfd8dc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #045745;
+        font-weight: 700;
+        background: #fff;
+      }
+      .add-member-box.open { background: #f3fff6; border-color: #d6f1df; }
+      .add-member-box .add-text { font-weight: 600; font-size: 15px; }
+    }
+
+    .students-panel {
+      background: #fff;
+      border: 1px solid #e6eef0;
+      border-radius: 8px;
+      max-height: 260px;
+      overflow: auto;
+      padding: 8px 10px;
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: calc(100% + 8px);
+      z-index: 9999;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+      min-width: 280px;
+    }
+
+    .students-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 10px;
+      border-bottom: 1px solid #f6f8f8;
+      transition: background 0.12s;
+    }
+    .students-row:hover { background: #fbffff; }
+
+    .students-row:last-child {
+      border-bottom: none;
+    }
+
+    .student-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #e0e0e0;
+    }
+    .student-name {
+      color: #045745;
+      font-weight: 500;
+    }
+
+    .student-checkbox input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #045745;
+    }
+  }
+
+  /* when panel is open we add a tiny reserve to avoid clipping but rely on overlay to prevent major shifts */
+  .students-checklist.open {
+    position: relative;
+    margin-bottom: 18px;
+  }
+
+  /* small responsive tweak to ensure panel doesn't overflow on narrow screens */
+  @media (max-width: 480px) {
+    .students-panel {
+      left: 6px;
+      right: 6px;
+      top: calc(100% + 6px);
     }
   }
 
@@ -104,7 +261,7 @@
     font-size: 13.5px;
     font-weight: 500;
     color: #045745;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     gap: 6px;
     transition: box-shadow 0.2s;
     min-height: 28px;
@@ -173,7 +330,6 @@
   }
 }
 
-
 .select-wrapper {
   width: 100%;
   display: flex;
@@ -195,7 +351,7 @@
   color: #045745;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 .select-wrapper select:focus {
   border-color: #045745;

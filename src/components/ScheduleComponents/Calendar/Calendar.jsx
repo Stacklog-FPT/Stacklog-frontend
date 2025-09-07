@@ -51,8 +51,23 @@ export default function Calendar({ groupId, isPage }) {
       const id = e.slotId ?? e.id;
       const title = e.slotTitle ?? e.slotTittle ?? e.title ?? "No title";
       const startISO = e.slotStartTime ?? e.slotStarTime ?? e.start;
-      const start = startISO ? new Date(startISO) : new Date();
-      const end = e.end ? new Date(e.end) : addHours(start, 1);
+      // parse backend datetimes as local (avoid UTC parsing inconsistencies)
+      const parseAsLocal = (iso) => {
+        if (!iso) return null;
+        // if already a Date object
+        if (iso instanceof Date) return iso;
+        // handle strings like '2025-09-07T13:15:00' (no timezone)
+        const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
+        if (m) {
+          const [, Y, Mo, D, H, Mi, S] = m;
+          return new Date(Number(Y), Number(Mo) - 1, Number(D), Number(H), Number(Mi), Number(S || 0));
+        }
+        // fallback to Date constructor
+        return new Date(iso);
+      };
+
+      const start = parseAsLocal(startISO) || new Date();
+      const end = e.end ? parseAsLocal(e.end) || addHours(start, 1) : addHours(start, 1);
       return { id, title, start, end, groupId: e.groupId, ...e };
     });
   }, [schedules]);

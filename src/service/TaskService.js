@@ -165,7 +165,7 @@ export const getPersonalTaskApi = async (token, semesterId, dispatch) => {
   }
 };
 
-export const updateReviewApi = async (token, groupId, data, dispatch) => {
+export const updateReviewApi = async (token, taskId, commentId, data, dispatch) => {
   try {
     if (!token) dispatch(setError('The token is invalid!'));
     dispatch(setPending(true));
@@ -176,9 +176,8 @@ export const updateReviewApi = async (token, groupId, data, dispatch) => {
         'Content-Type': 'application/json',
       },
     });
-
-    console.log(response);
-    dispatch(updateReview(response.data));
+    const changes = response.data;
+    dispatch(updateReview({ taskId, commentId, changes }));
     dispatch(setPending(false));
     return response;
   } catch (e) {

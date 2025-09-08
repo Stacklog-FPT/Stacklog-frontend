@@ -45,6 +45,7 @@ const CommentTask = ({ task, isClose }) => {
           },
         ],
       };
+
       const res = await updateTaskApi(payload, user?.token, dispatch);
       if (res) {
         setNewComment('');
@@ -100,21 +101,22 @@ const CommentTask = ({ task, isClose }) => {
       const payload = {
         ...currentTask,
         reviews: [
-          [
-            ...(currentTask.reviews || []),
-            {
-              reviewContent: editedComment,
-              createdBy: decodedId,
-              createdAt: new Date().toISOString(),
-              reviewId: editingCommentId,
-            },
-          ],
+          {
+            reviewId: editingCommentId,
+            reviewContent: editedComment,
+            createdBy: decodedId,
+            createdAt: new Date().toISOString(),
+          },
         ],
       };
 
-      console.log(payload);
-
-      const res = await updateReviewApi(user?.token, currentTask.groupId, payload, dispatch);
+      const res = await updateReviewApi(
+        user?.token,
+        currentTask.taskId,
+        editingCommentId,
+        payload,
+        dispatch,
+      );
       if (res.status === 200) {
         setEditingCommentId(null);
         setEditedComment('');

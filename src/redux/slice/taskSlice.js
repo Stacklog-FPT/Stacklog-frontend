@@ -31,16 +31,38 @@ const tasksSlice = createSlice({
     },
 
     updateReview: (state, action) => {
-      const { reviewId, taskId } = action.payload;
-      const task = state.tasks.filter((t) => t.taskId === taskId);
-      if (task) {
-        const review = task?.reviews.find((rv) => rv.reviewId === reviewId);
+      const { taskId, commentId, changes } = action.payload;
 
-        if (review) {
-          Object.assign(review, action.payload);
+      const task = Array.isArray(state.tasks)
+        ? state.tasks.find((t) => t.taskId === taskId)
+        : state.tasks?.[taskId];
+
+      if (!task) return;
+
+      if (Array.isArray(changes?.reviews)) {
+        const updatedReview = changes.reviews.find((rv) => rv.reviewId === commentId);
+        if (!updatedReview) return;
+
+        if (!Array.isArray(task.reviews)) task.reviews = [];
+
+        const idx = task.reviews.findIndex((rv) => rv.reviewId === commentId);
+        if (idx >= 0) {
+          task.reviews[idx] = { ...task.reviews[idx], ...updatedReview };
+        } else {
+          // nếu chưa có, thêm mới (tùy yêu cầu)
+          task.reviews.push(updatedReview);
         }
+        return;
       }
+
+      // 3) Còn nếu 'changes' chỉ là partial review fields -> merge trực tiếp
+      if (!Array.isArray(task.reviews)) return;
+      const review = task.reviews.find((rv) => rv.reviewId === commentId);
+      if (!review) return;
+
+      Object.assign(review, changes);
     },
+
     getPersonalTask: (state, action) => {
       state.personalTask = action.payload;
     },

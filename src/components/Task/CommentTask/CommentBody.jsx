@@ -71,7 +71,6 @@ const CommentBody = ({
                   }
                   alt="avatar"
                 />
-                {console.log('item:', item)}
                 <div>
                   <p className="infor__user__name">
                     {userMap[item.createdBy]?.full_name || item.authorName || 'User'}

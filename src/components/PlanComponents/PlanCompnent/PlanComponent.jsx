@@ -67,8 +67,6 @@ const PlanComponent = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [localError, setLocalError] = useState("");
 
-  // Add topic UI removed from this page
-
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [keyword, setKeyword] = useState("");
 
@@ -87,18 +85,25 @@ const PlanComponent = () => {
     if (role === "LECTURER") {
       return currentClass.filter((cls) => cls.lectureId === lecturerId);
     } else {
+      const extractStudentIds = (gr) => {
+        const raw = gr.groupStudent || gr.groupStudents || [];
+        if (!Array.isArray(raw)) return [];
+        return raw.map((s) => (typeof s === "string" ? s : s.userId || s));
+      };
       return currentClass.filter((cls) =>
-        (cls.groups || []).some(
-          (gr) =>
-            gr.groupsLeaderId === userId ||
-            (Array.isArray(gr.groupStudent) && gr.groupStudent.includes(userId))
-        )
+        (cls.groups || []).some((gr) => {
+          const students = extractStudentIds(gr);
+          return gr.groupsLeaderId === userId || students.includes(userId);
+        })
       );
     }
   }, [currentClass, role, lecturerId, userId]);
 
   useEffect(() => {
-    if (!selectedClass && classes.length > 0) {
+    if (
+      (!selectedClass || !classes.some((c) => c.classesId === selectedClass)) &&
+      classes.length > 0
+    ) {
       setSelectedClass(classes[0].classesId);
     }
     if (
@@ -111,27 +116,62 @@ const PlanComponent = () => {
   }, [classes, selectedClass]);
 
   useEffect(() => {
-    if (role !== "STUDENT" || !selectedClass || classes.length === 0) {
+    if (role !== "STUDENT") {
       setCurrentGroupId("");
       return;
     }
-    const cls = classes.find((c) => c.classesId === selectedClass);
-    if (!cls) return setCurrentGroupId("");
 
-    const found = (cls.groups || []).find(
-      (gr) =>
-        gr.groupsLeaderId === userId ||
-        (Array.isArray(gr.groupStudent) && gr.groupStudent.includes(userId))
-    );
-    setCurrentGroupId(found?.groupsId || "");
+    if (selectedClass && classes.length > 0) {
+      const cls = classes.find((c) => c.classesId === selectedClass);
+      if (cls) {
+        const found = (cls.groups || []).find((gr) => {
+          const raw = gr.groupStudent || gr.groupStudents || [];
+          const students = Array.isArray(raw)
+            ? raw.map((s) => (typeof s === "string" ? s : s.userId || s))
+            : [];
+          return gr.groupsLeaderId === userId || students.includes(userId);
+        });
+        if (found) {
+          setCurrentGroupId(found.groupsId || "");
+          return;
+        }
+      }
+    }
+
+    const foundGlobal = (currentClass || []).reduce((acc, c) => {
+      if (acc) return acc;
+      const g = (c.groups || []).find((gr) => {
+        const raw = gr.groupStudent || gr.groupStudents || [];
+        const students = Array.isArray(raw)
+          ? raw.map((s) => (typeof s === "string" ? s : s.userId || s))
+          : [];
+        return gr.groupsLeaderId === userId || students.includes(userId);
+      });
+      return g ? { group: g, classObj: c } : null;
+    }, null);
+
+    if (foundGlobal) {
+      setCurrentGroupId(foundGlobal.group.groupsId || "");
+
+      setSelectedClass(foundGlobal.classObj.classesId || selectedClass);
+      return;
+    }
+
+    setCurrentGroupId("");
   }, [role, selectedClass, classes, userId]);
 
   const groupMap = useMemo(() => {
     const map = {};
     classes.forEach((cls) => {
       (cls.groups || []).forEach((gr) => {
+        const raw = gr.groupStudent || gr.groupStudents || [];
+        const groupStudent = Array.isArray(raw)
+          ? raw.map((s) => (typeof s === "string" ? s : s.userId || s))
+          : [];
         map[gr.groupsId] = {
           ...gr,
+
+          groupStudent,
           className: cls.classesName,
           classId: cls.classesId,
         };
@@ -140,7 +180,16 @@ const PlanComponent = () => {
     return map;
   }, [classes]);
 
-  // user cache to avoid repeated network calls for names
+  useEffect(() => {
+    console.debug("PlanComponent debug:", {
+      currentSemesterId,
+      classesRawLength: (classesRaw || []).length,
+      visibleClassesLength: classes.length,
+      selectedClass,
+      plansLength: normalizedPlans.length,
+    });
+  }, [currentSemesterId, classesRaw, classes, selectedClass, normalizedPlans]);
+
   const { getUserById } = userApi();
   const [userCache, setUserCache] = useState({});
 
@@ -205,7 +254,6 @@ const PlanComponent = () => {
     keyword,
   ]);
 
-  // synchronous helpers used in render: show cached name or id while fetching
   const getLeaderName = (groupId) => {
     const id = groupMap[groupId]?.groupsLeaderId;
     return id ? userCache[id] || id : "-";
@@ -217,7 +265,6 @@ const PlanComponent = () => {
     return arr.map((s) => userCache[s] || s).join(", ");
   };
 
-  // effect: prefetch names for groups currently shown in filteredTopics
   useEffect(() => {
     const ids = new Set();
     filteredTopics.forEach((t) => {

@@ -186,11 +186,32 @@ export const getClasses = async (semesterId, token, dispatch) => {
 
     const raw = response.data;
     const data = Array.isArray(raw) ? raw : raw?.data || [];
-    console.log("getClasses response:", data);
-    const allGroups = data.flatMap((c) => c.groups || []);
-    dispatch(getClassesSuccess(data));
-    dispatch(getGroups(allGroups));
-    return data;
+    // normalize: ensure each class object has semesterId (so components that filter by semesterId work)
+    // and normalize group students to `groupStudent` as array of ids (supporting groupStudents array of objects)
+    const normalized = (data || []).map((c) => {
+      const groups = (c.groups || []).map((gr) => {
+        const rawMembers = gr.groupStudent || gr.groupStudents || [];
+        const groupStudent = Array.isArray(rawMembers)
+          ? rawMembers.map((s) => (typeof s === "string" ? s : s.userId || s))
+          : [];
+        return {
+          ...gr,
+          groupStudent,
+          // keep original array if present
+          groupStudents: gr.groupStudents || gr.groupStudent || [],
+        };
+      });
+      return {
+        ...c,
+        semesterId,
+        groups,
+      };
+    });
+    console.log("getClasses response (normalized):", normalized);
+    const normalizedGroups = normalized.flatMap((c) => c.groups || []);
+    dispatch(getClassesSuccess(normalized));
+    dispatch(getGroups(normalizedGroups));
+    return normalized;
   } catch (e) {
     dispatch(getClassesFailure(e.message));
     return [];

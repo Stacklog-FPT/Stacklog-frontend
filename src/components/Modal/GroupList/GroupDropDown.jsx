@@ -26,7 +26,10 @@ const GroupDropDown = ({ groups = [] }) => {
         <li className="group-empty">No groups</li>
       ) : (
         safeGroups.map((g) => {
-          const canView = canViewGroup(userWithId, g);
+          const isUnassigned =
+            typeof g.groupsName === "string" &&
+            g.groupsName.toLowerCase() === "unassigned";
+          const canView = isUnassigned || canViewGroup(userWithId, g);
           return (
             <li key={g.groupsId}>
               {canView ? (

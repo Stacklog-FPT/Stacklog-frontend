@@ -105,6 +105,7 @@ export const deleteTaskApi = async (token, taskId, dispatch) => {
 
 export const updateTaskApi = async (taskData, token, dispatch) => {
   try {
+    console.log('Service call:', taskData);
     if (!token) dispatch(setError('The token is missing!'));
     const response = await axios.post(`${API_TASK}/save`, taskData, {
       //Change taskId before mockup with BE

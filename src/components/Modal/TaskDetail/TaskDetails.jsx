@@ -19,6 +19,7 @@ import SubTask from './SubTask/SubTask';
 import HoldDeleteButton from './ButtonDelete';
 import { deleteTaskApi, updateTaskApi } from '../../../service/TaskService';
 import { toast } from 'sonner';
+import { normalize, toApiShape } from './Checklist/Checklist';
 
 const toLocalInput = (iso) => {
   if (!iso) return '';
@@ -45,7 +46,7 @@ const TaskDetails = ({ task, onClose }) => {
     description: task?.taskDescription || '',
     startLocal: toLocalInput(task?.taskStartTime),
     dueLocal: toLocalInput(task?.taskDueDate),
-    checkListDraft: Array.isArray(task?.checkLists) ? task.checkLists : [],
+    checkListDraft: normalize(Array.isArray(task?.checkLists) ? task.checkLists : []), // RAW UI
   });
 
   // comment state
@@ -68,7 +69,7 @@ const TaskDetails = ({ task, onClose }) => {
       description: task?.taskDescription || '',
       startLocal: toLocalInput(task?.taskStartTime),
       dueLocal: toLocalInput(task?.taskDueDate),
-      checkListDraft: Array.isArray(task?.checkLists) ? task.checkLists : [],
+      checkListDraft: normalize(Array.isArray(task?.checkLists) ? task.checkLists : []),
     });
     setChecklistDirty(false);
   }, [task]);
@@ -85,21 +86,25 @@ const TaskDetails = ({ task, onClose }) => {
     const description = form.description.trim();
     const startISO = toISO(form.startLocal);
     const dueISO = toISO(form.dueLocal);
+
     if (startISO && dueISO && new Date(dueISO) < new Date(startISO)) {
       toast.error('Due date must greater than start date');
       return;
     }
 
+    // >>>> CHUYỂN UI -> API SHAPE
+    const checkListsPayload = toApiShape(form.checkListDraft, { includeIds: true });
+    console.log('debug checklist: ', checkListsPayload);
     const payload = {
       ...task,
       taskTitle: title || task.taskTitle,
       taskDescription: description || task.taskDescription,
       taskStartTime: startISO || task.taskStartTime,
       taskDueDate: dueISO || task.taskDueDate,
-      checkLists: form.checkListDraft,
+      checkLists: checkListsPayload,
     };
 
-    console.log(payload);
+    console.log('payload debug update task: ', payload);
 
     const res = await updateTaskApi(payload, user.token, dispatch);
     if (res?.status === 200 || res?.data || res === true) {
@@ -349,12 +354,12 @@ const TaskDetails = ({ task, onClose }) => {
 
         <section className="taskdetail__todo">
           {activeTab === 'subtasks' ? (
-            <SubTask data={task?.subTasks} />
+            <SubTask data={task?.subtasks} />
           ) : (
             <Checklist
               checkList={form.checkListDraft}
               editTask={editTask}
-              onChange={(nextApiShape) => setForm((f) => ({ ...f, checkListDraft: nextApiShape }))}
+              onChange={(nextRawLists) => setForm((f) => ({ ...f, checkListDraft: nextRawLists }))}
               onDirtyChange={setChecklistDirty}
             />
           )}

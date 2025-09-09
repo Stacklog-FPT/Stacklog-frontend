@@ -7,40 +7,47 @@ import { FiTrash2 } from 'react-icons/fi';
 const genId = (prefix = 'id') =>
   `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
 
-const normalize = (arr = []) =>
+export const isUUID = (s) =>
+  typeof s === 'string' &&
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+
+export const normalize = (arr = []) =>
   (Array.isArray(arr) ? arr : []).map((cl, idx) => {
-    const bid = cl.checkListId ?? `cl_${idx}`;
-    const itemsSrc = cl.checkItem ?? cl.listItems ?? [];
+    const bid = cl.checkListId ?? cl.id ?? `cl_${idx}`;
+    const itemsSrc = cl.listItems ?? cl.checkItem ?? cl.items ?? [];
     return {
-      id: `${String(bid)}__${idx}`,
-      bid: String(bid),
-      name: cl.checkListName ?? `Checklist ${idx + 1}`,
+      id: `${String(bid)}__${idx}`, // id UI
+      bid: String(bid), // id BE (nếu có)
+      name: cl.checkListName ?? cl.name ?? `Checklist ${idx + 1}`,
       items: itemsSrc.map((it, j) => ({
-        id: String(it.checkItemId ?? `cli_${idx}_${j}`),
-        bid: String(it.checkItemId ?? `cli_${idx}_${j}`),
-        text: it.checkItemName ?? it.text ?? `Item ${j + 1}`,
-        done: Boolean(it.checkItemStatus === true || it.done === true),
+        id: String(it.checkItemId ?? it.id ?? `cli_${idx}_${j}`), // id UI
+        bid: String(it.checkItemId ?? it.id ?? ''), // id BE (nếu có)
+        text: it.checkItemTitle ?? it.checkItemName ?? it.text ?? `Item ${j + 1}`,
+        desc: it.checkItemDescription ?? it.description ?? '',
+        due: it.checkItemDueDate ?? it.dueDate ?? null, // ISO string or null
+        done: Boolean((it.isChecked ?? it.checkItemStatus ?? it.done) === true),
         assignTo: it.assignTo || [],
       })),
     };
   });
 
-const toApiShape = (listsState, { includeIds = false } = {}) =>
+export const toApiShape = (listsState, { includeIds = true } = {}) =>
   (listsState || []).map((l) => {
     const base = {
       checkListName: l.name,
-      checkItem: (l.items || []).map((it) => {
+      listItems: (l.items || []).map((it) => {
         const itemBase = {
-          checkItemName: it.text,
-          checkItemStatus: !!it.done,
-          assignTo: it.assignTo || [],
+          checkItemTitle: it.text,
+          checkItemDescription: it.desc ?? '',
+          checkItemDueDate: it.due ?? null,
+          isChecked: !!it.done,
         };
-
-        return includeIds && it.bid ? { checkItemId: it.bid, ...itemBase } : itemBase;
+        return includeIds && isUUID(it.bid) ? { checkItemId: it.bid, ...itemBase } : itemBase;
       }),
     };
-    return includeIds && l.bid ? { checkListId: l.bid, ...base } : base;
+    return includeIds && isUUID(l.bid) ? { checkListId: l.bid, ...base } : base;
   });
+
 // tiện key cho panel assign item
 const itemKey = (listId, itemId) => `${listId}::${itemId}`;
 
@@ -133,7 +140,7 @@ const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }
 
   const commitLocal = (nextLists) => {
     setLists(nextLists);
-    onChange?.(toApiShape(nextLists, { includeIds: false }));
+    onChange?.(nextLists);
     onDirtyChange?.(true);
   };
 

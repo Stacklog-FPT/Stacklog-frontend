@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react';
 import { FaPen, FaTrashAlt, FaCheck } from 'react-icons/fa';
 import { formatDateUI } from '../../../helper/formatDate';
-import userApi from '../../../service/UserService';
-import { useAuth } from '../../../context/AuthProvider';
 
 const CommentBody = ({
   reviews = [],
+  userMap = {},
   decodedId,
   editingCommentId,
   editedComment,
@@ -56,7 +54,6 @@ const CommentBody = ({
         return bTime - aTime;
       })
     : [];
-
   return (
     <div className="comment__task__body">
       {sortedReviews?.length > 0 ? (

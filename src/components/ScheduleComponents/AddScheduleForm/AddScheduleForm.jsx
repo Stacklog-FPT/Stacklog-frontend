@@ -315,7 +315,6 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
 
         <form className="add-schedule-form" onSubmit={handleSubmit}>
           <h3>Add new slot</h3>
-
           <div
             style={{
               display: 'flex',
@@ -334,12 +333,7 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
                     </option>
                   ))}
                 </select>
-                <select
-                  value={selectedGroup?.groupsId || ''}
-                  onChange={handleSelectGroup}
-                  required
-                  disabled={!selectedClasses}
-                >
+                <select value={selectedGroup?.groupsId || ''} onChange={handleSelectGroup} required disabled={!selectedClasses}>
                   <option value="">-- Choose Group --</option>
                   {selectedClasses?.groups.map((group) => (
                     <option key={group.groupsId} value={group.groupsId}>
@@ -352,10 +346,8 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
 
             {/* Hiển thị lớp và group đã chọn */}
             {isPage && selectedClasses && (
-              <div className="selected-group" style={{ marginTop: 8 }}>
-                <span>
-                  Class: <b>{selectedClasses.classesName}</b>
-                </span>
+              <div className="selected-group" style={{marginTop: 8}}>
+                <span>Class: <b>{selectedClasses.classesName}</b></span>
                 <button type="button" className="remove-btn" onClick={handleRemoveSelectedClass}>
                   <FaTrash />
                 </button>
@@ -363,10 +355,8 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
             )}
 
             {isPage && selectedGroup && (
-              <div className="selected-group" style={{ marginTop: 8 }}>
-                <span>
-                  Group: <b>{selectedGroup.groupsName}</b>
-                </span>
+              <div className="selected-group" style={{marginTop: 8}}>
+                <span>Group: <b>{selectedGroup.groupsName}</b></span>
                 <button type="button" className="remove-btn" onClick={handleRemoveSelectedGroup}>
                   <FaTrash />
                 </button>

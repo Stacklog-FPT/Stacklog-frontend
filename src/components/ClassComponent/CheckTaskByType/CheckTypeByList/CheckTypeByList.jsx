@@ -169,7 +169,7 @@ const CheckTypeByList = () => {
       onDragEnd={handleDragEnd}
     >
       <div className="check__task__by__list__container">
-        {/* <ClassAndMember onFilterByPriority={handleFilterByPriority} /> */}
+        <ClassAndMember onFilterByPriority={handleFilterByPriority} />
 
         <div className="check__task__by__list__column">
           {statuses.map((item) => {

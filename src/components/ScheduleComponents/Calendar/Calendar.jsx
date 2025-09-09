@@ -129,8 +129,8 @@ export default function Calendar({ groupId, isPage }) {
   };
 
   useEffect(() => {
-    getScheduleByGroupId(user.token, groupId, dispatch);
-  }, [groupId]);
+    getScheduleByGroupId(user.token, dispatch);
+  }, []);
 
   return (
     <div className="calendar-wrapper">

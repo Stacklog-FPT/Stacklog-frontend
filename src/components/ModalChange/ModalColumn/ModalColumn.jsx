@@ -12,12 +12,11 @@ import Swal from 'sweetalert2';
 const GAP = 8;
 
 const ModalColumn = ({ statusId, onEdit, onClose, anchor }) => {
-  console.log(statusId);
   const { user } = useAuth();
   const dispatch = useDispatch();
   const statuses = useSelector((s) => s.status?.statuses || []);
   const selectedStatus = useMemo(
-    () => statuses.find((it) => it.statusTaskId === statusId),
+    () => statuses.find((it) => String(it.statusTaskId) === String(statusId)),
     [statuses, statusId],
   ); // Mì ăn liền
 
@@ -60,7 +59,7 @@ const ModalColumn = ({ statusId, onEdit, onClose, anchor }) => {
   const handleDelete = async () => {
     onClose?.();
 
-    if (!statusId) {
+    if (!selectedStatus?.id) {
       await Swal.fire({
         title: 'Cannot delete',
         text: 'Status not found or invalid id.',
@@ -83,14 +82,14 @@ const ModalColumn = ({ statusId, onEdit, onClose, anchor }) => {
 
     if (!result.isConfirmed) return;
 
-    const response = await deleteStatusApi(user.token, statusId, dispatch);
-
-    if (response) {
+    try {
+      // Khuyến nghị: để deleteStatusApi throw error khi fail
+      await deleteStatusApi(user.token, selectedStatus.id, dispatch);
       await Swal.fire('Deleted!', 'Status was removed successfully.', 'success');
-    } else {
+    } catch (err) {
       await Swal.fire({
         title: 'Delete failed',
-        text: 'Something went wrong during deletion.',
+        text: err?.message || 'Something went wrong during deletion.',
         icon: 'error',
         confirmButtonColor: '#045745',
       });

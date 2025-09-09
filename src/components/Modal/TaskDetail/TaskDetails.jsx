@@ -17,7 +17,7 @@ import Navbar from './Navbar/Navbar';
 import Checklist from './Checklist/Checklist';
 import SubTask from './SubTask/SubTask';
 import HoldDeleteButton from './ButtonDelete';
-import { deleteTaskApi, updateTaskApi } from '../../../service/TaskService';
+import { deleteTaskApi, updateTaskApi } from '../../../service/TaskService'; // <-- thêm update
 import { toast } from 'sonner';
 
 const toLocalInput = (iso) => {
@@ -45,7 +45,7 @@ const TaskDetails = ({ task, onClose }) => {
     description: task?.taskDescription || '',
     startLocal: toLocalInput(task?.taskStartTime),
     dueLocal: toLocalInput(task?.taskDueDate),
-    checkListDraft: Array.isArray(task?.checkLists) ? task.checkLists : [],
+    checkListDraft: Array.isArray(task?.checkList) ? task.checkList : [],
   });
 
   // comment state
@@ -68,7 +68,7 @@ const TaskDetails = ({ task, onClose }) => {
       description: task?.taskDescription || '',
       startLocal: toLocalInput(task?.taskStartTime),
       dueLocal: toLocalInput(task?.taskDueDate),
-      checkListDraft: Array.isArray(task?.checkLists) ? task.checkLists : [],
+      checkListDraft: Array.isArray(task?.checkList) ? task.checkList : [],
     });
     setChecklistDirty(false);
   }, [task]);
@@ -96,10 +96,8 @@ const TaskDetails = ({ task, onClose }) => {
       taskDescription: description || task.taskDescription,
       taskStartTime: startISO || task.taskStartTime,
       taskDueDate: dueISO || task.taskDueDate,
-      checkLists: form.checkListDraft,
+      checkList: form.checkListDraft,
     };
-
-    console.log(payload);
 
     const res = await updateTaskApi(payload, user.token, dispatch);
     if (res?.status === 200 || res?.data || res === true) {
@@ -117,14 +115,20 @@ const TaskDetails = ({ task, onClose }) => {
       const payload = {
         ...task,
         reviews: [
+          ...(task.reviews || []),
           {
+            reviewId: Math.random(),
             reviewContent: newComment,
-            createdBy: decoded._id,
+            taskId: task.taskId ?? task.id,
+            createdBy: user._id,
             createdAt: new Date().toISOString(),
+            avatar_link:
+              user.avatar ||
+              'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
           },
         ],
       };
-      const res = await updateTaskApi(payload, user?.token, dispatch);
+      const res = await createReview(user?.token, task.id, payload, dispatch);
       if (res) {
         setNewComment('');
         await axios.post('http://localhost:3000/notifications', {
@@ -181,7 +185,7 @@ const TaskDetails = ({ task, onClose }) => {
   };
 
   const handleDeleteTask = async () => {
-    const response = await deleteTaskApi(user.token, task.taskId, dispatch);
+    const response = await deleteTaskApi(user.token, task.id, dispatch); // Change if before mock up
     if (response?.status === 200) {
       toast.success('Delete task successfully!');
       onClose();
@@ -343,7 +347,7 @@ const TaskDetails = ({ task, onClose }) => {
           onChange={setActiveTab}
           counts={{
             subtasks: task?.subTasks?.length || 0,
-            checklists: (form.checkListDraft || []).length || 0,
+            checklists: (task?.checkList || []).length || 0,
           }}
         />
 

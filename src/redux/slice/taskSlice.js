@@ -21,13 +21,14 @@ const tasksSlice = createSlice({
       state.tasks.push(action.payload);
     },
     updateTasks: (state, action) => {
-      const task = state.tasks.find((t) => t.taskId === action.payload.taskId);
+      const { id, ...changes } = action.payload;
+      const task = state.tasks.find((t) => t.id === id); // Change taskId before mockup with BE
       if (task) {
-        Object.assign(task, action.payload);
+        Object.assign(task, changes);
       }
     },
     deleteTask: (state, action) => {
-      state.tasks = state.tasks.filter((t) => t.taskId !== action.payload);
+      state.tasks = state.tasks.filter((t) => t.id !== action.payload); // Change taskId before mockup with BE
     },
 
     updateReview: (state, action) => {
@@ -74,7 +75,7 @@ const tasksSlice = createSlice({
     },
 
     resetTasks: (state, action) => {
-      state.tasks = state.tasks;
+      state.tasks = [];
     },
   },
 });

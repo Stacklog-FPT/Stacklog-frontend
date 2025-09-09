@@ -8,16 +8,16 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { createReview } from '../../../service/ReviewService';
 import { useDispatch, useSelector } from 'react-redux';
-
 import CommentTaskBody from './CommentBody';
 import CommentTaskFooter from './CommentFooter';
 import { useParams } from 'react-router';
 import { updateTaskApi, updateReviewApi } from '../../../service/TaskService';
 
+
 const CommentTask = ({ task, isClose }) => {
-  const { groupId } = useParams();
+  console.log(task);
   const tasks = useSelector((t) => t.task.tasks);
-  const currentTask = tasks.find((t) => t.taskId === task.taskId);
+  const currentTask = tasks.find((t) => t.id === task.id); // Change taskId before mockup with BE
   const reviews = currentTask?.reviews || [];
 
   const [newComment, setNewComment] = useState('');
@@ -38,10 +38,16 @@ const CommentTask = ({ task, isClose }) => {
       const payload = {
         ...currentTask,
         reviews: [
+          ...(reviews || []),
           {
+            reviewId: Math.random(),
             reviewContent: newComment,
-            createdBy: decodedId,
+            taskId: task.taskId ?? task.id,
+            createdBy: user._id,
             createdAt: new Date().toISOString(),
+            avatar_link:
+              user.avatar ||
+              'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
           },
         ],
       };

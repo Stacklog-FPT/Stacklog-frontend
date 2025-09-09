@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './SemesterDropdown.scss';
-const normalizeSemesters = (arr) =>
-  (Array.isArray(arr) ? arr : [])
+const normalizeSemesters = (arr = []) =>
+  arr
     .map((s) => ({
       id: s.semester_id ?? s.semesterId,
       name: s.semester_name ?? s.semesterName ?? s.name ?? 'Unnamed semester',

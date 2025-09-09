@@ -64,7 +64,6 @@ const PlanComponent = () => {
   const currentClass = classesRaw.filter(
     (clr) => clr.semesterId === currentSemesterId
   );
-
   const [currentGroupId, setCurrentGroupId] = useState("");
 
   const [modal, setModal] = useState({ open: false, topic: null });
@@ -168,6 +167,7 @@ const PlanComponent = () => {
         : [];
       return gr.groupsLeaderId === userId || students.includes(userId);
     });
+
     setCurrentGroupId(found?.groupsId || "");
   }, [role, effectiveClassId, classes, userId, paramGroupId]);
 
@@ -448,7 +448,7 @@ const PlanComponent = () => {
   const refresh = () => getPlansApi(dispatch, token);
 
   return (
-    <div className="">
+    <div className="plan">
       <div className="plan__header">
         <h2>Topic</h2>
         <div className="plan__actions">

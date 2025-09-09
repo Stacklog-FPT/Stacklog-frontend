@@ -20,9 +20,10 @@ const statusSlice = createSlice({
       state.statuses = state.statuses.filter((status) => status.statusTaskId !== action.payload);
     },
     updateStatus: (state, action) => {
-      const status = state.statuses.find((s) => s.statusTaskId === action.payload.statusTaskId);
+      const { id, ...changes } = action.payload;
+      const status = state.statuses.find((s) => s.id === id); // change before mockup with BE
       if (status) {
-        Object.assign(status, action.payload);
+        Object.assign(status, changes);
       }
     },
     setPending: (state, action) => {

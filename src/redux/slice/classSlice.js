@@ -41,7 +41,14 @@ const classesSlice = createSlice({
   },
 });
 
-export const { getClassesStart, getClassesSuccess, getClassesFailure, apiStart, apiSuccess, apiFailure } = classesSlice.actions;
+export const {
+  getClassesStart,
+  getClassesSuccess,
+  getClassesFailure,
+  apiStart,
+  apiSuccess,
+  apiFailure,
+} = classesSlice.actions;
 
 export default classesSlice.reducer;
 

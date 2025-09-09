@@ -54,7 +54,14 @@ export default function Calendar({ groupId, isPage }) {
         const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
         if (m) {
           const [, Y, Mo, D, H, Mi, S] = m;
-          return new Date(Number(Y), Number(Mo) - 1, Number(D), Number(H), Number(Mi), Number(S || 0));
+          return new Date(
+            Number(Y),
+            Number(Mo) - 1,
+            Number(D),
+            Number(H),
+            Number(Mi),
+            Number(S || 0),
+          );
         }
         // fallback to Date constructor
         return new Date(iso);

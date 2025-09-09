@@ -390,67 +390,22 @@
   ],
   "topic": [
     {
-      "id": "topict8mfu6",
-      "topicTitle": "Lập trình WEB123",
-      "topicAbbreviation": "WEB2",
-      "topicDescription": "1232",
-      "topicObjective": "1232",
-      "attachments": [
-        {
-          "fileName": "Proposal.docx",
-          "fileUrl": "https://example.com/Proposal.docx"
-        }
-      ],
-      "topicId": "topict8mfu6",
-      "classId": "1",
-      "groupId": "swp1",
-      "status": "Approved",
-      "allowEdit": false,
-      "registerBy": "688e11c4e4acb643f2bbc484",
-      "registerAt": "2025-08-28T02:52:51.099Z",
-      "rejectReason": null,
-      "approvedBy": null,
-      "approvedAt": null
-    },
-    {
-      "topicId": "topic02",
-      "classId": "1",
-      "groupId": "swp2",
-      "topicTitle": "Hệ thống E-learning",
-      "topicAbbreviation": "ELMS",
-      "topicDescription": "Xây dựng hệ thống học trực tuyến cho trường đại học.",
-      "topicObjective": "Tối ưu hóa việc học từ xa.",
-      "registerBy": "688e11c4e4acb643f2bbc484",
-      "registerAt": "2025-08-21T10:00:00Z",
-      "status": "Approved",
-      "rejectReason": null,
-      "approvedBy": "lecturer_id",
-      "approvedAt": "2025-08-22T10:00:00Z",
-      "attachments": [],
-      "id": "4948"
-    },
-    {
-      "id": "topichxfmlu",
-      "topicTitle": "ô",
-      "topicAbbreviation": "12",
-      "topicDescription": "q33",
+      "id": "topicxv53ac",
+      "topicTitle": "1",
+      "topicAbbreviation": "",
+      "topicDescription": "",
       "topicObjective": "",
-      "attachments": [
-        {
-          "fileName": "CV_LeHoangLong.pdf",
-          "fileUrl": "blob:http://localhost:5173/4170a774-ecc1-468a-af8c-4d698b6c6fa2"
-        }
-      ],
-      "topicId": "topichxfmlu",
-      "classId": "2",
-      "groupId": "1",
-      "status": "Pending",
-      "allowEdit": true,
+      "attachments": [],
+      "topicId": "topicxv53ac",
+      "classId": "5571fd96-11a2-4eaa-bea2-c6c83d1990a7",
+      "groupId": "41b434dd-d516-4e8c-9f3f-4e620f4686aa",
+      "status": "Rejected",
+      "allowEdit": false,
       "registerBy": "688e1182e4acb643f2bbc47e",
-      "registerAt": "2025-08-29T13:44:57.911Z",
-      "rejectReason": null,
-      "approvedBy": null,
-      "approvedAt": null
+      "registerAt": "2025-09-08T14:10:11.625Z",
+      "rejectReason": "123",
+      "approvedBy": "688e1238e4acb643f2bbc486",
+      "approvedAt": "2025-09-08T14:18:34.760Z"
     }
   ],
   "personalTask": {

@@ -11,6 +11,7 @@ import {
   updateTasks,
   resetTasks,
   getPersonalTask,
+  updateReview,
 } from '../redux/slice/taskSlice';
 
 const API_TASK = 'https://stacklog.id.vn/api/task';
@@ -135,5 +136,25 @@ export const getPersonalTaskApi = async (token, dispatch) => {
     dispatch(setPending(false));
   } catch (e) {
     dispatch(setError(e.message || 'Something went wrong!'));
+  }
+};
+
+export const updateReviewApi = async (token, taskId, commentId, data, dispatch) => {
+  try {
+    if (!token) dispatch(setError('The token is invalid!'));
+    dispatch(setPending(true));
+
+    const response = await axios.post(`${API_TASK}/save`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    const changes = response.data;
+    dispatch(updateReview({ taskId, commentId, changes }));
+    dispatch(setPending(false));
+    return response;
+  } catch (e) {
+    dispatch(setError(e.message));
   }
 };

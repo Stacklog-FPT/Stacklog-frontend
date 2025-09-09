@@ -4,9 +4,10 @@ import { setError, setPending, updateTasks } from '../redux/slice/taskSlice';
 const REVIEW_URL = 'https://stacklog.id.vn/api/task/review';
 const ReviewService = () => {
   const deleteReview = async (token, id) => {
+    console.log('Call me delete review: ', id);
     try {
       if (!token) throw new Error('Token is missing!');
-      const response = await axios.delete(`${REVIEW_URL}/delete/${id}`, {
+      const response = await axios.delete(`${REVIEW_URI}/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -52,5 +53,4 @@ export const createReview = async (token, taskId, data, dispatch) => {
     throw new Error(e.message || 'Failed to create review!');
   }
 };
-
 export default ReviewService;

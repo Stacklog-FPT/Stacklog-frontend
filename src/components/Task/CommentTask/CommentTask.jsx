@@ -8,9 +8,11 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { createReview } from '../../../service/ReviewService';
 import { useDispatch, useSelector } from 'react-redux';
-
 import CommentTaskBody from './CommentBody';
 import CommentTaskFooter from './CommentFooter';
+import { useParams } from 'react-router';
+import { updateTaskApi, updateReviewApi } from '../../../service/TaskService';
+
 
 const CommentTask = ({ task, isClose }) => {
   console.log(task);
@@ -21,8 +23,6 @@ const CommentTask = ({ task, isClose }) => {
   const [newComment, setNewComment] = useState('');
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState('');
-  const [userMap, setUserMap] = useState({});
-
   const { user } = useAuth();
   const decoded = decodeToken(user.token);
   const decodedId = decoded?.id;
@@ -51,7 +51,8 @@ const CommentTask = ({ task, isClose }) => {
           },
         ],
       };
-      const res = await createReview(user?.token, task.id, payload, dispatch);
+
+      const res = await updateTaskApi(payload, user?.token, dispatch);
       if (res) {
         setNewComment('');
         await axios.post('http://localhost:3000/notifications', {
@@ -104,13 +105,25 @@ const CommentTask = ({ task, isClose }) => {
     if (!editedComment.trim()) return;
     try {
       const payload = {
-        reviewContent: editedComment,
-        taskId: task.id,
-        reviewId: editingCommentId,
+        ...currentTask,
+        reviews: [
+          {
+            reviewId: editingCommentId,
+            reviewContent: editedComment,
+            createdBy: decodedId,
+            createdAt: new Date().toISOString(),
+          },
+        ],
       };
 
-      const res = await createReview(user?.token, task.id, payload, dispatch);
-      if (res) {
+      const res = await updateReviewApi(
+        user?.token,
+        currentTask.taskId,
+        editingCommentId,
+        payload,
+        dispatch,
+      );
+      if (res.status === 200) {
         setEditingCommentId(null);
         setEditedComment('');
       }
@@ -149,7 +162,6 @@ const CommentTask = ({ task, isClose }) => {
 
       <CommentTaskBody
         reviews={reviews}
-        userMap={userMap}
         decodedId={decodedId}
         editingCommentId={editingCommentId}
         editedComment={editedComment}

@@ -64,7 +64,6 @@ const PlanComponent = () => {
   const currentClass = classesRaw.filter(
     (clr) => clr.semesterId === currentSemesterId
   );
-  // local class selection removed; prefer globalSelectedClassId from sidebar
   const [currentGroupId, setCurrentGroupId] = useState("");
 
   const [modal, setModal] = useState({ open: false, topic: null });
@@ -89,20 +88,25 @@ const PlanComponent = () => {
 
   const classes = useMemo(() => {
     if (!Array.isArray(currentClass)) return [];
+
+    const extractStudentIds = (gr) => {
+      const raw = gr.groupStudent || gr.groupStudents || [];
+      if (!Array.isArray(raw)) return [];
+      return raw.map((s) => (typeof s === "string" ? s : s.userId || s));
+    };
+
     if (role === "LECTURER") {
       return currentClass.filter((cls) => cls.lectureId === lecturerId);
     } else {
       return currentClass.filter((cls) =>
-        (cls.groups || []).some(
-          (gr) =>
-            gr.groupsLeaderId === userId ||
-            (Array.isArray(gr.groupStudent) && gr.groupStudent.includes(userId))
-        )
+        (cls.groups || []).some((gr) => {
+          const students = extractStudentIds(gr);
+          return gr.groupsLeaderId === userId || students.includes(userId);
+        })
       );
     }
   }, [currentClass, role, lecturerId, userId]);
 
-  // ensure group reset when global selection changes
   useEffect(() => {
     if (!globalSelectedClassId && classes.length === 0) return;
     if (
@@ -115,14 +119,17 @@ const PlanComponent = () => {
 
   const { groupId: paramGroupId } = useParams();
 
-  // map groups to their classes early from all classes in the semester
-  // so a groupId present in the URL can be resolved even before role filtering.
   const groupMap = useMemo(() => {
     const map = {};
     (currentClass || []).forEach((cls) => {
       (cls.groups || []).forEach((gr) => {
+        const raw = gr.groupStudent || gr.groupStudents || [];
+        const groupStudent = Array.isArray(raw)
+          ? raw.map((s) => (typeof s === "string" ? s : s.userId || s))
+          : [];
         map[gr.groupsId] = {
           ...gr,
+          groupStudent,
           className: cls.classesName,
           classId: cls.classesId,
         };
@@ -131,7 +138,6 @@ const PlanComponent = () => {
     return map;
   }, [currentClass]);
 
-  // prefer: group from URL (when user clicks a group) -> explicit global selection (sidebar) -> first available class
   const effectiveClassId =
     (paramGroupId && groupMap[paramGroupId]?.classId) ||
     globalSelectedClassId ||
@@ -142,7 +148,6 @@ const PlanComponent = () => {
 
   useEffect(() => {
     if (role !== "STUDENT" || !effectiveClassId || classes.length === 0) {
-      // if URL param group exists, still allow it
       if (paramGroupId) {
         setCurrentGroupId(paramGroupId);
         return;
@@ -152,18 +157,20 @@ const PlanComponent = () => {
     }
     const cls = classes.find((c) => c.classesId === effectiveClassId);
     if (!cls) return setCurrentGroupId("");
-    // if URL param group provided, prefer it
+
     if (paramGroupId) return setCurrentGroupId(paramGroupId);
 
-    const found = (cls.groups || []).find(
-      (gr) =>
-        gr.groupsLeaderId === userId ||
-        (Array.isArray(gr.groupStudent) && gr.groupStudent.includes(userId))
-    );
+    const found = (cls.groups || []).find((gr) => {
+      const raw = gr.groupStudent || gr.groupStudents || [];
+      const students = Array.isArray(raw)
+        ? raw.map((s) => (typeof s === "string" ? s : s.userId || s))
+        : [];
+      return gr.groupsLeaderId === userId || students.includes(userId);
+    });
+
     setCurrentGroupId(found?.groupsId || "");
   }, [role, effectiveClassId, classes, userId, paramGroupId]);
 
-  // user cache to avoid repeated network calls for names
   const { getUserById } = userApi();
   const [userCache, setUserCache] = useState({});
 
@@ -228,7 +235,6 @@ const PlanComponent = () => {
     keyword,
   ]);
 
-  // synchronous helpers used in render: show cached name or id while fetching
   const getLeaderName = (groupId) => {
     const id = groupMap[groupId]?.groupsLeaderId;
     return id ? userCache[id] || id : "-";
@@ -240,7 +246,6 @@ const PlanComponent = () => {
     return arr.map((s) => userCache[s] || s).join(", ");
   };
 
-  // effect: prefetch names for groups currently shown in filteredTopics
   useEffect(() => {
     const ids = new Set();
     filteredTopics.forEach((t) => {
@@ -277,6 +282,26 @@ const PlanComponent = () => {
     };
   }, [filteredTopics, groupMap, token]);
   const getGroupName = (groupId) => groupMap[groupId]?.groupsName || groupId;
+
+  useEffect(() => {
+    console.debug("Topic debug:", {
+      currentSemesterId,
+      effectiveClassId,
+      effectiveClassName,
+      classesCount: classes.length,
+      groupMapKeys: Object.keys(groupMap).length,
+      currentGroupId,
+      plansCount: normalizedPlans.length,
+    });
+  }, [
+    currentSemesterId,
+    effectiveClassId,
+    effectiveClassName,
+    classes,
+    groupMap,
+    currentGroupId,
+    normalizedPlans,
+  ]);
 
   const handleApprove = async (topicId) => {
     setActionLoading(true);
@@ -328,7 +353,8 @@ const PlanComponent = () => {
           allowed = false;
         } else {
           if (oldPlan.status === "Rejected") allowed = true;
-          else if (oldPlan.status === "Pending" && oldPlan.allowEdit === true) allowed = true;
+          else if (oldPlan.status === "Pending" && oldPlan.allowEdit === true)
+            allowed = true;
           else allowed = false;
         }
       }
@@ -366,7 +392,8 @@ const PlanComponent = () => {
     } else if (role === "STUDENT") {
       if (isLeader) {
         if (oldPlan.status === "Rejected") canDelete = true;
-        else if (oldPlan.status === "Pending" && oldPlan.allowEdit === true) canDelete = true;
+        else if (oldPlan.status === "Pending" && oldPlan.allowEdit === true)
+          canDelete = true;
       }
     }
     if (!canDelete) {
@@ -433,7 +460,7 @@ const PlanComponent = () => {
               disabled={pending}
               type="button"
             >
-              <i class="fa-solid fa-plus"></i>Topic
+              <i className="fa-solid fa-plus"></i>Topic
             </button>
           )}
         </div>

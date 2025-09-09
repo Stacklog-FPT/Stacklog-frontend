@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   pending: true,
   error: null,
@@ -6,24 +6,51 @@ const initialState = {
 };
 
 const scheduleSlice = createSlice({
-  name: 'schedule',
+  name: "schedule",
   initialState: initialState,
   reducers: {
     getSchedules: (state, action) => {
-      state.schedules = action.payload;
+      state.schedules = Array.isArray(action.payload)
+        ? action.payload
+        : [action.payload].filter(Boolean);
     },
     addSchedules: (state, action) => {
-      state.schedules.push(action.payload);
+      if (Array.isArray(action.payload)) {
+        state.schedules = state.schedules.concat(action.payload);
+      } else if (action.payload) {
+        state.schedules.push(action.payload);
+      }
     },
     deleteSchedules: (state, action) => {
-      state.schedules = state.schedules.filter((s) => s.id !== action.payload); // Change slotId before mockup with BE
+      // action.payload may be an id string/number or an object containing slotId/id
+      const idToRemove =
+        typeof action.payload === "string" || typeof action.payload === "number"
+          ? action.payload
+          : action.payload?.slotId || action.payload?.id;
+      if (!idToRemove) return;
+      state.schedules = state.schedules.filter(
+        (s) => (s.slotId || s.id) != idToRemove
+      );
     },
     updateSchedules: (state, action) => {
-      const { id, ...changes } = action.payload;
-      const schedule = state.schedules.find((s) => s.id === id); // Change slotId before mockup with BE
-      if (schedule) {
-        Object.assign(schedule, changes);
-      }
+      // payload can be the updated slot object or array/object wrapper
+      const payload = action.payload;
+      const updated = Array.isArray(payload) ? payload : [payload];
+      updated.forEach((u) => {
+        if (!u) return;
+        const idToUpdate = u.slotId || u.id;
+        if (!idToUpdate) return;
+        const idx = state.schedules.findIndex(
+          (s) => (s.slotId || s.id) == idToUpdate
+        );
+        if (idx !== -1) {
+          // merge changes
+          state.schedules[idx] = { ...state.schedules[idx], ...u };
+        } else {
+          // if not found, append
+          state.schedules.push(u);
+        }
+      });
     },
     setPending: (state, action) => {
       state.pending = action.payload;

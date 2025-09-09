@@ -12,10 +12,52 @@ const CommentBody = ({
   onUpdate,
   onDelete,
 }) => {
+  const { user } = useAuth();
+  const [userMap, setUserMap] = useState({});
+  const { getUserById } = userApi();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!user?.token) return;
+      const uniqueUserIds = [...new Set(reviews.map((r) => r.createdBy).filter(Boolean))];
+      if (uniqueUserIds.length === 0) return;
+
+      try {
+        const responses = await Promise.all(
+          uniqueUserIds.map((id) =>
+            getUserById(user.token, id).catch((err) => {
+              console.error(`Failed to fetch user ${id}:`, err?.message || err);
+              return null;
+            }),
+          ),
+        );
+
+        const newUserMap = {};
+        uniqueUserIds.forEach((id, idx) => {
+          const u = responses[idx];
+          if (u) newUserMap[id] = u;
+        });
+
+        setUserMap((prev) => ({ ...prev, ...newUserMap }));
+      } catch (e) {
+        console.error('Failed to fetch comment users', e.message || e);
+      }
+    };
+
+    fetchUsers();
+  }, [user?.token]);
+
+  const sortedReviews = Array.isArray(reviews)
+    ? [...reviews].sort((a, b) => {
+        const aTime = new Date(a.createdAt || a.updateAt || 0).getTime();
+        const bTime = new Date(b.createdAt || b.updateAt || 0).getTime();
+        return bTime - aTime;
+      })
+    : [];
   return (
     <div className="comment__task__body">
-      {reviews?.length > 0 ? (
-        reviews.map((item, index) => (
+      {sortedReviews?.length > 0 ? (
+        sortedReviews.map((item, index) => (
           <div className="comment__task__card" key={item.reviewId ?? index}>
             <div className="comment__task__card__header">
               <div className="infor__user">

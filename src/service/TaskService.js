@@ -72,7 +72,6 @@ export const addTask = async (taskData, token, dispatch) => {
         'Content-Type': 'application/json',
       },
     });
-    console.log(response);
     dispatch(addTasks(response.data));
     return response;
   } catch (e) {

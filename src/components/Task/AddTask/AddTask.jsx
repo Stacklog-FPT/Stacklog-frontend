@@ -127,8 +127,8 @@ const AddTask = ({ status, onCancel, group }) => {
       }
     }
 
-    if (taskData.assignTo.length < 0) {
-      toast.error('The task must have member');
+    if (!Array.isArray(taskData.assignTo) || taskData.assignTo.length === 0) {
+      toast.error('Please assign at least one member!');
       return false;
     }
 

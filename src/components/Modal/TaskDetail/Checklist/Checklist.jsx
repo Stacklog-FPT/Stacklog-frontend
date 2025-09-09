@@ -9,18 +9,17 @@ const genId = (prefix = 'id') =>
 
 const normalize = (arr = []) =>
   (Array.isArray(arr) ? arr : []).map((cl, idx) => {
-    const bid = cl.checkListId ?? `cl_${idx}`;
-    const itemsSrc = cl.checkItem ?? cl.listItems ?? [];
+    const bid = cl.checkListId;
+    const itemsSrc = cl.listItems ?? [];
     return {
       id: `${String(bid)}__${idx}`,
-      bid: String(bid),
+      bid: bid,
       name: cl.checkListName ?? `Checklist ${idx + 1}`,
       items: itemsSrc.map((it, j) => ({
-        id: String(it.checkItemId ?? `cli_${idx}_${j}`),
-        bid: String(it.checkItemId ?? `cli_${idx}_${j}`),
-        text: it.checkItemName ?? it.text ?? `Item ${j + 1}`,
-        done: Boolean(it.checkItemStatus === true || it.done === true),
-        assignTo: it.assignTo || [],
+        id: String(it.checkItemId ?? ''),
+        bid: String(it.checkItemId ?? ''),
+        text: it.checkItemTitle ?? 'Unknow title',
+        done: Boolean(it.isChecked === true || it.done === true),
       })),
     };
   });
@@ -29,11 +28,10 @@ const toApiShape = (listsState, { includeIds = false } = {}) =>
   (listsState || []).map((l) => {
     const base = {
       checkListName: l.name,
-      checkItem: (l.items || []).map((it) => {
+      listItems: (l.items || []).map((it) => {
         const itemBase = {
-          checkItemName: it.text,
-          checkItemStatus: !!it.done,
-          assignTo: it.assignTo || [],
+          checkItemTitle: it.text,
+          isChecked: false,
         };
 
         return includeIds && it.bid ? { checkItemId: it.bid, ...itemBase } : itemBase;
@@ -53,6 +51,7 @@ const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }
 
   // nguồn & state
   const source = useMemo(() => checkList ?? [], [checkList]);
+  console.log('debug source: ', source);
   const initial = useMemo(() => normalize(source), [source]);
 
   const [lists, setLists] = useState(initial);
@@ -95,6 +94,7 @@ const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }
 
   useEffect(() => {
     const n = normalize(source);
+    console.log('normalize: ', n);
     setLists(n);
     setOpenMap((prev) => {
       const next = { ...prev };

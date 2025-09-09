@@ -19,6 +19,7 @@ import SubTask from './SubTask/SubTask';
 import HoldDeleteButton from './ButtonDelete';
 import { deleteTaskApi, updateTaskApi } from '../../../service/TaskService';
 import { toast } from 'sonner';
+import userApi from '../../../service/UserService';
 
 const toLocalInput = (iso) => {
   if (!iso) return '';
@@ -34,9 +35,13 @@ const toLocalInput = (iso) => {
 const toISO = (localValue) => (localValue ? new Date(localValue).toISOString() : null);
 
 const TaskDetails = ({ task, onClose }) => {
+  const groups = useSelector((state) => state.group.groups);
   const statuses = useSelector((state) => state.status.statuses);
   const currentStatus = statuses.find((s) => String(s.statusTaskId) === String(task.statusTaskId));
-
+  const currentGroup = groups.find((g) => g.groupsId === task.groupId);
+  const [studentInformation, setStudentInformation] = useState([]);
+  console.log(studentInformation);
+  const { getUserById } = userApi();
   // --- EDIT MODE STATE ---
   const [editTask, setEditTask] = useState(false);
   const [isChecklistDirty, setChecklistDirty] = useState(false);
@@ -61,7 +66,6 @@ const TaskDetails = ({ task, onClose }) => {
   const { deleteReview } = ReviewService();
   const [activeTab, setActiveTab] = useState('subtasks');
   const toggleComments = () => setIsCommentsOpen((v) => !v);
-
   useEffect(() => {
     setForm({
       title: task?.taskTitle || '',
@@ -99,7 +103,7 @@ const TaskDetails = ({ task, onClose }) => {
       checkLists: form.checkListDraft,
     };
 
-    console.log(payload);
+    console.log('updateTask debug: ', payload);
 
     const res = await updateTaskApi(payload, user.token, dispatch);
     if (res?.status === 200 || res?.data || res === true) {
@@ -218,6 +222,35 @@ const TaskDetails = ({ task, onClose }) => {
     return () => (document.body.style.overflow = prev);
   }, []);
 
+  useEffect(() => {
+    let userId = [];
+    if (task.assignTo) {
+      userId = task.assignTo.map((item) => item);
+    }
+    const fetchStudent = async () => {
+      const studentInfos = await Promise.all(
+        userId.map(async (id) => {
+          try {
+            const u = await getUserById(user.token, id);
+            return {
+              _id: u._id,
+              name: u.full_name,
+              email: u.email,
+              id: u.work_id,
+              avatar: u.avatar_link,
+            };
+          } catch {
+            return null;
+          }
+        }),
+      );
+
+      setStudentInformation(studentInfos);
+    };
+
+    fetchStudent();
+  }, [task.groupId]);
+
   const handleBackdropClick = (e) => {
     if (panelRef.current && !panelRef.current.contains(e.target)) onClose?.();
   };
@@ -329,9 +362,9 @@ const TaskDetails = ({ task, onClose }) => {
         <section className="taskdetail__section">
           <label>Assignees</label>
           <div className="taskdetail__chips">
-            {(task?.assignTo || []).map((u) => (
-              <span key={u} className="chip">
-                @{u}
+            {(studentInformation || []).map((u) => (
+              <span key={u._id} className="chip">
+                @{u.name}
               </span>
             ))}
           </div>

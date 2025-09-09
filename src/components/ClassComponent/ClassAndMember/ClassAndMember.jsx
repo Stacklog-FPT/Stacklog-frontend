@@ -9,13 +9,11 @@ import { useAuth } from '../../../context/AuthProvider';
 import useApi from '../../../service/UserService';
 import decodeToken from '../../../service/DecodeJwt';
 import { ClockLoader } from 'react-spinners';
+import { useSelector } from 'react-redux';
 
 const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
   const { user } = useAuth();
-  const [classes, setClasses] = useState([]);
-  const [selectedClass, setSelectedClass] = useState('');
-  const [groups, setGroups] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState('');
+  const { groups } = useSelector((state) => state.group);
   const [memberList, setMemberList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const visibleMembers = memberList?.slice(0, 3);
@@ -24,28 +22,28 @@ const ClassAndMember = ({ onFilterByPriority, setGroup, setMemberTask }) => {
 
   const decodeUser = decodeToken(user.token);
 
-  useEffect(() => {
-    if (!user || !user.token) return;
+  // useEffect(() => {
+  //   if (!user || !user.token) return;
 
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const classService = ClassService();
-        const data = await classService.getClassesByRole(user.token, user.role);
-        setClasses(data);
-        if (data.length > 0) {
-          setSelectedClass(data[0].classesId);
-          setGroups(data[0].groups);
-        }
-      } catch (err) {
-        setClasses([]);
-        setGroups([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, [user]);
+  //   const fetchData = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       const classService = ClassService();
+  //       const data = await classService.getClassesByRole(user.token, user.role);
+  //       setClasses(data);
+  //       if (data.length > 0) {
+  //         setSelectedClass(data[0].classesId);
+  //         setGroups(data[0].groups);
+  //       }
+  //     } catch (err) {
+  //       setClasses([]);
+  //       setGroups([]);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [user]);
 
   useEffect(() => {
     if (!selectedClass) return;

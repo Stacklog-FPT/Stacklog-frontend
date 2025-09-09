@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { setError, setPending, updateTasks } from '../redux/slice/taskSlice';
-
-const REVIEW_URL = 'https://stacklog.id.vn/api/task/review';
+import { REACT_API_URL } from '../api/apiConfig';
+const REVIEW_URI = REACT_API_URL + 'task/review';
 const ReviewService = () => {
   const deleteReview = async (token, id) => {
     console.log('Call me delete review: ', id);
@@ -35,16 +35,18 @@ const ReviewService = () => {
 //   }
 // };
 
-export const createReview = async (token, taskId, data, dispatch) => {
+export const createReview = async (token, groupId, data, dispatch) => {
   try {
     if (!token) throw new Error('Token is missing!');
     dispatch(setPending(true));
-    const response = await axios.put(`http://localhost:3001/task/${taskId}`, data, {
+    const response = await axios.post(`${REVIEW_URI}/${groupId}`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
+
+    console.log('Review response: ', response);
     dispatch(updateTasks(response.data));
     dispatch(setPending(false));
     return response.data;

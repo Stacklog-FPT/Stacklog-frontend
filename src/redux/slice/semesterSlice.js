@@ -7,6 +7,8 @@ const initialState = {
   classIdsBySemesterId: {},
   groupIdsByClassId: {},
   currentSemesterId: null,
+  currentClassId: null,
+  currentGroupId: null,
 };
 
 const semesterSlice = createSlice({
@@ -32,19 +34,29 @@ const semesterSlice = createSlice({
     selectSemester(state, action) {
       state.currentSemesterId = action.payload ?? null;
       state.currentClassId = null;
+      state.currentGroupId = null;
     },
     selectClass(state, action) {
       state.currentClassId = action.payload ?? null;
+      state.currentGroupId = null;
+    },
+    selectGroup(state, action) {
+      state.currentGroupId = action.payload ?? null;
+    },
+    setError(state, action) {
+      state.error = action.payload;
     },
   },
 });
 
 export const {
+  setError,
   getSemestersStart,
   getSemestersSuccess,
   getSemestersFailure,
   selectSemester,
   selectClass,
+  selectGroup,
 } = semesterSlice.actions;
 
 export default semesterSlice.reducer;
@@ -57,3 +69,5 @@ export const selectError = (s) => self(s).error;
 
 export const selectSemesters = (s) => self(s).semesters;
 export const selectCurrentSemesterId = (s) => self(s).currentSemesterId;
+export const selectCurrentClassId = (s) => self(s).currentClassId;
+export const selectCurrentGroupId = (s) => self(s).currentGroupId;

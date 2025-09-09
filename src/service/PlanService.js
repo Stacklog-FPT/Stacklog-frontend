@@ -13,7 +13,7 @@ export const getPlansApi = async (dispatch, token) => {
   try {
     dispatch(setPending(true));
     const response = await axios.get("http://localhost:3001/topic", {
-      headers: { Authorization: `Bearer ${token}` },
+      // headers: { Authorization: `Bearer ${token}` },
     });
     dispatch(setPlans(response.data));
     dispatch(setPending(false));
@@ -31,7 +31,7 @@ export const updatePlanApi = async (topicId, payload, token, dispatch) => {
     const response = await axios.put(
       `http://localhost:3001/topic/${topicId}`,
       payload,
-      { headers: { Authorization: `Bearer ${token}` } }
+      // { headers: { Authorization: `Bearer ${token}` } }
     );
     dispatch(updatePlan(response.data));
     dispatch(setPending(false));
@@ -47,7 +47,7 @@ export const addPlanApi = async (planData, token, dispatch) => {
   try {
     dispatch(setPending(true));
     const response = await axios.post(`http://localhost:3001/topic`, planData, {
-      headers: { Authorization: `Bearer ${token}` },
+      // headers: { Authorization: `Bearer ${token}` },
     });
     dispatch(addPlan(response.data));
     dispatch(setPending(false));
@@ -63,7 +63,7 @@ export const deletePlanApi = async (topicId, token, dispatch) => {
   try {
     dispatch(setPending(true));
     await axios.delete(`http://localhost:3001/topic/${topicId}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      // headers: { Authorization: `Bearer ${token}` },
     });
     dispatch(deletePlan(topicId));
     dispatch(setPending(false));

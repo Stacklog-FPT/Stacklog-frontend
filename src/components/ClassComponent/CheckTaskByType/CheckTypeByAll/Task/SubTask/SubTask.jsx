@@ -11,19 +11,9 @@ import './SubTask.scss';
 import { useAuth } from '../../../../../../context/AuthProvider';
 import { deleteTaskApi } from '../../../../../../service/TaskService';
 import { useDispatch } from 'react-redux';
+import { formatDateUI } from '../../../../../../helper/formatDate';
 
-const SubTask = ({
-  id,
-  title,
-  priority,
-  createdAt,
-  dueDate,
-  startTime,
-  members,
-  handleDeleteReRender,
-  subTaskId,
-  idTamThoi,
-}) => {
+const SubTask = ({ id, title, priority, dueDate, createAt, startTime, members, subTaskId }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
   });
@@ -32,7 +22,7 @@ const SubTask = ({
     transition: transition || 'transform 0.2s ease, opacity 0.2s ease',
     opacity: isDragging ? 0.6 : 1,
   };
-
+  console.log({ startTime, dueDate });
   const { user } = useAuth();
   const dispatch = useDispatch();
   const visibleMembers = members?.slice(0, 3);
@@ -64,7 +54,7 @@ const SubTask = ({
     return '#f44336';
   };
 
-  const percentSubTask = calculateRemainingPercent(startTime, dueDate);
+  const percentSubTask = calculateRemainingPercent(formatDateUI(createAt), formatDateUI(dueDate));
   const progressColor = getColorByPercent(percentSubTask);
 
   const handleDeleteTask = async (taskId) => {
@@ -85,18 +75,11 @@ const SubTask = ({
     });
 
     if (result.isConfirmed) {
-      try {
-        const response = await deleteTaskApi(user.token, taskId, dispatch);
-        console.log('API response:', response);
-        if (response.data === 'Delete success') {
-          handleDeleteReRender(true);
-          Swal.fire('Deleted!', 'Task was removed successfully.', 'success');
-        } else {
-          throw new Error('Unexpected response from server');
-        }
-      } catch (error) {
-        console.error('Delete failed:', error.message);
-        Swal.fire('Error!', 'Something went wrong during deletion.', 'error');
+      const response = await deleteTaskApi(user.token, taskId, dispatch);
+      if (response.data === 'Delete success') {
+        Swal.fire('Deleted!', 'Task was removed successfully.', 'success');
+      } else {
+        throw new Error('Unexpected response from server');
       }
     }
   };

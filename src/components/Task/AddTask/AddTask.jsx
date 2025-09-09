@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AddTask.scss';
 import avatar_add_button from '../../../assets/icon/avatar_add_button.png';
 import assignUser from '../../../assets/task/assign-user.png';
+import userApi from '../../../service/UserService';
 import iconPriority from '../../../assets/task/icon-priority.png';
 import { useAuth } from '../../../context/AuthProvider';
 import axios from 'axios';
@@ -12,19 +13,19 @@ import { toast } from 'sonner';
 import { useSelector } from 'react-redux';
 
 const AddTask = ({ status, onCancel, group }) => {
-  console.log(status);
   const { user } = useAuth();
   const userData = decodeToken(user?.token);
   const groupList = useSelector((state) => state.group.groups);
   const currentGroup = groupList.find((g) => g.groupsId === group);
   const dispatch = useDispatch();
-  const visibleMembers = currentGroup?.groupStudent.slice(0, 3);
-  const extraCount = currentGroup?.groupStudent.length - visibleMembers.length;
+  const visibleMembers = currentGroup.groupStudents?.slice(0, 3);
+  const extraCount = currentGroup.groupStudents?.length - visibleMembers.length;
+  const { getUserById } = userApi();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
   const [selectedPriority, setSelectedPriority] = useState('LOW');
-  console.log('selectedPriority: ', selectedPriority);
+  const [studentInformation, setStudentInformation] = useState([]);
   const [taskData, setTaskData] = useState({
     taskId: '',
     taskTitle: '',
@@ -44,6 +45,10 @@ const AddTask = ({ status, onCancel, group }) => {
     parentTask: null,
     assignTo: [],
   });
+  const selectedMembers = studentInformation
+    ? studentInformation.filter((m) => taskData.assignTo.includes(m._id))
+    : [];
+
   const [colorPriority, setColorPriority] = useState([
     { id: 1, color: '#FF6B6B', content: 'HIGH', borderColor: '#DC2626' },
     { id: 2, color: '#FFD60A', content: 'MEDIUM', borderColor: '#D97706' },
@@ -148,40 +153,48 @@ const AddTask = ({ status, onCancel, group }) => {
       let formattedDueDate = taskData.taskDueDate ? `${taskData.taskDueDate}T${currentTime}` : '';
 
       const payload = {
-        taskId: Math.random().toString(),
-        group_id: taskData.groupId,
+        taskId: '',
+        groupId: taskData.groupId,
         taskTitle: taskData.taskTitle,
         taskDescription: taskData.taskDescription,
         statusTaskId: taskData.statusTaskId,
         documentId: '',
         taskPoint: 0,
-        taskParentId: 0,
+        taskParentId: '',
         taskStartTime: formattedStartTime,
         taskDueDate: formattedDueDate,
-        createdBy: user?.userName || userData?.username || 'Unknown',
+        createdBy: userData?.id || 'Unknown',
         updatedBy: '',
         priority: taskData.priority,
-        assignTo: taskData.assignTo,
+        listUserAssign: taskData.assignTo,
+        subTasks: [],
+        reviews: [],
+        checkLists: [],
       };
 
+      console.log(payload);
       const response = await addTask(payload, user.token, dispatch);
-
-      if (response.data) {
-        toast.success('Add Task successfully!');
-        await axios.post('http://localhost:3000/notifications', {
-          title: `Announce add task ${taskData.taskTitle} by ${user.username}`,
-          author: {
-            _id: Math.random(),
-            name: user.username || userData?.username || 'Unknown',
-            avatar:
-              user.avatar ||
-              'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
-          },
-          createdAt: new Date().toISOString().split('T')[0],
-          isRead: false,
-          _id: Math.random(),
-        });
+      console.log(response);
+      if (response.status === 200) {
+        toast.success('Add task success');
       }
+
+      // if (response.data) {
+      //   toast.success('Add Task successfully!');
+      //   await axios.post('http://localhost:3000/notifications', {
+      //     title: `Announce add task ${taskData.taskTitle} by ${user.username}`,
+      //     author: {
+      //       _id: Math.random(),
+      //       name: user.username || userData?.username || 'Unknown',
+      //       avatar:
+      //         user.avatar ||
+      //         'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
+      //     },
+      //     createdAt: new Date().toISOString().split('T')[0],
+      //     isRead: false,
+      //     _id: Math.random(),
+      //   });
+      // }
       onCancel();
     } catch (e) {
       console.error(
@@ -195,6 +208,35 @@ const AddTask = ({ status, onCancel, group }) => {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    let userId = [];
+    if (currentGroup) {
+      userId = currentGroup.groupStudents.map((item) => item.userId);
+    }
+    const fetchStudent = async () => {
+      const studentInfos = await Promise.all(
+        userId.map(async (id) => {
+          try {
+            const u = await getUserById(user.token, id);
+            return {
+              _id: u._id,
+              name: u.full_name,
+              email: u.email,
+              id: u.work_id,
+              avatar: u.avatar_link,
+            };
+          } catch {
+            return null;
+          }
+        }),
+      );
+
+      setStudentInformation(studentInfos);
+    };
+
+    fetchStudent();
+  }, [group]);
 
   return (
     <div className="add-task">
@@ -229,37 +271,37 @@ const AddTask = ({ status, onCancel, group }) => {
             <h2>Assign</h2>
           </div>
           <div className="assigned-users-list">
-            {taskData.assignTo.map((userId) => {
-              const member = currentGroup.groupStudent.find((m) => m === userId);
-              return member ? (
-                <div key={userId} className="assigned-user-card">
-                  <div className="user-info">
-                    <div className="avatar-container">
-                      <img
-                        src={member.avatar}
-                        alt={`${member.name || member.userName}'s Avatar`}
-                        className="user-avatar"
-                        onError={(e) =>
-                          (e.target.src =
-                            'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg')
-                        }
-                      />
-                      <div className="check-icon">
-                        <i className="fa-solid fa-check"></i>
-                      </div>
+            {selectedMembers.map((member) => (
+              <div key={member._id} className="assigned-user-card">
+                <div className="user-info">
+                  <div className="avatar-container">
+                    <img
+                      src={
+                        member.avatar ||
+                        'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                      }
+                      alt={`${member.name || member.userName}'s Avatar`}
+                      className="user-avatar"
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg';
+                      }}
+                    />
+                    <div className="check-icon">
+                      <i className="fa-solid fa-check"></i>
                     </div>
-                    <span className="user-name">{member.name || member.userName}</span>
                   </div>
-                  <button
-                    type="button"
-                    className="remove-user-btn"
-                    onClick={() => handleRemoveAssign(userId)}
-                  >
-                    <i className="fa-solid fa-xmark"></i>
-                  </button>
+                  <span className="user-name">{member.name || member.userName}</span>
                 </div>
-              ) : null;
-            })}
+                <button
+                  type="button"
+                  className="remove-user-btn"
+                  onClick={() => handleRemoveAssign(member._id)}
+                >
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            ))}
           </div>
           <div className="add-member-section">
             <button
@@ -274,12 +316,12 @@ const AddTask = ({ status, onCancel, group }) => {
           {showAssignDropdown && (
             <div className="assign-dropdown">
               <div className="assign-checkbox-list">
-                {currentGroup.groupStudent.map((member) => (
-                  <label key={member} className="member-option">
+                {studentInformation?.map((member) => (
+                  <label key={member._id} className="member-option">
                     <input
                       type="checkbox"
-                      value={member}
-                      checked={taskData.assignTo.includes(member)}
+                      value={member._id}
+                      checked={taskData.assignTo?.includes(member._id)}
                       onChange={handleAssignChange}
                     />
                     <div className="member-info">
@@ -329,7 +371,7 @@ const AddTask = ({ status, onCancel, group }) => {
             </button>
             {showPriorityDropdown && (
               <div className="priority-dropdown">
-                {colorPriority.map((item) => (
+                {colorPriority?.map((item) => (
                   <div
                     key={item.id}
                     className={`priority-option ${

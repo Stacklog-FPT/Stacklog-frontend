@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import "./ClassList.scss";
-import { IoFilter } from "react-icons/io5";
-import { FaPlus } from "react-icons/fa";
-import { FaTrash } from "react-icons/fa";
-import ClassService from "../../../../service/ClassService";
-import { useAuth } from "../../../../context/AuthProvider";
-import axios from "axios";
-import FormAddStudent from "./FormAddStudent/FormAddStudent";
+import React, { useState } from 'react';
+import './ClassList.scss';
+import { IoFilter } from 'react-icons/io5';
+import { FaPlus } from 'react-icons/fa';
+import { FaTrash } from 'react-icons/fa';
+import ClassService from '../../../../service/ClassService';
+import { useAuth } from '../../../../context/AuthProvider';
+import axios from 'axios';
+import FormAddStudent from './FormAddStudent/FormAddStudent';
 const ClassList = () => {
   const { user } = useAuth();
-  const [selectedClass, setSelectedClass] = React.useState("");
+  const [selectedClass, setSelectedClass] = React.useState('');
   const [classList, setClassList] = React.useState([]);
   const [members, setMembers] = React.useState([]);
   const [data, setData] = React.useState([]);
@@ -20,7 +20,7 @@ const ClassList = () => {
   const indexOfFirstMember = indexOfLastMember - membersPerPage;
   const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
   const totalPages = Math.ceil(members.length / membersPerPage);
-  const [isBan, setIsBan] = useState(true)
+  const [isBan, setIsBan] = useState(true);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   // const { getMembersInClass } = ClassService();
 
@@ -43,7 +43,7 @@ const ClassList = () => {
 
   const handleGetClass = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/classes");
+      const response = await axios.get('http://localhost:3000/classes');
       if (response && response.data.length > 0) {
         const subjectList = response.data[0].subjects;
         setClassList(subjectList);
@@ -51,28 +51,24 @@ const ClassList = () => {
         setMembers(subjectList[0].members);
       }
     } catch (e) {
-      console.error(e.message || "Something went wrong!");
+      console.error(e.message || 'Something went wrong!');
     }
   };
 
   const handleGetMembers = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/classes");
+      const response = await axios.get('http://localhost:3000/classes');
 
-      if (
-        response &&
-        Array.isArray(response.data) &&
-        response.data.length > 0
-      ) {
+      if (response && Array.isArray(response.data) && response.data.length > 0) {
         const subjects = response.data[0].subjects;
         const allMembers = subjects.flatMap((subject) =>
-          Array.isArray(subject.members) ? subject.members : []
+          Array.isArray(subject.members) ? subject.members : [],
         );
 
         setMembers(allMembers);
       }
     } catch (e) {
-      console.error(e.message || "Something went wrong!");
+      console.error(e.message || 'Something went wrong!');
     }
   };
 
@@ -85,34 +81,26 @@ const ClassList = () => {
 
   const handleDeleteStudent = async (memberId) => {
     try {
-     
-      const res = await axios.get("http://localhost:3000/classes");
+      const res = await axios.get('http://localhost:3000/classes');
       const currentClass = res.data[0];
 
       // Tìm subject theo selectedClass
       const updatedSubjects = currentClass.subjects.map((subject) => {
         if (subject.name === selectedClass) {
           // Lọc ra những member không bị xóa
-          const updatedMembers = subject.members.filter(
-            (member) => member.id !== memberId
-          );
+          const updatedMembers = subject.members.filter((member) => member.id !== memberId);
           return { ...subject, members: updatedMembers };
         }
         return subject;
       });
       const updatedClass = { ...currentClass, subjects: updatedSubjects };
 
-      await axios.put(
-        `http://localhost:3000/classes/${currentClass.id}`,
-        updatedClass
-      );
+      await axios.put(`http://localhost:3000/classes/${currentClass.id}`, updatedClass);
 
-      const updatedMemberList = members.filter(
-        (member) => member.id !== memberId
-      );
+      const updatedMemberList = members.filter((member) => member.id !== memberId);
       setMembers(updatedMemberList);
     } catch (e) {
-      console.error("Failed to delete member:", e.message);
+      console.error('Failed to delete member:', e.message);
     }
   };
 
@@ -123,7 +111,7 @@ const ClassList = () => {
   }, []);
 
   React.useEffect(() => {
-    console.log("showForm state:", showForm);
+    console.log('showForm state:', showForm);
   }, [showForm]);
   return (
     <div className="class__list">
@@ -143,7 +131,7 @@ const ClassList = () => {
             <FaPlus
               className="icon"
               onClick={() => {
-                console.log("Opening form");
+                console.log('Opening form');
                 setShowForm(true);
               }}
             />
@@ -166,18 +154,18 @@ const ClassList = () => {
                 <tr key={index}>
                   <td
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
                     }}
                   >
                     <img
                       src={item.avatar}
                       alt={item.name}
                       style={{
-                        width: "30px",
-                        height: "30px",
-                        borderRadius: "50%",
+                        width: '30px',
+                        height: '30px',
+                        borderRadius: '50%',
                       }}
                     />
                     {item.name}
@@ -188,7 +176,7 @@ const ClassList = () => {
                     <FaTrash
                       className="icon"
                       onClick={() => handleDeleteStudent(item.id)}
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: 'pointer' }}
                     />
                   </td>
                 </tr>
@@ -197,10 +185,7 @@ const ClassList = () => {
           </table>
         </div>
         <div className="pagination">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
+          <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
             Previous
           </button>
 
@@ -208,16 +193,13 @@ const ClassList = () => {
             <button
               key={index}
               onClick={() => paginate(index + 1)}
-              className={currentPage === index + 1 ? "active" : ""}
+              className={currentPage === index + 1 ? 'active' : ''}
             >
               {index + 1}
             </button>
           ))}
 
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
+          <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages}>
             Next
           </button>
         </div>

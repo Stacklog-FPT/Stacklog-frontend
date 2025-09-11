@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./SlotModal.scss";
 
-const Modal = ({ event, onClose, onDelete, onEdit, onUpdate }) => {
+const Modal = ({ event, onClose, onDelete, onEdit, onUpdate, canDelete = false }) => {
   const [title, setTitle] = useState(event.title);
   const parseAsLocal = (iso) => {
     if (!iso) return null;
@@ -25,7 +25,6 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate }) => {
   };
 
   const [start, setStart] = useState(toInputValue(parseAsLocal(event.start)));
-  const [end, setEnd] = useState(toInputValue(parseAsLocal(event.end)));
   const [isEditing, setIsEditing] = useState(false);
 
   const handleSave = () => {
@@ -33,7 +32,7 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate }) => {
       ...event,
       title,
       start: new Date(start),
-      end: new Date(end),
+      end: event.end ? event.end : null,
     });
     setIsEditing(false);
     onClose();
@@ -70,15 +69,6 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate }) => {
             />
           </div>
 
-          <div className="modal-field">
-            <label>To:</label>
-            <input
-              type="datetime-local"
-              value={end}
-              onChange={(e) => setEnd(e.target.value)}
-              disabled={!isEditing}
-            />
-          </div>
         </div>
 
         <div className="modal-actions">
@@ -87,9 +77,11 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate }) => {
               <button className="edit" onClick={() => setIsEditing(true)}>
                 Edit
               </button>
-              <button className="delete" onClick={onDelete}>
-                Delete
-              </button>
+              {canDelete ? (
+                <button className="delete" onClick={onDelete}>
+                  Delete
+                </button>
+              ) : null}
               <button className="close" onClick={onClose}>
                 Close
               </button>

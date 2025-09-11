@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Schedules.scss';
-import Calendar from '../../ScheduleComponents/Calendar/Calendar';
+import Calendar from '../../Modal/Schedules/Calendar/CalendarModal';
 import { FaPlus } from 'react-icons/fa';
 import AddScheduleForms from '../../ScheduleComponents/AddScheduleForm/AddScheduleForm';
 import { useParams } from 'react-router-dom';

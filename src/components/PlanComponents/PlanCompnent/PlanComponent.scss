@@ -303,6 +303,12 @@
     color: #1b5e20;
     border-color: #a5d6a7;
   }
+  /* accepted uses same visual style as approved */
+  &--accepted {
+    background: #e8f5e9;
+    color: #1b5e20;
+    border-color: #a5d6a7;
+  }
   &--rejected {
     background: #ffebee;
     color: #b71c1c;

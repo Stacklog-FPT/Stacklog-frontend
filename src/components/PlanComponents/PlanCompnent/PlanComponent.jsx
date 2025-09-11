@@ -71,8 +71,9 @@ const PlanComponent = () => {
   const [keyword, setKeyword] = useState("");
 
   useEffect(() => {
-    getPlansApi(dispatch, token);
-  }, [dispatch, token]);
+    // fetch topics for the selected class
+    if (selectedClass) getPlansApi(dispatch, token, selectedClass);
+  }, [dispatch, token, selectedClass]);
 
   useEffect(() => {
     if (currentSemesterId && token) {
@@ -234,7 +235,6 @@ const PlanComponent = () => {
         (t) =>
           t.topicTitle?.toLowerCase().includes(k) ||
           t.topicDescription?.toLowerCase().includes(k) ||
-          t.topicObjective?.toLowerCase().includes(k) ||
           groupMap[t.groupId]?.groupsName?.toLowerCase().includes(k)
       );
     }
@@ -314,14 +314,14 @@ const PlanComponent = () => {
       }
       const payload = {
         ...oldPlan,
-        status: "Approved",
+        status: "Accepted",
 
         allowEdit: false,
         approvedBy: userId,
         approvedAt: new Date().toISOString(),
         rejectReason: null,
       };
-      await updatePlanApi(topicId, payload, token, dispatch);
+  await updatePlanApi(payload, token, dispatch);
       setModal({ open: false, topic: null });
     } catch {
       setLocalError("Failed to approve topic");
@@ -353,7 +353,7 @@ const PlanComponent = () => {
     setLocalError("");
     try {
       const payload = { ...oldPlan, ...updatedFields };
-      await updatePlanApi(topicId, payload, token, dispatch);
+  await updatePlanApi(payload, token, dispatch);
       setModal({ open: false, topic: null });
     } catch {
       setLocalError("Failed to update topic");
@@ -408,7 +408,7 @@ const PlanComponent = () => {
         approvedBy: userId,
         approvedAt: new Date().toISOString(),
       };
-      await updatePlanApi(topicId, payload, token, dispatch);
+  await updatePlanApi(payload, token, dispatch);
       setModal({ open: false, topic: null });
       setRejectReason("");
     } catch {
@@ -417,7 +417,7 @@ const PlanComponent = () => {
     setActionLoading(false);
   };
 
-  const refresh = () => getPlansApi(dispatch, token);
+  const refresh = () => getPlansApi(dispatch, token, selectedClass);
 
   return (
     <div className="plan">
@@ -454,7 +454,7 @@ const PlanComponent = () => {
             >
               <option value="ALL">All</option>
               <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
+              <option value="Accepted">Accepted</option>
               <option value="Rejected">Rejected</option>
             </select>
           </div>

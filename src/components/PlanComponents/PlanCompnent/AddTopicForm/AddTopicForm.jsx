@@ -21,7 +21,6 @@ const AddTopicForm = ({
     topicTitle: "",
     topicAbbreviation: "",
     topicDescription: "",
-    topicObjective: "",
     attachments: [],
   });
   const [error, setError] = useState("");
@@ -84,23 +83,17 @@ const AddTopicForm = ({
 
     setLoading(true);
     try {
-      const generatedId = "topic" + Math.random().toString(36).slice(2, 8);
-      const planData = {
-        ...form,
-        id: generatedId,
-        topicId: generatedId,
-        classId,
+      // Build minimal payload; addPlanApi maps to pi* fields
+      const payload = {
+        topicTitle: form.topicTitle,
+        topicAbbreviation: form.topicAbbreviation,
+        topicDescription: form.topicDescription,
+        topicObjective: form.topicObjective,
         groupId,
-        status: "Pending",
-        allowEdit: true,
-        registerBy: userId,
-        registerAt: new Date().toISOString(),
-        rejectReason: null,
-        approvedBy: null,
-        approvedAt: null,
+        // attachments here are local objects; addPlanApi will extract ids if present
         attachments: form.attachments || [],
       };
-      await addPlanApi(planData, token, dispatch);
+      await addPlanApi(payload, token, dispatch);
 
       setForm({
         topicTitle: "",
@@ -111,7 +104,9 @@ const AddTopicForm = ({
       });
       setOpen(false);
     } catch {
-      setError("Failed to add topic");
+  const err = arguments[0];
+  console.error('[AddTopicForm] add failed', err || null);
+  setError((err && err.message) || 'Failed to add topic');
     } finally {
       setLoading(false);
     }
@@ -173,14 +168,7 @@ const AddTopicForm = ({
               className="sl-textarea"
               disabled={loading}
             />
-            <textarea
-              name="topicObjective"
-              placeholder="Objectives"
-              value={form.topicObjective}
-              onChange={handleChange}
-              className="sl-textarea"
-              disabled={loading}
-            />
+            {/* objective removed */}
 
             <div className="sl-upload">
               <label className="sl-label">Attachments</label>

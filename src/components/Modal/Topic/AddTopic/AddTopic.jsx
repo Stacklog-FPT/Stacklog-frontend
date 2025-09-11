@@ -24,7 +24,6 @@ const AddTopic = ({
     topicTitle: "",
     topicAbbreviation: "",
     topicDescription: "",
-    topicObjective: "",
     attachments: [],
   });
   const [error, setError] = useState("");
@@ -125,23 +124,17 @@ const AddTopic = ({
 
     setLoading(true);
     try {
-      const generatedId = "topic" + Math.random().toString(36).slice(2, 8);
-      const planData = {
-        ...form,
-        id: generatedId,
-        topicId: generatedId,
-        classId,
+      // Build minimal payload: frontend legacy fields removed. addPlanApi will map to pi* properties.
+      const payload = {
+        topicTitle: form.topicTitle,
+        topicAbbreviation: form.topicAbbreviation,
+        topicDescription: form.topicDescription,
+        topicObjective: form.topicObjective,
+        // status will default to 'PENDING' in addPlanApi if not provided
         groupId,
-        status: "Pending",
-        allowEdit: true,
-        registerBy: userId,
-        registerAt: new Date().toISOString(),
-        rejectReason: null,
-        approvedBy: null,
-        approvedAt: null,
         attachments: form.attachments || [],
       };
-      await addPlanApi(planData, token, dispatch);
+      await addPlanApi(payload, token, dispatch);
 
       setForm({
         topicTitle: "",
@@ -152,7 +145,10 @@ const AddTopic = ({
       });
       setOpen(false);
     } catch {
-      setError("Failed to add topic");
+  // show server-provided message when available
+  const msg = (arguments[0] && arguments[0].message) || 'Failed to add topic';
+  console.error('[AddTopic] add failed', arguments[0] || null);
+  setError(msg);
     } finally {
       setLoading(false);
     }
@@ -214,14 +210,7 @@ const AddTopic = ({
               className="sl-textarea"
               disabled={loading || !isLeader}
             />
-            <textarea
-              name="topicObjective"
-              placeholder="Objectives"
-              value={form.topicObjective}
-              onChange={handleChange}
-              className="sl-textarea"
-              disabled={loading || !isLeader}
-            />
+            {/* objective removed */}
 
             <div className="sl-upload">
               <label className="sl-label">Attachments</label>

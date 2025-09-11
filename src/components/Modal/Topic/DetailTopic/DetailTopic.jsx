@@ -36,8 +36,7 @@ const DetailTopic = ({
   const [editForm, setEditForm] = React.useState({
     topicTitle: topic?.topicTitle || "",
     topicAbbreviation: topic?.topicAbbreviation || "",
-    topicDescription: topic?.topicDescription || "",
-    topicObjective: topic?.topicObjective || "",
+  topicDescription: topic?.topicDescription || "",
     attachments: topic?.attachments ? [...topic.attachments] : [],
   });
 
@@ -149,7 +148,7 @@ const DetailTopic = ({
   const canAct =
     role === "LECTURER" && (status === "Pending" || status === "Rejected");
 
-  const canGrantEdit = role === "LECTURER" && status === "Approved";
+  const canGrantEdit = role === "LECTURER" && status === "Accepted";
 
   const isLeader =
     !!group &&
@@ -171,7 +170,7 @@ const DetailTopic = ({
   const handleApprove = () => {
     if (!onApprove) return;
 
-    setLocalTopic((t) => ({ ...t, status: "Approved", allowEdit: false }));
+  setLocalTopic((t) => ({ ...t, status: "Accepted", allowEdit: false }));
     onApprove(topic.topicId);
   };
 
@@ -300,21 +299,7 @@ const DetailTopic = ({
             )}
           </div>
 
-          <div style={{ gridColumn: "1 / -1" }}>
-            <div className="sl-label">Objectives</div>
-            {editMode ? (
-              <textarea
-                className="sl-textarea"
-                value={editForm.topicObjective}
-                onChange={(e) =>
-                  setEditForm((f) => ({ ...f, topicObjective: e.target.value }))
-                }
-                disabled={actionLoading}
-              />
-            ) : (
-              <div className="sl-preline">{topic.topicObjective || "-"}</div>
-            )}
-          </div>
+          {/* objective removed */}
 
           <div>
             <div className="sl-label">Registered at</div>
@@ -439,7 +424,7 @@ const DetailTopic = ({
               onClick={handleApprove}
             >
               <FiCheckCircle />
-              Approve
+              Accepted
             </button>
             <button
               className="sl-btn sl-btn--danger"

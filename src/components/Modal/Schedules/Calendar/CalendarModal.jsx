@@ -5,7 +5,7 @@ import {
   Views,
 } from "react-big-calendar";
 import moment from "moment";
-import "./Calendar.scss";
+import "./calendarModal.scss";
 import Modal from "./SlotModal";
 import Swal from "sweetalert2";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -13,94 +13,37 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import {
+  getScheduleByGroupId,
   deleteScheduleSlot,
   updateScheduleSlot,
-  getPersonalScheduleBySemester,
-} from "../../../service/ScheduleService";
-import { useAuth } from "../../../context/AuthProvider";
+} from "../../../../service/ScheduleService";
+import { useAuth } from "../../../../context/AuthProvider";
 import { addHours } from "date-fns";
 import { Toaster, toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import decodeToken from "../../../service/DecodeJwt";
+import decodeToken from "../../../../service/DecodeJwt";
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(RBCalendar);
 
 export default function Calendar({ groupId, isPage }) {
   const { user } = useAuth();
   const dispatch = useDispatch();
+  const { schedules, pending } = useSelector((s) => s.schedule);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   let myId = null;
   try {
     myId = user?.token ? decodeToken(user.token).id : null;
   } catch (e) {
     myId = null;
   }
-  const { schedules, pending } = useSelector((s) => s.schedule);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  try {
-    console.log(
-      "Calendar debug - user token:",
-      user?.token ? "available" : "not available"
-    );
-    if (user?.token) {
-      try {
-        console.log(
-          "Calendar debug - decoded user id:",
-          decodeToken(user.token).id
-        );
-      } catch (e) {
-        console.log("Calendar debug - decodeToken failed", e);
-      }
-    }
-    console.log(
-      "Calendar debug - schedules length:",
-      Array.isArray(schedules) ? schedules.length : "n/a"
-    );
-  } catch (e) {
-    /* ignore */
-  }
-  const currentSemesterId = useSelector((s) => s.semester?.currentSemesterId);
   const showingSchedule = () => {
     let scheduleList = [];
 
-    const myId = user?.token ? decodeToken(user.token).id : null;
-
     if (isPage) {
-      try {
-        console.log(
-          "schedules (count):",
-          Array.isArray(schedules) ? schedules.length : 0
-        );
-        if (Array.isArray(schedules)) {
-          console.log(
-            "schedules ids:",
-            schedules.map((x) => ({
-              slotId: x.slotId ?? x.id,
-              createdBy: x.createdBy,
-            }))
-          );
-        }
-      } catch (err) {
-      }
-
-      scheduleList = schedules.filter((s) => {
-        const assigns =
-          s.assignTo ??
-          s.userIdAssigns ??
-          (Array.isArray(s.slotAssigns)
-            ? s.slotAssigns.map((a) => a.userId).filter(Boolean)
-            : []);
-
-        const assignsNormalized = assigns.map((id) => String(id));
-        const myIdStr = myId ? String(myId) : null;
-        const createdByStr = s.createdBy ? String(s.createdBy) : null;
-
-        if (myIdStr && assignsNormalized.includes(myIdStr)) return true;
-
-        if (myIdStr && createdByStr && createdByStr === myIdStr) return true;
-
-        return false;
-      });
+      scheduleList = schedules.filter((s) =>
+        s.assignTo?.includes(decodeToken(user.token).id)
+      );
     } else {
       scheduleList = schedules.filter((s) => s.groupId?.includes(groupId));
     }
@@ -114,9 +57,12 @@ export default function Calendar({ groupId, isPage }) {
       const id = e.slotId ?? e.id;
       const title = e.slotTitle ?? e.slotTittle ?? e.title ?? "No title";
       const startISO = e.slotStartTime ?? e.slotStarTime ?? e.start;
+
       const parseAsLocal = (iso) => {
         if (!iso) return null;
+
         if (iso instanceof Date) return iso;
+
         const m = iso.match(
           /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/
         );
@@ -131,6 +77,7 @@ export default function Calendar({ groupId, isPage }) {
             Number(S || 0)
           );
         }
+
         return new Date(iso);
       };
 
@@ -173,10 +120,8 @@ export default function Calendar({ groupId, isPage }) {
       slotTitle: updatedEvent.title,
       slotDescription: updatedEvent.description || "",
       slotStartTime: formatLocalDateTime(updatedEvent.start),
-      groupId: isPage ? null : updatedEvent.groupId || [],
-      userIdAssigns: isPage
-        ? []
-        : updatedEvent.userIdAssigns || updatedEvent.assignTo || [],
+      groupId: updatedEvent.groupId || [],
+      userIdAssigns: updatedEvent.userIdAssigns || updatedEvent.assignTo || [],
     };
 
     await updateScheduleSlot(user.token, payload.slotId, payload, dispatch);
@@ -190,10 +135,9 @@ export default function Calendar({ groupId, isPage }) {
         slotTitle: updatedEvent.title,
         slotDescription: updatedEvent.description || "",
         slotStartTime: formatLocalDateTime(updatedEvent.start),
-        groupId: isPage ? null : updatedEvent.groupId || "",
-        userIdAssigns: isPage
-          ? []
-          : updatedEvent.userIdAssigns || updatedEvent.assignTo || [],
+        groupId: updatedEvent.groupId || "",
+        userIdAssigns:
+          updatedEvent.userIdAssigns || updatedEvent.assignTo || [],
       };
 
       await updateScheduleSlot(user.token, payload.slotId, payload, dispatch);
@@ -207,43 +151,31 @@ export default function Calendar({ groupId, isPage }) {
     const myIdStr = myId ? String(myId) : null;
     const createdByStr = createdBy ? String(createdBy) : null;
     if (!myIdStr || !createdByStr || myIdStr !== createdByStr) {
-      toast.error('Only the creator of this slot can delete it');
+      toast.error("Only the creator of this slot can delete it");
       return;
     }
 
     const result = await Swal.fire({
-      title: 'Are you sure to delete this task?',
+      title: "Are you sure to delete this task?",
       text: "This action can't completed!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#045745',
-      cancelButtonColor: '#c8cad4',
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel',
+      confirmButtonColor: "#045745",
+      cancelButtonColor: "#c8cad4",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
     });
 
     if (result.isConfirmed) {
       await deleteScheduleSlot(user?.token, id, dispatch);
       setSelectedEvent(null);
-      toast.success('Delete slot successfully!');
+      toast.success("Delete slot successfully!");
     }
   };
 
   useEffect(() => {
-    if (!user?.token) {
-      console.log("Calendar: skipping fetch — user token not ready");
-      return;
-    }
-
-    const semesterIdParam = currentSemesterId ?? undefined;
-    console.log(
-      "Calendar: fetching personal schedules for semesterId=",
-      semesterIdParam
-    );
-    getPersonalScheduleBySemester(user.token, semesterIdParam, dispatch).catch(
-      (err) => console.log("getPersonalScheduleBySemester error", err)
-    );
-  }, [currentSemesterId, user?.token]);
+    getScheduleByGroupId(user.token, groupId, dispatch);
+  }, [groupId]);
 
   return (
     <div className="calendar-wrapper">
@@ -268,11 +200,15 @@ export default function Calendar({ groupId, isPage }) {
         <Modal
           event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
-          onDelete={() => handleDelete(selectedEvent.id, selectedEvent.createdBy)}
+          onDelete={() =>
+            handleDelete(selectedEvent.id, selectedEvent.createdBy)
+          }
           onEdit={() => alert(`You want fix: ${selectedEvent.title}`)}
           onUpdate={handleUpdate}
           canDelete={
-            myId && selectedEvent && String(selectedEvent.createdBy) === String(myId)
+            myId &&
+            selectedEvent &&
+            String(selectedEvent.createdBy) === String(myId)
           }
         />
       )}

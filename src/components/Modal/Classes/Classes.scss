@@ -1,5 +1,6 @@
 .class-group-display {
   display: flex;
+  height: 44px;
   align-items: center;
   gap: 24px;
 }
@@ -24,4 +25,19 @@
 
 .class-group-display .group-name .value {
   color: #4a4a4a;
+}
+
+/* Export/Import button styling: unified background and no hover */
+.btn-export {
+  background-color: var(--bg--primary-color) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+}
+
+.btn-export:hover,
+.btn-export:focus,
+.btn-export:active {
+  background-color: var(--bg--primary-color) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }

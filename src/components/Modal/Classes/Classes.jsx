@@ -14,6 +14,9 @@ import decodeToken from '../../../service/DecodeJwt';
 import PopupCreateClass from '../../ClassListComponent/PopupCreateClass/PopupCreateClass';
 import PopupCreateGroup from '../../ClassListComponent/PopupCreateGroup/PopupCreateGroup';
 import PopupInviteCode from '../../ClassListComponent/PopupInviteCode/PopupInviteCode';
+import ExportXlsxButton from '../../ExportXlsxButton/ExportXlsxButton';
+import ImportXlsxButton from '../../ImportXlsxButton/ImportXlsxButton';
+import { exportToXlsx } from '../../../service/exportXlsx';
 
 const {
   getClasses,
@@ -384,6 +387,44 @@ const ClassList = ({ handleActivityAddClass }) => {
     }
   };
 
+  // Export full class members (ignore selectedGroup)
+  const handleExportFullClass = async () => {
+    try {
+      const currentClass = classes.find((c) => c.classesId === selectedClass) || classes[0];
+      if (!currentClass) {
+        alert('No class selected to export');
+        return;
+      }
+      // collect all user ids across groups
+      const userIds = [];
+      currentClass.groups.forEach((g) => {
+        g.groupStudents.forEach((s) => userIds.push(s.userId));
+      });
+      const uniqueIds = [...new Set(userIds)];
+      // fetch user details in parallel
+      const rows = await Promise.all(
+        uniqueIds.map(async (id) => {
+          try {
+            const u = await getUserById(user.token, id);
+            return {
+              Name: u.full_name || '',
+              Email: u.email || '',
+              ID: u.work_id || u._id || '',
+              Avatar: u.avatar_link || '',
+            };
+          } catch (err) {
+            return { Name: '', Email: '', ID: id, Avatar: '' };
+          }
+        }),
+      );
+
+      await exportToXlsx(rows, `class-${currentClass.classesId || 'all'}-members.xlsx`);
+    } catch (err) {
+      console.error('Export full class failed', err);
+      alert('Export failed. See console for details.');
+    }
+  };
+
   return (
     <div className="grades__component">
       <div className="grades__component__container">
@@ -443,7 +484,7 @@ const ClassList = ({ handleActivityAddClass }) => {
                 }}
               >
                 <i className="fa-solid fa-user-plus"></i>
-                <span> Group</span>
+                <span>Group</span>
               </button>
             )}
 
@@ -463,7 +504,7 @@ const ClassList = ({ handleActivityAddClass }) => {
                 return (
                   <button
                     className="btn-add-member"
-                    style={{ marginLeft: '12px' }}
+                    style={{ marginLeft: '12px', width: '96px' }}
                     onClick={() => setShowCreateGroup(true)}
                   >
                     <i className="fa-solid fa-user-plus"></i>
@@ -483,8 +524,21 @@ const ClassList = ({ handleActivityAddClass }) => {
                   <i className="fa-solid fa-link"></i>
                   <span>Link</span>
                 </button>
+                {/* Export/Import Excel buttons (temporarily visible for testing) */}
+                <div style={{ display: 'inline-flex', alignItems: 'center', marginLeft: 8 }}>
+                  <ExportXlsxButton onExport={handleExportFullClass} />
+                  <ImportXlsxButton
+                    onImport={(rows) => {
+                      // basic import preview — you can extend to add/import users
+                      console.log('Imported rows', rows);
+                      alert(`Imported ${rows.length} rows. See console for data.`);
+                    }}
+                  />
+                </div>
               </>
             )}
+
+            {/* testing buttons removed — only lecturer-specific buttons remain */}
           </div>
         </div>
         <div className="grades__component__container__table__list">
@@ -556,7 +610,7 @@ const ClassList = ({ handleActivityAddClass }) => {
                                 style={{ marginLeft: '8px' }}
                                 onClick={() => handleKickUser(item._id)}
                               >
-                                <span>Kick</span>
+                                <span>Remove</span>
                               </button>
                             );
                           }

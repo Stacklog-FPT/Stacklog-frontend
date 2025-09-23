@@ -194,7 +194,7 @@ $color-border-input: #b5b5b5;
 
 .chat__message__row {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   margin-bottom: 12px;
   width: 100%;
 }
@@ -215,6 +215,118 @@ $color-border-input: #b5b5b5;
   object-fit: cover;
   background: #fff;
   border: 1px solid #e5e7eb;
+}
+
+.msg-more-container {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  position: relative; /* anchor for absolute menu */
+}
+
+.msg-more-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  color: #000; /* black */
+  font-size: 14px;
+}
+
+.msg-more-btn:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+.msg-more-menu {
+  position: absolute;
+  bottom: calc(100% + 10px); /* appear above the button */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 6px 0;
+  min-width: 160px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  z-index: 60;
+  pointer-events: auto;
+}
+
+/* little tail pointing down */
+.msg-more-menu::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #ffffff;
+}
+
+/* subtle shadow under the tail */
+.msg-more-menu::before {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 9px solid rgba(0,0,0,0.06);
+  z-index: 59;
+}
+
+.msg-more-menu button {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 10px 16px;
+  text-align: left;
+  cursor: pointer;
+  color: #111;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.msg-more-menu button + button {
+  border-top: 1px solid #f0f0f0;
+}
+
+.msg-more-menu button:hover {
+  background: #f7f7f8;
+}
+
+.msg-more-btn i,
+.msg-more-btn svg {
+  color: #000 !important;
+}
+
+.chat__message__row--right .msg-more-container {
+  /* for right-aligned messages the button should appear BEFORE the bubble */
+  order: 0;
+}
+
+.chat__message__row--left .msg-more-container {
+  order: 3;
+}
+
+/* ensure explicit ordering within the row for right-aligned messages */
+.chat__message__row--right .chat__message {
+  order: 1;
+  margin-left: 0; /* keep spacing controlled by msg-more */
+}
+
+.chat__message__row--right .chat__message__avatar {
+  order: 2;
+  margin-left: 8px;
 }
 
 .chat__message {

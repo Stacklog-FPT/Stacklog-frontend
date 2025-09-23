@@ -4,9 +4,8 @@ import { ChatContext } from "../../../context/ChatContext";
 import { useAuth } from "../../../context/AuthProvider";
 import userApi from "../../../service/UserService";
 import defaulfAvatar from "../../../assets/logo-login.png";
-import { io } from "socket.io-client";
-
-const SOCKET_URL = "http://localhost:3002";
+import chatApi from "../../../service/ChatService";
+import {jwtDecode} from "jwt-decode";
 
 const USER_IDS = [
   "688e1182e4acb643f2bbc47e",
@@ -18,7 +17,7 @@ const USER_IDS = [
 ];
 
 const FeatureChat = () => {
-  const { selectedBox, setSelectedBox, isFeatureChatOpen } =
+  const { selectedBox, setSelectedBox, isFeatureChatOpen, setBoxesVersion } =
     useContext(ChatContext);
   const { user } = useAuth();
   const { getUserById } = userApi();
@@ -27,35 +26,15 @@ const FeatureChat = () => {
   const [usersToAdd, setUsersToAdd] = useState([]);
   const [showAddPopup, setShowAddPopup] = useState(false);
 
-  const socketRef = useRef(null);
-
-  // Kết nối socket
-  useEffect(() => {
-    socketRef.current = io(SOCKET_URL);
-
-    // Lắng nghe cập nhật group realtime
-    const handleGroupsUpdated = () => {
-      if (selectedBox?.id) {
-        socketRef.current.emit("getGroups", user?._id || user?.id, (groups) => {
-          const found = groups.find((g) => g.id === selectedBox.id);
-          if (found) setSelectedBox(found);
-        });
-      }
-    };
-    socketRef.current.on("groupsUpdated", handleGroupsUpdated);
-
-    return () => {
-      socketRef.current.off("groupsUpdated", handleGroupsUpdated);
-      socketRef.current.disconnect();
-    };
-    // eslint-disable-next-line
-  }, [selectedBox?.id, user]);
+  // no local socket needed here — use REST for updates
 
   // Lấy danh sách thành viên hiện tại (userList)
   useEffect(() => {
-    if (!selectedBox?.members) return setUserList([]);
+    // derive an array of userIds either from selectedBox.members (ids) or selectedBox.memberObjects (objects with userId)
+    const memberIds = (Array.isArray(selectedBox?.memberObjects) && selectedBox.memberObjects.map((m) => m.userId).filter(Boolean)) || (Array.isArray(selectedBox?.members) && selectedBox.members) || [];
+    if (!memberIds || memberIds.length === 0) return setUserList([]);
     const fetchUsers = async () => {
-      const promises = selectedBox.members.map(async (id) => {
+      const promises = memberIds.map(async (id) => {
         try {
           const res = await getUserById(user.token, id);
           return res;
@@ -101,25 +80,70 @@ const FeatureChat = () => {
   }, [selectedBox]);
 
   // Thêm thành viên qua socket
-  const handleAddMember = (userId) => {
+  const handleAddMember = async (userId) => {
     if (!userId || !selectedBox) return;
     if (selectedBox.members.includes(userId)) return;
-    const updatedGroup = {
-      ...selectedBox,
-      members: [...selectedBox.members, userId],
-    };
-    socketRef.current.emit("updateGroup", updatedGroup, (group) => {
-      setSelectedBox(group);
-    });
+    const newMembers = [...(selectedBox.members || []), userId];
+    try {
+      const service = chatApi();
+      // server expects { memberIds: [...] }
+      const res = await service.updateBoxMembers(user.token, selectedBox.id, {
+        memberIds: newMembers,
+      });
+      // update local selectedBox with server response if available
+      if (res) setSelectedBox(res);
+    } catch (err) {
+      console.error("Update box members failed", err);
+      // fallback: optimistically update UI
+      setSelectedBox((prev) => ({ ...prev, members: newMembers }));
+    }
   };
 
-  // Xóa group qua socket
-  const handleDeleteChat = () => {
+  // Delete box chat via REST (admins only)
+  const handleDeleteChat = async () => {
     if (!selectedBox?.id) return;
-    if (!window.confirm("Bạn có chắc chắn muốn xóa group này?")) return;
-    socketRef.current.emit("deleteGroup", selectedBox.id, () => {
+
+    // decode current user id from token
+    let currentUserId = null;
+    try {
+      const decoded = jwtDecode(user.token);
+      currentUserId = decoded.id || decoded._id || decoded.userId || decoded.sub || null;
+    } catch (e) {
+      currentUserId = null;
+    }
+
+    // determine admin permission from selectedBox.memberObjects (server should provide isAdmin/is_admin)
+    const isAdmin = Array.isArray(selectedBox?.memberObjects)
+      ? selectedBox.memberObjects.some((m) => {
+          const uid = m.userId || m.user_id || m._id || m.id;
+          const adminFlag = m.isAdmin === true || m.is_admin === true || m.is_admin === "true";
+          return uid && uid === currentUserId && adminFlag;
+        })
+      : false;
+
+    if (!isAdmin) {
+      alert("Bạn không có quyền giải tán nhóm");
+      return;
+    }
+
+    // confirm deletion
+    if (!window.confirm("Bạn có chắc chắn muốn giải tán nhóm không?")) return;
+
+    try {
+      const service = chatApi();
+      await service.deleteBox(user.token, selectedBox.id);
       setSelectedBox(null);
-    });
+      // bump boxesVersion so sidebar list will refetch
+      try {
+        setBoxesVersion((v) => (v || 0) + 1);
+      } catch (e) {
+        /* ignore if not available */
+      }
+      alert("Nhóm đã được giải tán");
+    } catch (err) {
+      console.error("Delete box failed", err);
+      alert("Xóa nhóm thất bại: " + (err?.response?.data?.message || err.message));
+    }
   };
 
   const handleFeatureClick = (featureName) => {

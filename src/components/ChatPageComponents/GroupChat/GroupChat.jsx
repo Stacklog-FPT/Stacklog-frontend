@@ -4,19 +4,19 @@ import "./GroupChat.scss";
 import { ChatContext } from "../../../context/ChatContext";
 import { useAuth } from "../../../context/AuthProvider";
 import { jwtDecode } from "jwt-decode";
-import { io } from "socket.io-client";
+import chatApi from "../../../service/ChatService";
 
-const SOCKET_URL = "http://localhost:3002";
-
-const GroupChat = () => {
+const GroupChat = ({ showAddGroup: externalShowAddGroup, setShowAddGroup: externalSetShowAddGroup, defaultBoxType }) => {
   const { setSelectedBox } = useContext(ChatContext);
   const [groupChatDetails, setGroupChatDetails] = useState([]);
-  const [showAddGroup, setShowAddGroup] = useState(false);
+  const [localShowAddGroup, setLocalShowAddGroup] = useState(false);
+  const showAddGroup = externalShowAddGroup !== undefined ? externalShowAddGroup : localShowAddGroup;
+  const setShowAddGroup = externalSetShowAddGroup !== undefined ? externalSetShowAddGroup : setLocalShowAddGroup;
   const [newGroupName, setNewGroupName] = useState("");
   const [newGroupAvatar, setNewGroupAvatar] = useState(null);
   const [previewAvatar, setPreviewAvatar] = useState(null);
 
-  const socketRef = useRef(null);
+  // socketRef removed: this component now loads boxes via REST (`getBoxes`)
 
   const { user } = useAuth();
   let currentUserId = "";
@@ -29,28 +29,61 @@ const GroupChat = () => {
     }
   }
 
-  // Kết nối socket và lấy group
+  // Load groups via REST API (getBoxes)
   useEffect(() => {
-    socketRef.current = io(SOCKET_URL);
+    const service = chatApi();
+    let mounted = true;
 
-    // Lấy danh sách group của user
-    const fetchGroups = () => {
-      socketRef.current.emit("getGroups", currentUserId, (groups) => {
-        setGroupChatDetails(groups || []);
-      });
+    const fetchGroups = async () => {
+      if (!user?.token) {
+        if (mounted) setGroupChatDetails([]);
+        return;
+      }
+      try {
+        const boxes = await service.getBoxes(user.token);
+        // Map server shape to component shape used elsewhere in the UI
+        const mapped = (boxes || []).map((b) => {
+          // members may be an array of member objects ({ userId, ... }) or an array of ids
+          let members = [];
+          if (Array.isArray(b.memberIds) && b.memberIds.length) {
+            members = b.memberIds;
+          } else if (Array.isArray(b.members) && b.members.length) {
+            // members could be [{ userId: '...' }, ...]
+            members = b.members.map((m) => m.userId || m.user_id).filter(Boolean);
+          } else {
+            members = [currentUserId].filter(Boolean);
+          }
+
+          // keep original member objects when server provides them
+          const memberObjects = Array.isArray(b.members) && b.members.length ? b.members : undefined;
+
+          return {
+            id: b._id || b.id,
+            boxChat: {
+              boxChatId: b._id || b.id,
+              nameBox: b.name_box || b.name || "",
+              // server may use `ava_box` snake_case
+              avaBox: b.ava_box || b.avaBox || avatar,
+            },
+            members,
+            memberObjects,
+            messages: b.messages || [],
+            updatedAt: b.updated_at || b.updatedAt || b.created_at || b.createdAt,
+            boxType: b.boxType || b.box_type,
+          };
+        });
+        if (mounted) setGroupChatDetails(mapped);
+      } catch (err) {
+        console.error("Fetch boxes failed", err);
+      }
     };
 
     fetchGroups();
 
-    // Lắng nghe khi có group thay đổi
-    socketRef.current.on("groupsUpdated", fetchGroups);
-
     return () => {
-      socketRef.current.off("groupsUpdated", fetchGroups);
-      socketRef.current.disconnect();
+      mounted = false;
     };
-    // eslint-disable-next-line
-  }, [currentUserId]);
+  }, [user?.token, currentUserId]);
 
   // Xử lý chọn ảnh và preview
   const handleAvatarChange = (e) => {
@@ -86,14 +119,54 @@ const GroupChat = () => {
       messages: [],
     };
 
-    socketRef.current.emit("createGroup", newGroup, (savedGroup) => {
-      setShowAddGroup(false);
-      setNewGroupName("");
-      setNewGroupAvatar(null);
-      setPreviewAvatar(null);
-      setSelectedBox(savedGroup);
-      // Không cần fetch lại, sẽ tự động cập nhật qua "groupsUpdated"
-    });
+    // Use REST API createBox to create the chat box on server
+    const service = chatApi();
+    const payload = {
+      name: newGroupName,
+      type: defaultBoxType || "PERSONAL",
+      memberIds: [currentUserId],
+      avatar: avaBoxUrl,
+    };
+
+    (async () => {
+      try {
+        const saved = await service.createBox(user.token, payload);
+        setShowAddGroup(false);
+        setNewGroupName("");
+        setNewGroupAvatar(null);
+        setPreviewAvatar(null);
+
+        // Normalize saved box to the same internal shape
+        const savedMembers = Array.isArray(saved.memberIds)
+          ? saved.memberIds
+          : Array.isArray(saved.members)
+          ? saved.members.map((m) => m.userId || m.user_id).filter(Boolean)
+          : [currentUserId].filter(Boolean);
+
+        const mappedSaved = {
+          id: saved._id || saved.id,
+          boxChat: {
+            boxChatId: saved._id || saved.id,
+            nameBox: saved.name_box || saved.name || newGroupName,
+            avaBox: saved.ava_box || saved.avaBox || saved.avatar || payload.avatar || avatar,
+          },
+          members: savedMembers,
+          messages: saved.messages || [],
+          updatedAt: saved.updated_at || saved.updatedAt || saved.created_at,
+          boxType: saved.boxType || saved.box_type || saved.type || payload.type,
+        };
+
+        // Insert created box into list and select it
+        setGroupChatDetails((prev) => (mappedSaved ? [mappedSaved, ...prev] : prev));
+        setSelectedBox(mappedSaved);
+      } catch (err) {
+        console.error("Create box failed", err);
+        // show simple error to user
+        alert(
+          "Tạo nhóm thất bại: " + (err?.response?.data?.message || err.message)
+        );
+      }
+    })();
   };
 
   const handleSelectGroup = (group) => {
@@ -103,9 +176,7 @@ const GroupChat = () => {
   return (
     <div className="group__chat__container">
       <div className="group__chat__header">
-        <button className="btn-add-group" onClick={() => setShowAddGroup(true)}>
-          <i className="fa-solid fa-plus"></i> Add Group
-        </button>
+        {/* Header now mainly reserved for the list - Add Group button is rendered by parent `GroupComponent` */}
       </div>
       {/* Popup Add Group */}
       {showAddGroup && (

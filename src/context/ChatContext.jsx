@@ -1,12 +1,20 @@
 "use client";
 
 import { createContext, useEffect, useState } from "react";
-import { io } from "socket.io-client";
 import { useAuth } from "./AuthProvider";
+import socketService from "../service/SocketService";
+import { REACT_API_URL } from "../api/apiConfig";
 
 export const ChatContext = createContext();
 
-const socket = io("");
+let apiOrigin = REACT_API_URL;
+try {
+  apiOrigin = new URL(REACT_API_URL).origin;
+} catch (e) {
+  apiOrigin = REACT_API_URL.replace(/\/.*$/, "");
+}
+const socketScheme = apiOrigin.replace(/^http/, "ws");
+const SOCKET_URL = socketScheme + "/api/chat/socket.io";
 
 const ChatProvider = ({ children }) => {
   const { user } = useAuth();
@@ -18,25 +26,31 @@ const ChatProvider = ({ children }) => {
   const [isFeatureChatOpen, setIsFeatureChatOpen] = useState(false);
 
   const toggleFeatureChat = () => {
-    setIsFeatureChatOpen((prev) => {
-      return !prev;
-    });
+    setIsFeatureChatOpen((prev) => !prev);
   };
 
   useEffect(() => {
-    socket.on("users", (users) => {
-      setUsers(users.filter((u) => u._id !== user?._id));
-    });
+    if (!user) return;
 
-    socket.on("message", (message) => {
+  // connect shared socket (kept for app lifetime). Pass token in auth to avoid
+  // serializing userId=undefined into the handshake URL when user id is not present yet.
+  socketService.connect({ url: SOCKET_URL, token: user?.token });
+
+    const handleUsers = (incoming) => {
+      setUsers(incoming.filter((u) => u._id !== user?._id));
+    };
+    const handleMessage = (message) => {
       setMessages((prev) => [...prev, message]);
-    });
+    };
+
+    socketService.on("users", handleUsers);
+    socketService.on("message", handleMessage);
 
     return () => {
-      socket.off("users");
-      socket.off("message");
+      socketService.off("users", handleUsers);
+      socketService.off("message", handleMessage);
     };
-  }, [user?._id]);
+  }, [user]);
 
   return (
     <ChatContext.Provider

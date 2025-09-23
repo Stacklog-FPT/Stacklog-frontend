@@ -1,141 +1,187 @@
 import axios from "axios";
-const CHAT_API = "https://stacklog.id.vn/api/chat";
+import { REACT_API_URL } from "../api/apiConfig";
 
 const ChatBoxApi = () => {
-  // Lấy danh sách các box chat
-  const getBoxChat = async (token) => {
-    if (!token) {
-      throw new Error("Unauthorized: No token provided");
-    }
+  // Lấy danh sách box chat (endpoint: /boxes)
+  const getBoxes = async (token) => {
+    if (!token) throw new Error("Unauthorized: No token provided");
     try {
-      const response = await axios.get(`${CHAT_API}/box-chat`, {
+      const response = await axios.get(`${REACT_API_URL}/chat/boxes`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       return response.data;
     } catch (error) {
-      console.error(
-        "Get Box Chat API failed:",
-        error?.response || error.message
-      );
+      console.error("Get Boxes API failed:", error?.response || error.message);
       throw error;
     }
   };
 
-  // Tạo box chat mới
-  const createBoxChat = async (token) => {
-    if (!token) {
-      throw new Error("Unauthorized: No token provided");
-    }
+  // Tạo box chat mới (POST /boxes)
+  const createBox = async (token, payload) => {
+    if (!token) throw new Error("Unauthorized: No token provided");
+    if (!payload) throw new Error("Missing payload");
     try {
       const response = await axios.post(
-        `${CHAT_API}/box-chat`,
+        `${REACT_API_URL}/chat/boxes`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Create Box API failed:", error?.response || error.message);
+      throw error;
+    }
+  };
+
+  // Cập nhật memberIds của box chat (PATCH /boxes/{boxChatId})
+  const updateBoxMembers = async (token, boxChatId, payload) => {
+    if (!token) throw new Error("Unauthorized: No token provided");
+    if (!boxChatId) throw new Error("Missing boxChatId");
+    if (!payload) throw new Error("Missing payload");
+    try {
+      const response = await axios.post(
+        `${REACT_API_URL}/chat/boxes/${boxChatId}/members`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Update Box Members API failed:",
+        error?.response || error.message
+      );
+      throw error;
+    }
+  };
+
+  // Gửi tin nhắn vào box chat (POST /messages/{boxChatId})
+  const sendMessage = async (token, boxChatId, payload) => {
+    if (!token) throw new Error("Unauthorized: No token provided");
+    if (!boxChatId) throw new Error("Missing boxChatId");
+    if (!payload) throw new Error("Missing payload");
+    try {
+      const response = await axios.post(
+        `${REACT_API_URL}/chat/messages/${boxChatId}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Send Message API failed:",
+        error?.response || error.message
+      );
+      throw error;
+    }
+  };
+
+  // Lấy danh sách tin nhắn của box chat (GET /messages/{boxChatId})
+  const getMessages = async (token, boxChatId) => {
+    if (!token) throw new Error("Unauthorized: No token provided");
+    if (!boxChatId) throw new Error("Missing boxChatId");
+    try {
+      const response = await axios.get(
+        `${REACT_API_URL}/chat/messages/${boxChatId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Get Messages API failed:",
+        error?.response || error.message
+      );
+      throw error;
+    }
+  };
+
+  const recallMessage = async (token, messageId) => {
+    if (!token) throw new Error("Unauthorized: No token provided");
+    if (!messageId) throw new Error("Missing messageId");
+    try {
+      const response = await axios.put(
+        `${REACT_API_URL}/chat/messages/recall/${messageId}`,
         {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       return response.data;
     } catch (error) {
       console.error(
-        "Create Box Chat API failed:",
+        "Recall Message API failed:",
         error?.response || error.message
       );
       throw error;
     }
   };
 
-  // Lấy danh sách user của một box chat
-  const getBoxChatUserList = async (token, boxChatId) => {
+  // Xoá một message (DELETE /{messageId})
+  const deleteMessage = async (token, messageId) => {
+    if (!token) throw new Error("Unauthorized: No token provided");
+    if (!messageId) throw new Error("Missing messageId");
+    try {
+      const response = await axios.delete(
+        `${REACT_API_URL}/chat/messages/${messageId}?hard=0`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Delete Message API failed:",
+        error?.response || error.message
+      );
+      throw error;
+    }
+  };
+
+  // Xoá box chat (DELETE /boxes/{boxChatId})
+  const deleteBox = async (token, boxChatId) => {
     if (!token) throw new Error("Unauthorized: No token provided");
     if (!boxChatId) throw new Error("Missing boxChatId");
     try {
-      const response = await axios.get(
-        `${CHAT_API}/box-chat-user/${boxChatId}`,
+      const response = await axios.delete(
+        `${REACT_API_URL}/chat/boxes/${boxChatId}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       return response.data;
     } catch (error) {
-      console.error(
-        "Get Box Chat User List API failed:",
-        error?.response || error.message
-      );
+      console.error("Delete Box API failed:", error?.response || error.message);
       throw error;
     }
   };
-
-  // Lấy danh sách tin nhắn của một box chat
-  const getBoxChatMessages = async (token, boxChatId) => {
-    if (!token) throw new Error("Unauthorized: No token provided");
-    if (!boxChatId) throw new Error("Missing boxChatId");
-    try {
-      const response = await axios.get(
-        `${CHAT_API}/chat-message/${boxChatId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error(
-        "Get Box Chat Messages API failed:",
-        error?.response || error.message
-      );
-      throw error;
-    }
-  };
-
-  // Lấy danh sách user và tin nhắn của tất cả box chat
-  const getAllBoxChatUserDetails = async (token) => {
-  if (!token) {
-    throw new Error("Unauthorized: No token provided");
-  }
-  try {
-    const boxChats = await getBoxChat(token); 
-    const allDetails = await Promise.all(
-      boxChats.map(async (box) => {
-        const [users, messages] = await Promise.all([
-          getBoxChatUserList(token, box.boxChatId),
-          getBoxChatMessages(token, box.boxChatId),
-        ]);
-        // Lấy tin nhắn cuối cùng (hoặc đầu tiên tuỳ ý)
-        const chatMessageContent =
-          messages && messages.length > 0
-            ? messages[messages.length - 1].chatMessageContent
-            : "";
-        return {
-          boxChat: box,
-          users,
-          messages,
-          chatMessageContent, // Thêm trường này vào object trả về
-        };
-      })
-    );
-    return allDetails;
-  } catch (error) {
-    console.error(
-      "Get All Box Chat User Details failed:",
-      error?.response || error.message
-    );
-    throw error;
-  }
-};
 
   return {
-    getBoxChat,
-    createBoxChat,
-    getBoxChatUserList,
-    getBoxChatMessages,
-    getAllBoxChatUserDetails,
+    getBoxes,
+    createBox,
+    updateBoxMembers,
+    sendMessage,
+    getMessages,
+    recallMessage,
+    deleteMessage,
+    deleteBox,
   };
 };
 

@@ -45,7 +45,7 @@ const userApi = () => {
     }
 
     try {
-      const response = await axios.get(`${API_AUTH}profile/user/${email}`, {
+      const response = await axios.get(`${API_AUTH}profile/user/email/${email}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -87,6 +87,7 @@ const userApi = () => {
       throw new Error(error.message);
     }
   };
+
 
   return {
     login,

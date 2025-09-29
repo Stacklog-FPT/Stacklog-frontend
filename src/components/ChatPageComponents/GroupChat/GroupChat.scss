@@ -152,6 +152,132 @@ $background-is-hover: #dbeafe;
     gap: 12px;
   }
 
+  .add-group-form {
+    width: 100%;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .form-grid .left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .form-grid .right {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .label {
+    font-size: 13px;
+    color: $color-text-heading;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: $color-text-main-content;
+    margin-top: 8px;
+  }
+
+  .add-member-input,
+  .add-group-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e6e9ee;
+    outline: none;
+    transition: box-shadow 0.12s ease, border-color 0.12s ease;
+  }
+
+  .add-member-input:focus,
+  .add-group-input:focus {
+    border-color: var(--bg--primary-color);
+    box-shadow: 0 4px 20px rgba(6, 95, 70, 0.06);
+  }
+
+  .add-members-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .btn-add-member {
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid var(--bg--primary-color);
+    color: var(--bg--primary-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .members-list {
+    display: flex;
+    flex-direction: column; /* stack chips vertically */
+    gap: 8px;
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .member-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #e6eef3;
+    width: 100%;
+    box-sizing: border-box;
+    word-break: break-word; /* allow long emails to wrap */
+  }
+
+  .chip-text {
+    font-size: 13px;
+    color: $color-text-main-content;
+    display: block;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .chip-remove {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .btn-create-group {
+    padding: 10px 16px;
+    background: var(--bg--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .btn-cancel-group {
+    padding: 10px 16px;
+    background: #f3f4f6;
+    color: #374151;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
   .add-group-modal-header {
     display: flex;
     align-items: center;

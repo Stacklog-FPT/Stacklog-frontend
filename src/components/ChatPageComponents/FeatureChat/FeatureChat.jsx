@@ -5,40 +5,70 @@ import { useAuth } from "../../../context/AuthProvider";
 import userApi from "../../../service/UserService";
 import defaulfAvatar from "../../../assets/logo-login.png";
 import chatApi from "../../../service/ChatService";
-import {jwtDecode} from "jwt-decode";
-
-const USER_IDS = [
-  "688e1182e4acb643f2bbc47e",
-  "688e11b2e4acb643f2bbc482",
-  "688e110fe4acb643f2bbc47b",
-  "688e119fe4acb643f2bbc480",
-  "688e11c4e4acb643f2bbc484",
-  "688e1238e4acb643f2bbc486",
-];
+import { jwtDecode } from "jwt-decode";
 
 const FeatureChat = () => {
   const { selectedBox, setSelectedBox, isFeatureChatOpen, setBoxesVersion } =
     useContext(ChatContext);
   const { user } = useAuth();
-  const { getUserById } = userApi();
+  const { getUserById, getUserByEmail } = userApi();
   const [isFeatureOpen, setIsFeatureOpen] = useState(false);
   const [userList, setUserList] = useState([]);
-  const [usersToAdd, setUsersToAdd] = useState([]);
+  const [emailToAdd, setEmailToAdd] = useState("");
   const [showAddPopup, setShowAddPopup] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   // no local socket needed here — use REST for updates
 
   // Lấy danh sách thành viên hiện tại (userList)
   useEffect(() => {
-    // derive an array of userIds either from selectedBox.members (ids) or selectedBox.memberObjects (objects with userId)
-    const memberIds = (Array.isArray(selectedBox?.memberObjects) && selectedBox.memberObjects.map((m) => m.userId).filter(Boolean)) || (Array.isArray(selectedBox?.members) && selectedBox.members) || [];
-    if (!memberIds || memberIds.length === 0) return setUserList([]);
+    // memberRefs can be either an array of ids (strings) or an array of memberObjects whose userId
+    // may be a string or an object. Normalize and only fetch missing users.
+    const memberRefs =
+      (Array.isArray(selectedBox?.memberObjects) &&
+        selectedBox.memberObjects.map((m) => m.userId).filter(Boolean)) ||
+      (Array.isArray(selectedBox?.members) && selectedBox.members) ||
+      [];
+    if (!memberRefs || memberRefs.length === 0) return setUserList([]);
+
     const fetchUsers = async () => {
-      const promises = memberIds.map(async (id) => {
+      // preloaded map for entries where user object is already embedded
+      const preloaded = {};
+      const idsToFetch = [];
+
+      memberRefs.forEach((ref) => {
+        if (!ref) return;
+        if (typeof ref === "string") {
+          idsToFetch.push(ref);
+        } else if (typeof ref === "object") {
+          // ref could be the user object itself or an object with _id
+          const id =
+            ref._id ||
+            ref.id ||
+            (ref.user && (ref.user._id || ref.user.id)) ||
+            null;
+          if (id) {
+            // if ref already contains full profile fields, store it
+            const maybeUser =
+              ref.full_name || ref.email || (ref.user && ref.user.full_name)
+                ? ref.user || ref
+                : null;
+            if (maybeUser) preloaded[id] = maybeUser;
+            idsToFetch.push(id);
+          }
+        }
+      });
+
+      // dedupe ids
+      const uniqueIds = Array.from(new Set(idsToFetch));
+
+      // fetch missing users (but reuse preloaded ones)
+      const fetchPromises = uniqueIds.map(async (id) => {
+        if (preloaded[id]) return preloaded[id];
         try {
           const res = await getUserById(user.token, id);
           return res;
-        } catch {
+        } catch (e) {
           return {
             _id: id,
             full_name: id,
@@ -47,55 +77,148 @@ const FeatureChat = () => {
           };
         }
       });
-      const users = await Promise.all(promises);
-      setUserList(users);
+
+      const fetched = await Promise.all(fetchPromises);
+      // maintain original order of memberRefs by mapping back
+      const byId = {};
+      fetched.forEach((u) => {
+        if (u && (u._id || u.id)) byId[u._id || u.id] = u;
+      });
+
+      const ordered = [];
+      memberRefs.forEach((ref) => {
+        const id =
+          typeof ref === "string"
+            ? ref
+            : ref._id || ref.id || (ref.user && (ref.user._id || ref.user.id));
+        if (!id) return;
+        const userObj =
+          byId[id] ||
+          preloaded[id] ||
+          (typeof ref === "object" && (ref.user || ref.full_name)
+            ? ref.user || ref
+            : null);
+        if (userObj) ordered.push(userObj);
+      });
+
+      setUserList(ordered);
     };
+
     fetchUsers();
     // eslint-disable-next-line
   }, [selectedBox]);
 
-  // Lấy danh sách user có thể add (usersToAdd)
-  useEffect(() => {
-    if (!selectedBox?.members) return setUsersToAdd([]);
-    const idsToAdd = USER_IDS.filter((id) => !selectedBox.members.includes(id));
-    const fetchUsers = async () => {
-      const promises = idsToAdd.map(async (id) => {
-        try {
-          const res = await getUserById(user.token, id);
-          return res;
-        } catch {
-          return {
-            _id: id,
-            full_name: id,
-            avatar_link: "",
-            email: "",
-          };
-        }
-      });
-      const users = await Promise.all(promises);
-      setUsersToAdd(users);
-    };
-    fetchUsers();
-    // eslint-disable-next-line
-  }, [selectedBox]);
+  // no longer fetch a static list of users to add; adding is done by email lookup
 
   // Thêm thành viên qua socket
   const handleAddMember = async (userId) => {
     if (!userId || !selectedBox) return;
-    if (selectedBox.members.includes(userId)) return;
-    const newMembers = [...(selectedBox.members || []), userId];
+    if (
+      Array.isArray(selectedBox.members) &&
+      selectedBox.members.includes(userId)
+    )
+      return;
+    if (isAdding) return;
+    setIsAdding(true);
     try {
       const service = chatApi();
-      // server expects { memberIds: [...] }
+      // server supports receiving only the new ids; send single id to append
       const res = await service.updateBoxMembers(user.token, selectedBox.id, {
-        memberIds: newMembers,
+        memberIds: [userId],
       });
       // update local selectedBox with server response if available
       if (res) setSelectedBox(res);
+      else {
+        // if server didn't return full box, optimistically append
+        setSelectedBox((prev) => ({
+          ...prev,
+          members: Array.from(new Set([...(prev?.members || []), userId])),
+        }));
+      }
     } catch (err) {
       console.error("Update box members failed", err);
       // fallback: optimistically update UI
-      setSelectedBox((prev) => ({ ...prev, members: newMembers }));
+      setSelectedBox((prev) => ({
+        ...prev,
+        members: Array.from(new Set([...(prev?.members || []), userId])),
+      }));
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  // Start or open a personal chat with a user (create box with empty name and type PERSONAL)
+  const startPersonalChat = async (memberId) => {
+    if (!memberId || !user) return;
+    // determine current user id and prevent creating a personal chat with yourself
+    let currentUserId = null;
+    try {
+      const decoded = jwtDecode(user.token);
+      currentUserId =
+        decoded.id || decoded._id || decoded.userId || decoded.sub || null;
+      if (currentUserId && currentUserId === memberId) {
+        // clicking yourself: do nothing
+        return;
+      }
+    } catch (e) {
+      // ignore decoding errors and proceed (currentUserId may remain null)
+    }
+    if (isAdding) return;
+    setIsAdding(true);
+    try {
+      const service = chatApi();
+      // include both participants' ids in the create payload; dedupe and filter falsy
+      const memberIds = Array.from(
+        new Set(
+          [...(currentUserId ? [currentUserId] : []), memberId].filter(Boolean)
+        )
+      );
+      const payload = {
+        name: "",
+        type: "PERSONAL",
+        memberIds,
+      };
+      const res = await service.createBox(user.token, payload);
+      if (res) {
+        // server returns created/selected box
+        setSelectedBox(res);
+        try {
+          setBoxesVersion((v) => (v || 0) + 1);
+        } catch (e) {
+          /* ignore if not provided */
+        }
+        setShowAddPopup(false);
+      }
+    } catch (err) {
+      console.error("Failed to create personal box", err);
+      alert("Unable to start personal chat.");
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  // Add member by email: resolve via getUserByEmail then call updateBoxMembers
+  const addMemberByEmail = async () => {
+    const email = (emailToAdd || "").trim();
+    if (!email) return alert("Please enter an email address.");
+    if (isAdding) return;
+    setIsAdding(true);
+    try {
+      const resp = await getUserByEmail(user.token, email);
+      const foundId = resp?.user?._id;
+      if (!foundId) {
+        setIsAdding(false);
+        return alert(`No user found for ${email}`);
+      }
+      // reuse existing flow
+      await handleAddMember(foundId);
+      setEmailToAdd("");
+      setShowAddPopup(false);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add user by email.");
+    } finally {
+      setIsAdding(false);
     }
   };
 
@@ -107,7 +230,8 @@ const FeatureChat = () => {
     let currentUserId = null;
     try {
       const decoded = jwtDecode(user.token);
-      currentUserId = decoded.id || decoded._id || decoded.userId || decoded.sub || null;
+      currentUserId =
+        decoded.id || decoded._id || decoded.userId || decoded.sub || null;
     } catch (e) {
       currentUserId = null;
     }
@@ -116,7 +240,8 @@ const FeatureChat = () => {
     const isAdmin = Array.isArray(selectedBox?.memberObjects)
       ? selectedBox.memberObjects.some((m) => {
           const uid = m.userId || m.user_id || m._id || m.id;
-          const adminFlag = m.isAdmin === true || m.is_admin === true || m.is_admin === "true";
+          const adminFlag =
+            m.isAdmin === true || m.is_admin === true || m.is_admin === "true";
           return uid && uid === currentUserId && adminFlag;
         })
       : false;
@@ -142,7 +267,9 @@ const FeatureChat = () => {
       alert("Nhóm đã được giải tán");
     } catch (err) {
       console.error("Delete box failed", err);
-      alert("Xóa nhóm thất bại: " + (err?.response?.data?.message || err.message));
+      alert(
+        "Xóa nhóm thất bại: " + (err?.response?.data?.message || err.message)
+      );
     }
   };
 
@@ -244,7 +371,18 @@ const FeatureChat = () => {
             <div className="team-members">
               {userList.length > 0 ? (
                 userList.map((user) => (
-                  <div key={user._id} className="team-member">
+                  <div
+                    key={user._id}
+                    className="team-member"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => startPersonalChat(user._id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ")
+                        startPersonalChat(user._id);
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
                     <div className="team-member-avatar">
                       <img
                         src={
@@ -279,7 +417,7 @@ const FeatureChat = () => {
         <div className="add-people-modal">
           <div className="add-people-modal-content">
             <div className="add-people-modal-header">
-              <span>Thêm thành viên vào nhóm</span>
+              <span>Add members to group</span>
               <button
                 className="close-modal-btn"
                 onClick={() => setShowAddPopup(false)}
@@ -288,35 +426,41 @@ const FeatureChat = () => {
               </button>
             </div>
             <div className="add-people-list">
-              {usersToAdd.length > 0 ? (
-                usersToAdd.map((u) => (
-                  <div key={u._id} className="add-people-row">
-                    <img
-                      src={
-                        u.avatar_link
-                          ? `http://103.166.183.142:8080/${u.avatar_link}`
-                          : defaulfAvatar
-                      }
-                      alt={u.full_name}
-                      className="add-people-avatar"
-                    />
-                    <span className="add-people-name">{u.full_name}</span>
-                    <button
-                      onClick={() => handleAddMember(u._id)}
-                      className="add-member-btn  btn-create-add"
-                    >
+              <div className="add-people-controls">
+                <label className="sr-only">User email</label>
+                <div className="input-wrap">
+                  <i className="fa-solid fa-envelope input-icon"></i>
+                  <input
+                    type="email"
+                    placeholder="user@example.com"
+                    value={emailToAdd}
+                    onChange={(e) => setEmailToAdd(e.target.value)}
+                    className="email-input"
+                  />
+                </div>
+                <button
+                  onClick={addMemberByEmail}
+                  className="add-member-btn btn-create-add"
+                  disabled={isAdding || !emailToAdd.trim()}
+                >
+                  {isAdding ? (
+                    <span className="btn-content">
+                      <span className="spinner" /> Adding...
+                    </span>
+                  ) : (
+                    <span className="btn-content">
                       <i
                         className="fa-solid fa-user-plus"
-                        style={{ marginRight: 6 }}
-                      ></i>
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <span style={{ color: "#888" }}>
-                  Không còn user nào để thêm
-                </span>
-              )}
+                        style={{ marginRight: 8 }}
+                      />
+                      Add
+                    </span>
+                  )}
+                </button>
+              </div>
+              <div className="helper-text">
+                Enter an email to look up a user and add them to the group.
+              </div>
             </div>
           </div>
           <div

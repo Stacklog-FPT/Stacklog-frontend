@@ -53,7 +53,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
     { name: 'Documents', path: '/documents', icon: 'fa-solid fa-folder-plus' },
     { name: 'Chat', path: '/chatbox', icon: 'fa-solid fa-comment', onClick: handleChatClick },
     { name: 'Grades', path: '/grades', icon: 'fa-solid fa-user-graduate' },
-    { name: 'Plan', path: '/plan', icon: 'fas fa-tasks' },
+    { name: 'Topic', path: '/plan', icon: 'fas fa-tasks' },
     { name: 'Task', path: '/tasks-self', icon: 'fa-solid fa-list-check' },
     { name: 'Class', path: '/class', icon: 'fa-solid fa-users' },
   ];

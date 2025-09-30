@@ -7,18 +7,23 @@ import {
   deleteNotification,
 } from '../redux/slice/notificationSlice';
 const NOTIFI_API = 'https://stacklog.id.vn/api/notification';
+import { REACT_API_URL } from "../api/apiConfig";
 
 export const getAllNotification = async (token, dispatch) => {
   try {
     if (!token) dispatch(setError('The token is not valid!'));
     dispatch(setPending(true));
-    const response = await axios.get(`http://localhost:3000/notifications`, {
+    const response = await axios.get(`${REACT_API_URL}/notification/`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    dispatch(getNotifications(response.data));
+    // annotate REST-fetched notifications so UI can distinguish source
+    const restNotifs = Array.isArray(response.data)
+      ? response.data.map((n) => ({ ...n, __receivedVia: 'rest' }))
+      : response.data;
+    dispatch(getNotifications(restNotifs));
     dispatch(setPending(false));
   } catch (e) {
     dispatch(setError);

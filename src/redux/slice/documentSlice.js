@@ -26,4 +26,6 @@ export const documentSlice = createSlice({
   },
 });
 
-export default documentSlice.reducer();
+export const { setPending, setDocumentStart, getDocumentDetail, setError } = documentSlice.actions;
+
+export default documentSlice.reducer;

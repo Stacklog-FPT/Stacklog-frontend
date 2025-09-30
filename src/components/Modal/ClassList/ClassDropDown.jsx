@@ -5,9 +5,8 @@ import { NavLink } from 'react-router-dom';
 import GroupDropDown from '../GroupList/GroupDropDown';
 import './ClassDropdown.scss';
 
-const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen, currentSemester }) => {
+const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
   const { classes } = useSelector((state) => state.class);
-  const groups = useSelector((state) => state.group.groups);
   const [selectedClassId, setSelectedClassId] = useState(null);
 
   const dispatch = useDispatch();

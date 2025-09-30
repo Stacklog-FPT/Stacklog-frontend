@@ -19,7 +19,7 @@ const normalize = (arr = []) =>
         id: String(it.checkItemId ?? `cli_${idx}_${j}`),
         bid: String(it.checkItemId ?? `cli_${idx}_${j}`),
         text: it.checkItemName ?? it.text ?? `Item ${j + 1}`,
-        done: Boolean(it.checkItemStatus === true || it.done === true),
+        isChecked: Boolean(it.checkItemStatus === true || it.isChecked === true),
         assignTo: it.assignTo || [],
       })),
     };
@@ -32,7 +32,7 @@ const toApiShape = (listsState, { includeIds = false } = {}) =>
       checkItem: (l.items || []).map((it) => {
         const itemBase = {
           checkItemName: it.text,
-          checkItemStatus: !!it.done,
+          checkItemStatus: !!it.isChecked,
           assignTo: it.assignTo || [],
         };
 
@@ -122,12 +122,12 @@ const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }
   const totals = lists.reduce(
     (acc, l) => {
       acc.total += l.items.length;
-      acc.done += l.items.filter((i) => i.done).length;
+      acc.isChecked += l.items.filter((i) => i.isChecked).length;
       return acc;
     },
-    { done: 0, total: 0 },
+    { isChecked: 0, total: 0 },
   );
-  const overallPct = totals.total ? Math.round((totals.done / totals.total) * 100) : 0;
+  const overallPct = totals.total ? Math.round((totals.isChecked / totals.total) * 100) : 0;
 
   const toggleOpen = (listId) => setOpenMap((m) => ({ ...m, [listId]: !m[listId] }));
 
@@ -166,7 +166,7 @@ const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }
             ...l,
             items: [
               ...l.items,
-              { id: newItemId, bid: newItemId, text, done: false, assignTo: assignees },
+              { id: newItemId, bid: newItemId, text, isChecked: false, assignTo: assignees },
             ],
           },
     );
@@ -180,7 +180,10 @@ const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }
     const nextLists = lists.map((l) =>
       l.id !== listId
         ? l
-        : { ...l, items: l.items.map((i) => (i.id === itemId ? { ...i, done: !i.done } : i)) },
+        : {
+            ...l,
+            items: l.items.map((i) => (i.id === itemId ? { ...i, isChecked: !i.isChecked } : i)),
+          },
     );
     commitLocal(nextLists);
   };
@@ -268,7 +271,7 @@ const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }
             <div className="ck__bar__fill" style={{ width: `${overallPct}%` }} />
           </div>
           <span className="ck__count">
-            {totals.done}/{totals.total}
+            {totals.isChecked}/{totals.total}
           </span>
         </div>
       </div>
@@ -293,9 +296,9 @@ const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }
       ) : (
         <div className="ck__list">
           {lists.map((cl) => {
-            const done = cl.items.filter((i) => i.done).length;
+            const isChecked = cl.items.filter((i) => i.isChecked).length;
             const total = cl.items.length;
-            const pct = total ? Math.round((done / total) * 100) : 0;
+            const pct = total ? Math.round((isChecked / total) * 100) : 0;
             const open = !!openMap[cl.id];
             const isEditingName = nameEdit.listId === cl.id;
 
@@ -365,7 +368,7 @@ const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }
                   )}
 
                   <span className="ck__mini">
-                    {done}/{total}
+                    {isChecked}/{total}
                   </span>
                   <div className="ck__miniBar">
                     <div className="ck__miniBar__fill" style={{ width: `${pct}%` }} />
@@ -378,10 +381,10 @@ const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }
                       const isEditingItem = itemEdit.listId === cl.id && itemEdit.itemId === it.id;
                       const k = itemKey(cl.id, it.id);
                       return (
-                        <label key={it.id} className={`ck__row ${it.done ? 'is-done' : ''}`}>
+                        <label key={it.id} className={`ck__row ${it.isChecked ? 'is-done' : ''}`}>
                           <input
                             type="checkbox"
-                            checked={it.done}
+                            checked={it.isChecked}
                             onChange={() => toggleItemDone(cl.id, it.id)}
                             disabled={!editTask}
                           />

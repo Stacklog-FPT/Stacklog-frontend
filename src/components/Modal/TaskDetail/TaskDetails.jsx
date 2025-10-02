@@ -117,9 +117,10 @@ const TaskDetails = ({ task, onClose }) => {
       const payload = {
         ...task,
         reviews: [
+          ...task?.reviews,
           {
             reviewContent: newComment,
-            createdBy: decoded._id,
+            createdBy: decoded.id,
             createdAt: new Date().toISOString(),
           },
         ],
@@ -352,7 +353,8 @@ const TaskDetails = ({ task, onClose }) => {
             <SubTask data={task?.subTasks} />
           ) : (
             <Checklist
-              checkList={form.checkListDraft}
+              checkList={task?.checkLists}
+              task={task}
               editTask={editTask}
               onChange={(nextApiShape) => setForm((f) => ({ ...f, checkListDraft: nextApiShape }))}
               onDirtyChange={setChecklistDirty}

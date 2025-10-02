@@ -38,10 +38,9 @@ const CommentTask = ({ task, isClose }) => {
       const payload = {
         ...currentTask,
         reviews: [
+          ...currentTask.reviews,
           {
             reviewContent: newComment,
-            createdBy: decodedId,
-            createdAt: new Date().toISOString(),
           },
         ],
       };

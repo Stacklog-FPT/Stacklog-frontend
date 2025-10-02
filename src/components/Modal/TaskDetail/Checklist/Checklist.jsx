@@ -1,591 +1,194 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
+import { FaPlus } from 'react-icons/fa';
+import { RiDeleteBin5Fill } from 'react-icons/ri';
 import './Checklist.scss';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { FiTrash2 } from 'react-icons/fi';
+import { updateTaskApi } from '../../../../service/TaskService';
+import { useAuth } from '../../../../context/AuthProvider';
+import { useDispatch } from 'react-redux';
 
-const genId = (prefix = 'id') =>
-  `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+const Checklist = ({ checkList, task }) => {
+  const { user } = useAuth();
+  const dispatch = useDispatch();
+  const [isAddingList, setIsAddingList] = React.useState(false);
+  const [newCheckListName, setNewCheckListName] = React.useState('');
+  const [activeId, setActiveId] = React.useState(null);
+  const [newItem, setNewItem] = React.useState('');
 
-const normalize = (arr = []) =>
-  (Array.isArray(arr) ? arr : []).map((cl, idx) => {
-    const bid = cl.checkListId ?? `cl_${idx}`;
-    const itemsSrc = cl.checkItem ?? cl.listItems ?? [];
-    return {
-      id: `${String(bid)}__${idx}`,
-      bid: String(bid),
-      name: cl.checkListName ?? `Checklist ${idx + 1}`,
-      items: itemsSrc.map((it, j) => ({
-        id: String(it.checkItemId ?? `cli_${idx}_${j}`),
-        bid: String(it.checkItemId ?? `cli_${idx}_${j}`),
-        text: it.checkItemName ?? it.text ?? `Item ${j + 1}`,
-        isChecked: Boolean(it.checkItemStatus === true || it.isChecked === true),
-        assignTo: it.assignTo || [],
-      })),
-    };
-  });
-
-const toApiShape = (listsState, { includeIds = false } = {}) =>
-  (listsState || []).map((l) => {
-    const base = {
-      checkListName: l.name,
-      checkItem: (l.items || []).map((it) => {
-        const itemBase = {
-          checkItemName: it.text,
-          checkItemStatus: !!it.isChecked,
-          assignTo: it.assignTo || [],
-        };
-
-        return includeIds && it.bid ? { checkItemId: it.bid, ...itemBase } : itemBase;
-      }),
-    };
-    return includeIds && l.bid ? { checkListId: l.bid, ...base } : base;
-  });
-// tiện key cho panel assign item
-const itemKey = (listId, itemId) => `${listId}::${itemId}`;
-
-const Checklist = ({ checkList = [], editTask = false, onChange, onDirtyChange }) => {
-  // Group context
-  const { groupId } = useParams();
-  const { groups } = useSelector((state) => state.group);
-  const currentGroup = groups?.find((g) => g.groupsId === groupId);
-  const groupMembers = currentGroup?.groupStudent || [];
-
-  // nguồn & state
-  const source = useMemo(() => checkList ?? [], [checkList]);
-  const initial = useMemo(() => normalize(source), [source]);
-
-  const [lists, setLists] = useState(initial);
-  const [openMap, setOpenMap] = useState(() =>
-    Object.fromEntries(initial.map((l) => [l.id, true])),
-  );
-
-  // Inline edit
-  const [nameEdit, setNameEdit] = useState({ listId: null, value: '' });
-  const [itemEdit, setItemEdit] = useState({ listId: null, itemId: null, value: '' });
-
-  // Create checklist/item
-  const [newTitle, setNewTitle] = useState('');
-  const [draftMap, setDraftMap] = useState({});
-  const getDraft = (listId) => draftMap[listId] || { text: '', assignees: [] };
-  const setDraftText = (listId, text) =>
-    setDraftMap((m) => ({ ...m, [listId]: { ...getDraft(listId), text } }));
-
-  // Assignee: list-level (để tạo item) & item-level (để sửa item đã tồn tại)
-  const [assigneeOpen, setAssigneeOpen] = useState({});
-  const toggleAssigneePanel = (listId) => setAssigneeOpen((m) => ({ ...m, [listId]: !m[listId] }));
-
-  const [itemAssigneeOpen, setItemAssigneeOpen] = useState({});
-  const toggleItemAssigneePanel = (listId, itemId) =>
-    setItemAssigneeOpen((m) => {
-      const k = itemKey(listId, itemId);
-      return { ...m, [k]: !m[k] };
-    });
-  const closeItemAssigneePanel = (listId, itemId) =>
-    setItemAssigneeOpen((m) => ({ ...m, [itemKey(listId, itemId)]: false }));
-
-  const normMember = (u) =>
-    typeof u === 'string'
-      ? { id: u, name: u, avatar: null }
-      : {
-          id: u?.id ?? u?._id ?? u?.userId ?? String(u),
-          name: u?.name ?? u?.username ?? String(u),
-          avatar: u?.avatar ?? null,
-        };
-
-  useEffect(() => {
-    const n = normalize(source);
-    setLists(n);
-    setOpenMap((prev) => {
-      const next = { ...prev };
-      let changed = false;
-      for (const l of n)
-        if (!(l.id in next)) {
-          next[l.id] = true;
-          changed = true;
-        }
-      for (const k of Object.keys(next))
-        if (!n.some((l) => l.id === k)) {
-          delete next[k];
-          changed = true;
-        }
-      return changed ? next : prev;
-    });
-    setDraftMap({});
-    setNameEdit({ listId: null, value: '' });
-    setItemEdit({ listId: null, itemId: null, value: '' });
-    setAssigneeOpen({});
-    setItemAssigneeOpen({});
-    onDirtyChange?.(false);
-  }, [source]);
-
-  const totals = lists.reduce(
-    (acc, l) => {
-      acc.total += l.items.length;
-      acc.isChecked += l.items.filter((i) => i.isChecked).length;
-      return acc;
-    },
-    { isChecked: 0, total: 0 },
-  );
-  const overallPct = totals.total ? Math.round((totals.isChecked / totals.total) * 100) : 0;
-
-  const toggleOpen = (listId) => setOpenMap((m) => ({ ...m, [listId]: !m[listId] }));
-
-  const commitLocal = (nextLists) => {
-    setLists(nextLists);
-    onChange?.(toApiShape(nextLists, { includeIds: false }));
-    onDirtyChange?.(true);
+  const toggleAddItemRow = (checkListId) => {
+    setActiveId((prev) => (String(prev) === String(checkListId) ? null : checkListId));
+    setNewItem('');
   };
 
-  // tạo checklist
-  const commitCreateChecklist = () => {
-    if (!editTask) return;
-    const title = newTitle.trim();
+  const handleAddChecklist = async () => {
+    const name = newCheckListName.trim();
+    if (!name) return;
+
+    const newChecklist = {
+      // checkListId: Math.random().toString(16).slice(2, 6),
+      checkListName: name,
+      listItems: [],
+    };
+
+    const current = Array.isArray(task.checkLists) ? task.checkLists : [];
+    const payload = { ...task, checkLists: [...current, newChecklist] };
+    console.log('payload: ', payload);
+    await updateTaskApi(payload, user.token, dispatch);
+    setNewCheckListName('');
+    setIsAddingList(false);
+  };
+
+  const handleDeleteChecklist = async (checkListId) => {
+    const updatedCheckLists = (task.checkLists || []).filter(
+      (cl) => String(cl.checkListId) !== String(checkListId),
+    );
+    const payload = { ...task, checkLists: updatedCheckLists };
+    console.log('delete checkList debug: ', payload);
+    await updateTaskApi(payload, user.token, dispatch);
+  };
+
+  const handleAddChecklistItem = async (checkListId) => {
+    const title = newItem.trim();
     if (!title) return;
 
-    const newId = genId('cl');
-    const optimistic = { id: newId, bid: newId, name: title, items: [] };
-    commitLocal([...lists, optimistic]);
-    setOpenMap((prev) => ({ ...prev, [newId]: true }));
-    setNewTitle('');
+    const newCheckItem = {
+      // checkItemId: '',
+      checkItemTitle: title,
+      checkItemDescription: title,
+      checkItemDueDate: null,
+      isChecked: false,
+    };
+
+    const updatedCheckLists = (task.checkLists || []).map((cl) => {
+      if (String(cl.checkListId) === String(checkListId)) {
+        const items = Array.isArray(cl.listItems) ? cl.listItems : [];
+        return { ...cl, listItems: [...items, newCheckItem] };
+      }
+      return cl;
+    });
+
+    const payload = { ...task, checkLists: updatedCheckLists };
+
+    console.log(payload);
+
+    await updateTaskApi(payload, user.token, dispatch);
+    setNewItem('');
+    setActiveId(null);
   };
 
-  // tạo item
-  const commitCreateItem = (listId) => {
-    if (!editTask) return;
-    const draft = getDraft(listId);
-    const text = draft.text.trim();
-    const assignees = draft.assignees || [];
-    if (!text) return;
-
-    const newItemId = genId('cli');
-    const nextLists = lists.map((l) =>
-      l.id !== listId
-        ? l
-        : {
-            ...l,
-            items: [
-              ...l.items,
-              { id: newItemId, bid: newItemId, text, isChecked: false, assignTo: assignees },
-            ],
-          },
-    );
-    commitLocal(nextLists);
-    setDraftMap((m) => ({ ...m, [listId]: { text: '', assignees: [] } }));
-  };
-
-  // check done
-  const toggleItemDone = (listId, itemId) => {
-    if (!editTask) return;
-    const nextLists = lists.map((l) =>
-      l.id !== listId
-        ? l
-        : {
-            ...l,
-            items: l.items.map((i) => (i.id === itemId ? { ...i, isChecked: !i.isChecked } : i)),
-          },
-    );
-    commitLocal(nextLists);
-  };
-
-  // rename checklist
-  const startEditListName = (list) => {
-    if (!editTask) return;
-    setNameEdit({ listId: list.id, value: list.name });
-  };
-  const saveListName = () => {
-    const { listId, value } = nameEdit;
-    if (!listId) return;
-    const next = lists.map((l) => (l.id === listId ? { ...l, name: value.trim() || l.name } : l));
-    commitLocal(next);
-    setNameEdit({ listId: null, value: '' });
-  };
-  const cancelListName = () => setNameEdit({ listId: null, value: '' });
-
-  // rename item
-  const startEditItem = (listId, item) => {
-    if (!editTask) return;
-    setItemEdit({ listId, itemId: item.id, value: item.text });
-  };
-  const saveItemText = () => {
-    const { listId, itemId, value } = itemEdit;
-    if (!listId || !itemId) return;
-    const next = lists.map((l) =>
-      l.id !== listId
-        ? l
-        : {
-            ...l,
-            items: l.items.map((it) =>
-              it.id === itemId ? { ...it, text: value.trim() || it.text } : it,
-            ),
-          },
-    );
-    commitLocal(next);
-    setItemEdit({ listId: null, itemId: null, value: '' });
-  };
-  const cancelItemText = () => setItemEdit({ listId: null, itemId: null, value: '' });
-
-  // delete
-  const deleteChecklist = (listId) => {
-    if (!editTask) return;
-    const next = lists.filter((l) => l.id !== listId);
-    commitLocal(next);
-  };
-  const deleteItem = (listId, itemId) => {
-    if (!editTask) return;
-    const next = lists.map((l) =>
-      l.id !== listId ? l : { ...l, items: l.items.filter((it) => it.id !== itemId) },
-    );
-    commitLocal(next);
-  };
-
-  // toggle assign của item đã có
-  const toggleItemAssignee = (listId, itemId, userId) => {
-    if (!editTask) return;
-    const next = lists.map((l) =>
-      l.id !== listId
-        ? l
-        : {
-            ...l,
-            items: l.items.map((it) =>
-              it.id !== itemId
-                ? it
-                : {
-                    ...it,
-                    assignTo: (it.assignTo || []).includes(userId)
-                      ? it.assignTo.filter((u) => u !== userId)
-                      : [...(it.assignTo || []), userId],
-                  },
-            ),
-          },
-    );
-    commitLocal(next);
+  const handleToggleChecklistItem = async (checkListId, checkItemId) => {
+    console.log({ checkListId, checkItemId });
   };
 
   return (
-    <div className="ck">
-      <div className="ck__toolbar">
-        <h3>Checklists</h3>
-        <div className="ck__overall">
-          <div className="ck__bar">
-            <div className="ck__bar__fill" style={{ width: `${overallPct}%` }} />
-          </div>
-          <span className="ck__count">
-            {totals.isChecked}/{totals.total}
-          </span>
-        </div>
-      </div>
+    <div className="checklist__container">
+      <div className="checklist_content">
+        {(checkList || []).map((list, idx) => {
+          const cid = list.checkListId || idx;
 
-      {/* tạo checklist (chỉ enable khi edit) */}
-      <div className="ck__inlineCreate">
-        <input
-          placeholder="New Check List"
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-          onBlur={commitCreateChecklist}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') commitCreateChecklist();
-            if (e.key === 'Escape') setNewTitle('');
-          }}
-          disabled={!editTask}
-        />
-      </div>
-
-      {lists.length === 0 ? (
-        <div className="ck__empty">No data available</div>
-      ) : (
-        <div className="ck__list">
-          {lists.map((cl) => {
-            const isChecked = cl.items.filter((i) => i.isChecked).length;
-            const total = cl.items.length;
-            const pct = total ? Math.round((isChecked / total) * 100) : 0;
-            const open = !!openMap[cl.id];
-            const isEditingName = nameEdit.listId === cl.id;
-
-            return (
-              <section key={cl.id} className={`ck__section ${open ? 'is-open' : 'is-closed'}`}>
-                <button className="ck__head" onClick={() => toggleOpen(cl.id)}>
-                  <span className={`ck__chev ${open ? 'open' : ''}`}>›</span>
-
-                  {/* Tên checklist */}
-                  <strong
-                    className="ck__name"
-                    title={cl.name}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      startEditListName(cl);
-                    }}
-                  >
-                    {isEditingName && editTask ? (
-                      <input
-                        className="ck__nameInput"
-                        value={nameEdit.value}
-                        autoFocus
-                        onChange={(e) => setNameEdit((s) => ({ ...s, value: e.target.value }))}
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            saveListName();
-                          }
-                          if (e.key === 'Escape') {
-                            e.preventDefault();
-                            cancelListName();
-                          }
-                        }}
-                        onBlur={saveListName}
-                      />
-                    ) : (
-                      <>{cl.name}</>
-                    )}
-                  </strong>
-
-                  {editTask && !isEditingName && (
-                    <>
-                      <button
-                        className="ck__renameBtn"
-                        title="Rename checklist"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          startEditListName(cl);
-                        }}
-                      >
-                        ✎
-                      </button>
-
-                      <button
-                        className="ck__trashBtn"
-                        title="Delete checklist"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteChecklist(cl.id);
-                        }}
-                        aria-label={`Delete checklist ${cl.name}`}
-                      >
-                        <FiTrash2 size={14} />
-                      </button>
-                    </>
-                  )}
-
-                  <span className="ck__mini">
-                    {isChecked}/{total}
-                  </span>
-                  <div className="ck__miniBar">
-                    <div className="ck__miniBar__fill" style={{ width: `${pct}%` }} />
-                  </div>
-                </button>
-
-                <div className="ck__body" aria-hidden={!open}>
-                  <div className="ck__rows">
-                    {cl.items.map((it) => {
-                      const isEditingItem = itemEdit.listId === cl.id && itemEdit.itemId === it.id;
-                      const k = itemKey(cl.id, it.id);
-                      return (
-                        <label key={it.id} className={`ck__row ${it.isChecked ? 'is-done' : ''}`}>
-                          <input
-                            type="checkbox"
-                            checked={it.isChecked}
-                            onChange={() => toggleItemDone(cl.id, it.id)}
-                            disabled={!editTask}
-                          />
-
-                          {/* Text item */}
-                          {isEditingItem && editTask ? (
-                            <input
-                              className="ck__itemInput"
-                              value={itemEdit.value}
-                              autoFocus
-                              onChange={(e) =>
-                                setItemEdit((s) => ({ ...s, value: e.target.value }))
-                              }
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  saveItemText();
-                                }
-                                if (e.key === 'Escape') {
-                                  e.preventDefault();
-                                  cancelItemText();
-                                }
-                              }}
-                              onBlur={saveItemText}
-                            />
-                          ) : (
-                            <span
-                              className="ck__text"
-                              onDoubleClick={() => startEditItem(cl.id, it)}
-                              title="Double click to rename"
-                            >
-                              {it.text}
-                            </span>
-                          )}
-
-                          {/* Assignees hiện ngay trên item */}
-                          <div className="ck__itemAssign" onMouseDown={(e) => e.stopPropagation()}>
-                            <div className="ck__chips">
-                              {(it.assignTo || []).map((uidRaw) => {
-                                const m = normMember(uidRaw);
-                                return (
-                                  <span key={m.id} className="ck__chip" title={m.name}>
-                                    {m.avatar ? (
-                                      <img src={m.avatar} alt={m.name} />
-                                    ) : (
-                                      m.name.slice(0, 2).toUpperCase()
-                                    )}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          </div>
-
-                          {/* nút rename / trash item */}
-                          {editTask && !isEditingItem && (
-                            <div className="ck__rowBtns">
-                              <button
-                                type="button"
-                                className="ck__itemRenameBtn"
-                                title="Rename item"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  startEditItem(cl.id, it);
-                                }}
-                              >
-                                ✎
-                              </button>
-                              <button
-                                type="button"
-                                className="ck__itemTrashBtn"
-                                title="Delete item"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  deleteItem(cl.id, it.id);
-                                }}
-                                aria-label={`Delete item ${it.text}`}
-                              >
-                                <FiTrash2 size={12} />
-                              </button>
-                            </div>
-                          )}
-                        </label>
-                      );
-                    })}
-
-                    {/* Add item row */}
-                    <div className="ck__addItem">
-                      <div className="ck__chips">
-                        {(getDraft(cl.id).assignees || []).map((uid) => {
-                          const m = normMember(uid);
-                          return (
-                            <span key={m.id} className="ck__chip" title={m.name}>
-                              {m.avatar ? (
-                                <img src={m.avatar} alt={m.name} />
-                              ) : (
-                                m.name.slice(0, 2).toUpperCase()
-                              )}
-                              <button
-                                className="ck__chipX"
-                                onMouseDown={(e) => e.preventDefault()}
-                                onClick={() =>
-                                  setDraftMap((mm) => ({
-                                    ...mm,
-                                    [cl.id]: {
-                                      ...getDraft(cl.id),
-                                      assignees: (getDraft(cl.id).assignees || []).filter(
-                                        (x) => normMember(x).id !== m.id,
-                                      ),
-                                    },
-                                  }))
-                                }
-                                disabled={!editTask}
-                              >
-                                ×
-                              </button>
-                            </span>
-                          );
-                        })}
-                      </div>
-
-                      <input
-                        className="ck__addInput"
-                        placeholder="Add check item"
-                        value={getDraft(cl.id).text}
-                        onChange={(e) => setDraftText(cl.id, e.target.value)}
-                        onBlur={() => commitCreateItem(cl.id)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') commitCreateItem(cl.id);
-                          if (e.key === 'Escape')
-                            setDraftMap((m) => ({ ...m, [cl.id]: { text: '', assignees: [] } }));
-                        }}
-                        disabled={!editTask}
-                      />
-
-                      <button
-                        className="ck__assignBtn"
-                        title="Choose assign"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => editTask && toggleAssigneePanel(cl.id)}
-                        disabled={!editTask}
-                      >
-                        +
-                      </button>
-
-                      {assigneeOpen[cl.id] && editTask && (
-                        <div
-                          className="ck__assigneePicker"
-                          onMouseDown={(e) => e.preventDefault()}
-                          onTouchStart={(e) => e.preventDefault()}
-                        >
-                          {groupMembers.length === 0 ? (
-                            <div className="ck__assigneeEmpty">The members are empty</div>
-                          ) : (
-                            groupMembers.map((gm) => {
-                              const m = normMember(gm);
-                              const selected = getDraft(cl.id).assignees?.some(
-                                (x) => normMember(x).id === m.id,
-                              );
-                              const isLeader = m.id === currentGroup?.groupsLeaderId;
-                              return (
-                                <button
-                                  key={m.id}
-                                  className={`ck__assigneeItem ${selected ? 'is-selected' : ''}`}
-                                  onClick={() =>
-                                    setDraftMap((mm) => {
-                                      const d = getDraft(cl.id);
-                                      const exists = d.assignees?.some(
-                                        (x) => normMember(x).id === m.id,
-                                      );
-                                      const next = exists
-                                        ? d.assignees.filter((x) => normMember(x).id !== m.id)
-                                        : [...(d.assignees || []), m.id];
-                                      return { ...mm, [cl.id]: { ...d, assignees: next } };
-                                    })
-                                  }
-                                  title={m.name}
-                                >
-                                  <span className="ck__avatar">
-                                    {m.avatar ? (
-                                      <img src={m.avatar} alt={m.name} />
-                                    ) : (
-                                      m.name.slice(0, 2).toUpperCase()
-                                    )}
-                                  </span>
-                                  <span className="ck__assigneeName">{m.name}</span>
-                                  {isLeader && <span className="ck__tag">Leader</span>}
-                                  {selected && <span className="ck__check">✓</span>}
-                                </button>
-                              );
-                            })
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+          return (
+            <div key={cid} className="checklist_item">
+              <div className="checklist_item_header">
+                <div className="checklist_item_title">
+                  <input type="checkbox" checked={!!list.isChecked} readOnly />
+                  <span className={list.isChecked ? 'completed' : ''}>{list.checkListName}</span>
                 </div>
-              </section>
-            );
-          })}
+
+                <div className="checklist_item_button d-flex gap-2">
+                  <button
+                    type="button"
+                    className="btn_add_check_list_item"
+                    onClick={() => toggleAddItemRow(cid)}
+                    title="Add"
+                  >
+                    <FaPlus size={14} />
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn_add_check_list_item"
+                    onClick={() => handleDeleteChecklist(cid)}
+                    title="Delete"
+                  >
+                    <RiDeleteBin5Fill size={14} />
+                  </button>
+                </div>
+              </div>
+
+              {Array.isArray(list.listItems) && list.listItems.length > 0 && (
+                <div className="checklist_subitems">
+                  {list.listItems.map((it, i) => (
+                    <div
+                      className="d-flex align-items-center justify-content-between"
+                      key={it.checkItemId || i}
+                    >
+                      <div className="checklist_subitem">
+                        <input
+                          type="checkbox"
+                          checked={!!it.isChecked}
+                          // onClick={handleToggleChecklistItem(cid, it.checkItemId)}
+                        />
+                        <span className={it.isChecked ? 'completed' : ''}>{it.checkItemTitle}</span>
+                      </div>
+                      <div></div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {String(activeId) === String(cid) && (
+                <div className="add_checklist_item">
+                  <input
+                    type="text"
+                    value={newItem}
+                    onChange={(e) => setNewItem(e.target.value)}
+                    placeholder="New checklist item..."
+                  />
+                  <button
+                    type="button"
+                    className="btn_add_item"
+                    onClick={() => handleAddChecklistItem(cid)}
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
+        <div className="checklist_footer">
+          {!isAddingList ? (
+            <button
+              type="button"
+              className="btn_add_checklist"
+              onClick={() => setIsAddingList(true)}
+            >
+              + Add checklist
+            </button>
+          ) : (
+            <div className="add_checklist_row">
+              <input
+                type="text"
+                value={newCheckListName}
+                onChange={(e) => setNewCheckListName(e.target.value)}
+                placeholder="Checklist name..."
+              />
+              <button type="button" onClick={handleAddChecklist}>
+                Add
+              </button>
+              <button
+                type="button"
+                className="btn_cancel"
+                onClick={() => {
+                  setIsAddingList(false);
+                  setNewCheckListName('');
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

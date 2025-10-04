@@ -22,6 +22,7 @@ const ChatProvider = ({ children }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedBox, setSelectedBox] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [boxesVersion, setBoxesVersion] = useState(0);
 
   const [isFeatureChatOpen, setIsFeatureChatOpen] = useState(false);
 
@@ -62,7 +63,9 @@ const ChatProvider = ({ children }) => {
         selectedUser,
         setSelectedUser,
         selectedBox,
-        setSelectedBox,
+          setSelectedBox,
+          boxesVersion,
+          setBoxesVersion,
         isFeatureChatOpen,
         setIsFeatureChatOpen,
         toggleFeatureChat,

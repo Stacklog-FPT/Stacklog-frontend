@@ -83,6 +83,7 @@ $color-border-input: #b5b5b5;
   }
 
   .chat__footer {
+    position: relative; /* allow suggestion box to position relative to footer */
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -160,6 +161,48 @@ $color-border-input: #b5b5b5;
       }
     }
   }
+
+  .chat__input_wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.chat__mention_suggestions {
+  position: absolute;
+  bottom: calc(100% + 8px); /* just above the footer input area */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  z-index: 80;
+  width: 650px; /* match input width */
+  max-width: calc(100% - 40px);
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.chat__mention_item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.chat__mention_item img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.chat__mention_item:hover {
+  background: #f5f5f5;
 }
 
 .chat__content--scroll {
@@ -195,8 +238,10 @@ $color-border-input: #b5b5b5;
 .chat__message__row {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 20px; /* give extra room for avatars below */
   width: 100%;
+  position: relative; /* anchor for absolute-positioned reader avatars */
+  padding-bottom: 28px; /* space to place avatars under the bubble */
 }
 
 .chat__message__row--right {
@@ -235,7 +280,7 @@ $color-border-input: #b5b5b5;
 }
 
 .msg-more-btn:hover {
-  background: rgba(0,0,0,0.04);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .msg-more-menu {
@@ -279,7 +324,7 @@ $color-border-input: #b5b5b5;
   height: 0;
   border-left: 9px solid transparent;
   border-right: 9px solid transparent;
-  border-top: 9px solid rgba(0,0,0,0.06);
+  border-top: 9px solid rgba(0, 0, 0, 0.06);
   z-index: 59;
 }
 
@@ -391,4 +436,88 @@ $color-border-input: #b5b5b5;
   color: inherit;
   white-space: pre-line;
   margin-top: 2px;
+}
+
+.chat__mention {
+  /* Theme-consistent pill for mentions in light bubbles */
+  display: inline-block;
+  background: rgba(4, 87, 69, 0.08); /* soft green */
+  color: #045745;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95em;
+  line-height: 1;
+  border: 1px solid rgba(4, 87, 69, 0.12);
+  box-shadow: 0 1px 0 rgba(4, 87, 69, 0.02) inset;
+  transition: background-color 120ms ease, color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+/* Dark bubble (right) variant: light translucent pill with white text for contrast */
+.chat__message--right .chat__mention {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 6px rgba(4, 87, 69, 0.06);
+}
+
+/* Keep a slightly stronger green on left bubbles while staying harmonious */
+.chat__message--left .chat__mention {
+  background: rgba(4, 87, 69, 0.1);
+  color: #045745;
+  border-color: rgba(4, 87, 69, 0.14);
+}
+
+/* readers (seen avatars) */
+.chat__message__readers {
+  display: flex;
+  gap: 6px;
+  position: absolute;
+  right: 8px;
+  bottom: 6px; /* sit slightly below the bubble */
+  justify-content: flex-end; /* align to the right side of the row */
+  pointer-events: auto;
+}
+
+.chat__message__reader_wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.chat__message__reader_avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
+  cursor: default;
+}
+
+/* hidden name tooltip shown on hover */
+.chat__message__reader_name {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transform: translateY(4px);
+  transition: opacity 120ms ease, transform 120ms ease;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.chat__message__reader_wrapper:hover .chat__message__reader_name {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }

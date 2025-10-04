@@ -88,6 +88,19 @@ const userApi = () => {
     }
   };
 
+  const getAllUsers = async (token) => {
+    if (!token) throw new Error('Unauthorized: No token provided');
+    try {
+      const url = `${API_AUTH}profile/user/find/n`;
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+
 
   return {
     login,
@@ -98,6 +111,7 @@ const userApi = () => {
     getUserByEmail,
     getUserByRole,
     getUserById,
+    getAllUsers,
   };
 };
 

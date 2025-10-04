@@ -29,13 +29,17 @@ const socketScheme = apiOrigin.replace(/^http/, "ws");
 const SOCKET_URL = socketScheme + "/api/chat/socket.io";
 
 const ChatWindow = () => {
-  const { selectedBox, setSelectedBox, toggleFeatureChat } =
+  const { selectedBox, setSelectedBox, toggleFeatureChat, setBoxesVersion } =
     useContext(ChatContext);
   const { user } = useAuth();
   const { getUserById } = userApi();
   const [myMessage, setMyMessage] = useState("");
   const [error, setError] = useState(null);
   const [userCache, setUserCache] = useState({});
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [showMentionList, setShowMentionList] = useState(false);
+  const [mentionSuggestions, setMentionSuggestions] = useState([]);
+  const [mentionedUserIds, setMentionedUserIds] = useState([]);
   const [messages, setMessages] = useState([]);
   const [openMenuId, setOpenMenuId] = useState(null);
   const scrollRef = useRef(null);
@@ -153,6 +157,13 @@ const ChatWindow = () => {
       if (!selectedBox?.id || !user?.token) return;
       try {
         const service = chatApi();
+        // mark messages in this box as read for current user
+        try {
+          await service.markMessagesRead(user.token, selectedBox.id);
+        } catch (e) {
+          // non-fatal: still try to load messages
+          console.warn("markMessagesRead failed:", e);
+        }
         const msgs = await service.getMessages(user.token, selectedBox.id);
         // map server fields to UI fields used in this component
         const mapped = (msgs || []).map((m) => ({
@@ -166,8 +177,18 @@ const ChatWindow = () => {
             new Date().toISOString(),
           groupId: selectedBox.id,
           state: normalizeState(m.state || m.status || m.message_state),
+          // preserve server read list (array of user ids)
+          readBy: Array.isArray(m.read_by) ? m.read_by : m.readBy || [],
         }));
         if (mounted) setMessages(mapped);
+        // prefetch reader user info (avatars) for any readBy ids
+        const allReaderIds = new Set();
+        mapped.forEach((mm) => (mm.readBy || []).forEach((id) => allReaderIds.add(id)));
+        Array.from(allReaderIds).forEach((id) => {
+          if (!id) return;
+          // fetch and cache user info using existing fetchUser helper
+          fetchUser(id);
+        });
       } catch (err) {
         console.error("Load messages failed", err);
       }
@@ -187,10 +208,15 @@ const ChatWindow = () => {
     )
       return;
 
+    // defensive: ensure current user id is never sent in mentionUserIds
+    const cleanMentionUserIds = (mentionedUserIds || []).filter(
+      (id) => id && id !== currentUserId
+    );
+
     const payload = {
       content: myMessage,
       attachment: null,
-      mentionUserIds: [],
+      mentionUserIds: cleanMentionUserIds,
     };
 
     // optimistic UI: show message immediately
@@ -203,6 +229,7 @@ const ChatWindow = () => {
       groupId: selectedBox.id,
       pending: true,
       state: "SENT",
+      mentionUserIds: cleanMentionUserIds,
     };
     setMessages((prev) => [...prev, optimistic]);
     setMyMessage("");
@@ -228,6 +255,10 @@ const ChatWindow = () => {
           saved.createdAt || saved.created_at || new Date().toISOString(),
         groupId: selectedBox.id,
         state: normalizeState(saved.state || saved.status || saved.message_state),
+        // prefer server-returned mention list, fallback to the cleaned payload we sent
+        mentionUserIds: Array.isArray(saved.mentionUserIds)
+          ? saved.mentionUserIds.filter((id) => id && id !== currentUserId)
+          : cleanMentionUserIds,
       };
 
       setMessages((prev) => {
@@ -237,6 +268,12 @@ const ChatWindow = () => {
             m.chatMessageId !== optimistic.chatMessageId &&
             m.chatMessageId !== savedMsg.chatMessageId
         );
+        // reset mention tracking for next message
+        setMentionedUserIds([]);
+        // notify outer list (groups/boxes) to refresh preview of last message
+        try {
+          if (typeof setBoxesVersion === "function") setBoxesVersion((v) => (v || 0) + 1);
+        } catch (e) {}
         return [...withoutOptimistic, savedMsg];
       });
     } catch (err) {
@@ -270,6 +307,70 @@ const ChatWindow = () => {
     }
   };
 
+  // Pre-fetch members of the selected box so mention suggestions can show
+  useEffect(() => {
+    if (!selectedBox?.members || !Array.isArray(selectedBox.members)) return;
+    // build mention suggestion list but exclude current user
+    const items = (selectedBox.members || [])
+      .filter((id) => id && id !== currentUserId)
+      .map((id) => {
+      const info = userCache[id] || {};
+      return {
+        id,
+        display: info.full_name || info.email || id,
+        avatar: info.avatar_link ? `https://stacklog.id.vn/${info.avatar_link}` : avatarDefault,
+      };
+    });
+    setMentionSuggestions(items);
+    // ensure cache is filled
+    selectedBox.members.forEach((id) => fetchUser(id));
+  }, [selectedBox?.members, userCache]);
+
+  // Handle typing in input to detect '@' trigger for mentions
+  const handleInputChange = (e) => {
+    const v = e.target.value;
+    setMyMessage(v);
+    const at = v.lastIndexOf("@");
+    if (at === -1) {
+      setShowMentionList(false);
+      setMentionQuery("");
+      return;
+    }
+    const before = at === 0 ? " " : v[at - 1];
+    if (before && !/\s/.test(before)) {
+      setShowMentionList(false);
+      setMentionQuery("");
+      return;
+    }
+    const q = v.slice(at + 1);
+    if (/\s/.test(q)) {
+      setShowMentionList(false);
+      setMentionQuery("");
+      return;
+    }
+    setMentionQuery(q);
+    setShowMentionList(true);
+  };
+
+  const selectMention = (item) => {
+    if (!item) return;
+    const v = myMessage;
+    const at = v.lastIndexOf("@");
+    let newText;
+    if (at === -1) newText = v + `@${item.display} `;
+    else newText = v.slice(0, at) + `@${item.display} `;
+    setMyMessage(newText);
+    setShowMentionList(false);
+    setMentionQuery("");
+    // do not add current user to mentionedUserIds
+    if (item.id && item.id !== currentUserId) {
+      setMentionedUserIds((prev) => (prev.includes(item.id) ? prev : [...prev, item.id]));
+    } else {
+      // ensure currentUserId is not present
+      setMentionedUserIds((prev) => prev.filter((id) => id !== currentUserId));
+    }
+  };
+
   // Khi có tin nhắn mới, fetch thông tin user nếu chưa có
   useEffect(() => {
     if (!messages) return;
@@ -277,6 +378,33 @@ const ChatWindow = () => {
     ids.forEach((id) => fetchUser(id));
     // eslint-disable-next-line
   }, [messages]);
+
+  // Render message content with mention highlights
+  const renderMessageContent = (msg) => {
+    const text = msg.chatMessageContent || "";
+    // split by spaces but keep them so we can rebuild
+    const parts = text.split(/(\s+)/);
+    return parts.map((part, idx) => {
+      if (!part) return null;
+      if (!part.startsWith("@")) return <span key={idx}>{part}</span>;
+      const token = part.slice(1).replace(/[.,!?;:]$/, ""); // strip trailing punctuation
+      // find cached user whose display matches token (case-insensitive)
+      const matchId = Object.keys(userCache).find((id) => {
+        const info = userCache[id] || {};
+        const name = (info.full_name || info.email || id).toLowerCase();
+        return name === token.toLowerCase();
+      });
+      if (matchId) {
+        const info = userCache[matchId] || {};
+        const name = info.full_name || info.email || matchId;
+        return (
+          <span key={idx} className="chat__mention">@{name}</span>
+        );
+      }
+      // no match, render as plain text
+      return <span key={idx}>{part}</span>;
+    });
+  };
 
   // Handlers for own-message actions
   const handleDeleteMessage = async (msg) => {
@@ -443,6 +571,30 @@ const ChatWindow = () => {
                           <span className="chat__message__time">{new Date(msg.createdAt).toLocaleString()}</span>
                         </div>
                         <div className="chat__message__content">Đã thu hồi tin nhắn</div>
+                        {/* readers (who saw this message) */}
+                        {(msg.readBy && msg.readBy.length > 0) && (
+                          <div className="chat__message__readers">
+                            {Array.from(new Set(msg.readBy))
+                              .filter((id) => id && id !== msg.createdBy)
+                              .map((readerId) => {
+                                const info = userCache[readerId] || {};
+                                const avatar = info.avatar_link
+                                  ? `https://stacklog.id.vn/${info.avatar_link}`
+                                  : avatarDefault;
+                                const name = info.full_name || info.email || readerId;
+                                return (
+                                  <span key={readerId} className="chat__message__reader_wrapper">
+                                    <img
+                                      className="chat__message__reader_avatar"
+                                      src={avatar}
+                                      alt={name}
+                                    />
+                                    <span className="chat__message__reader_name">{name}</span>
+                                  </span>
+                                );
+                              })}
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div
@@ -454,7 +606,31 @@ const ChatWindow = () => {
                           <span className="chat__message__name">{senderName}</span>
                           <span className="chat__message__time">{new Date(msg.createdAt).toLocaleString()}</span>
                         </div>
-                        <div className="chat__message__content">{msg.chatMessageContent}</div>
+                        <div className="chat__message__content">{renderMessageContent(msg)}</div>
+                        {/* readers (who saw this message) */}
+                        {(msg.readBy && msg.readBy.length > 0) && (
+                          <div className="chat__message__readers">
+                            {Array.from(new Set(msg.readBy))
+                              .filter((id) => id && id !== msg.createdBy)
+                              .map((readerId) => {
+                                const info = userCache[readerId] || {};
+                                const avatar = info.avatar_link
+                                  ? `https://stacklog.id.vn/${info.avatar_link}`
+                                  : avatarDefault;
+                                const name = info.full_name || info.email || readerId;
+                                return (
+                                  <span key={readerId} className="chat__message__reader_wrapper">
+                                    <img
+                                      className="chat__message__reader_avatar"
+                                      src={avatar}
+                                      alt={name}
+                                    />
+                                    <span className="chat__message__reader_name">{name}</span>
+                                  </span>
+                                );
+                              })}
+                          </div>
+                        )}
                       </div>
                     )}
                     {isMe && (
@@ -464,6 +640,8 @@ const ChatWindow = () => {
                         alt={senderName}
                       />
                     )}
+                    {/* render avatars of users who have read this message */}
+                    
                   </div>
                 );
               })
@@ -473,13 +651,33 @@ const ChatWindow = () => {
         </div>
 
         <div className="chat__footer">
-          <input
-            type="text"
-            placeholder="Nhập tin nhắn..."
-            value={myMessage}
-            onChange={(e) => setMyMessage(e.target.value)}
-            onKeyUp={(e) => e.key === "Enter" && onSend()}
-          />
+          <div className="chat__input_wrapper">
+            <input
+              type="text"
+              placeholder="Nhập tin nhắn..."
+              value={myMessage}
+              onChange={handleInputChange}
+              onKeyUp={(e) => e.key === "Enter" && onSend()}
+            />
+
+            {showMentionList && (
+              <div className="chat__mention_suggestions">
+                {mentionSuggestions
+                  .filter((s) => s.display.toLowerCase().includes((mentionQuery || "").toLowerCase()))
+                  .slice(0, 6)
+                  .map((s) => (
+                    <div
+                      key={s.id}
+                      className="chat__mention_item"
+                      onClick={() => selectMention(s)}
+                    >
+                      <img src={s.avatar} alt={s.display} />
+                      <span>{s.display}</span>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
           <div className="chat__footer__feature">
             <div className="wrapper__feature">
               <i className="fas fa-at"></i>

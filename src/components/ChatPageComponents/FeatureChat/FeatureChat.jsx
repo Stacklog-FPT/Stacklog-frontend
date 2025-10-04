@@ -11,12 +11,14 @@ const FeatureChat = () => {
   const { selectedBox, setSelectedBox, isFeatureChatOpen, setBoxesVersion } =
     useContext(ChatContext);
   const { user } = useAuth();
-  const { getUserById, getUserByEmail } = userApi();
+  const { getUserById, getUserByEmail, getAllUsers } = userApi();
   const [isFeatureOpen, setIsFeatureOpen] = useState(false);
   const [userList, setUserList] = useState([]);
   const [emailToAdd, setEmailToAdd] = useState("");
   const [showAddPopup, setShowAddPopup] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [allUsers, setAllUsers] = useState([]);
+  const [selectedToAdd, setSelectedToAdd] = useState([]); // array of user objects to add in batch
 
   // no local socket needed here — use REST for updates
 
@@ -220,6 +222,79 @@ const FeatureChat = () => {
     } finally {
       setIsAdding(false);
     }
+  };
+
+  // Batch add selected users in selectedToAdd to the box when user clicks Add
+  const handleBatchAdd = async () => {
+    if (!selectedBox || !selectedToAdd || selectedToAdd.length === 0) return;
+    if (isAdding) return;
+    setIsAdding(true);
+    try {
+      const ids = selectedToAdd
+        .map((u) => u._id || u.id || u.user_id)
+        .filter(Boolean)
+        // exclude ones already in the box
+        .filter((id) => !isAlreadyMember(id));
+
+      if (ids.length === 0) {
+        setIsAdding(false);
+        setSelectedToAdd([]);
+        setShowAddPopup(false);
+        return;
+      }
+      const service = chatApi();
+      const res = await service.updateBoxMembers(user.token, selectedBox.id, {
+        memberIds: ids,
+      });
+      if (res) setSelectedBox(res);
+      else
+        setSelectedBox((prev) => ({
+          ...prev,
+          members: Array.from(new Set([...(prev?.members || []), ...ids])),
+        }));
+
+      setSelectedToAdd([]);
+      setEmailToAdd("");
+      setShowAddPopup(false);
+    } catch (err) {
+      console.error('Batch add failed', err);
+      alert('Failed to add users');
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  // Load all users for suggestions when Add People popup opens
+  useEffect(() => {
+    let mounted = true;
+    const loadAll = async () => {
+      if (!showAddPopup || !user?.token) return;
+      try {
+        const users = await getAllUsers(user.token);
+        if (!mounted) return;
+        const list = Array.isArray(users) ? users : users?.data || users?.users || [];
+        setAllUsers(list || []);
+      } catch (e) {
+        console.warn('Failed to load all users for suggestions', e);
+      }
+    };
+    loadAll();
+    return () => {
+      mounted = false;
+    };
+  }, [showAddPopup, user?.token, getAllUsers]);
+
+  // helper: check whether an id is already a member of selectedBox
+  const isAlreadyMember = (id) => {
+    if (!id || !selectedBox) return false;
+    if (Array.isArray(selectedBox.members) && selectedBox.members.includes(id)) return true;
+    if (Array.isArray(selectedBox.memberObjects)) {
+      return selectedBox.memberObjects.some((m) => {
+        const uid = m.userId || m.user_id || m._id || m.id || (m.user && (m.user._id || m.user.id));
+        return uid === id;
+      });
+    }
+    return false;
   };
 
   // Delete box chat via REST (admins only)
@@ -431,17 +506,83 @@ const FeatureChat = () => {
                 <div className="input-wrap">
                   <i className="fa-solid fa-envelope input-icon"></i>
                   <input
-                    type="email"
+                    type="text"
                     placeholder="user@example.com"
                     value={emailToAdd}
                     onChange={(e) => setEmailToAdd(e.target.value)}
                     className="email-input"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addMemberByEmail();
+                      }
+                    }}
                   />
                 </div>
+                {/* suggestion list (client-side filter from getAllUsers) */}
+                {showAddPopup && emailToAdd && allUsers && allUsers.length > 0 && (
+                  <div className="add-user-suggestions">
+                    {allUsers
+                      .filter((u) => {
+                        const q = emailToAdd.toLowerCase();
+                        // skip users already in the box
+                        const uid = u._id || u.id || u.user_id || null;
+                        if (isAlreadyMember(uid)) return false;
+                        return (
+                          (u.email && u.email.toLowerCase().includes(q)) ||
+                          (u.full_name && u.full_name.toLowerCase().includes(q)) ||
+                          (String(u.work_id || '').toLowerCase().includes(q))
+                        );
+                      })
+                      .slice(0, 8)
+                      .map((u) => (
+                        <div
+                          key={u._id || u.user_id || u.email}
+                          className="add-user-suggestion-item"
+                          onClick={() => {
+                            // add to local selected list instead of immediate server add
+                            const id = u._id || u.id || u.user_id;
+                            if (!id) return;
+                            // avoid duplicates
+                            if (selectedToAdd.find((s) => (s._id || s.id) === id)) return;
+                            setSelectedToAdd((prev) => [...prev, u]);
+                            setEmailToAdd("");
+                          }}
+                        >
+                          <img src={u.avatar_link ? `https://stacklog.id.vn/${u.avatar_link}` : defaulfAvatar} alt={u.full_name || u.email} />
+                          <div className="add-user-suggestion-info">
+                            <div className="name">{u.full_name || u.email}</div>
+                            <div className="email">{u.email}</div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+                {/* selected list preview */}
+                {selectedToAdd && selectedToAdd.length > 0 && (
+                  <div className="selected-add-list">
+                    {selectedToAdd.map((u) => (
+                      <div key={u._id || u.email} className="selected-add-chip">
+                        <img src={u.avatar_link ? `https://stacklog.id.vn/${u.avatar_link}` : defaulfAvatar} alt={u.full_name || u.email} />
+                        <div className="selected-add-info">
+                          <div className="name">{u.full_name || u.email}</div>
+                          <div className="email">{u.email}</div>
+                        </div>
+                        <button
+                          type="button"
+                          className="chip-remove"
+                          onClick={() => setSelectedToAdd((prev) => prev.filter((x) => (x._id || x.email) !== (u._id || u.email)))}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <button
-                  onClick={addMemberByEmail}
+                  onClick={handleBatchAdd}
                   className="add-member-btn btn-create-add"
-                  disabled={isAdding || !emailToAdd.trim()}
+                  disabled={isAdding || (selectedToAdd.length === 0 && !emailToAdd.trim())}
                 >
                   {isAdding ? (
                     <span className="btn-content">
@@ -459,7 +600,6 @@ const FeatureChat = () => {
                 </button>
               </div>
               <div className="helper-text">
-                Enter an email to look up a user and add them to the group.
               </div>
             </div>
           </div>

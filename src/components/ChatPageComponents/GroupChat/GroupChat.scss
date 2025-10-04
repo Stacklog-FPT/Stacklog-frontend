@@ -123,6 +123,51 @@ $background-is-hover: #dbeafe;
       }
     }
   }
+
+  /* member suggestion dropdown inside Add Group modal */
+  .member-suggestions {
+    background: #fff;
+    border: 1px solid #e6eef3;
+    border-radius: 8px;
+    margin-top: 8px;
+    width: 100%;
+    max-height: 240px;
+    overflow: auto;
+    box-shadow: 0 6px 18px rgba(6, 95, 70, 0.06);
+    z-index: 1500;
+  }
+
+  .member-suggestion-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+  .member-suggestion-item img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #f3f4f6;
+  }
+
+  .member-suggestion-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .member-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: $color-text-head-content;
+  }
+
+  .member-email {
+    font-size: 12px;
+    color: $color-text-main-content;
+  }
 }
 
 .add-group-modal {
@@ -222,32 +267,62 @@ $background-is-hover: #dbeafe;
 
   .members-list {
     display: flex;
-    flex-direction: column; /* stack chips vertically */
+    flex-direction: column; /* stack chips vertically so each selected email is on its own line */
     gap: 8px;
     margin-top: 8px;
     width: 100%;
   }
-
   .member-chip {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    background: #f8fafc;
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: 1px solid #e6eef3;
-    width: 100%;
+    gap: 10px;
+    background: #fff;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid #eef2f6;
+    box-shadow: 0 1px 2px rgba(16,24,40,0.03);
+    width: 100%; /* make each chip full width of the container */
+    max-width: 100%;
     box-sizing: border-box;
-    word-break: break-word; /* allow long emails to wrap */
   }
 
-  .chip-text {
+  .chip-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #f3f4f6;
+  }
+
+  .chip-avatar--placeholder {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e6eef3, #f8fafc);
+  }
+
+  .member-chip-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .member-chip .member-name {
     font-size: 13px;
+    font-weight: 600;
+    color: $color-text-head-content;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .member-chip .member-email {
+    font-size: 12px;
     color: $color-text-main-content;
-    display: block;
-    overflow-wrap: anywhere;
-    white-space: normal;
+    white-space: normal; /* allow wrapping */
+    overflow-wrap: anywhere; /* break long emails when needed */
+    word-break: break-word;
+    margin-top: 2px;
   }
 
   .chip-remove {
@@ -256,6 +331,8 @@ $background-is-hover: #dbeafe;
     color: #9ca3af;
     font-weight: 700;
     cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
   }
 
   .btn-create-group {

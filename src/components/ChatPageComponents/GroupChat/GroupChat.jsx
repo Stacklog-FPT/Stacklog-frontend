@@ -26,9 +26,10 @@ const GroupChat = ({
   const [newGroupName, setNewGroupName] = useState("");
   const [newGroupAvatar, setNewGroupAvatar] = useState(null);
   const [previewAvatar, setPreviewAvatar] = useState(null);
-  const { getUserByEmail, getUserById } = userApi();
-  const [newMemberEmail, setNewMemberEmail] = useState("");
+  const { getUserByEmail, getUserById, getAllUsers } = userApi();
   const [membersEmails, setMembersEmails] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [memberQuery, setMemberQuery] = useState("");
 
   const { user } = useAuth();
   let currentUserId = "";
@@ -42,6 +43,8 @@ const GroupChat = ({
   }
 
   // Load groups via REST API (getBoxes)
+  const { boxesVersion } = useContext(ChatContext) || {};
+
   useEffect(() => {
     const service = chatApi();
     let mounted = true;
@@ -160,7 +163,78 @@ const GroupChat = ({
           }
         }
 
-        if (mounted) setGroupChatDetails(mapped);
+        if (mounted) {
+          // For any box that doesn't have normalized messages, fetch its messages
+          // and normalize them so the left-hand list can show the last message text.
+          const boxesToFetch = mapped.filter(
+            (m) =>
+              !Array.isArray(m.messages) ||
+              m.messages.length === 0 ||
+              // also fetch if last message lacks a `chatMessageContent` field
+              !(
+                m.messages[m.messages.length - 1] &&
+                m.messages[m.messages.length - 1].chatMessageContent
+              )
+          );
+
+          if (boxesToFetch.length > 0) {
+            try {
+              const fetches = boxesToFetch.map((box) =>
+                service
+                  .getMessages(user.token, box.id)
+                  .then((msgs) => ({ boxId: box.id, msgs }))
+                  .catch((err) => ({ boxId: box.id, msgs: null }))
+              );
+
+              const results = await Promise.all(fetches);
+
+              // helper to normalize a raw message from server into our UI shape
+              const normalizeMsg = (m) => ({
+                chatMessageId:
+                  m._id ||
+                  m.chat_message_id ||
+                  m.chatMessageId ||
+                  Math.random().toString(),
+                chatMessageContent:
+                  m.content ||
+                  m.chat_message_content ||
+                  m.chatMessageContent ||
+                  m.message ||
+                  m.text ||
+                  "",
+                createdBy:
+                  m.createdBy ||
+                  m.created_by ||
+                  m.senderId ||
+                  m.sender_id ||
+                  "",
+                createdAt:
+                  m.createdAt ||
+                  m.created_at ||
+                  m.timestamp ||
+                  new Date().toISOString(),
+                readBy: Array.isArray(m.read_by) ? m.read_by : m.readBy || [],
+              });
+
+              results.forEach(({ boxId, msgs }) => {
+                if (!msgs || !Array.isArray(msgs) || msgs.length === 0) return;
+                const idx = mapped.findIndex((x) => x.id === boxId);
+                if (idx === -1) return;
+                try {
+                  const normalized = msgs.map((mm) => normalizeMsg(mm));
+                  mapped[idx].messages = normalized;
+                } catch (e) {
+                  // leave as-is on error
+                }
+              });
+            } catch (e) {
+              // non-fatal
+              console.warn("Failed to fetch per-box messages:", e);
+            }
+          }
+
+          setGroupChatDetails(mapped);
+        }
       } catch (err) {
         console.error("Fetch boxes failed", err);
       }
@@ -171,7 +245,7 @@ const GroupChat = ({
     return () => {
       mounted = false;
     };
-  }, [user?.token, currentUserId]);
+  }, [user?.token, currentUserId, boxesVersion]);
 
   // Xử lý chọn ảnh và preview
   const handleAvatarChange = (e) => {
@@ -185,6 +259,29 @@ const GroupChat = ({
       setPreviewAvatar(null);
     }
   };
+
+  // Fetch user list for member suggestions when modal opens
+  useEffect(() => {
+    let mounted = true;
+    const service = chatApi();
+    const loadUsers = async () => {
+      if (!showAddGroup || !user?.token) return;
+      try {
+        // prefer UserService getAllUsers via userApi()
+        const users = await getAllUsers(user.token);
+        if (!mounted) return;
+        // Some getAllUsers endpoints return { data: [...] } or array directly
+        const list = Array.isArray(users) ? users : users?.data || users?.users || [];
+        setAllUsers(list);
+      } catch (e) {
+        console.warn('Failed to load users for suggestions', e);
+      }
+    };
+    loadUsers();
+    return () => {
+      mounted = false;
+    };
+  }, [showAddGroup, user?.token]);
 
   // Tạo group mới
   const handleAddGroup = async (e) => {
@@ -228,12 +325,11 @@ const GroupChat = ({
 
       const saved = await service.createBox(user.token, payload);
 
-      setShowAddGroup(false);
-      setNewGroupName("");
-      setNewGroupAvatar(null);
-      setPreviewAvatar(null);
-      setNewMemberEmail("");
-      setMembersEmails([]);
+  setShowAddGroup(false);
+  setNewGroupName("");
+  setNewGroupAvatar(null);
+  setPreviewAvatar(null);
+  setMembersEmails([]);
 
       // Normalize saved box to the same internal shape
       const savedMembers = Array.isArray(saved.memberIds)
@@ -373,47 +469,117 @@ const GroupChat = ({
                   <label className="label">Add members by email</label>
                   <div className="add-members-row">
                     <input
-                      type="email"
-                      placeholder="e.g. user@example.com"
-                      value={newMemberEmail}
-                      onChange={(e) => setNewMemberEmail(e.target.value)}
-                      className="add-member-input"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (newMemberEmail) {
-                          setMembersEmails((prev) => [
-                            ...prev,
-                            newMemberEmail.trim(),
-                          ]);
-                          setNewMemberEmail("");
+                      type="text"
+                      placeholder="Search users by email or name"
+                      value={memberQuery}
+                      onChange={(e) => setMemberQuery(e.target.value)}
+                      onKeyDown={async (e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const q = memberQuery.trim();
+                          if (!q) return;
+
+                          // Prefer selecting a matching user from suggestions
+                          const match = (allUsers || []).find((u) =>
+                            (u.email || "").toLowerCase() === q.toLowerCase()
+                          );
+                          if (match && match.email) {
+                            const email = match.email;
+                            if (!membersEmails.includes(email)) {
+                              setMembersEmails((prev) => [...prev, email]);
+                            }
+                            setMemberQuery("");
+                            return;
+                          }
+
+                          // If typed looks like an email, add as fallback
+                          if (q.includes("@") && q.includes(".")) {
+                            if (!membersEmails.includes(q)) {
+                              setMembersEmails((prev) => [...prev, q]);
+                            }
+                            setMemberQuery("");
+                            return;
+                          }
                         }
                       }}
-                      className="btn-add-member"
-                    >
-                      Add
-                    </button>
+                      className="add-member-input"
+                    />
+                    {/* removed Add button: selection / Enter key will add items */}
                   </div>
+
+                  {/* Suggestion list from server users */}
+                  {memberQuery && allUsers && allUsers.length > 0 && (
+                    <div className="member-suggestions">
+                      {allUsers
+                        .filter((u) => {
+                          const q = memberQuery.toLowerCase();
+                          return (
+                            (u.email && u.email.toLowerCase().includes(q)) ||
+                            (u.full_name && u.full_name.toLowerCase().includes(q)) ||
+                            (u.work_id && String(u.work_id).toLowerCase().includes(q))
+                          );
+                        })
+                        .slice(0, 8)
+                        .map((u) => (
+                          <div
+                            key={u._id || u.user_id || u.email}
+                            className="member-suggestion-item"
+                            onClick={() => {
+                              const email = u.email;
+                              if (email && !membersEmails.includes(email)) {
+                                setMembersEmails((prev) => [...prev, email]);
+                              }
+                              setMemberQuery("");
+                            }}
+                          >
+                            <img src={u.avatar_link ? `https://stacklog.id.vn/${u.avatar_link}` : avatar} alt={u.full_name || u.email} />
+                            <div className="member-suggestion-info">
+                              <div className="member-name">{u.full_name || u.email}</div>
+                              <div className="member-email">{u.email}</div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
 
                   {membersEmails.length > 0 && (
                     <div className="members-list">
-                      {membersEmails.map((email, index) => (
-                        <div key={`${email}-${index}`} className="member-chip">
-                          <span className="chip-text">{email}</span>
-                          <button
-                            type="button"
-                            className="chip-remove"
-                            onClick={() =>
-                              setMembersEmails((prev) =>
-                                prev.filter((_, i) => i !== index)
-                              )
-                            }
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
+                      {membersEmails.map((email, index) => {
+                        const userObj = (allUsers || []).find(
+                          (u) => (u.email || "").toLowerCase() === (email || "").toLowerCase()
+                        );
+                        const ava = userObj
+                          ? userObj.avatar_link
+                            ? `https://stacklog.id.vn/${userObj.avatar_link}`
+                            : null
+                          : null;
+                        const displayName = userObj
+                          ? userObj.full_name || userObj.email
+                          : email;
+
+                        return (
+                          <div key={`${email}-${index}`} className="member-chip">
+                            {ava ? (
+                              <img src={ava} alt={displayName} className="chip-avatar" />
+                            ) : (
+                              <div className="chip-avatar chip-avatar--placeholder" />
+                            )}
+                            <div className="member-chip-info">
+                              <div className="member-name">{displayName}</div>
+                              <div className="member-email">{email}</div>
+                            </div>
+                            <button
+                              type="button"
+                              className="chip-remove"
+                              onClick={() =>
+                                setMembersEmails((prev) => prev.filter((_, i) => i !== index))
+                              }
+                            >
+                              ×
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
 

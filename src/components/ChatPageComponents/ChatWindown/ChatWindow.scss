@@ -521,3 +521,64 @@ $color-border-input: #b5b5b5;
   transform: translateY(0);
   pointer-events: auto;
 }
+
+/* Call bubble (card) styles to match renderMessageContent */
+.chat__call {
+  position: relative;
+  background: linear-gradient(180deg,#056a5f 0%,#034c43 100%);
+  color: #fff;
+  padding: 16px;
+  border-radius: 14px;
+  max-width: 360px;
+  box-shadow: 0 8px 26px rgba(1, 36, 34, 0.12);
+}
+
+.chat__call__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat__call__initiator_name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.chat__call__initiator_time {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.chat__call__icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+}
+
+.chat__call__icon i { font-size: 18px; }
+
+.chat__call__body { margin-top: 10px; }
+
+.chat__call__title { font-weight: 800; font-size: 16px; }
+
+.chat__call__sub { margin-top: 6px; font-size: 13px; }
+
+.chat__call__link { color: #cfeee6; text-decoration: underline; }
+
+.chat__call__actions { margin-top: 12px; }
+
+.chat__call__retry {
+  background: #fff;
+  color: #045e56;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chat__call__retry:hover { opacity: 0.95; transform: translateY(-1px); }

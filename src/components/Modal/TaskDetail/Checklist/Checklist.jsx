@@ -50,7 +50,7 @@ const Checklist = ({ checkList, task }) => {
     if (!title) return;
 
     const newCheckItem = {
-      checkItemId: '',
+      checkItemId: null,
       checkItemTitle: title,
       checkItemDescription: title,
       checkItemDueDate: null,
@@ -67,11 +67,24 @@ const Checklist = ({ checkList, task }) => {
 
     const payload = { ...task, checkLists: updatedCheckLists };
 
-    console.log(payload);
-
     await updateTaskApi(payload, user.token, dispatch);
     setNewItem('');
     setActiveId(null);
+  };
+
+  const handleDeleteChecklistItem = async (checkListId, checkItemId) => {
+    const updatedCheckLists = (task.checkLists || []).map((cl) => {
+      if (String(cl.checkListId) === String(checkListId)) {
+        const items = (cl.listItems || []).filter(
+          (it) => String(it.checkItemId) !== String(checkItemId),
+        );
+        return { ...cl, listItems: items };
+      }
+      return cl;
+    });
+
+    const payload = { ...task, checkLists: updatedCheckLists };
+    await updateTaskApi(payload, user.token, dispatch);
   };
 
   // const handleToggleChecklistItem = async (checkListId, checkItemId) => {
@@ -120,15 +133,26 @@ const Checklist = ({ checkList, task }) => {
                       className="d-flex align-items-center justify-content-between"
                       key={it.checkItemId || i}
                     >
-                      <div className="checklist_subitem">
-                        <input
-                          type="checkbox"
-                          checked={!!it.isChecked}
-                          // onClick={handleToggleChecklistItem(cid, it.checkItemId)}
-                        />
-                        <span className={it.isChecked ? 'completed' : ''}>{it.checkItemTitle}</span>
+                      <div className="checklist_subitem align-items-center justify-content-between">
+                        <div className="d-flex align-items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={!!it.isChecked}
+                            // onClick={handleToggleChecklistItem(cid, it.checkItemId)}
+                          />
+                          <span className={it.isChecked ? 'completed' : ''}>
+                            {it.checkItemTitle}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn_add_check_list_item"
+                          onClick={() => handleDeleteChecklistItem(cid, it.checkItemId)}
+                          title="Delete"
+                        >
+                          <RiDeleteBin5Fill size={14} />
+                        </button>
                       </div>
-                      <div></div>
                     </div>
                   ))}
                 </div>

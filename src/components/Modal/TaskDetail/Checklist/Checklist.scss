@@ -30,19 +30,6 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-
-    .btn_add_check_list_item {
-      background: #e1e4e8;
-      border: none;
-      border-radius: 20px;
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
   }
 
   .checklist_item_title {
@@ -79,6 +66,19 @@
       }
     }
   }
+}
+
+.btn_add_check_list_item {
+  background: #e1e4e8;
+  border: none;
+  border-radius: 20px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .checklist_item:hover {
@@ -123,6 +123,7 @@
 }
 
 .checklist_subitem {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;

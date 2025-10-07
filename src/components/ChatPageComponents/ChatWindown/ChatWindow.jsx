@@ -286,6 +286,72 @@ const ChatWindow = () => {
     }
   };
 
+  // Start an audio/video call for the current box (frontend-only option)
+  // Uses the public Jitsi Meet server so no backend changes are required.
+  const startCall = async (type = "video") => {
+    try {
+      if (!selectedBox || !selectedBox.id) return alert("No chat selected for call");
+
+  // Use a unique room name per call so old links cannot be reused to restart
+  // the same meeting session. This prevents someone opening an old link
+  // and recreating the previous meeting state.
+  const roomName = `stacklog-${selectedBox.id}-${Date.now()}`;
+
+      // Build Jitsi Meet public room URL (meet.jit.si)
+      const base = `https://meet.jit.si/${encodeURIComponent(roomName)}`;
+      // Customize query/hash params as needed (e.g. startWithAudioMuted)
+      const jitsiUrl = `${base}#room=${encodeURIComponent(roomName)}&config.startWithVideoMuted=false&config.startWithAudioMuted=false`;
+
+      // Try to copy the link to clipboard so user can paste/share
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(jitsiUrl);
+        }
+      } catch (e) {
+        // non-fatal
+        console.warn('Clipboard write failed', e);
+      }
+
+      // Optionally send a chat message containing the meeting link so other members see it
+      try {
+        const service = chatApi();
+        // mention everyone in the box except the caller so they get notified
+        const allMentionIds = (selectedBox?.members || []).filter((id) => id && id !== currentUserId);
+        const payload = {
+          content: `📞 Cuộc gọi ${type} — tham gia: ${jitsiUrl}`,
+          attachment: null,
+          mentionUserIds: allMentionIds,
+        };
+        // fire-and-forget: we don't need to await or block UX; errors are non-fatal
+        service.sendMessage(user.token, selectedBox.id, payload).catch((err) => {
+          console.warn('Failed to send meeting link message', err);
+        });
+      } catch (e) {}
+
+      // Emit a socket invite if you still have realtime handling on server — harmless if server ignores it
+      try {
+        const mentionIds = (selectedBox?.members || []).filter((id) => id && id !== currentUserId);
+        const payload = {
+          roomId: roomName,
+          boxId: selectedBox.id,
+          type,
+          from: currentUserId,
+          timestamp: new Date().toISOString(),
+          mentionUserIds: mentionIds,
+        };
+        socketEmit && socketEmit("call:invite", payload);
+      } catch (e) {
+        console.warn("call:invite emit failed", e);
+      }
+
+      // Open the Jitsi room in a new tab so the caller stays in chat
+      window.open(jitsiUrl, "_blank");
+    } catch (e) {
+      console.error("Start call failed", e);
+      alert("Khởi tạo cuộc gọi thất bại");
+    }
+  };
+
   // Scroll xuống cuối khi có tin nhắn mới
   useEffect(() => {
     if (scrollRef.current) {
@@ -382,27 +448,89 @@ const ChatWindow = () => {
   // Render message content with mention highlights
   const renderMessageContent = (msg) => {
     const text = msg.chatMessageContent || "";
-    // split by spaces but keep them so we can rebuild
-    const parts = text.split(/(\s+)/);
-    return parts.map((part, idx) => {
-      if (!part) return null;
-      if (!part.startsWith("@")) return <span key={idx}>{part}</span>;
-      const token = part.slice(1).replace(/[.,!?;:]$/, ""); // strip trailing punctuation
-      // find cached user whose display matches token (case-insensitive)
-      const matchId = Object.keys(userCache).find((id) => {
-        const info = userCache[id] || {};
-        const name = (info.full_name || info.email || id).toLowerCase();
-        return name === token.toLowerCase();
-      });
-      if (matchId) {
-        const info = userCache[matchId] || {};
-        const name = info.full_name || info.email || matchId;
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+    // If this message looks like a meeting/call (contains meet.jit.si or is prefixed with the call emoji),
+    // render a nicer call card instead of the raw long link.
+    const isCallLink = /meet\.jit\.si/i.test(text) || /^\s*📞\s*Cuộc gọi/i.test(text) || (typeof text === 'string' && text.startsWith('CALL::'));
+    if (isCallLink) {
+      // extract first URL if present
+      const match = text.match(urlRegex);
+      const url = match ? match[0] : null;
+      const senderInfo = userCache[msg.createdBy] || {};
+      const senderName = senderInfo.full_name || senderInfo.email || msg.createdBy;
+      const time = new Date(msg.createdAt).toLocaleString();
+      // try to detect type from text (audio/video)
+      const type = /audio/i.test(text) ? 'audio' : 'video';
+
+      return (
+        <div className="chat__call">
+          <div className="chat__call__meta">
+            <div className="chat__call__initiator">
+              <div className="chat__call__initiator_name">{senderName}</div>
+              <div className="chat__call__initiator_time">{time}</div>
+            </div>
+            <div className="chat__call__icon">
+              <i className={`fa-solid ${type === 'audio' ? 'fa-phone' : 'fa-video'}`}></i>
+            </div>
+          </div>
+          <div className="chat__call__body">
+            <div className="chat__call__title">Cuộc gọi {type === 'audio' ? 'âm thanh' : 'video'}</div>
+            {url && (
+              <div className="chat__call__sub">
+                <a href={url} target="_blank" rel="noopener noreferrer" className="chat__call__link">Tham gia cuộc gọi</a>
+              </div>
+            )}
+            <div className="chat__call__actions">
+              <button className="chat__call__retry" onClick={() => startCall(type)}>Gọi lại</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Fallback: render as regular message with URL highlighting
+    const segments = text.split(urlRegex);
+    return segments.map((seg, i) => {
+      if (!seg) return null;
+      // if this segment is a URL, render anchor
+      if (/^https?:\/\//i.test(seg)) {
         return (
-          <span key={idx} className="chat__mention">@{name}</span>
+          <a
+            key={`url-${i}`}
+            href={seg}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="chat__link"
+          >
+            {seg}
+          </a>
         );
       }
-      // no match, render as plain text
-      return <span key={idx}>{part}</span>;
+
+      // otherwise handle mentions and plain text (preserve spaces)
+      const parts = seg.split(/(\s+)/);
+      return parts.map((part, idx) => {
+        if (!part) return null;
+        if (!part.startsWith("@")) return <span key={`t-${i}-${idx}`}>{part}</span>;
+        const token = part.slice(1).replace(/[.,!?;:]$/, ""); // strip trailing punctuation
+        // find cached user whose display matches token (case-insensitive)
+        const matchId = Object.keys(userCache).find((id) => {
+          const info = userCache[id] || {};
+          const name = (info.full_name || info.email || id).toLowerCase();
+          return name === token.toLowerCase();
+        });
+        if (matchId) {
+          const info = userCache[matchId] || {};
+          const name = info.full_name || info.email || matchId;
+          return (
+            <span key={`m-${i}-${idx}`} className="chat__mention">
+              @{name}
+            </span>
+          );
+        }
+        return <span key={`t-${i}-${idx}`}>{part}</span>;
+      });
     });
   };
 
@@ -489,8 +617,8 @@ const ChatWindow = () => {
             </div>
           </div>
           <div className="chat__heading__right">
-            <i className="fa-solid fa-phone"></i>
-            <i className="fa-solid fa-video"></i>
+            <i className="fa-solid fa-phone" onClick={() => startCall('audio')} style={{ cursor: 'pointer' }}></i>
+            <i className="fa-solid fa-video" onClick={() => startCall('video')} style={{ cursor: 'pointer' }}></i>
             <i
               className="fa-solid fa-circle-info"
               onClick={toggleFeatureChat}

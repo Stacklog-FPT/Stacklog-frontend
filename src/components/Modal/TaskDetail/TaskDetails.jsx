@@ -36,7 +36,6 @@ const toISO = (localValue) => (localValue ? new Date(localValue).toISOString() :
 const TaskDetails = ({ task, onClose }) => {
   const statuses = useSelector((state) => state.status.statuses);
   const currentStatus = statuses.find((s) => String(s.statusTaskId) === String(task.statusTaskId));
-
   // --- EDIT MODE STATE ---
   const [editTask, setEditTask] = useState(false);
   const [isChecklistDirty, setChecklistDirty] = useState(false);
@@ -61,7 +60,7 @@ const TaskDetails = ({ task, onClose }) => {
   const { deleteReview } = ReviewService();
   const [activeTab, setActiveTab] = useState('subtasks');
   const toggleComments = () => setIsCommentsOpen((v) => !v);
-
+  console.log(task.reviews);
   useEffect(() => {
     setForm({
       title: task?.taskTitle || '',
@@ -117,9 +116,10 @@ const TaskDetails = ({ task, onClose }) => {
       const payload = {
         ...task,
         reviews: [
+          ...task?.reviews,
           {
             reviewContent: newComment,
-            createdBy: decoded._id,
+            createdBy: decoded.id,
             createdAt: new Date().toISOString(),
           },
         ],
@@ -342,26 +342,58 @@ const TaskDetails = ({ task, onClose }) => {
           active={activeTab}
           onChange={setActiveTab}
           counts={{
-            subtasks: task?.subTasks?.length || 0,
-            checklists: (form.checkListDraft || []).length || 0,
+            subtasks: task?.subtasks?.length,
+            checklists: (form.checkListDraft || []).length,
+            reviews: task?.reviews?.length,
           }}
         />
 
         <section className="taskdetail__todo">
-          {activeTab === 'subtasks' ? (
-            <SubTask data={task?.subTasks} />
-          ) : (
+          {activeTab === 'subtasks' && <SubTask data={task?.subtasks} />}
+
+          {activeTab === 'checklists' && (
             <Checklist
-              checkList={form.checkListDraft}
+              checkList={task?.checkLists}
+              task={task}
               editTask={editTask}
-              onChange={(nextApiShape) => setForm((f) => ({ ...f, checkListDraft: nextApiShape }))}
+              onChange={(next) => setForm((f) => ({ ...f, checkListDraft: next }))}
               onDirtyChange={setChecklistDirty}
             />
+          )}
+
+          {activeTab === 'reviews' && (
+            <section>
+              <div className="taskdetail_comments">
+                <div className="comments__inner">
+                  <CommentBody
+                    reviews={task?.reviews}
+                    userMap={{}}
+                    formatDate={(d) => formatDateUI(d)}
+                    decodedId={decoded?.id}
+                    editingCommentId={editingCommentId}
+                    editedComment={editedComment}
+                    onEdit={handleEditComment}
+                    onChangeEdited={setEditedComment}
+                    onUpdate={handleUpdateComment}
+                    onDelete={handleDeleteComment}
+                  />
+                  <CommentFooter
+                    avatar={
+                      user?.avatar ||
+                      'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                    }
+                    newComment={newComment}
+                    onChangeNew={setNewComment}
+                    onSend={handleSendComment}
+                  />
+                </div>
+              </div>
+            </section>
           )}
         </section>
 
         {/* Comment Task */}
-        <section className="taskdetail_comments">
+        {/* <section className="taskdetail_comments">
           <button
             className="comments__toggle"
             onClick={toggleComments}
@@ -405,7 +437,7 @@ const TaskDetails = ({ task, onClose }) => {
               />
             </div>
           </div>
-        </section>
+        </section> */}
       </aside>
     </div>,
     document.body,

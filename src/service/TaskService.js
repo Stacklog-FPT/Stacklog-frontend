@@ -113,7 +113,7 @@ export const updateTaskApi = async (taskData, token, dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log('Call me update task: ', response.data);
+    console.log('Call me update task: ', response);
     dispatch(updateTasks(response.data));
     dispatch(setPending(false));
     return response;
@@ -134,7 +134,6 @@ export const createSubtaskApi = async (taskData, token, dispatch) => {
       },
     });
 
-    console.log('Call me subtask: ', response);
     dispatch(updateTasks(response.data));
     dispatch(setPending(false));
     return response;

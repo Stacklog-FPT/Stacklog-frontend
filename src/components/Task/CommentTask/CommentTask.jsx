@@ -15,7 +15,6 @@ import { useParams } from 'react-router';
 import { updateTaskApi, updateReviewApi } from '../../../service/TaskService';
 
 const CommentTask = ({ task, isClose }) => {
-  const { groupId } = useParams();
   const tasks = useSelector((t) => t.task.tasks);
   const currentTask = tasks.find((t) => t.taskId === task.taskId);
   const reviews = currentTask?.reviews || [];
@@ -73,6 +72,7 @@ const CommentTask = ({ task, isClose }) => {
       title: 'Are you sure to delete this comment?',
       text: "This action can't be undone!",
       icon: 'warning',
+      customClass: { container: 'swal-on-top' },
       showCancelButton: true,
       confirmButtonColor: '#045745',
       cancelButtonColor: '#c8cad4',
@@ -80,12 +80,13 @@ const CommentTask = ({ task, isClose }) => {
       cancelButtonText: 'Cancel',
     });
     if (result.isConfirmed) {
-      try {
-        await deleteReview(user.token, commentId);
-        // tuỳ backend có trả list mới hay không, bạn có thể dispatch refetch ở đây nếu cần
-      } catch (e) {
-        console.error(e.message);
-      }
+      const updateTask = task.reviews.filter((rv) => rv.reviewId !== commentId);
+      const payload = {
+        ...currentTask,
+        reviews: updateTask,
+      };
+      await updateTaskApi(payload, user.token, dispatch);
+      Swal.fire('Deleted!', 'Your comment has been deleted.', 'success');
     }
   };
 

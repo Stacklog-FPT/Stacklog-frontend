@@ -42,7 +42,6 @@ const Checklist = ({ checkList, task }) => {
       (cl) => String(cl.checkListId) !== String(checkListId),
     );
     const payload = { ...task, checkLists: updatedCheckLists };
-    console.log('delete checkList debug: ', payload);
     await updateTaskApi(payload, user.token, dispatch);
   };
 
@@ -51,7 +50,7 @@ const Checklist = ({ checkList, task }) => {
     if (!title) return;
 
     const newCheckItem = {
-      // checkItemId: '',
+      checkItemId: '',
       checkItemTitle: title,
       checkItemDescription: title,
       checkItemDueDate: null,
@@ -75,9 +74,9 @@ const Checklist = ({ checkList, task }) => {
     setActiveId(null);
   };
 
-  const handleToggleChecklistItem = async (checkListId, checkItemId) => {
-    console.log({ checkListId, checkItemId });
-  };
+  // const handleToggleChecklistItem = async (checkListId, checkItemId) => {
+  //   console.log({ checkListId, checkItemId });
+  // };
 
   return (
     <div className="checklist__container">

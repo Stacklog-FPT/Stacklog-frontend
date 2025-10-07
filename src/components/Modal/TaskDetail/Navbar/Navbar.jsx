@@ -5,6 +5,7 @@ const Navbar = ({ active = 'subtasks', onChange, counts = {} }) => {
   const tabs = [
     { key: 'subtasks', label: 'Subtasks', count: counts.subtasks ?? 0 },
     { key: 'checklists', label: 'Checklists', count: counts.checklists ?? 0 },
+    { key: 'reviews', label: 'Reviews', count: counts.reviews ?? 0 },
   ];
 
   return (

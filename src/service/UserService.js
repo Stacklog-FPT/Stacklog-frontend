@@ -18,6 +18,17 @@ const userApi = () => {
     }
   };
 
+  const loginGoogle = async (tokenGoogle) => {
+    if (!tokenGoogle) throw new Error('The token google is missing!');
+
+    try {
+      const res = await axios.post(`${API_AUTH}auth/login-google`, { idToken: tokenGoogle });
+      return res;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  };
+
   const logout = async (token) => {
     try {
       const response = await axios.post(
@@ -101,7 +112,6 @@ const userApi = () => {
     }
   };
 
-
   return {
     login,
     logout,
@@ -112,6 +122,7 @@ const userApi = () => {
     getUserByRole,
     getUserById,
     getAllUsers,
+    loginGoogle,
   };
 };
 

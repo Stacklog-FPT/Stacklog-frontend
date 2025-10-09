@@ -9,7 +9,7 @@ import { ColorModeContext } from '../../context/ColorModeContext';
 
 const LoginPage = () => {
   const { loginSave } = useAuth();
-  const { login, error, isLoading } = userApi();
+  const { login, loginGoogle, error, isLoading } = userApi();
   const [user, setUser] = useState({});
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
@@ -17,7 +17,23 @@ const LoginPage = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const redirect = searchParams.get('redirect') || '/';
-  const handleGoogleSuccess = (credentialResponse) => {};
+  const handleLoginGoogle = async (response) => {
+    const { credential } = response;
+    console.log(credential);
+    if (credential) {
+      const response = await loginGoogle(credential);
+      if (response) {
+        const userData = {
+          email: response.email,
+          username: response.username,
+          token: response.token,
+          role: response.role,
+        };
+        loginSave(userData);
+        navigate(redirect);
+      }
+    }
+  };
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -42,10 +58,9 @@ const LoginPage = () => {
       console.error('Login Failed', e || e.message);
     }
   };
-  const handleGoogleFailure = () => {};
 
   return (
-    <GoogleOAuthProvider>
+    <GoogleOAuthProvider clientId="936936448941-in2ggpv40tvh3489tv0n79ou5rqjvqd0.apps.googleusercontent.com">
       <div className="form-login-container">
         <div className="wrapper-form">
           <div className="form_text">
@@ -93,8 +108,10 @@ const LoginPage = () => {
               </button>
               <GoogleLogin
                 className="google-login-btn"
-                onSuccess={handleGoogleSuccess}
-                onError={handleGoogleFailure}
+                onSuccess={handleLoginGoogle}
+                onError={() => {
+                  console.log('Login failure!');
+                }}
                 text="signin_with"
                 logo_alignment="left"
               />

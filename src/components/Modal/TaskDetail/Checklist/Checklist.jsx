@@ -9,10 +9,14 @@ import { useDispatch } from 'react-redux';
 const Checklist = ({ checkList, task }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
+
   const [isAddingList, setIsAddingList] = React.useState(false);
   const [newCheckListName, setNewCheckListName] = React.useState('');
   const [activeId, setActiveId] = React.useState(null);
   const [newItem, setNewItem] = React.useState('');
+
+  const [editCheckListId, setEditCheckListId] = React.useState(null);
+  const [editCheckListName, setEditCheckListName] = React.useState('');
 
   const toggleAddItemRow = (checkListId) => {
     setActiveId((prev) => (String(prev) === String(checkListId) ? null : checkListId));
@@ -24,17 +28,33 @@ const Checklist = ({ checkList, task }) => {
     if (!name) return;
 
     const newChecklist = {
-      // checkListId: Math.random().toString(16).slice(2, 6),
       checkListName: name,
       listItems: [],
     };
 
     const current = Array.isArray(task.checkLists) ? task.checkLists : [];
     const payload = { ...task, checkLists: [...current, newChecklist] };
-    console.log('payload: ', payload);
     await updateTaskApi(payload, user.token, dispatch);
     setNewCheckListName('');
     setIsAddingList(false);
+  };
+
+  const handleUpdateChecklistName = async (checkListId) => {
+    const name = editCheckListName.trim();
+    if (!name) return;
+
+    const updatedCheckLists = (task.checkLists || []).map((cl) => {
+      if (String(cl.checkListId) === String(checkListId)) {
+        return { ...cl, checkListName: name };
+      }
+      return cl;
+    });
+
+    const payload = { ...task, checkLists: updatedCheckLists };
+    await updateTaskApi(payload, user.token, dispatch);
+
+    setEditCheckListId(null);
+    setEditCheckListName('');
   };
 
   const handleDeleteChecklist = async (checkListId) => {
@@ -66,7 +86,6 @@ const Checklist = ({ checkList, task }) => {
     });
 
     const payload = { ...task, checkLists: updatedCheckLists };
-
     await updateTaskApi(payload, user.token, dispatch);
     setNewItem('');
     setActiveId(null);
@@ -99,9 +118,6 @@ const Checklist = ({ checkList, task }) => {
     });
 
     const payload = { ...task, checkLists: updatedCheckLists };
-
-    console.log('Toggle payload: ', payload);
-
     await updateTaskApi(payload, user.token, dispatch);
   };
 
@@ -110,13 +126,38 @@ const Checklist = ({ checkList, task }) => {
       <div className="checklist_content">
         {(checkList || []).map((list, idx) => {
           const cid = list.checkListId || idx;
+          const isEditing = String(editCheckListId) === String(cid);
 
           return (
             <div key={cid} className="checklist_item">
               <div className="checklist_item_header">
                 <div className="checklist_item_title">
-                  {/* <input type="checkbox" checked={!!it.isChecked} /> */}
-                  <span className={list.isChecked ? 'completed' : ''}>{list.checkListName}</span>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editCheckListName}
+                      onChange={(e) => setEditCheckListName(e.target.value)}
+                      onBlur={() => handleUpdateChecklistName(cid)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleUpdateChecklistName(cid);
+                        if (e.key === 'Escape') {
+                          setEditCheckListId(null);
+                          setEditCheckListName('');
+                        }
+                      }}
+                      autoFocus
+                    />
+                  ) : (
+                    <span
+                      onClick={() => {
+                        setEditCheckListId(cid);
+                        setEditCheckListName(list.checkListName);
+                      }}
+                      className="editable-checklist-name"
+                    >
+                      {list.checkListName}
+                    </span>
+                  )}
                 </div>
 
                 <div className="checklist_item_button d-flex gap-2">
@@ -124,7 +165,7 @@ const Checklist = ({ checkList, task }) => {
                     type="button"
                     className="btn_add_check_list_item"
                     onClick={() => toggleAddItemRow(cid)}
-                    title="Add"
+                    title="Add item"
                   >
                     <FaPlus size={14} />
                   </button>
@@ -133,7 +174,7 @@ const Checklist = ({ checkList, task }) => {
                     type="button"
                     className="btn_add_check_list_item"
                     onClick={() => handleDeleteChecklist(cid)}
-                    title="Delete"
+                    title="Delete checklist"
                   >
                     <RiDeleteBin5Fill size={14} />
                   </button>
@@ -162,7 +203,7 @@ const Checklist = ({ checkList, task }) => {
                           type="button"
                           className="btn_add_check_list_item"
                           onClick={() => handleDeleteChecklistItem(cid, it.checkItemId)}
-                          title="Delete"
+                          title="Delete item"
                         >
                           <RiDeleteBin5Fill size={14} />
                         </button>
@@ -192,6 +233,7 @@ const Checklist = ({ checkList, task }) => {
             </div>
           );
         })}
+
         <div className="checklist_footer">
           {!isAddingList ? (
             <button

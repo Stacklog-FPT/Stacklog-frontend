@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import './TaskDetail.scss';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,7 +10,6 @@ import axios from 'axios';
 import { createReview } from '../../../service/ReviewService';
 import ReviewService from '../../../service/ReviewService';
 import decodeToken from '../../../service/DecodeJwt';
-import { FaChevronRight } from 'react-icons/fa';
 import { MdModeEditOutline } from 'react-icons/md';
 import { FaCheck } from 'react-icons/fa';
 import Navbar from './Navbar/Navbar';
@@ -18,6 +17,7 @@ import Checklist from './Checklist/Checklist';
 import SubTask from './SubTask/SubTask';
 import HoldDeleteButton from './ButtonDelete';
 import { deleteTaskApi, updateTaskApi } from '../../../service/TaskService';
+import userApi from '../../../service/UserService';
 import { toast } from 'sonner';
 
 const toLocalInput = (iso) => {
@@ -36,6 +36,9 @@ const toISO = (localValue) => (localValue ? new Date(localValue).toISOString() :
 const TaskDetails = ({ task, onClose }) => {
   const statuses = useSelector((state) => state.status.statuses);
   const currentStatus = statuses.find((s) => String(s.statusTaskId) === String(task.statusTaskId));
+  // -- Get User by id --
+  const [studentInformation, setStudentInformation] = useState([]);
+  const { getUserById } = userApi();
   // --- EDIT MODE STATE ---
   const [editTask, setEditTask] = useState(false);
   const [isChecklistDirty, setChecklistDirty] = useState(false);
@@ -60,7 +63,6 @@ const TaskDetails = ({ task, onClose }) => {
   const { deleteReview } = ReviewService();
   const [activeTab, setActiveTab] = useState('subtasks');
   const toggleComments = () => setIsCommentsOpen((v) => !v);
-  console.log(task.reviews);
   useEffect(() => {
     setForm({
       title: task?.taskTitle || '',
@@ -218,6 +220,35 @@ const TaskDetails = ({ task, onClose }) => {
     return () => (document.body.style.overflow = prev);
   }, []);
 
+  useEffect(() => {
+    let userId = [];
+    if (task?.assignTo && Array.isArray(task?.assignTo)) {
+      userId = [...task.assignTo];
+    }
+    const fetchStudent = async () => {
+      const studentInfos = await Promise.all(
+        userId.map(async (id) => {
+          try {
+            const u = await getUserById(user.token, id);
+            return {
+              _id: u._id,
+              name: u.full_name,
+              email: u.email,
+              id: u.work_id,
+              avatar: u.avatar_link,
+            };
+          } catch {
+            return null;
+          }
+        }),
+      );
+
+      setStudentInformation(studentInfos);
+    };
+
+    fetchStudent();
+  }, [task?.assignTo]);
+
   const handleBackdropClick = (e) => {
     if (panelRef.current && !panelRef.current.contains(e.target)) onClose?.();
   };
@@ -329,9 +360,9 @@ const TaskDetails = ({ task, onClose }) => {
         <section className="taskdetail__section">
           <label>Assignees</label>
           <div className="taskdetail__chips">
-            {(task?.assignTo || []).map((u) => (
+            {(studentInformation || []).map((u) => (
               <span key={u} className="chip">
-                @{u}
+                {u.name || 'Unknown'}
               </span>
             ))}
           </div>

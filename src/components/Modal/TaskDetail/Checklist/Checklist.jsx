@@ -87,9 +87,23 @@ const Checklist = ({ checkList, task }) => {
     await updateTaskApi(payload, user.token, dispatch);
   };
 
-  // const handleToggleChecklistItem = async (checkListId, checkItemId) => {
-  //   console.log({ checkListId, checkItemId });
-  // };
+  const handleToggleChecklistItem = async (checkListId, checkItemId) => {
+    const updatedCheckLists = (task.checkLists || []).map((cl) => {
+      if (String(cl.checkListId) === String(checkListId)) {
+        const updatedItems = (cl.listItems || []).map((it) =>
+          String(it.checkItemId) === String(checkItemId) ? { ...it, isChecked: !it.isChecked } : it,
+        );
+        return { ...cl, listItems: updatedItems };
+      }
+      return cl;
+    });
+
+    const payload = { ...task, checkLists: updatedCheckLists };
+
+    console.log('Toggle payload: ', payload);
+
+    await updateTaskApi(payload, user.token, dispatch);
+  };
 
   return (
     <div className="checklist__container">
@@ -101,7 +115,7 @@ const Checklist = ({ checkList, task }) => {
             <div key={cid} className="checklist_item">
               <div className="checklist_item_header">
                 <div className="checklist_item_title">
-                  <input type="checkbox" checked={!!list.isChecked} readOnly />
+                  {/* <input type="checkbox" checked={!!it.isChecked} /> */}
                   <span className={list.isChecked ? 'completed' : ''}>{list.checkListName}</span>
                 </div>
 
@@ -138,7 +152,7 @@ const Checklist = ({ checkList, task }) => {
                           <input
                             type="checkbox"
                             checked={!!it.isChecked}
-                            // onClick={handleToggleChecklistItem(cid, it.checkItemId)}
+                            onChange={() => handleToggleChecklistItem(cid, it.checkItemId)}
                           />
                           <span className={it.isChecked ? 'completed' : ''}>
                             {it.checkItemTitle}

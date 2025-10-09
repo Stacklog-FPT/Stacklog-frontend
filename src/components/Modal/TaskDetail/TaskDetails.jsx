@@ -54,15 +54,12 @@ const TaskDetails = ({ task, onClose }) => {
   const [newComment, setNewComment] = useState('');
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState('');
-  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
-
   const panelRef = useRef(null);
   const { user } = useAuth();
   const decoded = decodeToken(user.token);
   const dispatch = useDispatch();
   const { deleteReview } = ReviewService();
   const [activeTab, setActiveTab] = useState('subtasks');
-  const toggleComments = () => setIsCommentsOpen((v) => !v);
   useEffect(() => {
     setForm({
       title: task?.taskTitle || '',
@@ -380,8 +377,10 @@ const TaskDetails = ({ task, onClose }) => {
         />
 
         <section className="taskdetail__todo">
+          {/* SubTask Task */}
           {activeTab === 'subtasks' && <SubTask data={task?.subtasks} />}
 
+          {/* Checklist Task */}
           {activeTab === 'checklists' && (
             <Checklist
               checkList={task?.checkLists}
@@ -392,83 +391,35 @@ const TaskDetails = ({ task, onClose }) => {
             />
           )}
 
+          {/* Comment Task */}
           {activeTab === 'reviews' && (
-            <section>
-              <div className="taskdetail_comments">
-                <div className="comments__inner">
-                  <CommentBody
-                    reviews={task?.reviews}
-                    userMap={{}}
-                    formatDate={(d) => formatDateUI(d)}
-                    decodedId={decoded?.id}
-                    editingCommentId={editingCommentId}
-                    editedComment={editedComment}
-                    onEdit={handleEditComment}
-                    onChangeEdited={setEditedComment}
-                    onUpdate={handleUpdateComment}
-                    onDelete={handleDeleteComment}
-                  />
-                  <CommentFooter
-                    avatar={
-                      user?.avatar ||
-                      'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
-                    }
-                    newComment={newComment}
-                    onChangeNew={setNewComment}
-                    onSend={handleSendComment}
-                  />
-                </div>
+            <div className="taskdetail_comments">
+              <div className="comments__inner">
+                <CommentBody
+                  reviews={task?.reviews}
+                  userMap={{}}
+                  formatDate={(d) => formatDateUI(d)}
+                  decodedId={decoded?.id}
+                  editingCommentId={editingCommentId}
+                  editedComment={editedComment}
+                  onEdit={handleEditComment}
+                  onChangeEdited={setEditedComment}
+                  onUpdate={handleUpdateComment}
+                  onDelete={handleDeleteComment}
+                />
+                <CommentFooter
+                  avatar={
+                    user?.avatar ||
+                    'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                  }
+                  newComment={newComment}
+                  onChangeNew={setNewComment}
+                  onSend={handleSendComment}
+                />
               </div>
-            </section>
+            </div>
           )}
         </section>
-
-        {/* Comment Task */}
-        {/* <section className="taskdetail_comments">
-          <button
-            className="comments__toggle"
-            onClick={toggleComments}
-            aria-expanded={isCommentsOpen}
-            aria-controls="comments-panel"
-          >
-            <FaChevronRight
-              className={`comments__chevron ${isCommentsOpen ? 'is-open' : ''}`}
-              size={14}
-            />
-            <span>Comments</span>
-            <span className="comments__count">{task?.reviews?.length || 0}</span>
-          </button>
-
-          <div
-            id="comments-panel"
-            className={`comments__content ${isCommentsOpen ? 'open' : ''}`}
-            aria-hidden={!isCommentsOpen}
-          >
-            <div className="comments__inner">
-              <CommentBody
-                reviews={task?.reviews}
-                userMap={{}}
-                formatDate={(d) => formatDateUI(d)}
-                decodedId={decoded?.id}
-                editingCommentId={editingCommentId}
-                editedComment={editedComment}
-                onEdit={handleEditComment}
-                onChangeEdited={setEditedComment}
-                onUpdate={handleUpdateComment}
-                onDelete={handleDeleteComment}
-              />
-              <CommentFooter
-                avatar={
-                  user?.avatar ||
-                  'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
-                }
-                newComment={newComment}
-                onChangeNew={setNewComment}
-                onSend={handleSendComment}
-              />
-            </div>
-          </div>
-        </section> */}
       </aside>
     </div>,
     document.body,

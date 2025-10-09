@@ -1,8 +1,8 @@
 .taskdetail__root {
   position: fixed;
   inset: 0;
-  z-index: 14000;
-  pointer-events: none;
+  z-index: 1000;
+  // pointer-events: auto;
 }
 
 .taskdetail__backdrop {
@@ -199,8 +199,7 @@
 .comments__inner {
   overflow: hidden;
   padding-top: 8px;
-
-  opacity: 0;
+  opacity: 1;
   transform: translateY(-4px);
   transition: opacity 0.2s ease, transform 0.2s ease;
 }

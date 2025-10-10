@@ -1,0 +1,70 @@
+.meeting-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: calc(100vh - 80px); /* leave room for app header if present */
+  min-height: 480px;
+  overflow: hidden; /* prevent extra page scroll */
+
+  .meeting-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: #0b1221;
+    color: #fff;
+  }
+
+  .meeting-back {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .meeting-title {
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .meeting-main {
+    flex: 1 1 auto;
+    min-height: 0; /* important for flex children to shrink properly */
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+  }
+
+  .meeting-container {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+
+    /* Jitsi inserts a direct child node; force it to fill container */
+    > div {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      display: block !important;
+    }
+
+    /* defensive resets to reduce global CSS leakage into Jitsi */
+    &, & * {
+      box-sizing: border-box !important;
+      background: transparent !important;
+      color: inherit !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .meeting-main {
+      flex-direction: column;
+    }
+    .meeting-header { padding: 10px; }
+  }
+}

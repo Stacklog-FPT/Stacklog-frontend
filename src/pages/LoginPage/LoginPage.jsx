@@ -19,10 +19,8 @@ const LoginPage = () => {
   const redirect = searchParams.get('redirect') || '/';
   const handleLoginGoogle = async (response) => {
     const { credential } = response;
-    console.log(credential);
     if (credential) {
       const response = await loginGoogle(credential);
-      console.log('login google debug: ', response);
       if (response) {
         const userData = {
           email: response.data.email,
@@ -30,7 +28,6 @@ const LoginPage = () => {
           token: response.data.token,
           role: response.data.role,
         };
-        console.log('user data: ', userData);
         loginSave(userData);
         navigate(redirect);
       }

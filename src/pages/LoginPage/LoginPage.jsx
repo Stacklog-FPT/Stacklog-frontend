@@ -22,13 +22,15 @@ const LoginPage = () => {
     console.log(credential);
     if (credential) {
       const response = await loginGoogle(credential);
+      console.log('login google debug: ', response);
       if (response) {
         const userData = {
-          email: response.email,
-          username: response.username,
-          token: response.token,
-          role: response.role,
+          email: response.data.email,
+          username: response.data.username,
+          token: response.data.token,
+          role: response.data.role,
         };
+        console.log('user data: ', userData);
         loginSave(userData);
         navigate(redirect);
       }

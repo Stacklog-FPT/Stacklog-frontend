@@ -23,7 +23,6 @@ const userApi = () => {
 
     try {
       const res = await axios.post(`${API_AUTH}auth/login-google`, { idToken: tokenGoogle });
-      console.log(res);
       return res;
     } catch (e) {
       throw new Error(e.message);

@@ -8,6 +8,7 @@ import ClassPage from '../pages/ClassPage/ClassPage';
 import SchedulePage from '../pages/SchedulePage/SchedulePage';
 import DocumentPage from '../pages/DocumentPage/DocumentPage';
 import ChatPage from '../pages/ChatPage/ChatPage';
+import Meeting from '../pages/Meeting/Meeting';
 import GradesPage from '../pages/GradesPage/GradesPage';
 import PlanPage from '../pages/PlanPage/PlanPage';
 import Profile from '../pages/Profile/Profile';
@@ -40,6 +41,7 @@ const routes = [
           { path: '/schedule', element: <SchedulePage /> },
           { path: '/documents', element: <DocumentPage /> },
           { path: '/chatbox', element: <ChatPage /> },
+          { path: '/meeting', element: <Meeting /> },
           { path: '/grades', element: <GradesPage /> },
           { path: '/plan', element: <PlanPage /> },
           { path: '/user-detail', element: <Profile /> },

@@ -297,28 +297,39 @@ const ChatWindow = () => {
   // and recreating the previous meeting state.
   const roomName = `stacklog-${selectedBox.id}-${Date.now()}`;
 
-      // Build Jitsi Meet public room URL (meet.jit.si)
-      const base = `https://meet.jit.si/${encodeURIComponent(roomName)}`;
-      // Customize query/hash params as needed (e.g. startWithAudioMuted)
-      const jitsiUrl = `${base}#room=${encodeURIComponent(roomName)}&config.startWithVideoMuted=false&config.startWithAudioMuted=false`;
+      // Build an in-app meeting URL (we'll host an embedded Jitsi page at /meeting)
+      const origin = window.location.origin || (window.location.protocol + '//' + window.location.host);
+      const appMeetingUrl = `${origin}/meeting?room=${encodeURIComponent(roomName)}&type=${encodeURIComponent(
+        type
+      )}&displayName=${encodeURIComponent(
+        (user && user.user && (user.user.full_name || user.user.email)) || ''
+      )}`;
 
-      // Try to copy the link to clipboard so user can paste/share
+      // Try to copy the app meeting link to clipboard so user can paste/share
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(jitsiUrl);
+          await navigator.clipboard.writeText(appMeetingUrl);
         }
       } catch (e) {
         // non-fatal
         console.warn('Clipboard write failed', e);
       }
 
-      // Optionally send a chat message containing the meeting link so other members see it
+      // Optionally send a chat message containing the in-app meeting link so other members see it
       try {
         const service = chatApi();
         // mention everyone in the box except the caller so they get notified
         const allMentionIds = (selectedBox?.members || []).filter((id) => id && id !== currentUserId);
+        const callPayload = {
+          room: roomName,
+          type,
+          appUrl: appMeetingUrl,
+          displayName: (user && user.user && (user.user.full_name || user.user.email)) || '',
+          startedAt: new Date().toISOString(),
+        };
         const payload = {
-          content: `📞 Cuộc gọi ${type} — tham gia: ${jitsiUrl}`,
+          // prefix with CALL:: so client renderers can detect and render a call card
+          content: `CALL::${JSON.stringify(callPayload)}`,
           attachment: null,
           mentionUserIds: allMentionIds,
         };
@@ -328,7 +339,7 @@ const ChatWindow = () => {
         });
       } catch (e) {}
 
-      // Emit a socket invite if you still have realtime handling on server — harmless if server ignores it
+      // Emit a socket invite (harmless if server ignores it) including the in-app URL
       try {
         const mentionIds = (selectedBox?.members || []).filter((id) => id && id !== currentUserId);
         const payload = {
@@ -338,14 +349,15 @@ const ChatWindow = () => {
           from: currentUserId,
           timestamp: new Date().toISOString(),
           mentionUserIds: mentionIds,
+          appUrl: appMeetingUrl,
         };
         socketEmit && socketEmit("call:invite", payload);
       } catch (e) {
         console.warn("call:invite emit failed", e);
       }
 
-      // Open the Jitsi room in a new tab so the caller stays in chat
-      window.open(jitsiUrl, "_blank");
+      // Open the app meeting page in a new tab so the caller stays in chat
+      window.open(appMeetingUrl, "_blank");
     } catch (e) {
       console.error("Start call failed", e);
       alert("Khởi tạo cuộc gọi thất bại");
@@ -452,16 +464,25 @@ const ChatWindow = () => {
 
     // If this message looks like a meeting/call (contains meet.jit.si or is prefixed with the call emoji),
     // render a nicer call card instead of the raw long link.
-    const isCallLink = /meet\.jit\.si/i.test(text) || /^\s*📞\s*Cuộc gọi/i.test(text) || (typeof text === 'string' && text.startsWith('CALL::'));
+    // Detect structured CALL:: payloads first
+    let callData = null;
+    if (typeof text === 'string' && text.startsWith('CALL::')) {
+      try {
+        callData = JSON.parse(text.replace(/^CALL::/, ''));
+      } catch (e) {
+        callData = null;
+      }
+    }
+
+    const isCallLink = callData || /meet\.jit\.si/i.test(text) || /^\s*📞\s*Cuộc gọi/i.test(text);
     if (isCallLink) {
-      // extract first URL if present
-      const match = text.match(urlRegex);
-      const url = match ? match[0] : null;
+      // prefer structured callData if available
+      const url = (callData && callData.appUrl) || (text.match(urlRegex) || [null])[0];
       const senderInfo = userCache[msg.createdBy] || {};
-      const senderName = senderInfo.full_name || senderInfo.email || msg.createdBy;
+      const senderName = (callData && callData.displayName) || senderInfo.full_name || senderInfo.email || msg.createdBy;
       const time = new Date(msg.createdAt).toLocaleString();
-      // try to detect type from text (audio/video)
-      const type = /audio/i.test(text) ? 'audio' : 'video';
+      // try to detect type from structured data or text
+      const type = (callData && callData.type) || (/audio/i.test(text) ? 'audio' : 'video');
 
       return (
         <div className="chat__call">

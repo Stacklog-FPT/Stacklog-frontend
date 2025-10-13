@@ -97,8 +97,6 @@ const TaskDetails = ({ task, onClose }) => {
       checkLists: form.checkListDraft,
     };
 
-    console.log(payload);
-
     const res = await updateTaskApi(payload, user.token, dispatch);
     if (res?.status === 200 || res?.data || res === true) {
       toast.success('Updated task successfully!');

@@ -2,6 +2,7 @@ import React from 'react';
 import './Document.scss';
 import { FaPlus } from 'react-icons/fa';
 import UploadFile from './UploadFile/UploadFile';
+import { useParams } from 'react-router-dom';
 const Document = () => {
   const [isShowUpload, setIsShowUpload] = React.useState(false);
 

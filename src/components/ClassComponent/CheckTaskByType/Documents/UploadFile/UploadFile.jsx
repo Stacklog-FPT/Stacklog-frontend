@@ -1,15 +1,27 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import './UploadFile.scss';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { uploadDocument } from '../../../../../service/DocumentService';
+import { useAuth } from '../../../../../context/AuthProvider';
 
 const UploadFile = ({ onClose }) => {
-  const { id } = useParams();
-  console.log(id);
+  const { groupId } = useParams();
+  const { user } = useAuth();
+  const dispatch = useDispatch();
+  const modalRef = useRef(null);
+
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState('');
   const [dragActive, setDragActive] = useState(false);
-  const dispatch = useDispatch();
+  const [uploading, setUploading] = useState(false);
+
+  const [documentData, setDocumentData] = useState({
+    documentTitle: '',
+    documentType: 'NORMAL',
+    documentAccesses: [],
+  });
+
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
     if (selected) {
@@ -25,11 +37,8 @@ const UploadFile = ({ onClose }) => {
   const handleDrag = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
-    }
+    if (e.type === 'dragenter' || e.type === 'dragover') setDragActive(true);
+    else if (e.type === 'dragleave') setDragActive(false);
   }, []);
 
   const handleDrop = useCallback((e) => {
@@ -46,6 +55,22 @@ const UploadFile = ({ onClose }) => {
       }
     }
   }, []);
+
+  const handleUploadFileService = async () => {
+    if (!file) return alert('File is required!');
+    setUploading(true);
+
+    const payload = {
+      file,
+      documentTitle: documentData.documentTitle,
+      documentType: documentData.documentType,
+      documentAccesses: documentData.documentAccesses,
+    };
+
+    const res = await uploadDocument('', groupId, payload, user.token, dispatch);
+    console.log(res);
+    setUploading(false);
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -65,19 +90,46 @@ const UploadFile = ({ onClose }) => {
       onDragLeave={handleDrag}
       onDrop={handleDrop}
     >
-      {dragActive && <div className="upload__overlay">Drog your file here</div>}
+      {dragActive && <div className="upload__overlay">Drog file here</div>}
 
-      <div className="upload__file__container">
+      <div className="upload__file__container" ref={modalRef}>
+        <h3 className="upload__title">Upload File</h3>
+
+        <div className="upload__form">
+          <label className="upload__label">
+            Document Title
+            <input
+              type="text"
+              value={documentData.documentTitle}
+              onChange={(e) => setDocumentData({ ...documentData, documentTitle: e.target.value })}
+              placeholder="Nhập tiêu đề..."
+            />
+          </label>
+
+          <label className="upload__label">
+            Document Type
+            <select
+              value={documentData.documentType}
+              onChange={(e) => setDocumentData({ ...documentData, documentType: e.target.value })}
+            >
+              <option value="NORMAL">Normal</option>
+              <option value="REFERENCE">Reference</option>
+              <option value="CONFIDENTIAL">Confidential</option>
+            </select>
+          </label>
+        </div>
+
         {!file ? (
           <>
             <p className="upload__text">
-              Drog your file here <br /> or <span>choose your file</span>
+              Drag and drog file here! <br /> or <span>choose file</span>
             </p>
             <input
               type="file"
               id="uploadInput"
               onChange={handleFileChange}
               className="upload__input"
+              accept="*/*"
             />
           </>
         ) : (
@@ -87,7 +139,9 @@ const UploadFile = ({ onClose }) => {
             ) : (
               <p className="preview__name">{file.name}</p>
             )}
-            <button className="upload__btn">Upload</button>
+            <button className="upload__btn" onClick={handleUploadFileService} disabled={uploading}>
+              {uploading ? 'Uploading...' : 'Upload'}
+            </button>
           </div>
         )}
       </div>

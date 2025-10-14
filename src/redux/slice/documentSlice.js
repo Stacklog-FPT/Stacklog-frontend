@@ -9,23 +9,32 @@ const initialState = {
 
 export const documentSlice = createSlice({
   name: 'document',
-  initialState: initialState,
+  initialState,
   reducers: {
     setPending: (state, action) => {
-      state.pending = true;
+      state.pending = action.payload;
+      state.error = null;
     },
-    setDocumentStart: (state, action) => {
+    setDocuments: (state, action) => {
       state.documents = action.payload;
+      state.pending = false;
+    },
+    addDocument: (state, action) => {
+      state.documents.unshift(action.payload);
+      state.pending = false;
     },
     getDocumentDetail: (state, action) => {
       state.document = action.payload;
+      state.pending = false;
     },
     setError: (state, action) => {
       state.error = action.payload;
+      state.pending = false;
     },
   },
 });
 
-export const { setPending, setDocumentStart, getDocumentDetail, setError } = documentSlice.actions;
+export const { setPending, setDocuments, addDocument, getDocumentDetail, setError } =
+  documentSlice.actions;
 
 export default documentSlice.reducer;

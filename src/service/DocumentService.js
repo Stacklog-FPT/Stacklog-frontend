@@ -1,53 +1,57 @@
 import axios from 'axios';
-import { setDocumentStart, setError } from '../redux/slice/documentSlice';
+import { setPending, setError } from '../redux/slice/documentSlice';
+import { REACT_API_URL } from '../api/apiConfig';
 
+// Port of BE
+const DOCUMENT_API = REACT_API_URL + 'document';
 export const getAllDocument = async (classId) => {};
 
-export const uploadDocument = async (classId, groupId, file, token, dispatch) => {
+export const uploadDocument = async (classId, groupId, data, token, dispatch) => {
   try {
-    if (!token) return dispatch(setError('Missing token!'));
-    if (!file) return dispatch(setError('File is required!'));
+    if (!token) return dispatch(setError('Token is missing!'));
+    if (!data.file) return dispatch(setError('File is required!'));
 
     dispatch(setPending());
 
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', 'react_unsigned_upload');
+    formData.append('file', data.file);
+    formData.append('upload_preset', 'StackLog');
     formData.append('cloud_name', 'dogkzlnvj');
-    formData.append('resource_type', 'auto');
 
-    // Send for Cloudinary
-    const cloudRes = await axios.post(
-      'https://api.cloudinary.com/v1_1/dogkzlnvj/auto/upload',
-      formData,
-    );
+    const fileType = data.file.type;
+    let uploadUrl = '';
+    if (fileType.startsWith('image/'))
+      uploadUrl = 'https://api.cloudinary.com/v1_1/dogkzlnvj/image/upload';
+    else if (fileType.startsWith('video/'))
+      uploadUrl = 'https://api.cloudinary.com/v1_1/dogkzlnvj/video/upload';
+    else uploadUrl = 'https://api.cloudinary.com/v1_1/dogkzlnvj/raw/upload';
 
+    const cloudRes = await axios.post(uploadUrl, formData);
     const url = cloudRes.data.secure_url;
     const fileName = cloudRes.data.original_filename;
-    const fileType = cloudRes.data.resource_type;
+    const resourceType = cloudRes.data.resource_type;
     const fileSize = cloudRes.data.bytes;
 
-    // Send for Be
-    const backendRes = await axios.post(
-      `http://localhost:3000/documents`,
-      {
-        classId,
-        groupId,
-        url,
-        name: fileName,
-        type: fileType,
-        size: fileSize,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    const responseForm = {
+      documentId: null,
+      documentTitle: data.documentTitle || fileName,
+      documentContentType: resourceType,
+      documentSize: fileSize,
+      documentType: data.documentType || 'NORMAL',
+      documentPath: url,
+      documentAccesses: data.documentAccesses || [],
+      // classId,
+      // groupId,
+    };
+
+    console.log('Response for BE', responseForm);
+
+    const backendRes = await axios.post(`${DOCUMENT_API}/save`, responseForm, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     dispatch(addDocument(backendRes.data));
-
-    return backendRes.data;
+    return backendRes;
   } catch (e) {
     console.error('Something went wrong when upload:', e);
     dispatch(setError(e.response?.data?.message || e.message));

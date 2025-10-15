@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { setPending, setError } from '../redux/slice/documentSlice';
 import { REACT_API_URL } from '../api/apiConfig';
+import { addDocument } from '../redux/slice/documentSlice';
 
 // Port of BE
 const DOCUMENT_API = REACT_API_URL + 'document';
 export const getAllDocument = async (classId) => {};
 
-export const uploadDocument = async (classId, groupId, data, token, dispatch) => {
+export const uploadDocument = async (data, token, dispatch) => {
   try {
     if (!token) return dispatch(setError('Token is missing!'));
     if (!data.file) return dispatch(setError('File is required!'));
@@ -28,20 +29,18 @@ export const uploadDocument = async (classId, groupId, data, token, dispatch) =>
 
     const cloudRes = await axios.post(uploadUrl, formData);
     const url = cloudRes.data.secure_url;
-    const fileName = cloudRes.data.original_filename;
+    // const fileName = cloudRes.data.original_filename;
     const resourceType = cloudRes.data.resource_type;
     const fileSize = cloudRes.data.bytes;
 
     const responseForm = {
       documentId: null,
-      documentTitle: data.documentTitle || fileName,
+      documentTitle: data.documentTitle,
       documentContentType: resourceType,
       documentSize: fileSize,
       documentType: data.documentType || 'NORMAL',
       documentPath: url,
-      documentAccesses: data.documentAccesses || [],
-      // classId,
-      // groupId,
+      documentLocations: data.documentLocations,
     };
 
     console.log('Response for BE', responseForm);

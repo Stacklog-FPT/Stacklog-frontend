@@ -1,11 +1,15 @@
 import axios from 'axios';
-import { setPending, setError } from '../redux/slice/documentSlice';
 import { REACT_API_URL } from '../api/apiConfig';
-import { addDocument } from '../redux/slice/documentSlice';
+import {
+  addDocument,
+  setDocuments,
+  setError,
+  setPending,
+  setDocumentPerson,
+} from '../redux/slice/documentSlice';
 
 // Port of BE
 const DOCUMENT_API = REACT_API_URL + 'document';
-export const getAllDocument = async (classId) => {};
 
 export const uploadDocument = async (data, token, dispatch) => {
   try {
@@ -43,8 +47,6 @@ export const uploadDocument = async (data, token, dispatch) => {
       documentLocations: data.documentLocations,
     };
 
-    console.log('Response for BE', responseForm);
-
     const backendRes = await axios.post(`${DOCUMENT_API}/save`, responseForm, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -57,6 +59,55 @@ export const uploadDocument = async (data, token, dispatch) => {
   }
 };
 
-export const getDocumentById = async (classId, groupId) => {};
+export const getDocumentById = async (groupId, token, dispatch) => {
+  try {
+    if (!token) {
+      dispatch(setError('Missing Token!'));
+      return;
+    }
 
+    dispatch(setPending(true));
+    const res = await axios.get(`${DOCUMENT_API}/groups/${groupId}`);
+    console.log(res.data);
+    dispatch(setDocuments(res.data));
+  } catch (e) {
+    dispatch(setError(e.message));
+  }
+};
+
+export const getAllDocument = async (token, dispatch) => {
+  try {
+    if (!token) dispatch(setError('Missing token!'));
+
+    dispatch(setPending(true));
+    const res = await axios.get(`${DOCUMENT_API}/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    dispatch(setDocuments(res.data));
+  } catch (e) {
+    console.error('Something wrong: ', e.message);
+    dispatch(setError(e.message));
+  }
+};
+
+export const getDocumentByUserId = async (token, dispatch) => {
+  try {
+    if (!token) dispatch(setError('Missing token!'));
+
+    dispatch(setPending(true));
+    const res = await axios.get(`${DOCUMENT_API}/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    dispatch(setDocumentPerson(res.data));
+  } catch (e) {
+    console.error('Something went wrong: ', e.message);
+    dispatch(setError(e.message));
+  }
+};
 export const deleteDocumentById = async (classId, groupId, documentId) => {};

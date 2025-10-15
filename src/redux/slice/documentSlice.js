@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   documents: [],
-  document: {},
+  documentPerson: [],
+  documentDetail: {},
   pending: false,
   error: null,
 };
@@ -19,12 +20,15 @@ export const documentSlice = createSlice({
       state.documents = action.payload;
       state.pending = false;
     },
+    setDocumentPerson: (state, action) => {
+      state.documentPerson = action.payload;
+    },
     addDocument: (state, action) => {
       state.documents.unshift(action.payload);
       state.pending = false;
     },
     getDocumentDetail: (state, action) => {
-      state.document = action.payload;
+      state.documentDetail = action.payload;
       state.pending = false;
     },
     setError: (state, action) => {
@@ -34,7 +38,13 @@ export const documentSlice = createSlice({
   },
 });
 
-export const { setPending, setDocuments, addDocument, getDocumentDetail, setError } =
-  documentSlice.actions;
+export const {
+  setPending,
+  setDocuments,
+  addDocument,
+  getDocumentDetail,
+  setError,
+  setDocumentPerson,
+} = documentSlice.actions;
 
 export default documentSlice.reducer;

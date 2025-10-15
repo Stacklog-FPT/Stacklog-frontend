@@ -1,6 +1,7 @@
-import React from "react";
-import "./DocumentCard.scss";
+import React from 'react';
+import './DocumentCard.scss';
 const DocumentCard = ({ title, data }) => {
+  console.log(data);
   return (
     <div className="document__card">
       <div className="document__card__container">
@@ -15,8 +16,12 @@ const DocumentCard = ({ title, data }) => {
               <div className="document__card__container__list__data__item">
                 <i className="fa-solid fa-file"></i>
                 <div className="document__card__container__list__data__item__content">
-                  <span className="document__card__container__list__data__item__content__title">{item.title}</span>
-                  <span className="document__card__container__list__data__item__content__size">{item.size} KB</span>
+                  <span className="document__card__container__list__data__item__content__title">
+                    {item.documentTitle}
+                  </span>
+                  <span className="document__card__container__list__data__item__content__size">
+                    {item.documentSize} KB
+                  </span>
                 </div>
               </div>
             ))

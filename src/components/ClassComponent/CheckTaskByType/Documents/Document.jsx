@@ -7,11 +7,11 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from '../../../../context/AuthProvider';
 import { getDocumentById } from '../../../../service/DocumentService';
 import { useDispatch } from 'react-redux';
+import DocumentRecent from '../../../DocumentComponents/DocumentRecent/DocumentRecent';
 const Document = () => {
   const { groupId } = useParams();
   const { user } = useAuth();
   const { documents } = useSelector((state) => state.document);
-  console.log(documents);
   const dispatch = useDispatch();
   const [isShowUpload, setIsShowUpload] = React.useState(false);
 
@@ -26,6 +26,7 @@ const Document = () => {
   React.useEffect(() => {
     handleGetDocuments();
   }, [groupId]);
+
   React.useEffect(() => {
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
@@ -48,6 +49,8 @@ const Document = () => {
               </button>
             </div>
           </div>
+          {/* Document List */}
+          <DocumentRecent title={'Documents'} data={documents} />
         </div>
       </div>
       {isShowUpload && <UploadFile onClose={handleCloseModal} />}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './NotificationPage.scss';
 import { RiLayoutHorizontalLine } from 'react-icons/ri';
 import { FaStar } from 'react-icons/fa';
@@ -7,8 +7,11 @@ import { FaTrashAlt } from 'react-icons/fa';
 import NavBar from '../../components/NotificationComponents/NavBar/NavBar';
 import TableList from '../../components/NotificationComponents/TableList/TableList';
 import { useAuth } from '../../context/AuthProvider';
+import { useDispatch } from 'react-redux';
+import { getAllNotification } from '../../service/NotificationService';
 const NotificationPage = () => {
   const { user } = useAuth();
+  const dispatch = useDispatch();
   const [active, setActive] = useState('All');
   const features = [
     { id: 1, label: 'All', icon: <RiLayoutHorizontalLine /> },
@@ -16,6 +19,12 @@ const NotificationPage = () => {
     { id: 3, label: 'Mark as read', icon: <FaBookmark /> },
     { id: 4, label: 'Trash', icon: <FaTrashAlt /> },
   ];
+
+  useEffect(() => {
+    if (user && user.token) {
+      getAllNotification(user.token, dispatch).catch(() => {});
+    }
+  }, [user, dispatch]);
 
   return (
     <div className="notification__page">

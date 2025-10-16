@@ -2,6 +2,13 @@ import React from "react";
 import "./Card.scss";
 
 const Card = (props) => {
+  const handleKeyDown = (e) => {
+    if (!props.onClick) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      props.onClick();
+    }
+  };
   const getTimeDifference = (createdAt) => {
     const now = new Date();
     const createTime = new Date(createdAt);
@@ -20,7 +27,14 @@ const Card = (props) => {
   };
 
   return (
-    <div className="card-container">
+    <div
+      className="card-container"
+      role={props.onClick ? 'button' : undefined}
+      tabIndex={props.onClick ? 0 : undefined}
+      onClick={props.onClick}
+      onKeyDown={handleKeyDown}
+      style={props.onClick ? { cursor: 'pointer' } : undefined}
+    >
       <div className="avatar-title">
         <div className="avatar">
           <img src={props.avatar} alt="Avatar" />

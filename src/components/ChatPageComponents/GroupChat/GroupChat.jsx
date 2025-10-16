@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import avatar from "../../../assets/logo-login.png";
 import "./GroupChat.scss";
 import { ChatContext } from "../../../context/ChatContext";
@@ -13,6 +14,7 @@ const GroupChat = ({
   defaultBoxType,
 }) => {
   const { setSelectedBox } = useContext(ChatContext);
+  const navigate = useNavigate();
   const [groupChatDetails, setGroupChatDetails] = useState([]);
   const [localShowAddGroup, setLocalShowAddGroup] = useState(false);
   const showAddGroup =
@@ -390,6 +392,17 @@ const GroupChat = ({
   };
 
   const handleSelectGroup = (group) => {
+    try {
+      const id = group.id || group.boxChat?.boxChatId || group._id || group.boxChat?.id;
+      if (id) {
+        // navigate to parameterized chat path so URL reflects selected box
+        navigate(`/chatbox/${id}`);
+      }
+    } catch (e) {
+      // ignore navigation errors
+    }
+    // set local selected box after navigation so ChatPage's URL-driven effect
+    // can canonicalize the selected box from the route param if needed.
     setSelectedBox(group);
   };
 

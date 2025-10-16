@@ -29,7 +29,7 @@ const MainLayout = () => {
     //   setIsLoading(false);
     // }, 3000);
 
-    if (location.pathname === '/chatbox') {
+    if (location.pathname === '/chatbox' || location.pathname.startsWith('/chatbox')) {
       setIsShowGroupChat(true);
       setIsOpen(false);
     } else {
@@ -67,7 +67,7 @@ const MainLayout = () => {
       )} */}
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className="announcement-place">{isAnnouncementVisible && <Announcement />}</div>
-      {location.pathname === '/chatbox' && isShowGroupChat && <GroupComponent />}
+  {location.pathname.startsWith('/chatbox') && isShowGroupChat && <GroupComponent />}
       <main className={`main-content ${location.pathname === '/class-page' ? 'no-scroll' : ''}`}>
         <InputSearch />
         <Toaster position="bottom-right" richColors duration={4000} closeButton />

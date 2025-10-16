@@ -16,7 +16,26 @@ export function canViewGroup(user, group) {
 }
 
 // Is Leader
-export const isLeader = (group, userId) => group.groupsLeaderId === userId;
+/**
+ * Returns true if the given userId is the leader of the group.
+ * Safely handles missing/undefined group or groupsLeaderId.
+ * Accepts groupsLeaderId as string or an object with leader id fields.
+ */
+export const isLeader = (group, userId) => {
+  if (!group || !userId) return false;
+
+  const leader = group.groupsLeaderId;
+  if (leader == null) return false;
+
+  // If leader is an object, try common id fields
+  if (typeof leader === 'object') {
+    const id = leader.id ?? leader._id ?? leader.userId ?? leader.leaderId;
+    return String(id) === String(userId);
+  }
+
+  // Otherwise compare primitive values as strings
+  return String(leader) === String(userId);
+};
 
 // Is Lecture
 export const isLecture = (user) => user.role === 'LECTURER';

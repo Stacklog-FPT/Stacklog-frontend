@@ -2,6 +2,19 @@ import axios from 'axios';
 import usePostApi from '../hooks/usePost';
 
 const API_AUTH = 'http://103.166.183.142:8080/api/';
+// Standalone helper for non-hook callers (effects, services) to fetch a user by id
+export const fetchUserById = async (token, id) => {
+  if (!token) throw new Error('Unauthorized: No token provided');
+  if (!id) throw new Error('Invalid user ID');
+  try {
+    const response = await axios.get(`${API_AUTH}profile/user/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.user;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 const userApi = () => {
   const { postData, isLoading, error, data } = usePostApi();
 

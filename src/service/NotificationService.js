@@ -11,7 +11,10 @@ import { REACT_API_URL } from "../api/apiConfig";
 
 export const getAllNotification = async (token, dispatch) => {
   try {
-    if (!token) dispatch(setError('The token is not valid!'));
+    if (!token) {
+      dispatch(setError('The token is not valid!'));
+      return [];
+    }
     dispatch(setPending(true));
     const response = await axios.get(`${REACT_API_URL}/notification/`, {
       headers: {
@@ -19,15 +22,25 @@ export const getAllNotification = async (token, dispatch) => {
       },
     });
 
-    // annotate REST-fetched notifications so UI can distinguish source
-    const restNotifs = Array.isArray(response.data)
-      ? response.data.map((n) => ({ ...n, __receivedVia: 'rest' }))
-      : response.data;
-    dispatch(getNotifications(restNotifs));
+    const restNotifs = Array.isArray(response.data) ? response.data : [];
+
+    // map server shape to UI-friendly shape
+    const mapped = restNotifs.map((n) => ({
+      id: n._id || n.id,
+      title: n.content || n.title || '',
+      createdAt: n.createdAt,
+      starred: false,
+      receivers: n.receivers || [],
+      __receivedVia: 'rest',
+      path: n.path || '',
+    }));
+
+    dispatch(getNotifications(mapped));
     dispatch(setPending(false));
   } catch (e) {
-    dispatch(setError);
-    throw new Error(e.message || 'Something went wrong!');
+    dispatch(setPending(false));
+    dispatch(setError(e?.message || 'Something went wrong!'));
+    throw e;
   }
 };
 
@@ -35,7 +48,7 @@ export const createNotification = async (token, data, dispatch) => {
   try {
     if (!token) dispatch(setError('The token is not valid!'));
     dispatch(setPending(true));
-    const response = await axios.post(`http://localhost:3000/notifications`, data, {
+    const response = await axios.post(`${REACT_API_URL}/notification/`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -54,7 +67,7 @@ export const deleteNotificationApi = async (token, id, dispatch) => {
     if (!token) dispatch(setError('The token is not valid!'));
     dispatch(setPending(true));
 
-    const response = await axios.delete(`http://localhost:3000/notifications/${id}`, {
+    const response = await axios.delete(`${REACT_API_URL}/notification/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

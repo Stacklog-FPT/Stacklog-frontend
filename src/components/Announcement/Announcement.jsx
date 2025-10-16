@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './Announcement.scss';
 import Card from './Card/Card';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { getAllNotification } from '../../service/NotificationService';
 import { useAuth } from '../../context/AuthProvider';
 import { useDispatch } from 'react-redux';
@@ -23,6 +23,18 @@ const Announcement = () => {
   const [activeTab, setActiveTab] = useState('all');
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+  };
+
+  const navigate = useNavigate();
+  const handleNotificationClick = (item) => {
+    if (!item || !item.path) return;
+    // treat internal routes (starting with '/') as SPA routes
+    if (item.path.startsWith('/')) {
+      navigate(item.path);
+    } else {
+      // external link - open in new tab
+      window.open(item.path, '_blank');
+    }
   };
 
   // For UI we show only notifications relevant to current user; unread tab filters those not read by current user
@@ -67,6 +79,7 @@ const Announcement = () => {
                   </div>
                 );
               }
+              console.log("listToRender", listToRender)
 
               return listToRender.map((item) => {
                 const me = (item.receivers || []).find((r) => r.userId === decodeId) || {};
@@ -80,6 +93,7 @@ const Announcement = () => {
                     isRead={isRead}
                     createdAt={item.createdAt}
                     name={author.name}
+                    onClick={() => handleNotificationClick(item)}
                   />
                 );
               });

@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import './TableList.scss';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { FaTrashAlt } from 'react-icons/fa';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 import { deleteNotificationApi } from '../../../service/NotificationService';
 import { useDispatch } from 'react-redux';
 const TableList = ({ active, user }) => {
-  const notifications = useSelector((state) => state.notification.notifications);
+  const notifications = useSelector((state) => state.notification.notifications || []);
   const dispatch = useDispatch();
   const [selected, setSelected] = useState(new Set());
   const itemPerPage = 5;
-  const totalPage = Math.ceil(notifications.length / itemPerPage);
-  const currentPage = useState(1);
+  const totalPage = Math.max(1, Math.ceil(notifications.length / itemPerPage));
+  const [currentPage, setCurrentPage] = useState(1);
   const startIndex = (currentPage - 1) * itemPerPage;
   const endIndex = startIndex + itemPerPage;
   const currentTimes = notifications.slice(startIndex, endIndex);
@@ -40,19 +41,48 @@ const TableList = ({ active, user }) => {
     }
   };
 
+  const toggleRow = (id) => {
+    setSelected((prev) => {
+      const copy = new Set(prev);
+      if (copy.has(id)) copy.delete(id);
+      else copy.add(id);
+      return copy;
+    });
+  };
+
+  const toggleStar = (id) => {
+    const updated = notifications.map((n) => (n.id === id ? { ...n, starred: !n.starred } : n));
+    dispatch({ type: 'notification/getNotifications', payload: updated });
+  };
+
+  const navigate = useNavigate();
+  const handleRowClick = (r) => {
+    if (!r || !r.path) return;
+    if (r.path.startsWith('/')) navigate(r.path);
+    else window.open(r.path, '_blank');
+  };
+
   return (
     <div className="table-wrap">
       <div className="table-scroll">
         <table className="mail-table">
           <tbody>
             {notifications.map((r) => (
-              <tr key={r.id} className={selected.has(r.id) ? 'is-selected' : ''}>
+              <tr
+                key={r.id}
+                className={selected.has(r.id) ? 'is-selected' : ''}
+                onClick={() => handleRowClick(r)}
+                style={{ cursor: r.path ? 'pointer' : undefined }}
+              >
                 <td className="cell-check">
                   <label className="chk">
                     <input
                       type="checkbox"
                       checked={selected.has(r.id)}
-                      onChange={() => toggleRow(r.id)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        toggleRow(r.id);
+                      }}
                     />
                     <span />
                   </label>
@@ -61,7 +91,10 @@ const TableList = ({ active, user }) => {
                 <td className="cell-star">
                   <button
                     className={`star ${r.starred ? 'active' : ''}`}
-                    onClick={() => toggleStar(r.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleStar(r.id);
+                    }}
                     aria-label="toggle star"
                   />
                 </td>
@@ -72,7 +105,7 @@ const TableList = ({ active, user }) => {
 
                 <td className="cell-time">{r.createdAt}</td>
 
-                <td className="cell-more">
+                {/* <td className="cell-more">
                   <button
                     className="more"
                     aria-label="more actions"
@@ -80,7 +113,7 @@ const TableList = ({ active, user }) => {
                   >
                     <FaTrashAlt size={14} />
                   </button>
-                </td>
+                </td> */}
               </tr>
             ))}
           </tbody>

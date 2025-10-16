@@ -12,12 +12,12 @@ import { getAllNotification } from '../../service/NotificationService';
 const NotificationPage = () => {
   const { user } = useAuth();
   const dispatch = useDispatch();
-  const [active, setActive] = useState('All');
+  const [active, setActive] = useState('Notification');
   const features = [
-    { id: 1, label: 'All', icon: <RiLayoutHorizontalLine /> },
-    { id: 2, label: 'Starred', icon: <FaStar /> },
-    { id: 3, label: 'Mark as read', icon: <FaBookmark /> },
-    { id: 4, label: 'Trash', icon: <FaTrashAlt /> },
+    { id: 1, label: 'Notification', icon: <RiLayoutHorizontalLine /> },
+    // { id: 2, label: 'Starred', icon: <FaStar /> },
+    // { id: 3, label: 'Mark as read', icon: <FaBookmark /> },
+    // { id: 4, label: 'Trash', icon: <FaTrashAlt /> },
   ];
 
   useEffect(() => {

@@ -17,7 +17,6 @@ const UploadFile = ({ onClose }) => {
   });
 
   const [groupLocations, setGroupLocations] = useState([]);
-  console.log('group choose debug:', groupLocations);
 
   const toggleGroupSelection = (groupId) => {
     setGroupLocations((prevGroupLocations) => {
@@ -86,7 +85,6 @@ const UploadFile = ({ onClose }) => {
       documentLocations: groupLocations,
     };
 
-    console.log(payload);
     const res = await uploadDocument(payload, user.token, dispatch);
     console.log(res);
     setUploading(false);

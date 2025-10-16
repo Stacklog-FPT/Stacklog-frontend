@@ -1,10 +1,19 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './DocumentCard.scss';
 import DocumentDetail from '../../DocumentDetail/DocumentDetail';
 const DocumentCard = ({ title, data }) => {
   const [isOpenDetail, showOpenDetail] = React.useState(false);
+  const [documentId, setDocumentId] = React.useState('');
 
-  useEffect(() => {
+  const handleShowDetail = (id) => {
+    setDocumentId(id);
+    showOpenDetail(true);
+  };
+
+  const handleCloseDetail = () => {
+    showOpenDetail(false);
+  };
+  React.useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         showOpenDetail(false);
@@ -16,7 +25,7 @@ const DocumentCard = ({ title, data }) => {
   });
   return (
     <>
-      <div className="document__card" onClick={() => showOpenDetail(!isOpenDetail)}>
+      <div className="document__card">
         <div className="document__card__container">
           <div className="document__card__container__heading">
             <h2>{title}</h2>
@@ -26,7 +35,11 @@ const DocumentCard = ({ title, data }) => {
           <div className="document__card__container__list__data">
             {data.length > 0 ? (
               data.map((item) => (
-                <div className="document__card__container__list__data__item">
+                <div
+                  key={item.documentId}
+                  className="document__card__container__list__data__item"
+                  onClick={() => handleShowDetail(item.documentId)}
+                >
                   <i className="fa-solid fa-file"></i>
                   <div className="document__card__container__list__data__item__content">
                     <span className="document__card__container__list__data__item__content__title">
@@ -44,7 +57,7 @@ const DocumentCard = ({ title, data }) => {
           </div>
         </div>
       </div>
-      {isOpenDetail && <DocumentDetail />}
+      {isOpenDetail && <DocumentDetail id={documentId} onClose={handleCloseDetail} />}
     </>
   );
 };

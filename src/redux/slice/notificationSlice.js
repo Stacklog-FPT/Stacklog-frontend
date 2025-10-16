@@ -10,10 +10,12 @@ const notificationSlice = createSlice({
   initialState: initialState,
   reducers: {
     setPending: (state, action) => {
-      state.pending = true;
+      // accept boolean payload to set pending on or off
+      state.pending = typeof action.payload === 'boolean' ? action.payload : true;
     },
     setError: (state, action) => {
-      state.error = action.payload;
+      // payload should be an error message string (or empty to clear)
+      state.error = action.payload || '';
     },
     getNotifications: (state, action) => {
       state.notifications = action.payload;

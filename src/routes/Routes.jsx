@@ -41,6 +41,7 @@ const routes = [
           { path: '/schedule', element: <SchedulePage /> },
           { path: '/documents', element: <DocumentPage /> },
           { path: '/chatbox', element: <ChatPage /> },
+          { path: '/chatbox/:boxId', element: <ChatPage /> },
           { path: '/meeting', element: <Meeting /> },
           { path: '/grades', element: <GradesPage /> },
           { path: '/plan', element: <PlanPage /> },

@@ -35,7 +35,6 @@ const LoginPage = () => {
   };
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
       const response = await login(email, password);
       if (response) {

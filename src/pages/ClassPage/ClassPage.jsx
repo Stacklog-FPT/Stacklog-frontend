@@ -7,6 +7,7 @@ import Schedules from '../../components/Modal/Schedules/Schedules';
 import ClassList from '../../components/ClassComponent/CheckTaskByType/ClassList/ClassList';
 import Topic from '../../components/Modal/Topic/Topic';
 import Classes from '../../components/Modal/Classes/Classes';
+import Document from '../../components/ClassComponent/CheckTaskByType/Documents/Document';
 const ClassPage = () => {
   const [activeType, setActiveType] = React.useState('TaskBoard');
   return (
@@ -20,8 +21,8 @@ const ClassPage = () => {
         {activeType === 'TaskList' && <CheckTypeByList />}
         {activeType === 'Schedules' && <Schedules />}
         {activeType === 'Classes' && <Classes />}
-        {activeType === 'Documents' && <ClassList />}
-        {activeType === 'Topic' && <Topic/>}
+        {activeType === 'Documents' && <Document />}
+        {activeType === 'Topic' && <Topic />}
         {activeType === 'Chat' && <ClassList />}
       </div>
     </div>

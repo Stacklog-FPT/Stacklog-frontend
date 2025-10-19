@@ -1,0 +1,16 @@
+.document {
+  width: 100%;
+  z-index: 999;
+  &__container {
+    width: 100%;
+    background-color: var(--bg--nav);
+    padding: 10px 20px;
+  }
+
+  .document__header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

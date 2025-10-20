@@ -2,8 +2,10 @@ import React from "react";
 import "./NavbarList.scss";
 const NavbarList = ({ listByRole, setListByRole }) => {
   const [types, setTypes] = React.useState([
-    { id: 1, type: "Lecture" },
-    { id: 2, type: "Student" },
+    { id: 1, type: "Lecture", icon: "fa-solid fa-chalkboard-user" },
+    { id: 2, type: "Student", icon: "fa-solid fa-users" },
+    { id: 3, type: "Semester", icon: "fa-solid fa-hashtag" },
+    { id: 4, type: "Class", icon: "fa-solid fa-users" },
   ]);
   return (
     <div className="navbar__list__container">
@@ -17,6 +19,7 @@ const NavbarList = ({ listByRole, setListByRole }) => {
               key={item.id}
               onClick={() => setListByRole(item.type)}
             >
+              <i className={item.icon}></i>
               <p>{item.type}</p>
             </div>
           );

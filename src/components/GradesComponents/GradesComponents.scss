@@ -1,5 +1,5 @@
 .grades__component {
-  width: 1112px;
+  width: 100%;
   height: 609px;
   border-radius: 20px;
   background-color: var(--bg--nav);
@@ -121,9 +121,11 @@
             }
             &:nth-child(5) {
               width: 145px;
+              text-align: center; /* Average header centered to match pill */
             }
             &:nth-child(6) {
               width: 127px;
+              text-align: center; /* Status header centered to match pill */
             }
           }
         }
@@ -156,18 +158,11 @@
             }
             &:nth-child(5) {
               width: 145px;
+              text-align: center; /* center Average header */
             }
             &:nth-child(6) {
               width: 127px;
-            }
-
-            .passed__text {
-              width: 56px;
-              height: 22px;
-              color: #146c43;
-              background-color: #d1e7dd;
-              padding: 10px 10px;
-              border-radius: 20px;
+              text-align: center; /* center Status header */
             }
 
             p {
@@ -215,18 +210,31 @@
       }
     }
 
+    /* Match DetailScore pills: larger, centered, with padding */
     .isPassed {
-      width: 40px;
+      display: inline-block;
+      min-width: 56px;
+      padding: 6px 12px;
       border-radius: 20px;
       background-color: #146c43;
       color: #f2f2f2;
+      text-align: center;
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 1;
     }
 
     .notPassed {
-      width: 40px;
+      display: inline-block;
+      min-width: 56px;
+      padding: 6px 12px;
       border-radius: 20px;
       background-color: #842029;
       color: #f2f2f2;
+      text-align: center;
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 1;
     }
     .pagination {
       display: flex;
@@ -271,6 +279,246 @@
         font-weight: 500;
         color: #333;
       }
+    }
+  }
+
+  /* Modal styles for Create score category */
+  .modal__overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1200;
+    padding: 24px;
+  }
+
+  .modal__card {
+    width: 100%;
+    max-width: 560px;
+    background: var(--bg--nav);
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 10px 30px rgba(8, 30, 50, 0.2);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .modal__card h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-color);
+  }
+
+  .modal__card label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    color: var(--text-color);
+    gap: 6px;
+  }
+
+  /* New modal form field styles */
+  .modal__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 6px;
+  }
+
+  .modal__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .modal__label {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-color);
+  }
+
+  .modal__input {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font-size: 14px;
+    color: #111827;
+    outline: none;
+  }
+
+  .modal__input:focus {
+    border-color: rgba(4, 87, 69, 0.9);
+    box-shadow: 0 4px 10px rgba(4,87,69,0.06);
+  }
+
+  .modal__textarea {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font-size: 14px;
+    color: #111827;
+    outline: none;
+    resize: vertical;
+  }
+
+  .modal__hint {
+    color: #6b7280;
+    font-size: 12px;
+  }
+
+  /* percent input wrapper */
+  .input--percent {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .input--percent .modal__input {
+    padding-right: 44px;
+  }
+
+  .percent__suffix {
+    position: absolute;
+    right: 12px;
+    color: #374151;
+    font-weight: 600;
+  }
+
+  .modal__card input[type="text"],
+  .modal__card input[type="number"] {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font-size: 14px;
+    color: #111827;
+    outline: none;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+
+  .modal__card input[type="text"]:focus,
+  .modal__card input[type="number"]:focus {
+    border-color: rgba(4, 87, 69, 0.9);
+    box-shadow: 0 4px 10px rgba(4,87,69,0.08);
+  }
+
+  .modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .modal__actions button {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .modal__actions button:first-child {
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid #d1d5db;
+  }
+
+  .modal__actions button:last-child {
+    background: var(--bg--primary-color);
+    color: #fff;
+  }
+
+  .modal__actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* small responsive tweaks */
+  @media (max-width: 1024px) {
+    .grades__component {
+      width: calc(100% - 48px);
+    }
+    .grades__component .grades__component__table__list table thead th {
+      font-size: 13px;
+      padding: 10px 12px;
+    }
+    .grades__component .grades__component__table__list tbody td {
+      padding: 18px 10px 0 12px;
+    }
+  }
+
+  /* tablet */
+  @media (max-width: 768px) {
+    .modal__card {
+      padding: 16px;
+    }
+    .grades__component {
+      width: calc(100% - 32px);
+    }
+    /* allow table horizontal scroll on smaller devices */
+    .grades__component .grades__component__table__list {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .grades__component .grades__component__table__list table {
+      min-width: 820px; /* keep columns readable */
+    }
+    .grades__component .grades__component__table__list tbody td {
+      padding: 16px 10px 10px 12px;
+    }
+    .grades__component .grades__component__table__list thead th:nth-child(n) {
+      text-align: left;
+    }
+    /* scale down pills for space */
+    .grades__component .isPassed, .grades__component .notPassed {
+      min-width: 48px;
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+  }
+
+  /* mobile */
+  @media (max-width: 480px) {
+    .modal__card {
+      padding: 12px;
+      max-width: 100%;
+      border-radius: 10px;
+    }
+    .grades__component {
+      width: calc(100% - 20px);
+      margin: 0 10px;
+    }
+    .grades__component .grades__component__table__list {
+      overflow-x: auto;
+    }
+    .grades__component .grades__component__table__list table {
+      min-width: 700px;
+    }
+    .grades__component .grades__component__table__list thead th,
+    .grades__component .grades__component__table__list tbody td {
+      padding: 10px 8px;
+      font-size: 13px;
+    }
+    /* compact pagination */
+    .grades__component .pagination {
+      gap: 8px;
+    }
+    .grades__component .pagination__button {
+      width: 32px;
+      height: 32px;
+    }
+    /* make modal actions touch friendly */
+    .grades__component .modal__actions button {
+      padding: 10px 12px;
+      font-size: 13px;
     }
   }
 }

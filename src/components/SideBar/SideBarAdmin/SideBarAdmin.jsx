@@ -6,10 +6,14 @@ import logoDark from "../../../assets/darkMode/logo-darkmode.png";
 import "./SideBarAdmin.scss";
 import { ColorModeContext } from "../../../context/ColorModeContext";
 import { useAuth } from "../../../context/AuthProvider";
+import NavbarList from "../../AdminComponents/NavbarList/NavbarList";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const SideBarAdmin = ({ isOpen, setIsOpen }) => {
   const { mode } = useContext(ColorModeContext);
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <div className={`navbar-container ${isOpen ? "open" : "close"}`}>
@@ -37,6 +41,22 @@ const SideBarAdmin = ({ isOpen, setIsOpen }) => {
               className={isOpen ? "fa-solid fa-times" : "fa-solid fa-bars"}
             ></i>
           </button>
+        </div>
+        {/* Role tabs for Admin placed in sidebar */}
+        <div className="sidebar-admin-role-tabs">
+          <NavbarList
+            listByRole={
+              new URLSearchParams(location.search).get("role") || "Lecture"
+            }
+            setListByRole={(r) => {
+              const params = new URLSearchParams(location.search);
+              params.set("role", r);
+              navigate({
+                pathname: location.pathname,
+                search: params.toString(),
+              });
+            }}
+          />
         </div>
         {/* Support */}
         <nav className="navbar-support">

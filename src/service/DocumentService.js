@@ -8,6 +8,7 @@ import {
   setDocumentPerson,
   deleteDocument,
   deleteDocumentPerson,
+  addDocumentPerson,
 } from '../redux/slice/documentSlice';
 import decodedToken from '../service/DecodeJwt';
 // Port of BE
@@ -18,6 +19,7 @@ export const uploadDocument = async (data, token, dispatch) => {
     if (!token) return dispatch(setError('Token is missing!'));
     if (!data.file) return dispatch(setError('File is required!'));
     const user = decodedToken(token);
+    console.log(user);
     dispatch(setPending());
 
     const formData = new FormData();
@@ -46,6 +48,7 @@ export const uploadDocument = async (data, token, dispatch) => {
       documentSize: fileSize,
       documentType: data.documentType || 'NORMAL',
       documentPath: url,
+      documentAccess: [],
       documentLocations: data.documentLocations,
     };
 
@@ -53,8 +56,8 @@ export const uploadDocument = async (data, token, dispatch) => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (backendRes.data.createAt === user.id) {
-      dispatch(setDocumentPerson(backendRes.data));
+    if (backendRes.data.createdBy === user.id) {
+      dispatch(addDocumentPerson(backendRes.data));
     }
 
     dispatch(addDocument(backendRes.data));
@@ -78,27 +81,11 @@ export const getDocumentById = async (groupId, token, dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(res.data);
-    dispatch(setDocuments(res.data));
+
+    console.log('Response data: ', res);
+    dispatch(setDocuments(res.data || []));
+    return res;
   } catch (e) {
-    dispatch(setError(e.message));
-  }
-};
-
-export const getAllDocument = async (token, dispatch) => {
-  try {
-    if (!token) dispatch(setError('Missing token!'));
-
-    dispatch(setPending(true));
-    const res = await axios.get(`${DOCUMENT_API}/`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    dispatch(setDocuments(res.data));
-  } catch (e) {
-    console.error('Something wrong: ', e.message);
     dispatch(setError(e.message));
   }
 };
@@ -114,6 +101,7 @@ export const getDocumentByUserId = async (token, dispatch) => {
     });
 
     dispatch(setDocumentPerson(res.data));
+    return res.data;
   } catch (e) {
     console.error('Something went wrong: ', e.message);
     dispatch(setError(e.message));
@@ -131,7 +119,6 @@ export const deleteDocumentApi = async (documentId, token, dispatch) => {
       },
     });
 
-    console.log(res);
     dispatch(deleteDocument(documentId));
     dispatch(deleteDocumentPerson(documentId));
   } catch (e) {}

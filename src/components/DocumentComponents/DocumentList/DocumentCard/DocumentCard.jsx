@@ -33,8 +33,8 @@ const DocumentCard = ({ title, data }) => {
           </div>
 
           <div className="document__card__container__list__data">
-            {data.length > 0 ? (
-              data.map((item) => (
+            {data?.length > 0 ? (
+              data?.map((item) => (
                 <div
                   key={item.documentId}
                   className="document__card__container__list__data__item"

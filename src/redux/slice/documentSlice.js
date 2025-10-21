@@ -17,14 +17,21 @@ export const documentSlice = createSlice({
       state.error = null;
     },
     setDocuments: (state, action) => {
-      state.documents = action.payload;
+      state.documents = action.payload.filter((item) => item !== null);
       state.pending = false;
     },
-    // setDocumentPerson: (state, action) => {
-    //   if (!Array.isArray(state.documents)) state.documents = [];
-    //   state.documentPerson.unshift(action.payload);
-    //   state.pending = false;
-    // },
+    setDocumentPerson: (state, action) => {
+      state.documentPerson = action.payload;
+    },
+    addDocument: (state, action) => {
+      if (!Array.isArray(state.documents)) state.documents = [];
+      state.documents.unshift(action.payload);
+      state.pending = false;
+    },
+    addDocumentPerson: (state, action) => {
+      state.documentPerson.push(action.payload);
+      state.pending = false;
+    },
     deleteDocument: (state, action) => {
       console.log(action.payload);
       state.documents = state.documents.filter((item) => item.documentId !== action.payload);
@@ -37,11 +44,7 @@ export const documentSlice = createSlice({
       );
       state.pending = false;
     },
-    addDocument: (state, action) => {
-      if (!Array.isArray(state.documents)) state.documents = [];
-      state.documents.unshift(action.payload);
-      state.pending = false;
-    },
+
     getDocumentDetail: (state, action) => {
       state.documentDetail = action.payload;
       state.pending = false;
@@ -50,7 +53,6 @@ export const documentSlice = createSlice({
       state.error = action.payload;
       state.pending = false;
     },
-    updateDocumentPerson: (state, action) => {},
   },
 });
 
@@ -63,6 +65,7 @@ export const {
   setDocumentPerson,
   deleteDocument,
   deleteDocumentPerson,
+  addDocumentPerson,
 } = documentSlice.actions;
 
 export default documentSlice.reducer;

@@ -26,10 +26,9 @@ const Document = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
 
   // tính currentItems mỗi render
-  const currentItems = documents.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
+  const currentItems = documents
+    .filter((item) => item !== null)
+    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const totalPages = Math.ceil(documents.length / itemsPerPage);
 
@@ -51,11 +50,12 @@ const Document = () => {
   };
 
   const handleGetDocuments = async () => {
-    await getDocumentById(groupId, user.token, dispatch);
+    const res = await getDocumentById(groupId, user.token, dispatch);
+    console.log(res);
   };
 
   const handleDeleteDocument = async (id) => {
-    await deleteDocumentApi(deleteDocumentApi(id, user.token, dispatch));
+    await deleteDocumentApi(id, user.token, dispatch);
   };
 
   React.useEffect(() => {
@@ -91,7 +91,7 @@ const Document = () => {
                 return (
                   <div
                     className="document__recent__container__main__content__item d-flex align-items-center justify-content-between"
-                    key={item._id}
+                    key={item.documentId}
                   >
                     <div className="document__recent__container__main__content__item__content">
                       <span className="document__recent__container__main__content__item__content__title">
@@ -137,7 +137,7 @@ const Document = () => {
           </div>
         </div>
       </div>
-      {isShowUpload && <UploadFile onClose={handleCloseModal} />}
+      {isShowUpload && <UploadFile onClose={handleCloseModal} isGroup={true} />}
     </>
   );
 };

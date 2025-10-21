@@ -2,34 +2,25 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import './UploadFile.scss';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { uploadDocument } from '../../../../../service/DocumentService';
+import { getDocumentByUserId, uploadDocument } from '../../../../../service/DocumentService';
 import { useAuth } from '../../../../../context/AuthProvider';
 import { useSelector } from 'react-redux';
 import decodeToken from '../../../../../service/DecodeJwt';
+import { toast } from 'react-toastify';
 
-const UploadFile = ({ onClose }) => {
+const UploadFile = ({ onClose, isGroup }) => {
   const { groupId } = useParams();
   const { groups } = useSelector((state) => state.group);
   const { user } = useAuth();
+
   const userDecode = decodeToken(user.token);
+  const { documentPerson } = useSelector((state) => state.document);
   const groupsUser = groups.filter((group) => {
     return group.groupStudents?.some((student) => student.userId === userDecode.id);
   });
-
+  const [isNewDocument, setIsNewDocument] = useState(true);
+  const [selectedDocument, setSelectedDocument] = useState([]);
   const [groupLocations, setGroupLocations] = useState([]);
-
-  const toggleGroupSelection = (groupId) => {
-    setGroupLocations((prevGroupLocations) => {
-      if (prevGroupLocations.some((group) => group.groupId === groupId)) {
-        return prevGroupLocations.filter((group) => group.groupId !== groupId);
-      } else {
-        return [...prevGroupLocations, { groupId, documentLocationId: null }];
-      }
-    });
-  };
-
-  const dispatch = useDispatch();
-  const modalRef = useRef(null);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState('');
   const [dragActive, setDragActive] = useState(false);
@@ -38,8 +29,13 @@ const UploadFile = ({ onClose }) => {
     documentTitle: '',
     documentType: 'NORMAL',
     documentAccesses: [],
+    documentLocations: [],
   });
 
+  const dispatch = useDispatch();
+  const modalRef = useRef(null);
+
+  // Handle file selection
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
     if (selected) {
@@ -52,6 +48,7 @@ const UploadFile = ({ onClose }) => {
     }
   };
 
+  // Handle drag events
   const handleDrag = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -74,19 +71,51 @@ const UploadFile = ({ onClose }) => {
     }
   }, []);
 
+  const toggleGroupSelection = (groupId) => {
+    setGroupLocations((prevGroupLocations) => {
+      if (prevGroupLocations.some((group) => group.groupId === groupId)) {
+        return prevGroupLocations.filter((group) => group.groupId !== groupId);
+      } else {
+        return [...prevGroupLocations, { groupId, documentLocationId: null }];
+      }
+    });
+  };
+
+  // Fetch document data if user is not uploading a new document
+  const handleGetDocumentPerson = async () => {
+    await getDocumentByUserId(user.token, dispatch);
+  };
+
+  // Handle file upload person
   const handleUploadFileService = async () => {
-    if (!file) return alert('File is required!');
+    // Handle upload document for personal
+    if (isGroup) return;
+
+    if (!file) return toast.error('File is required!');
     setUploading(true);
 
     const payload = {
       file,
       documentTitle: documentData.documentTitle,
       documentType: documentData.documentType,
-      documentLocations: groupLocations,
+      documentAccess: groupLocations,
     };
 
     const res = await uploadDocument(payload, user.token, dispatch);
-    console.log(res);
+    setUploading(false);
+  };
+
+  const handleUploadFileGroup = async () => {
+    if (!file) toast.error('file is required!');
+
+    const payload = {
+      file,
+      documentTitle: documentData.documentTitle,
+      documentAccess: [groupId],
+      documentLocations: selectedDocument,
+    };
+
+    await uploadDocument(payload, user.token, dispatch);
     setUploading(false);
   };
 
@@ -103,6 +132,9 @@ const UploadFile = ({ onClose }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose, dragActive]);
 
+  useEffect(() => {
+    handleGetDocumentPerson();
+  }, [user.token]);
   return (
     <div
       className="upload__file_"
@@ -138,45 +170,91 @@ const UploadFile = ({ onClose }) => {
             </select>
           </label>
 
-          {/* Chọn nhóm */}
-          <label className="upload__label">Select Groups</label>
-          <div className="groups-selection">
-            {groupsUser.map((group) => (
-              <div key={group.groupsId} className="group-item">
-                <input
-                  type="checkbox"
-                  checked={groupLocations.some((groupLoc) => groupLoc.groupId === group.groupsId)}
-                  onChange={() => toggleGroupSelection(group.groupsId)}
-                />
-                <span>{group.groupsName}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Hiển thị các nhóm đã chọn */}
-          <div className="selected-groups">
-            {groupLocations.length > 0 && (
-              <div className="selected-group-list">
-                {groupLocations.map((groupLoc) => {
-                  const group = groupsUser.find((g) => g.groupsId === groupLoc.groupId);
+          {isGroup && (
+            <div className="own__group">
+              {documentPerson &&
+                documentPerson.map((doc) => {
                   return (
-                    <div key={groupLoc.groupId} className="selected-group-item">
-                      <span>{group?.groupsName}</span>
-                      <button
-                        type="button"
-                        onClick={() => toggleGroupSelection(groupLoc.groupId)}
-                        className="remove-group-btn"
-                      >
-                        &#10005; {/* dấu x */}
-                      </button>
+                    <div key={doc.documentId} className="document__card_item d-flex gap-2">
+                      <input
+                        type="radio"
+                        name="documentSelection"
+                        checked={selectedDocument?.documentId === doc.documentId}
+                        onChange={() => setSelectedDocument(doc)}
+                      />
+                      <span>{doc.documentTitle}</span>
                     </div>
                   );
                 })}
-              </div>
-            )}
-          </div>
-        </div>
+            </div>
+          )}
 
+          {/* Checkbox to toggle "New Document" */}
+          {!isNewDocument && isGroup && (
+            <div className="document-selection">
+              <label className="upload__label">Select Document from Existing</label>
+              <div>
+                {documentPerson.map((doc) => (
+                  <div key={doc.documentId} className="document-item">
+                    <input
+                      type="radio"
+                      name="documentSelection"
+                      checked={selectedDocument?.documentId === doc.documentId}
+                      onChange={() => setSelectedDocument((prev) => [...prev, doc])}
+                    />
+                    <span>{doc.documentTitle}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Chọn nhóm */}
+          {!isGroup && (
+            <div>
+              <label className="upload__label">Select Groups</label>
+              <div className="groups-selection">
+                {groupsUser.map((group) => (
+                  <div key={group.groupsId} className="group-item">
+                    <input
+                      type="checkbox"
+                      checked={groupLocations.some(
+                        (groupLoc) => groupLoc.groupId === group.groupsId,
+                      )}
+                      onChange={() => toggleGroupSelection(group.groupsId)}
+                    />
+                    <span>{group.groupsName}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Hiển thị các nhóm đã chọn */}
+          {!isGroup && (
+            <div className="selected-groups">
+              {groupLocations.length > 0 && (
+                <div className="selected-group-list">
+                  {groupLocations.map((groupLoc) => {
+                    const group = groupsUser.find((g) => g.groupsId === groupLoc.groupId);
+                    return (
+                      <div key={groupLoc.groupId} className="selected-group-item">
+                        <span>{group?.groupsName}</span>
+                        <button
+                          type="button"
+                          onClick={() => toggleGroupSelection(groupLoc.groupId)}
+                          className="remove-group-btn"
+                        >
+                          &#10005; {/* dấu x */}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
         {!file ? (
           <>
             <p className="upload__text">
@@ -197,9 +275,19 @@ const UploadFile = ({ onClose }) => {
             ) : (
               <p className="preview__name">{file.name}</p>
             )}
-            <button className="upload__btn" onClick={handleUploadFileService} disabled={uploading}>
-              {uploading ? 'Uploading...' : 'Upload'}
-            </button>
+            {isGroup ? (
+              <button className="upload__btn" onClick={handleUploadFileGroup} disabled={uploading}>
+                {uploading ? 'Uploading...' : 'Upload Group'}
+              </button>
+            ) : (
+              <button
+                className="upload__btn"
+                onClick={handleUploadFileService}
+                disabled={uploading}
+              >
+                {uploading ? 'Uploading...' : 'Upload'}
+              </button>
+            )}
           </div>
         )}
       </div>

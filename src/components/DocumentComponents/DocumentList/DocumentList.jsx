@@ -17,7 +17,8 @@ const DocumentList = () => {
   };
 
   const handleGetUserDocument = async () => {
-    await getDocumentByUserId(user.token, dispatch);
+    const res = await getDocumentByUserId(user.token, dispatch);
+    console.log('debug doc person: ', res);
   };
 
   React.useEffect(() => {
@@ -53,7 +54,7 @@ const DocumentList = () => {
           </div>
         </div>
       </div>
-      {isOpenUpload && <UploadFile onClose={handleCloseModal} />}
+      {isOpenUpload && <UploadFile onClose={handleCloseModal} isGroup={false} />}
     </>
   );
 };

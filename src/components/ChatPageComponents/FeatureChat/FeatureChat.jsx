@@ -20,6 +20,25 @@ const FeatureChat = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [selectedToAdd, setSelectedToAdd] = useState([]); // array of user objects to add in batch
 
+  // derive current user id (fallback-safe) and whether current user is an admin in the selected box
+  let currentUserId = null;
+  try {
+    const decoded = jwtDecode(user.token);
+    currentUserId =
+      decoded.id || decoded._id || decoded.userId || decoded.sub || null;
+  } catch (e) {
+    currentUserId = null;
+  }
+
+  const isAdmin = Array.isArray(selectedBox?.memberObjects)
+    ? selectedBox.memberObjects.some((m) => {
+        const uid = m.userId || m.user_id || m._id || m.id;
+        const adminFlag =
+          m.isAdmin === true || m.is_admin === true || m.is_admin === "true";
+        return uid && uid === currentUserId && adminFlag;
+      })
+    : false;
+
   // no local socket needed here — use REST for updates
 
   // Lấy danh sách thành viên hiện tại (userList)
@@ -257,8 +276,8 @@ const FeatureChat = () => {
       setEmailToAdd("");
       setShowAddPopup(false);
     } catch (err) {
-      console.error('Batch add failed', err);
-      alert('Failed to add users');
+      console.error("Batch add failed", err);
+      alert("Failed to add users");
     } finally {
       setIsAdding(false);
     }
@@ -272,10 +291,12 @@ const FeatureChat = () => {
       try {
         const users = await getAllUsers(user.token);
         if (!mounted) return;
-        const list = Array.isArray(users) ? users : users?.data || users?.users || [];
+        const list = Array.isArray(users)
+          ? users
+          : users?.data || users?.users || [];
         setAllUsers(list || []);
       } catch (e) {
-        console.warn('Failed to load all users for suggestions', e);
+        console.warn("Failed to load all users for suggestions", e);
       }
     };
     loadAll();
@@ -287,14 +308,131 @@ const FeatureChat = () => {
   // helper: check whether an id is already a member of selectedBox
   const isAlreadyMember = (id) => {
     if (!id || !selectedBox) return false;
-    if (Array.isArray(selectedBox.members) && selectedBox.members.includes(id)) return true;
+    if (Array.isArray(selectedBox.members) && selectedBox.members.includes(id))
+      return true;
     if (Array.isArray(selectedBox.memberObjects)) {
       return selectedBox.memberObjects.some((m) => {
-        const uid = m.userId || m.user_id || m._id || m.id || (m.user && (m.user._id || m.user.id));
+        const uid =
+          m.userId ||
+          m.user_id ||
+          m._id ||
+          m.id ||
+          (m.user && (m.user._id || m.user.id));
         return uid === id;
       });
     }
     return false;
+  };
+
+  // Kick a member from the box (admins only)
+  const handleKickMember = async (memberId) => {
+    if (!memberId || !selectedBox || !selectedBox.id) return;
+    if (!isAdmin) {
+      alert("You do not have permission to remove members.");
+      return;
+    }
+
+    // confirm action
+    if (
+      !window.confirm(
+        "Are you sure you want to remove this member from the group?"
+      )
+    )
+      return;
+
+    try {
+      const service = chatApi();
+      await service.deleteBoxMember(user.token, selectedBox.id, memberId);
+      // update local selectedBox: remove from members and memberObjects
+      setSelectedBox((prev) => {
+        if (!prev) return prev;
+        const next = { ...prev };
+        if (Array.isArray(next.members))
+          next.members = next.members.filter(
+            (m) => String(m) !== String(memberId)
+          );
+        if (Array.isArray(next.memberObjects))
+          next.memberObjects = next.memberObjects.filter((m) => {
+            const uid =
+              m.userId ||
+              m.user_id ||
+              m._id ||
+              m.id ||
+              (m.user && (m.user._id || m.user.id));
+            return String(uid) !== String(memberId);
+          });
+        return next;
+      });
+
+      // update local userList shown in the panel
+      setUserList((prev) =>
+        Array.isArray(prev)
+          ? prev.filter((u) => String(u._id || u.id) !== String(memberId))
+          : prev
+      );
+
+      try {
+        setBoxesVersion((v) => (v || 0) + 1);
+      } catch (e) {
+        /* ignore */
+      }
+    } catch (err) {
+      console.error("Kick member failed", err);
+      alert(
+        "Could not remove member: " +
+          (err?.response?.data?.message || err.message || "Error")
+      );
+    }
+  };
+
+  // Leave group (non-admins): remove current user from selected box
+  const handleLeaveGroup = async () => {
+    if (!selectedBox || !selectedBox.id) return;
+
+    // derive current user id (safe)
+    let currentUserIdLocal = null;
+    try {
+      const decoded = jwtDecode(user.token);
+      currentUserIdLocal = decoded.id || decoded._id || decoded.userId || decoded.sub || null;
+    } catch (e) {
+      currentUserIdLocal = null;
+    }
+
+    if (!currentUserIdLocal) {
+      alert('Unable to determine current user. Please re-login.');
+      return;
+    }
+
+    // if user is admin, do not allow via this flow
+    const amAdmin = Array.isArray(selectedBox?.memberObjects)
+      ? selectedBox.memberObjects.some((m) => {
+          const uid = m.userId || m.user_id || m._id || m.id;
+          const adminFlag = m.isAdmin === true || m.is_admin === true || m.is_admin === 'true';
+          return uid && uid === currentUserIdLocal && adminFlag;
+        })
+      : false;
+
+    if (amAdmin) {
+      alert('Admins must ask another admin to remove them or delete the group.');
+      return;
+    }
+
+    if (!window.confirm('Are you sure you want to leave this group?')) return;
+
+    try {
+      const service = chatApi();
+      await service.deleteBoxMember(user.token, selectedBox.id, currentUserIdLocal);
+      // remove local selection so UI goes back to no-chat
+      setSelectedBox(null);
+      try {
+        setBoxesVersion((v) => (v || 0) + 1);
+      } catch (e) {
+        /* ignore */
+      }
+    } catch (err) {
+      console.error('Leave group failed', err);
+      alert('Failed to leave group: ' + (err?.response?.data?.message || err.message || 'Error'));
+    }
   };
 
   // Delete box chat via REST (admins only)
@@ -322,12 +460,12 @@ const FeatureChat = () => {
       : false;
 
     if (!isAdmin) {
-      alert("Bạn không có quyền giải tán nhóm");
+      alert("You do not have permission to disband the group.");
       return;
     }
 
     // confirm deletion
-    if (!window.confirm("Bạn có chắc chắn muốn giải tán nhóm không?")) return;
+    if (!window.confirm("Are you sure you want to disband this group?")) return;
 
     try {
       const service = chatApi();
@@ -339,11 +477,12 @@ const FeatureChat = () => {
       } catch (e) {
         /* ignore if not available */
       }
-      alert("Nhóm đã được giải tán");
+      alert("The group has been disbanded.");
     } catch (err) {
       console.error("Delete box failed", err);
       alert(
-        "Xóa nhóm thất bại: " + (err?.response?.data?.message || err.message)
+        "Failed to delete the group: " +
+          (err?.response?.data?.message || err.message)
       );
     }
   };
@@ -415,6 +554,15 @@ const FeatureChat = () => {
               <i className="fa-solid fa-link"></i>
               <span>Link</span>
             </div>
+            {!isAdmin && (
+              <div
+                className="feature__menu__item"
+                onClick={handleLeaveGroup}
+              >
+                <i className="fa-solid fa-right-from-bracket"></i>
+                <span>Leave</span>
+              </div>
+            )}
             <div className="feature__menu__item" onClick={handleDeleteChat}>
               <i className="fa-solid fa-trash"></i>
               <span>Delete chat</span>
@@ -445,40 +593,73 @@ const FeatureChat = () => {
             {/* Danh sách thành viên hiện tại */}
             <div className="team-members">
               {userList.length > 0 ? (
-                userList.map((user) => (
-                  <div
-                    key={user._id}
-                    className="team-member"
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => startPersonalChat(user._id)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ")
-                        startPersonalChat(user._id);
-                    }}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div className="team-member-avatar">
-                      <img
-                        src={
-                          user.avatar_link
-                            ? `https://stacklog.id.vn/${user.avatar_link}`
-                            : defaulfAvatar
-                        }
-                        alt={user.full_name}
-                        onError={(e) =>
-                          (e.target.src =
-                            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
-                        }
-                      />
-                      <div className="status-indicator"></div>
+                userList.map((user) => {
+                  const memberId =
+                    user._id || user.id || user.user_id || user._id;
+                  return (
+                    <div
+                      key={memberId}
+                      className="team-member"
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => {
+                        // if clicked on action button, don't open personal chat
+                        if (
+                          e.target &&
+                          e.target.closest &&
+                          e.target.closest(".member-actions")
+                        )
+                          return;
+                        startPersonalChat(memberId);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ")
+                          startPersonalChat(memberId);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <div className="team-member-avatar">
+                        <img
+                          src={
+                            user.avatar_link
+                              ? `https://stacklog.id.vn/${user.avatar_link}`
+                              : defaulfAvatar
+                          }
+                          alt={user.full_name}
+                          onError={(e) =>
+                            (e.target.src =
+                              "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                          }
+                        />
+                        <div className="status-indicator"></div>
+                      </div>
+                      <div className="team-member-info">
+                        <div className="team-member-name">{user.full_name}</div>
+                        <div className="team-member-email">{user.email}</div>
+                      </div>
+                      {isAdmin &&
+                        String(memberId) !== String(currentUserId) && (
+                          <div className="member-actions">
+                            <button
+                              type="button"
+                              className="member-action-btn"
+                              title="Đá thành viên"
+                              aria-label="Đá thành viên"
+                              onClick={(ev) => {
+                                ev.stopPropagation();
+                                // confirm then kick
+                                {
+                                  handleKickMember(memberId);
+                                }
+                              }}
+                            >
+                              <i className="fa-solid fa-arrow-right-from-bracket"></i>
+                            </button>
+                          </div>
+                        )}
                     </div>
-                    <div className="team-member-info">
-                      <div className="team-member-name">{user.full_name}</div>
-                      <div className="team-member-email">{user.email}</div>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <p>No members available</p>
               )}
@@ -512,7 +693,7 @@ const FeatureChat = () => {
                     onChange={(e) => setEmailToAdd(e.target.value)}
                     className="email-input"
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         e.preventDefault();
                         addMemberByEmail();
                       }
@@ -520,50 +701,77 @@ const FeatureChat = () => {
                   />
                 </div>
                 {/* suggestion list (client-side filter from getAllUsers) */}
-                {showAddPopup && emailToAdd && allUsers && allUsers.length > 0 && (
-                  <div className="add-user-suggestions">
-                    {allUsers
-                      .filter((u) => {
-                        const q = emailToAdd.toLowerCase();
-                        // skip users already in the box
-                        const uid = u._id || u.id || u.user_id || null;
-                        if (isAlreadyMember(uid)) return false;
-                        return (
-                          (u.email && u.email.toLowerCase().includes(q)) ||
-                          (u.full_name && u.full_name.toLowerCase().includes(q)) ||
-                          (String(u.work_id || '').toLowerCase().includes(q))
-                        );
-                      })
-                      .slice(0, 8)
-                      .map((u) => (
-                        <div
-                          key={u._id || u.user_id || u.email}
-                          className="add-user-suggestion-item"
-                          onClick={() => {
-                            // add to local selected list instead of immediate server add
-                            const id = u._id || u.id || u.user_id;
-                            if (!id) return;
-                            // avoid duplicates
-                            if (selectedToAdd.find((s) => (s._id || s.id) === id)) return;
-                            setSelectedToAdd((prev) => [...prev, u]);
-                            setEmailToAdd("");
-                          }}
-                        >
-                          <img src={u.avatar_link ? `https://stacklog.id.vn/${u.avatar_link}` : defaulfAvatar} alt={u.full_name || u.email} />
-                          <div className="add-user-suggestion-info">
-                            <div className="name">{u.full_name || u.email}</div>
-                            <div className="email">{u.email}</div>
+                {showAddPopup &&
+                  emailToAdd &&
+                  allUsers &&
+                  allUsers.length > 0 && (
+                    <div className="add-user-suggestions">
+                      {allUsers
+                        .filter((u) => {
+                          const q = emailToAdd.toLowerCase();
+                          // skip users already in the box
+                          const uid = u._id || u.id || u.user_id || null;
+                          if (isAlreadyMember(uid)) return false;
+                          return (
+                            (u.email && u.email.toLowerCase().includes(q)) ||
+                            (u.full_name &&
+                              u.full_name.toLowerCase().includes(q)) ||
+                            String(u.work_id || "")
+                              .toLowerCase()
+                              .includes(q)
+                          );
+                        })
+                        .slice(0, 8)
+                        .map((u) => (
+                          <div
+                            key={u._id || u.user_id || u.email}
+                            className="add-user-suggestion-item"
+                            onClick={() => {
+                              // add to local selected list instead of immediate server add
+                              const id = u._id || u.id || u.user_id;
+                              if (!id) return;
+                              // avoid duplicates
+                              if (
+                                selectedToAdd.find(
+                                  (s) => (s._id || s.id) === id
+                                )
+                              )
+                                return;
+                              setSelectedToAdd((prev) => [...prev, u]);
+                              setEmailToAdd("");
+                            }}
+                          >
+                            <img
+                              src={
+                                u.avatar_link
+                                  ? `https://stacklog.id.vn/${u.avatar_link}`
+                                  : defaulfAvatar
+                              }
+                              alt={u.full_name || u.email}
+                            />
+                            <div className="add-user-suggestion-info">
+                              <div className="name">
+                                {u.full_name || u.email}
+                              </div>
+                              <div className="email">{u.email}</div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                  </div>
-                )}
+                        ))}
+                    </div>
+                  )}
                 {/* selected list preview */}
                 {selectedToAdd && selectedToAdd.length > 0 && (
                   <div className="selected-add-list">
                     {selectedToAdd.map((u) => (
                       <div key={u._id || u.email} className="selected-add-chip">
-                        <img src={u.avatar_link ? `https://stacklog.id.vn/${u.avatar_link}` : defaulfAvatar} alt={u.full_name || u.email} />
+                        <img
+                          src={
+                            u.avatar_link
+                              ? `https://stacklog.id.vn/${u.avatar_link}`
+                              : defaulfAvatar
+                          }
+                          alt={u.full_name || u.email}
+                        />
                         <div className="selected-add-info">
                           <div className="name">{u.full_name || u.email}</div>
                           <div className="email">{u.email}</div>
@@ -571,7 +779,13 @@ const FeatureChat = () => {
                         <button
                           type="button"
                           className="chip-remove"
-                          onClick={() => setSelectedToAdd((prev) => prev.filter((x) => (x._id || x.email) !== (u._id || u.email)))}
+                          onClick={() =>
+                            setSelectedToAdd((prev) =>
+                              prev.filter(
+                                (x) => (x._id || x.email) !== (u._id || u.email)
+                              )
+                            )
+                          }
                         >
                           ×
                         </button>
@@ -582,7 +796,10 @@ const FeatureChat = () => {
                 <button
                   onClick={handleBatchAdd}
                   className="add-member-btn btn-create-add"
-                  disabled={isAdding || (selectedToAdd.length === 0 && !emailToAdd.trim())}
+                  disabled={
+                    isAdding ||
+                    (selectedToAdd.length === 0 && !emailToAdd.trim())
+                  }
                 >
                   {isAdding ? (
                     <span className="btn-content">
@@ -599,8 +816,7 @@ const FeatureChat = () => {
                   )}
                 </button>
               </div>
-              <div className="helper-text">
-              </div>
+              <div className="helper-text"></div>
             </div>
           </div>
           <div

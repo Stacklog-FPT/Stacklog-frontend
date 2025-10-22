@@ -264,6 +264,27 @@ const ChatBoxApi = () => {
     }
   };
 
+  // Xoá member khỏi box chat (DELETE /boxes/{boxChatId}/delete/{memberId})
+  const deleteBoxMember = async (token, boxChatId, memberId, dispatch) => {
+    if (!token) throw new Error('Unauthorized: No token provided');
+    if (!boxChatId) throw new Error('Missing boxChatId');
+    if (!memberId) throw new Error('Missing memberId');
+    try {
+      if (dispatch) dispatch(apiStart());
+      const response = await axios.delete(
+        `${REACT_API_URL}/chat/boxes/${boxChatId}/delete/${memberId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data = response.data;
+      if (dispatch) dispatch(apiSuccess());
+      return data;
+    } catch (error) {
+      if (dispatch) dispatch(apiFailure(error?.message || error));
+      console.error('Delete Box Member API failed:', error?.response || error.message);
+      throw error;
+    }
+  };
+
   return {
     getBoxes,
     createBox,
@@ -274,6 +295,7 @@ const ChatBoxApi = () => {
     recallMessage,
     deleteMessage,
     deleteBox,
+    deleteBoxMember,
   };
 };
 

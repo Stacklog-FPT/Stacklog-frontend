@@ -1,11 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import './LoginPage.scss';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import userApi from '../../service/UserService';
 import logo from '../../assets/logo-login.png';
 import { useAuth } from '../../context/AuthProvider';
-import { ColorModeContext } from '../../context/ColorModeContext';
+import { MdOutlineVisibility } from 'react-icons/md';
+import { MdOutlineVisibilityOff } from 'react-icons/md';
 
 const LoginPage = () => {
   const { loginSave } = useAuth();
@@ -13,6 +14,7 @@ const LoginPage = () => {
   const [user, setUser] = useState({});
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
+  const [showPassWord, setShowPassWord] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -79,14 +81,35 @@ const LoginPage = () => {
               </div>
               <div className="form_wrapper_input_field">
                 <label className="form_wrapper_input_field_label">Password</label>
-                <input
-                  type="password"
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassWord(e.target.value)}
-                />
+                {showPassWord ? (
+                  <input
+                    type="type"
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassWord(e.target.value)}
+                  />
+                ) : (
+                  <input
+                    type="password"
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassWord(e.target.value)}
+                  />
+                )}
               </div>
-
+              <div className="form_wrapper_visibility">
+                {showPassWord ? (
+                  <MdOutlineVisibilityOff
+                    className="form_wrapper_visibility_icon"
+                    onClick={() => setShowPassWord(!showPassWord)}
+                  />
+                ) : (
+                  <MdOutlineVisibility
+                    className="form_wrapper_visibility_icon"
+                    onClick={() => setShowPassWord(!showPassWord)}
+                  />
+                )}
+              </div>
               <div className="form_wrapper_checkbox">
                 <div className="form_wrapper_checkbox_field">
                   <input type="checkbox" id="remember-checkbox" />

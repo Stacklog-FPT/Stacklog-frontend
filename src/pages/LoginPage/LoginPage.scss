@@ -72,6 +72,7 @@ $bp-2xl: 1536px; // wide screens
   padding: 40px;
   background-color: var(--bg--nav);
   animation: show-form 0.5s ease-in-out;
+  position: relative;
 }
 
 @keyframes show-form {
@@ -83,6 +84,14 @@ $bp-2xl: 1536px; // wide screens
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+.form_wrapper_visibility {
+  position: absolute;
+  right: 65px;
+  top: 41%;
+  transform: translateY(-50%);
+  cursor: pointer;
 }
 
 .form_wrapper_input {
@@ -393,7 +402,6 @@ $bp-2xl: 1536px; // wide screens
   }
 }
 
-
 /* ---- GoogleLogin full-width, chống vỡ ở mọi cỡ màn ---- */
 .google-login-btn {
   width: 100% !important;
@@ -425,7 +433,7 @@ $bp-2xl: 1536px; // wide screens
   }
 
   /* Nếu Google set inline width ở bất kỳ level nào */
-  [style*="width"] {
+  [style*='width'] {
     width: 100% !important;
     max-width: 100% !important;
   }

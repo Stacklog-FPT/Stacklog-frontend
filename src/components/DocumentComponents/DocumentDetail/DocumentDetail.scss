@@ -1,72 +1,108 @@
 .document__detail {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.55);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 999;
+  backdrop-filter: blur(3px);
 
   .document__detail__container {
-    width: 550px;
-    background-color: #fff;
+    width: 70%;
+    max-width: 1000px;
+    height: 80vh;
+    background-color: #ffffff;
     border-radius: 16px;
-    padding: 25px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+    padding: 25px 30px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    overflow: hidden;
     position: relative;
+    animation: fadeIn 0.3s ease-out;
 
     .document__detail__header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 10px;
 
       h2.editable-title {
         margin: 0;
-        font-size: 22px;
+        font-size: 1.5rem;
         font-weight: 700;
+        color: #333;
         cursor: pointer;
+        transition: color 0.2s ease-in;
         &:hover {
-          color: #045745;
+          color: #046c54;
         }
       }
 
       input.title-input {
-        font-size: 22px;
+        font-size: 1.4rem;
         font-weight: 700;
-        padding: 4px 8px;
+        padding: 6px 10px;
         border: 2px solid #04a67f;
-        border-radius: 8px;
+        border-radius: 10px;
         width: 100%;
+        color: #333;
+        outline: none;
+        transition: all 0.2s;
+        &:focus {
+          border-color: #028c68;
+          box-shadow: 0 0 0 3px rgba(4, 166, 127, 0.2);
+        }
       }
 
       .close-btn {
-        background: none;
+        background: #f6f6f6;
         border: none;
+        border-radius: 8px;
         cursor: pointer;
-        color: #dc3545;
-        transition: 0.2s;
+        color: #d63348;
+        transition: all 0.25s ease;
+        padding: 4px 8px;
 
         &:hover {
+          background-color: #ffe2e5;
           color: #a30000;
-          transform: scale(1.2);
+          transform: scale(1.1);
         }
       }
     }
 
     .document__detail__content {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 10px;
+      margin-top: 8px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
+      scroll-behavior: smooth;
 
       .detail-item {
         display: flex;
         flex-direction: column;
-        font-size: 14px;
+        font-size: 0.95rem;
+        background-color: #fafafa;
+        border: 1px solid #f0f0f0;
+        border-radius: 10px;
+        padding: 10px 15px;
+        transition: all 0.2s ease;
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+
+        &:hover {
+          background-color: #f5fdfb;
+          border-color: #c9ebe3;
+          box-shadow: 0 0 5px rgba(4, 166, 127, 0.1);
+        }
 
         strong {
           font-weight: 600;
+          color: #045745;
           margin-bottom: 4px;
         }
 
@@ -74,28 +110,75 @@
         a {
           color: #333;
           font-weight: 400;
+          word-break: break-all;
         }
 
         a {
-          color: #045745;
+          color: #04a67f;
           text-decoration: underline;
-
+          font-weight: 500;
+          transition: color 0.2s;
           &:hover {
+            color: #028c68;
             text-decoration: none;
-            color: #027a5c;
           }
         }
 
         ul {
-          margin: 0;
-          padding-left: 20px;
+          margin: 5px 0 0 16px;
+          padding-left: 0;
           list-style-type: disc;
 
           li {
-            font-size: 13px;
+            font-size: 0.9rem;
             color: #555;
+            margin-top: 2px;
           }
         }
+      }
+    }
+
+    .document__preview {
+      margin-top: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e1e1e1;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      flex-shrink: 0;
+
+      iframe {
+        width: 100%;
+        height: 60vh;
+        border: none;
+        background-color: #fdfdfd;
+      }
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .document__detail__container {
+      width: 90%;
+      height: 85vh;
+      padding: 20px;
+
+      .document__detail__header h2,
+      .document__detail__header input {
+        font-size: 1.2rem;
+      }
+
+      .document__preview iframe {
+        height: 50vh;
       }
     }
   }

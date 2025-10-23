@@ -17,7 +17,7 @@ const UploadFile = ({ onClose, isGroup }) => {
   const groupsUser = groups.filter((group) => {
     return group.groupStudents?.some((student) => student.userId === userDecode.id);
   });
-  const [isNewDocument, setIsNewDocument] = useState(true);
+  const [isNewDocument, setIsNewDocument] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState([]);
   const [groupLocations, setGroupLocations] = useState([]);
   const [file, setFile] = useState(null);
@@ -172,7 +172,7 @@ const UploadFile = ({ onClose, isGroup }) => {
             </select>
           </label>
 
-          {isGroup && (
+          {/* {isGroup && (
             <div className="own__group">
               {documentPerson &&
                 documentPerson.map((doc) => {
@@ -189,27 +189,35 @@ const UploadFile = ({ onClose, isGroup }) => {
                   );
                 })}
             </div>
-          )}
+          )} */}
 
           {/* Checkbox to toggle "New Document" */}
           {!isNewDocument && isGroup && (
             <div className="document-selection">
               <label className="upload__label">Select Document from Existing</label>
-              <div>
-                {documentPerson.map((doc) => (
-                  <div key={doc.documentId} className="document-item">
-                    <input
-                      type="radio"
-                      name="documentSelection"
-                      checked={selectedDocument?.documentId === doc.documentId}
-                      onChange={() => setSelectedDocument((prev) => [...prev, doc])}
-                    />
-                    <span>{doc.documentTitle}</span>
-                  </div>
-                ))}
+              <div className="own__group">
+                {documentPerson &&
+                  documentPerson.map((doc) => {
+                    return (
+                      <div key={doc.documentId} className="document__card_item d-flex gap-2">
+                        <input
+                          type="radio"
+                          name="documentSelection"
+                          checked={selectedDocument?.documentId === doc.documentId}
+                          onChange={() => setSelectedDocument(doc)}
+                        />
+                        <span>{doc.documentTitle}</span>
+                      </div>
+                    );
+                  })}
               </div>
             </div>
           )}
+
+          <div className="option_create_document d-flex align-center gap-2">
+            <label className="upload__label">Choose new Document</label>
+            <input type="checkbox" onChange={() => setIsNewDocument(true)} />
+          </div>
 
           {/* Chọn nhóm */}
           {!isGroup && (

@@ -12,7 +12,6 @@ const UploadFile = ({ onClose, isGroup }) => {
   const { groupId } = useParams();
   const { groups } = useSelector((state) => state.group);
   const { user } = useAuth();
-
   const userDecode = decodeToken(user.token);
   const { documentPerson } = useSelector((state) => state.document);
   const groupsUser = groups.filter((group) => {
@@ -98,10 +97,10 @@ const UploadFile = ({ onClose, isGroup }) => {
       file,
       documentTitle: documentData.documentTitle,
       documentType: documentData.documentType,
-      documentAccess: groupLocations,
+      documentLocations: groupLocations,
     };
 
-    const res = await uploadDocument(payload, user.token, dispatch);
+    await uploadDocument(payload, user.token, dispatch);
     setUploading(false);
   };
 
@@ -112,7 +111,10 @@ const UploadFile = ({ onClose, isGroup }) => {
       file,
       documentTitle: documentData.documentTitle,
       documentAccess: [groupId],
-      documentLocations: selectedDocument,
+      documentLocations: {
+        documentLocationId: null,
+        groupId: groupId,
+      },
     };
 
     await uploadDocument(payload, user.token, dispatch);

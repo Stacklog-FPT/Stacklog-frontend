@@ -19,7 +19,6 @@ export const uploadDocument = async (data, token, dispatch) => {
     if (!token) return dispatch(setError('Token is missing!'));
     if (!data.file) return dispatch(setError('File is required!'));
     const user = decodedToken(token);
-    console.log(user);
     dispatch(setPending());
 
     const formData = new FormData();
@@ -48,14 +47,16 @@ export const uploadDocument = async (data, token, dispatch) => {
       documentSize: fileSize,
       documentType: data.documentType || 'NORMAL',
       documentPath: url,
-      documentAccess: [],
       documentLocations: data.documentLocations,
     };
+
+    console.log('response form: ', responseForm);
 
     const backendRes = await axios.post(`${DOCUMENT_API}/save`, responseForm, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
+    console.log('Backend response: ', backendRes);
     if (backendRes.data.createdBy === user.id) {
       dispatch(addDocumentPerson(backendRes.data));
     }

@@ -1,0 +1,122 @@
+/* Basic styles for reuse modal */
+.reuse-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.reuse-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+.reuse-modal-card {
+  position: relative;
+  background: #ffffff;
+  padding: 22px;
+  border-radius: 12px;
+  width: 640px;
+  max-width: 95%;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+  z-index: 10;
+  color: #0b2f23;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+}
+.reuse-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.reuse-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+.reuse-modal-body {
+  margin-top: 18px;
+  max-height: 56vh;
+  overflow: auto;
+  padding-right: 8px;
+}
+.reuse-list {
+  display: flex;
+  flex-direction: column;
+}
+.reuse-row {
+  display: flex;
+  gap: 14px;
+  padding: 14px 10px;
+  align-items: center;
+  border-bottom: 1px solid rgba(11, 47, 35, 0.06);
+}
+.reuse-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+.reuse-info {
+  display: flex;
+  flex-direction: column;
+}
+.reuse-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #09261b;
+}
+.reuse-meta {
+  font-size: 13px;
+  color: #6b7a73;
+  margin-top: 6px;
+}
+.reuse-modal-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.reuse-modal-actions button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(11, 47, 35, 0.08);
+  background: #fff;
+  cursor: pointer;
+}
+.reuse-modal-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.reuse-modal-actions button:last-child {
+  background: #0b6b4f;
+  color: #fff;
+  border-color: transparent;
+}
+
+/* subtle focus states */
+.reuse-row input[type="checkbox"]:focus {
+  outline: 2px solid rgba(11, 107, 79, 0.12);
+}
+.reuse-modal-header .close {
+  background: transparent;
+  border: 1px solid rgba(11, 47, 35, 0.06);
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .reuse-modal-card {
+    width: 95%;
+    padding: 14px;
+  }
+  .reuse-row {
+    padding: 10px 8px;
+  }
+  .reuse-modal-header h3 {
+    font-size: 18px;
+  }
+}

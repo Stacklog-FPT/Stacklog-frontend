@@ -68,7 +68,8 @@ const AddCategoryByReuse = ({ classId, token, dispatch, onClose }) => {
           scoreCategoryComment:
             item.scoreCategoryComment || item.comment || null,
           classId,
-          scoreItems: item.scoreItems || item.items || [],
+          scoreItems: [],
+          isReusable: false,
         };
         await saveScoreCategory(payload, token, dispatch);
       }

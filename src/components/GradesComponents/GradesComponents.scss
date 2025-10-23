@@ -66,7 +66,7 @@
           border: none;
           color: #fff;
           background-color: var(--bg--primary-color);
-          width: 88px;
+          width: 150px;
           height: 44px;
           padding: 5px 5px;
           border-radius: 10px;
@@ -75,10 +75,9 @@
             font-weight: 600;
             font-size: 14px;
             line-height: 21px;
-
           }
           i {
-            padding-left: 5px;
+            padding-right: 5px;
           }
         }
       }
@@ -354,7 +353,7 @@
 
   .modal__input:focus {
     border-color: rgba(4, 87, 69, 0.9);
-    box-shadow: 0 4px 10px rgba(4,87,69,0.06);
+    box-shadow: 0 4px 10px rgba(4, 87, 69, 0.06);
   }
 
   .modal__textarea {
@@ -406,7 +405,7 @@
   .modal__card input[type="text"]:focus,
   .modal__card input[type="number"]:focus {
     border-color: rgba(4, 87, 69, 0.9);
-    box-shadow: 0 4px 10px rgba(4,87,69,0.08);
+    box-shadow: 0 4px 10px rgba(4, 87, 69, 0.08);
   }
 
   .modal__actions {
@@ -478,7 +477,8 @@
       text-align: left;
     }
     /* scale down pills for space */
-    .grades__component .isPassed, .grades__component .notPassed {
+    .grades__component .isPassed,
+    .grades__component .notPassed {
       min-width: 48px;
       padding: 4px 10px;
       font-size: 12px;

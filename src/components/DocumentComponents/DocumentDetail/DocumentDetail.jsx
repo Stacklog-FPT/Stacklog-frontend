@@ -9,6 +9,7 @@ const DocumentDetail = ({ id, onClose }) => {
   const { user } = useAuth();
   const documentPerson = useSelector((state) => state.document.documentPerson ?? []);
   const documentDetail = documentPerson?.find((doc) => doc.documentId === id);
+  console.log('Document Detail Rendered:', documentDetail);
   const [title, setTitle] = useState(documentDetail?.documentTitle || '');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './DocumentDetail.scss';
 import { useSelector, useDispatch } from 'react-redux';
 import { FaTimes } from 'react-icons/fa';
@@ -9,10 +9,12 @@ const DocumentDetail = ({ id, onClose }) => {
   const { user } = useAuth();
   const documentPerson = useSelector((state) => state.document.documentPerson ?? []);
   const documentDetail = documentPerson?.find((doc) => doc.documentId === id);
+  console.log('Document Detail Rendered:', documentDetail);
   const [title, setTitle] = useState(documentDetail?.documentTitle || '');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+
   useEffect(() => {
     setTitle(documentDetail?.documentTitle || '');
   }, [documentDetail]);
@@ -36,14 +38,34 @@ const DocumentDetail = ({ id, onClose }) => {
       })),
     };
 
-    console.log('payload document: ', payload);
-
     updateDocument(payload, user.token, dispatch)
       .then(() => console.log('Documents saved!'))
       .catch((err) => console.error(err));
 
     setIsEditing(false);
   };
+
+  const getViewerUrl = (url, contentType) => {
+    if (!url) return null;
+
+    if (contentType?.includes('pdf')) {
+      return url;
+    } else if (
+      contentType?.includes('word') ||
+      url.endsWith('.doc') ||
+      url.endsWith('.docx') ||
+      url.endsWith('.xls') ||
+      url.endsWith('.xlsx')
+    ) {
+      return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
+    } else if (contentType?.includes('image')) {
+      return url;
+    } else {
+      return `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
+    }
+  };
+
+  const previewUrl = getViewerUrl(documentDetail.documentPath, documentDetail.documentContentType);
 
   return (
     <div className="document__detail">
@@ -71,7 +93,7 @@ const DocumentDetail = ({ id, onClose }) => {
           </button>
         </div>
 
-        {/* Content */}
+        {/* Info */}
         <div className="document__detail__content">
           <div className="detail-item">
             <strong>Type:</strong> <span>{documentDetail.documentType}</span>
@@ -85,17 +107,25 @@ const DocumentDetail = ({ id, onClose }) => {
           <div className="detail-item">
             <strong>Path:</strong>{' '}
             <a href={documentDetail.documentPath} target="_blank" rel="noopener noreferrer">
-              Open Document
+              Open in new tab
             </a>
           </div>
-          <div className="detail-item">
-            <strong>Groups:</strong>
-            <ul>
-              {documentDetail.documentLocations.map((loc) => (
-                <li key={loc.documentLocationId}>{loc.groupId}</li>
-              ))}
-            </ul>
-          </div>
+
+          {previewUrl && (
+            <div className="document__preview">
+              <iframe
+                src={previewUrl}
+                title="Document Preview"
+                style={{
+                  width: '100%',
+                  height: '600px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                }}
+                allowFullScreen
+              ></iframe>
+            </div>
+          )}
         </div>
       </div>
     </div>

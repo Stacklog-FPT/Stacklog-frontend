@@ -15,6 +15,17 @@ export const fetchUserById = async (token, id) => {
     throw new Error(error.message);
   }
 };
+
+export const updateUserProfile = async (token, userId, profileData) => {
+  if (!token) throw new Error('Unauthorized: No token provided');
+  if (!userId) throw new Error('Invalid user ID');
+
+  try {
+    const response = await axios.post(`${API_AUTH}auth`);
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
 const userApi = () => {
   const { postData, isLoading, error, data } = usePostApi();
 

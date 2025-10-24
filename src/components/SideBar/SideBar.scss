@@ -7,7 +7,7 @@ $color-hover: #045745;
 .navbar-container {
   display: flex;
   flex-direction: column;
-  width: 288px;
+  width: 300px;
   height: auto;
   transition: width 0.3s ease;
   background: var(--bg--nav);
@@ -507,4 +507,3 @@ $color-hover: #045745;
     z-index: 5999;
   }
 }
-

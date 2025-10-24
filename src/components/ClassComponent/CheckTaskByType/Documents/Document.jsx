@@ -8,6 +8,7 @@ import { useAuth } from '../../../../context/AuthProvider';
 import { deleteDocumentApi, getDocumentById } from '../../../../service/DocumentService';
 import { useDispatch } from 'react-redux';
 import { FaTrash } from 'react-icons/fa';
+import DocumentDetail from '../../../DocumentComponents/DocumentDetail/DocumentDetail';
 
 const Document = () => {
   // Get id from param
@@ -17,6 +18,14 @@ const Document = () => {
   // Get data from Redux and dispatch if have anything changes
   const { documents } = useSelector((state) => state.document);
   const dispatch = useDispatch();
+
+  // State to control show detail file
+  const [isShowDetail, setIsShowDetail] = React.useState({
+    documentId: '',
+    status: false,
+  });
+
+  console.log('Debug: ', isShowDetail);
 
   // Show upload variable
   const [isShowUpload, setIsShowUpload] = React.useState(false);
@@ -49,26 +58,32 @@ const Document = () => {
     setIsShowUpload(false);
   };
 
+  // Get documents by group id
   const handleGetDocuments = async () => {
     const res = await getDocumentById(groupId, user.token, dispatch);
     console.log(res);
   };
 
+  // Handle delete document
   const handleDeleteDocument = async (id) => {
     await deleteDocumentApi(id, user.token, dispatch);
   };
 
-  React.useEffect(() => {
-    handleGetDocuments();
-  }, [groupId]);
+  // Handle see detail
+  const handleSeeDetail = (documentId) => {
+    setIsShowDetail({ documentId: documentId, status: true });
+  };
 
   React.useEffect(() => {
+    handleGetDocuments();
+    // Event listener for esc key
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         setIsShowUpload(false);
       }
     });
-  }, []);
+  }, [groupId]);
+
   return (
     <>
       <div className="document">
@@ -92,6 +107,7 @@ const Document = () => {
                   <div
                     className="document__recent__container__main__content__item d-flex align-items-center justify-content-between"
                     key={item.documentId}
+                    onClick={() => handleSeeDetail(item.documentId)}
                   >
                     <div className="document__recent__container__main__content__item__content">
                       <span className="document__recent__container__main__content__item__content__title">
@@ -138,6 +154,12 @@ const Document = () => {
         </div>
       </div>
       {isShowUpload && <UploadFile onClose={handleCloseModal} isGroup={true} />}
+      {isShowDetail && (
+        <DocumentDetail
+          id={isShowDetail.documentId}
+          onClose={() => setIsShowDetail({ documentId: '', status: false })}
+        />
+      )}
     </>
   );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import ClassList from '../../components/ClassListComponent/ClassList';
 import AddClass from '../../components/ClassListComponent/AddClass/AddClass';
-import Detailstudent from '../../components/ClassListComponent/DetailStudent/DetailStudent';
+import DetailStudent from '../../components/ClassListComponent/DetailStudent/DetailStudent';
 import './TaskPage.scss';
 
 const TaskPage = () => {
@@ -24,7 +24,7 @@ const TaskPage = () => {
       />
       {activityAddClass && <AddClass handleActivityAddClass={handleActivityAddClass} />}
       {activeDetailStudent && (
-        <Detailstudent handleActiveDetailStudent={handleActiveDetailStudent} />
+        <DetailStudent handleActiveDetailStudent={handleActiveDetailStudent} />
       )}
     </div>
   );

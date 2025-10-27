@@ -1,14 +1,14 @@
-import React from "react";
-import "./DetailStudent.scss";
-const Detailstudent = ({ student, handleActiveDetailStudent }) => {
+import React from 'react';
+import './DetailStudent.scss';
+const DetailStudent = ({ student, handleActiveDetailStudent }) => {
   React.useEffect(() => {
     const handleEsc = (e) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         handleActiveDetailStudent();
       }
     };
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
   }, [handleActiveDetailStudent]);
 
   if (!student) return null;
@@ -42,4 +42,4 @@ const Detailstudent = ({ student, handleActiveDetailStudent }) => {
   );
 };
 
-export default Detailstudent;
+export default DetailStudent;

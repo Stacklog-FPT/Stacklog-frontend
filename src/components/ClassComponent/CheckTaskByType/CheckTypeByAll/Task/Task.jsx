@@ -139,27 +139,9 @@ const Task = ({ isDraggingOverlay, onTaskAdded, handleDeleteReRender, ...props }
 
     if (result.isConfirmed) {
       try {
-        const response = await deleteTaskApi(user.token, task.taskId, dispatch); // Change taskId before mockup with BE
+        const response = await deleteTaskApi(user.token, task.taskId, dispatch);
         console.log(response);
         if (response.data === 'Delete success') {
-          //   flag = true;
-          //   setShowSubTask(false);
-
-          //   await axios.post('http://localhost:3000/notifications', {
-          //     id: Math.random().toString(16).slice(2, 6),
-          //     title: `Delete task ${task.task_title} by ${user.username}`,
-          //     author: {
-          //       _id: Math.random(),
-          //       name: user.username || 'Unknown',
-          //       avatar:
-          //         user.avatar ||
-          //         'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
-          //     },
-          //     createdAt: new Date().toISOString().split('T')[0],
-          //     isRead: false,
-          //     _id: Math.random(),
-          //   });
-          // }
           Swal.fire('Deleted!', 'Task was removed successfully.', 'success');
         }
       } catch (error) {

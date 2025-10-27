@@ -9,6 +9,7 @@ import { deleteDocumentApi, getDocumentById } from '../../../../service/Document
 import { useDispatch } from 'react-redux';
 import { FaTrash } from 'react-icons/fa';
 import DocumentDetail from '../../../DocumentComponents/DocumentDetail/DocumentDetail';
+import Swal from 'sweetalert2';
 
 const Document = () => {
   // Get id from param
@@ -25,8 +26,6 @@ const Document = () => {
     status: false,
   });
 
-  console.log('Debug: ', isShowDetail);
-
   // Show upload variable
   const [isShowUpload, setIsShowUpload] = React.useState(false);
 
@@ -34,14 +33,17 @@ const Document = () => {
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = React.useState(1);
 
-  // tính currentItems mỗi render
-  const currentItems = documents
-    .filter((item) => item !== null)
-    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const filteredDocuments = documents.filter(
+    (item) => item !== null && item.documentLocations?.some((loc) => loc.groupId === groupId),
+  );
 
-  const totalPages = Math.ceil(documents.length / itemsPerPage);
+  const currentItems = filteredDocuments.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
 
-  // reset page khi documents thay đổi
+  const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
+
   React.useEffect(() => {
     setCurrentPage(1);
   }, [documents]);
@@ -61,12 +63,31 @@ const Document = () => {
   // Get documents by group id
   const handleGetDocuments = async () => {
     const res = await getDocumentById(groupId, user.token, dispatch);
-    console.log(res);
   };
 
   // Handle delete document
-  const handleDeleteDocument = async (id) => {
-    await deleteDocumentApi(id, user.token, dispatch);
+  const handleDeleteDocument = async (e, id) => {
+    e.stopPropagation();
+    const result = await Swal.fire({
+      title: 'Are you sure to delete this doc?',
+      text: "This action can't completed!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#045745',
+      cancelButtonColor: '#c8cad4',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+    });
+    console.log(result);
+    if (result.isConfirmed) {
+      const res = await deleteDocumentApi(id, user.token, dispatch);
+      console.log(res);
+      if (res) {
+        Swal.fire('Deleted!', 'This doc was removed successfully.', 'success');
+      } else {
+        Swal.fire('Error!', 'Something went wrong during deletion.', 'error');
+      }
+    }
   };
 
   // Handle see detail
@@ -118,7 +139,7 @@ const Document = () => {
                       </span>
                     </div>
                     <div className="document__recent__container__main__content__item__bin">
-                      <FaTrash onClick={() => handleDeleteDocument(item.documentId)} />
+                      <FaTrash onClick={(e) => handleDeleteDocument(e, item.documentId)} />
                     </div>
                   </div>
                 );

@@ -33,15 +33,15 @@ export const documentSlice = createSlice({
       state.pending = false;
     },
     deleteDocument: (state, action) => {
-      console.log(action.payload);
-      state.documents = state.documents.filter((item) => item.documentId !== action.payload);
-      state.pending = false;
-    },
-    deleteDocumentPerson: (state, action) => {
-      console.log(action.payload);
-      state.documentPerson = state.documentPerson.filter(
-        (item) => item.documentId !== action.payload,
-      );
+      const documentId = action.payload;
+      const getDocumentPerson = state.documentPerson.find((item) => item === documentId);
+      console.log('Document Person has: ', getDocumentPerson);
+      state.documents = state.documents.filter((item) => item.documentId !== documentId);
+      if (getDocumentPerson) {
+        state.documentPerson = state.documentPerson.filter(
+          (item) => item.documentId !== documentId,
+        );
+      }
       state.pending = false;
     },
 

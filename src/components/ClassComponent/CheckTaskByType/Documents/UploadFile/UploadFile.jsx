@@ -123,8 +123,6 @@ const UploadFile = ({ onClose, isGroup }) => {
         documentPath: selectedDocument.documentPath,
         documentLocations: [{ documentLocationId: null, groupId: groupId }],
       };
-
-      console.log('before payload: ', payload);
       await uploadDocumentByGroup(payload, user.token, dispatch);
       setUploading(false);
     } else {

@@ -180,8 +180,11 @@ export const deleteDocumentApi = async (documentId, token, dispatch) => {
     });
 
     dispatch(deleteDocument(documentId));
-    dispatch(deleteDocumentPerson(documentId));
-  } catch (e) {}
+
+    return res;
+  } catch (e) {
+    dispatch(setError(e.message));
+  }
 };
 
 export const updateDocument = async (data, token, dispatch) => {

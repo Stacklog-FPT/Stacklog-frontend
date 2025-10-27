@@ -36,8 +36,8 @@ const routes = [
         children: [
           { path: '/', element: <Home /> },
           { path: '/tasks-self/', element: <TaskSelfPage /> },
-          { path: '/tasks/:groupId', element: <ClassPage /> }, // Task
-          { path: '/class', element: <TaskPage /> }, // Class
+          { path: '/tasks/:groupId', element: <ClassPage /> },
+          { path: '/class', element: <TaskPage /> },
           { path: '/schedule', element: <SchedulePage /> },
           { path: '/documents', element: <DocumentPage /> },
           { path: '/chatbox', element: <ChatPage /> },
@@ -84,11 +84,13 @@ const routes = [
       </AuthProvider>
     ),
   },
+
   {
-    path: '/404',
+    path: '*',
     element: <NotFoundPage />,
   },
 ];
+
 const Routes = () => {
   const router = createBrowserRouter(routes);
   return <RouterProvider router={router} />;

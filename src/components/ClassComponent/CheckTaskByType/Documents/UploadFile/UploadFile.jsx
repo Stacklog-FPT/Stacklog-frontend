@@ -33,6 +33,7 @@ const UploadFile = ({ onClose, isGroup }) => {
     documentType: 'NORMAL',
     documentLocations: [],
   });
+  const toast = toast();
 
   const dispatch = useDispatch();
   const modalRef = useRef(null);
@@ -103,7 +104,12 @@ const UploadFile = ({ onClose, isGroup }) => {
       documentLocations: groupLocations,
     };
 
-    await uploadDocument(payload, user.token, dispatch);
+    const res = await uploadDocument(payload, user.token, dispatch);
+    if (res.status === 200) {
+      toast.success('Upload successfully');
+    } else {
+      toast.success('Something went wrong!');
+    }
     setUploading(false);
   };
 
@@ -122,7 +128,14 @@ const UploadFile = ({ onClose, isGroup }) => {
         documentPath: selectedDocument.documentPath,
         documentLocations: [{ documentLocationId: null, groupId: groupId }],
       };
-      await uploadDocumentByGroup(payload, user.token, dispatch);
+      const res = await uploadDocumentByGroup(payload, user.token, dispatch);
+
+      if (res.status === 200) {
+        toast.success('Upload successfully');
+      } else {
+        toast.success('Something went wrong!');
+      }
+      setUploading(false);
       setUploading(false);
     } else {
       if (!file) {
@@ -135,7 +148,13 @@ const UploadFile = ({ onClose, isGroup }) => {
         documentType: documentData.documentType,
         documentLocations: [{ documentLocationId: null, groupId: groupId }],
       };
-      await uploadDocument(payload, user.token, dispatch);
+      const res = await uploadDocument(payload, user.token, dispatch);
+      if (res.status === 200) {
+        toast.success('Upload successfully');
+      } else {
+        toast.success('Something went wrong!');
+      }
+      setUploading(false);
     }
   };
 

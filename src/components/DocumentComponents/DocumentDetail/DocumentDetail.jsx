@@ -5,6 +5,7 @@ import { FaTimes } from 'react-icons/fa';
 import { updateDocument } from '../../../service/DocumentService';
 import { useAuth } from '../../../context/AuthProvider';
 import Swal from 'sweetalert2';
+import { formatFileSize } from '../../../helper/calculateByte';
 
 const DocumentDetail = ({ id, onClose }) => {
   const { user } = useAuth();
@@ -166,7 +167,7 @@ const DocumentDetail = ({ id, onClose }) => {
               <strong>Content Type:</strong> <span>{documentDetail.documentContentType}</span>
             </div>
             <div className="detail-item">
-              <strong>Size:</strong> <span>{documentDetail.documentSize} KB</span>
+              <strong>Size:</strong> <span>{formatFileSize(documentDetail.documentSize)}</span>
             </div>
             <div className="detail-item">
               <strong>Path:</strong>{' '}
@@ -174,10 +175,7 @@ const DocumentDetail = ({ id, onClose }) => {
                 Open in new tab
               </a>
             </div>
-            <div className="detail-item">
-              <strong>Download this file: </strong>
-              {handleShowDownLoadFile()}
-            </div>
+            {handleShowDownLoadFile}
           </div>
 
           {previewUrl && (

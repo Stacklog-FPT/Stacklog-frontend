@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { FaTrash } from 'react-icons/fa';
 import DocumentDetail from '../../../DocumentComponents/DocumentDetail/DocumentDetail';
 import Swal from 'sweetalert2';
+import { formatFileSize } from '../../../../helper/calculateByte';
 
 const Document = () => {
   // Get id from param
@@ -135,7 +136,7 @@ const Document = () => {
                         {item.documentTitle}
                       </span>
                       <span className="document__recent__container__main__content__item__content__description">
-                        {item.documentSize} KB
+                        {formatFileSize(item.documentSize)}
                       </span>
                     </div>
                     <div className="document__recent__container__main__content__item__bin">

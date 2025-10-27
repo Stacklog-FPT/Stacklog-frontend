@@ -34,7 +34,7 @@ export const documentSlice = createSlice({
     },
     deleteDocument: (state, action) => {
       const documentId = action.payload;
-      const getDocumentPerson = state.documentPerson.find((item) => item === documentId);
+      const getDocumentPerson = state.documentPerson.find((item) => item.documentId === documentId);
       console.log('Document Person has: ', getDocumentPerson);
       state.documents = state.documents.filter((item) => item.documentId !== documentId);
       if (getDocumentPerson) {

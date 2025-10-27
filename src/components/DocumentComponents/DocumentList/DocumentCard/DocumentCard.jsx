@@ -1,6 +1,7 @@
 import React from 'react';
 import './DocumentCard.scss';
 import DocumentDetail from '../../DocumentDetail/DocumentDetail';
+import { formatFileSize } from '../../../../helper/calculateByte';
 const DocumentCard = ({ title, data }) => {
   const [isOpenDetail, showOpenDetail] = React.useState(false);
   const [documentId, setDocumentId] = React.useState('');
@@ -46,7 +47,7 @@ const DocumentCard = ({ title, data }) => {
                       {item.documentTitle}
                     </span>
                     <span className="document__card__container__list__data__item__content__size">
-                      {item.documentSize} KB
+                      {formatFileSize(item.documentSize)}
                     </span>
                   </div>
                 </div>

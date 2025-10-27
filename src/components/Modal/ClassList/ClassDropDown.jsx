@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectClass } from '../../../redux/slice/semesterSlice';
-import { NavLink } from 'react-router-dom';
 import GroupDropDown from '../GroupList/GroupDropDown';
-import './ClassDropdown.scss';
+import './ClassDropDown.scss';
 
 const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
   const { classes } = useSelector((state) => state.class);

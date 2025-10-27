@@ -109,7 +109,6 @@ const UploadFile = ({ onClose, isGroup }) => {
 
   const handleUploadFileGroup = async () => {
     if (!isNewDocument) {
-      console.log('Voo day!');
       if (!selectedDocument.documentId) {
         toast.error('Please select a document to attach!');
         return;
@@ -126,6 +125,17 @@ const UploadFile = ({ onClose, isGroup }) => {
       await uploadDocumentByGroup(payload, user.token, dispatch);
       setUploading(false);
     } else {
+      if (!file) {
+        toast.error('File is empty!');
+        return;
+      }
+      const payload = {
+        file,
+        documentTitle: documentData.documentTitle,
+        documentType: documentData.documentType,
+        documentLocations: [{ documentLocationId: null, groupId: groupId }],
+      };
+      await uploadDocument(payload, user.token, dispatch);
     }
   };
 

@@ -33,7 +33,6 @@ const UploadFile = ({ onClose, isGroup }) => {
     documentType: 'NORMAL',
     documentLocations: [],
   });
-  const toast = toast();
 
   const dispatch = useDispatch();
   const modalRef = useRef(null);

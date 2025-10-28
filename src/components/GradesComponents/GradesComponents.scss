@@ -4,6 +4,8 @@
   border-radius: 20px;
   background-color: var(--bg--nav);
   margin-top: 20px;
+  position: relative; /* allow absolute child positioning (pagination) */
+  padding-bottom: 84px; /* reserve space at bottom so pagination doesn't overlap content */
 
   &__container {
     display: flex;
@@ -235,6 +237,79 @@
       font-size: 13px;
       line-height: 1;
     }
+    /* Student class/group list (compact, matching site look) */
+    .student-list-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start; /* keep class list left-aligned inside wrapper */
+      gap: 8px;
+      padding: 0 12px 8px 12px;
+      width: 100%; /* span the full card width so pagination can center across the card */
+      box-sizing: border-box;
+    }
+
+    .student-class-list {
+      width: 100%;
+      max-width: 420px; /* keep the list narrow so pagination centers under it */
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 8px 0;
+      box-sizing: border-box;
+    }
+
+    .student-class-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-start;
+    }
+
+    .student-class-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 4px;
+    }
+
+    .student-groups {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .student-group-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      background: #fff;
+      color: #0f172a;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 120ms ease, box-shadow 120ms ease,
+        background-color 120ms ease, color 120ms ease;
+      box-shadow: 0 1px 0 rgba(2, 6, 23, 0.03);
+    }
+
+    .student-group-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(4, 87, 69, 0.08);
+      background-color: var(--bg--primary-color);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .student-group-button.unassigned {
+      background: #f8fafc;
+      color: #6b7280;
+      border-color: #e6edf3;
+      font-weight: 600;
+    }
     .pagination {
       display: flex;
       align-items: center;
@@ -278,6 +353,22 @@
         font-weight: 500;
         color: #333;
       }
+    }
+
+    /* center student-class list pagination and place at bottom space */
+    .student-pagination {
+      /* pinned to bottom-center of the card */
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      width: auto;
+      box-sizing: border-box;
+      background: transparent;
+      padding: 6px 8px;
     }
   }
 

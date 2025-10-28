@@ -221,10 +221,23 @@
                 text-align: center;
               }
             }
+            /* ensure first column content uses flex and allows children to flex correctly */
+            tr > td:first-child {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            }
             /* allow horizontal scrolling on narrow screens */
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
           }
+        }
+        /* Footer area with close button */
+        .detail__score__container__right__footer {
+          width: 100%;
+          display: flex;
+          justify-content: flex-end;
+          padding: 12px 10px 4px 10px;
         }
         .score__input {
           width: 110px;
@@ -238,6 +251,44 @@
           transition: box-shadow 0.12s ease, border-color 0.12s ease;
         }
 
+        /* Inline category inputs should visually match the value input */
+        .inline-cat-name {
+          width: 100%;
+          padding: 8px 10px;
+          border-radius: 8px;
+          border: 1px solid rgba(0,0,0,0.12);
+          background: #fff;
+          font-size: 14px;
+          color: var(--text-color);
+          outline: none;
+          transition: box-shadow 0.12s ease, border-color 0.12s ease;
+          /* allow filling flex cell and handle overflow correctly */
+          box-sizing: border-box;
+          display: block;
+          flex: 1 1 auto;
+          min-width: 0;
+        }
+
+        .inline-cat-weight {
+          width: 80px;
+          padding: 8px 10px;
+          border-radius: 8px;
+          border: 1px solid rgba(0,0,0,0.12);
+          background: #fff;
+          font-size: 14px;
+          color: var(--text-color);
+          outline: none;
+          transition: box-shadow 0.12s ease, border-color 0.12s ease;
+          box-sizing: border-box;
+          display: inline-block;
+          flex: 0 0 auto;
+        }
+
+        .inline-cat-name:focus,
+        .inline-cat-weight:focus {
+          box-shadow: 0 0 0 3px rgba(20,112,67,0.06);
+          border-color: rgba(20,112,67,0.4);
+        }
         .score__input:focus {
           box-shadow: 0 0 0 3px rgba(20,112,67,0.06);
           border-color: rgba(20,112,67,0.4);
@@ -245,7 +296,7 @@
 
         .score__actions {
           display: flex;
-          gap: 8px;
+          gap: 6px;
           justify-content: center;
           align-items: center;
         }
@@ -302,6 +353,61 @@
           border-color: rgba(20,112,67,0.22);
           color: #0f5132;
         }
+
+        /* Danger / Delete button styling and visual alignment so it sits next to Edit/Eye
+           We keep the delete button in its own TD (JSX) but visually overlap it into the
+           Action column so users see Edit / Eye / Trash grouped together. */
+        .btn--danger {
+          color: #fff;
+          background: #842029;
+          border-color: rgba(0,0,0,0.08);
+          padding: 6px 10px;
+          border-radius: 8px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        }
+
+        /* make table rows a positioning container so we can overlap the delete button */
+        table tbody tr {
+          position: relative;
+        }
+
+        /* reduce visual gap by pulling the delete button leftwards into the previous cell
+           and ensuring it sits above other content */
+        table tbody td:last-child {
+          padding-left: 6px; /* smaller padding so overlap looks natural */
+          width: auto; /* allow natural width */
+        }
+
+        table tbody td:last-child .btn--danger {
+          position: relative; /* relative so transform works predictably */
+          left: -25px; /* nudge left to sit closer to the Edit/Eye group */
+          z-index: 3; /* make sure it sits above adjacent cells */
+        }
+
+        /* when the actions cell already contains buttons, make sure they don't wrap and align center */
+        table tbody td:nth-child(4) .score__actions,
+        table tbody td:nth-child(4) > div {
+          display: inline-flex;
+          gap: 8px;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* slight responsive tweaks: on small screens, revert overlap to avoid clipping */
+        @media (max-width: 480px) {
+          table tbody td:last-child .btn--danger {
+            left: 0;
+            margin-left: 6px;
+            z-index: 1;
+          }
+          table tbody td:nth-child(4) .score__actions,
+          table tbody td:nth-child(4) > div {
+            gap: 6px;
+          }
+        }
       }
       /* Pill styles for Average/Status to match list and avoid clipping */
       .isPassed {
@@ -330,6 +436,32 @@
         line-height: 1;
       }
     }
+  }
+
+  /* top-right close button for the detail popup */
+  .modal-close-top-right {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1100;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color);
+    font-size: 16px;
+  }
+  .modal-close-top-right i {
+    pointer-events: none;
+    color: black;
+  }
+  .modal-close-top-right:focus {
+    outline: 2px solid rgba(20,112,67,0.18);
+    outline-offset: 2px;
   }
 
   /* Responsive adjustments for modal stacking and tables */

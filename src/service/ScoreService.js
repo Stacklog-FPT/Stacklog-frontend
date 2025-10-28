@@ -43,6 +43,12 @@ export const saveScoreCategory = async (payload, token, dispatch) => {
   }
 };
 
+export const updateScoreCategory = async (categoryId, updates = {}, token, dispatch) => {
+  if (!categoryId) throw new Error('Missing categoryId');
+  const payload = { ...updates, scoreCategoryId: categoryId };
+  return await saveScoreCategory(payload, token, dispatch);
+};
+
 export const saveScore = async (payload, token, dispatch) => {
   if (!payload) throw new Error("Missing payload");
   try {
@@ -92,6 +98,22 @@ export const getListScoreCategoryReuse = async ( token, dispatch) => {
     return res.data;
   } catch (err) {
     if (dispatch) dispatch(apiFailure(err.message || 'Failed to check reuse'));
+    throw err;
+  }
+};
+
+export const deleteScoreCategory = async (categoryId, token, dispatch) => {
+  if (!categoryId) throw new Error('Missing categoryId');
+  try {
+    if (dispatch) dispatch(apiStart());
+    const url = `${SCORE_API}/category/delete/${categoryId}`;
+    const res = await axios.delete(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+    if (dispatch) dispatch(apiSuccess(res.data));
+    return res.data;
+  } catch (err) {
+    if (dispatch) dispatch(apiFailure(err.message || 'Failed to delete score category'));
     throw err;
   }
 };

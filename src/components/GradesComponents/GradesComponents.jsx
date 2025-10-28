@@ -58,6 +58,10 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
   });
   const [savingCategory, setSavingCategory] = React.useState(false);
 
+  // pagination for student-class list (when role === STUDENT)
+  const [studentPage, setStudentPage] = React.useState(1);
+  const classesPerPage = 6; // adjust as desired
+
   const itemsPerPage = 5;
   const totalPages = Math.ceil(students.length / itemsPerPage);
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -581,6 +585,11 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
     };
   }, [currentSemesterId, token, dispatch, uid]);
 
+  // reset student page when classes list changes
+  React.useEffect(() => {
+    setStudentPage(1);
+  }, [classes]);
+
   const handleClassChange = (e) => {
     const classId = e.target.value;
     setSelectedClassId(classId);
@@ -746,61 +755,178 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
       <div className="grades__component__container">
         <div className="grades__component__container__filter__class">
           <div className="grades__component__container__filter__class__feature">
-            <select
-              aria-label="Select class"
-              onChange={handleClassChange}
-              value={selectedClassId}
-            >
-              {loading ? (
-                <option value="" disabled>
-                  Loading...
-                </option>
-              ) : (
-                <>
-                  <option value="" disabled>
-                    -- Class --
-                  </option>
-                  {classes.map((item) => (
-                    <option
-                      key={item.classesId || item._id}
-                      value={item.classesId || item._id}
-                    >
-                      {item.classesName ||
-                        item.name ||
-                        item.className ||
-                        "Unnamed class"}
-                    </option>
-                  ))}
-                </>
-              )}
-            </select>
+            {/* Student view: show list of classes & groups; clicking a group opens Detail for the current student */}
+            {isStudent ? (
+              (() => {
+                const candidateIds = new Set([
+                  uid,
+                  tokenId,
+                  String(user?.user_id || ""),
+                  String(user?.work_id || ""),
+                ].filter(Boolean));
 
-            <select
-              aria-label="Select group"
-              onChange={handleGroupChange}
-              value={selectedGroupId}
-              disabled={isStudent}
-            >
-              {loading ? (
-                <option value="" disabled>
-                  Loading...
-                </option>
-              ) : (
-                <>
-                  <option value="" disabled>
-                    -- Group --
-                  </option>
-                  {area.map((item) => (
-                    <option key={item._id} value={item._id}>
-                      {item.name ||
-                        item.groupsName ||
-                        item.groupName ||
-                        "Unnamed group"}
+                const candidateEmail = user?.email ? String(user.email).toLowerCase() : "";
+
+                const groupHasStudent = (g) => {
+                  const groupStudents = g.groupStudents || g.raw?.groupStudents || [];
+                  if (!Array.isArray(groupStudents) || groupStudents.length === 0) return false;
+                  return groupStudents.some((s) => {
+                    const sid = String(s?.userId ?? s?.user_id ?? s?.groupStudentId ?? s?.id ?? s?._id ?? "");
+                    if (sid && candidateIds.has(sid)) return true;
+                    const semail = String(s?.email ?? s?.user?.email ?? "").toLowerCase();
+                    if (candidateEmail && semail && candidateEmail === semail) return true;
+                    const swork = String(s?.work_id ?? s?.user?.work_id ?? "").toLowerCase();
+                    const candidateWork = String(user?.work_id || "").toLowerCase();
+                    if (candidateWork && swork && candidateWork === swork) return true;
+                    return false;
+                  });
+                };
+
+                // Build a student object that includes multiple identifier fields
+                // so DetailScore can reliably match scoreItems regardless of id shape.
+                const currentStudent = {
+                  _id: user?._id || user?.user_id || user?.id || uid || tokenId,
+                  userId: user?.user_id || uid || tokenId,
+                  work_id: user?.work_id || user?.workId || "",
+                  id: user?.work_id || user?.user_id || user?.id || uid || tokenId,
+                  name: user?.full_name || user?.work_id || user?.user_id || user?.username || "You",
+                  email: user?.email || "",
+                  avatar: user?.avatar_link || "",
+                };
+
+                // Find classes that have at least one group containing the student
+                const studentClasses = (classes || [])
+                  .map((c) => {
+                    const groups = (c.groups || []).filter((g) => groupHasStudent(g));
+                    return groups.length > 0 ? { class: c, groups } : null;
+                  })
+                  .filter(Boolean);
+
+                // pagination for studentClasses (client-side)
+                const totalStudentPages = Math.max(1, Math.ceil(studentClasses.length / classesPerPage));
+                const startIdx = (studentPage - 1) * classesPerPage;
+                const pagedStudentClasses = studentClasses.slice(startIdx, startIdx + classesPerPage);
+
+                return (
+                  <div className="student-list-wrapper">
+                    <div className="student-class-list">
+                      {studentClasses.length === 0 ? (
+                        loading ? (
+                          <div>Loading...</div>
+                        ) : (
+                          <div>No classes available.</div>
+                        )
+                      ) : (
+                        pagedStudentClasses.map(({ class: cls, groups }) => (
+                          <div key={cls.classesId || cls._id} className="student-class-item">
+                            <div className="student-class-name">
+                              {cls.classesName || cls.name || cls.className || "Unnamed class"}
+                            </div>
+                            <div className="student-groups">
+                              {groups.map((g) => {
+                                const gid = g.groupsId || g.groupId || g.id;
+                                const gname = g.groupsName || g.groupName || g.name || "Unnamed group";
+                                return (
+                                  <button
+                                    key={gid}
+                                    className="student-group-button"
+                                    onClick={() =>
+                                      handleActiveDetail({
+                                        student: currentStudent,
+                                        classId: cls.classesId || cls._id,
+                                        groupId: gid,
+                                      })
+                                    }
+                                  >
+                                    {gname}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* pagination controls for student class list */}
+                    {studentClasses.length > classesPerPage && (
+                      <div className="pagination student-pagination">
+                        <button
+                          className="pagination__button"
+                          onClick={() => setStudentPage((p) => Math.max(1, p - 1))}
+                          disabled={studentPage === 1}
+                        >
+                          <i className="fa-solid fa-arrow-left"></i>
+                        </button>
+                        <span className="pagination__info" style={{ marginLeft: 8, marginRight: 8 }}>
+                          {studentPage} / {totalStudentPages}
+                        </span>
+                        <button
+                          className="pagination__button"
+                          onClick={() => setStudentPage((p) => Math.min(totalStudentPages, p + 1))}
+                          disabled={studentPage === totalStudentPages}
+                        >
+                          <i className="fa-solid fa-arrow-right"></i>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()
+            ) : (
+              // Lecturer: keep original select dropdowns
+              <>
+                <select
+                  aria-label="Select class"
+                  onChange={handleClassChange}
+                  value={selectedClassId}
+                >
+                  {loading ? (
+                    <option value="" disabled>
+                      Loading...
                     </option>
-                  ))}
-                </>
-              )}
-            </select>
+                  ) : (
+                    <>
+                      <option value="" disabled>
+                        -- Class --
+                      </option>
+                      {classes.map((item) => (
+                        <option
+                          key={item.classesId || item._id}
+                          value={item.classesId || item._id}
+                        >
+                          {item.classesName || item.name || item.className || "Unnamed class"}
+                        </option>
+                      ))}
+                    </>
+                  )}
+                </select>
+
+                <select
+                  aria-label="Select group"
+                  onChange={handleGroupChange}
+                  value={selectedGroupId}
+                  disabled={isStudent}
+                >
+                  {loading ? (
+                    <option value="" disabled>
+                      Loading...
+                    </option>
+                  ) : (
+                    <>
+                      <option value="" disabled>
+                        -- Group --
+                      </option>
+                      {area.map((item) => (
+                        <option key={item._id} value={item._id}>
+                          {item.name || item.groupsName || item.groupName || "Unnamed group"}
+                        </option>
+                      ))}
+                    </>
+                  )}
+                </select>
+              </>
+            )}
           </div>
           <div className="grades__component__container__filter__class__icon">
             <i className="fa-solid fa-file-arrow-down"></i>
@@ -907,6 +1033,16 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                   onClick={async () => {
                     // only lecturers allowed, defensive check
                     if (user?.role !== "LECTURER") return;
+                    // Validation: require name and a positive weight before creating
+                    const nameTrim = (newCategory.scoreCategoryName || "").trim();
+                    if (!nameTrim) {
+                      alert("Category name is required");
+                      return;
+                    }
+                    if (typeof newCategory.scoreCategoryWeight !== 'number' || Number.isNaN(newCategory.scoreCategoryWeight) || newCategory.scoreCategoryWeight <= 0) {
+                      alert("Category weight is required and must be greater than 0");
+                      return;
+                    }
                     // ensure class selected
                     const classId =
                       selectedClassId ||
@@ -996,7 +1132,12 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                       setSavingCategory(false);
                     }
                   }}
-                  disabled={savingCategory}
+                  disabled={
+                    savingCategory ||
+                    !(newCategory.scoreCategoryName && String(newCategory.scoreCategoryName).trim()) ||
+                    !(typeof newCategory.scoreCategoryWeight === 'number') ||
+                    newCategory.scoreCategoryWeight <= 0
+                  }
                 >
                   {savingCategory ? "Saving..." : "Save"}
                 </button>
@@ -1015,8 +1156,9 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
             onClose={() => setIsReuseOpen(false)}
           />
         )}
-        <div className="grades__component__container__table__list">
-          <table>
+        {!isStudent && (
+          <div className="grades__component__container__table__list">
+            <table>
             <thead>
               <tr>
                 <th>No.</th>
@@ -1047,7 +1189,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                     <td>
                       <div className="name__ava">
                         <img
-                          src={item.avatar || "/public/default-avatar.png"}
+                          src={item.avatar || "/default-avatar.png"}
                           alt={item.name || "avatar"}
                         />
                         <p>{item.name}</p>
@@ -1125,7 +1267,8 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
               )}
             </tbody>
           </table>
-        </div>
+          </div>
+        )}
 
         <div className="pagination">
           {students.length > itemsPerPage && (

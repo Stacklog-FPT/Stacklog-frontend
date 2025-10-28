@@ -10,6 +10,7 @@ const TaskByType = ({ activeType, setActiveType }) => {
     { type: 'Classes', icon: 'fa-solid fa-users' },
     { type: 'Documents', icon: 'fa-solid fa-folder-plus' },
     { type: 'Topic', icon: 'fas fa-tasks' },
+    { type: 'Grade', icon: 'fa-solid fa-square-poll-vertical' },
     { type: 'Chat', icon: 'fa-solid fa-comment' },
 
     // { type: "By Status", icon: "fa-solid fa-chart-line" },
@@ -22,7 +23,9 @@ const TaskByType = ({ activeType, setActiveType }) => {
   return (
     <div className="task-by-type">
       <ul className="task-by-type-list">
-        {taskTypes.map((item, index) => (
+        {taskTypes
+          .filter((item) => item.type !== 'Grade' || String(user?.role || '').toLowerCase() === 'lecturer')
+          .map((item, index) => (
           <li
             className={`task-by-type-element ${activeType === item.type ? 'active' : ''}`}
             onClick={() => setActiveType(item.type)}

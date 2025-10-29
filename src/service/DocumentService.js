@@ -7,8 +7,9 @@ import {
   setPending,
   setDocumentPerson,
   deleteDocument,
-  deleteDocumentPerson,
   addDocumentPerson,
+  updateDocumentRedux,
+  updateDocumentPersonRedux,
 } from '../redux/slice/documentSlice';
 import decodedToken from '../service/DecodeJwt';
 // Port of BE
@@ -36,7 +37,8 @@ export const uploadDocument = async (data, token, dispatch) => {
 
     const cloudRes = await axios.post(uploadUrl, formData);
     const url = cloudRes.data.secure_url;
-    // const fileName = cloudRes.data.original_filename;
+    // ================================== File name for future use
+    // const fileName
     const resourceType = cloudRes.data.resource_type;
     const fileSize = cloudRes.data.bytes;
 
@@ -71,7 +73,6 @@ export const uploadDocumentByGroup = async (data, token, dispatch) => {
     const user = decodedToken(token);
 
     dispatch(setPending());
-    console.log('payload debug: ', data);
     const backendRes = await axios.post(`${DOCUMENT_API}/save`, data, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -81,6 +82,7 @@ export const uploadDocumentByGroup = async (data, token, dispatch) => {
     }
 
     dispatch(addDocument(backendRes.data));
+    return backendRes;
   } catch (e) {
     dispatch(setError(e.message));
   }
@@ -100,7 +102,6 @@ export const getDocumentById = async (groupId, token, dispatch) => {
       },
     });
 
-    console.log('Response data: ', res);
     dispatch(setDocuments(res.data || []));
     return res;
   } catch (e) {
@@ -160,6 +161,9 @@ export const updateDocument = async (data, token, dispatch) => {
       : [res.data.data];
 
     dispatch(setDocuments(documentsArray));
+    dispatch(updateDocumentRedux(res.data));
+    dispatch(updateDocumentPersonRedux(res.data));
+    return res;
   } catch (e) {
     dispatch(setError(e.message));
   }

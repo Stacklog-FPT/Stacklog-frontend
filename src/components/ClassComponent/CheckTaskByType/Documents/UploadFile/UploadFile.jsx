@@ -106,6 +106,7 @@ const UploadFile = ({ onClose, isGroup }) => {
     const res = await uploadDocument(payload, user.token, dispatch);
     if (res.status === 200) {
       toast.success('Upload successfully');
+      onClose?.();
     } else {
       toast.success('Something went wrong!');
     }
@@ -128,11 +129,13 @@ const UploadFile = ({ onClose, isGroup }) => {
         documentLocations: [{ documentLocationId: null, groupId: groupId }],
       };
       const res = await uploadDocumentByGroup(payload, user.token, dispatch);
-
+      console.log('Upload file in group: ', res);
       if (res.status === 200) {
         toast.success('Upload successfully');
+        onClose?.();
       } else {
         toast.success('Something went wrong!');
+        onClose?.();
       }
       setUploading(false);
       setUploading(false);

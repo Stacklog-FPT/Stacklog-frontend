@@ -83,7 +83,6 @@ const Document = () => {
       confirmButtonText: 'Delete',
       cancelButtonText: 'Cancel',
     });
-    console.log(result);
     if (result.isConfirmed) {
       const res = await deleteDocumentApi(id, user.token, dispatch);
       console.log(res);

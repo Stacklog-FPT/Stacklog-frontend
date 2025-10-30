@@ -25,7 +25,7 @@
     &__main__content {
       display: flex;
       align-items: flex-start;
-      justify-content: flex-start;
+      justify-content: space-around;
       gap: 10px;
       flex-wrap: wrap;
       overflow-y: auto;

@@ -4,8 +4,13 @@ import imgLeft from '../../../assets/home/image54.png';
 import taskImg from '../../../assets/home/head/task.png';
 import completeImg from '../../../assets/home/head/complete.png';
 import { useAuth } from '../../../context/AuthProvider';
+import { getPersonalTaskApi } from '../../../service/TaskService';
+import { useSelector, useDispatch } from 'react-redux';
 const Head = () => {
   const { user } = useAuth();
+  const currentSemesterId = useSelector((state) => state.semester.currentSemesterId);
+  const personalTask = useSelector((state) => state.task.personalTask);
+  const dispatch = useDispatch();
   const today = new Date();
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const months = [
@@ -23,10 +28,14 @@ const Head = () => {
     'September',
     'December',
   ];
-
   const dayOfWeeks = days[today.getDay()];
   const month = months[today.getMonth()];
   const date = today.getDate();
+
+  const getTaskPersonal = async () => {
+    getTotalTask();
+    await getPersonalTaskApi(user.token, currentSemesterId, dispatch);
+  };
 
   const getCurrentSession = () => {
     const now = new Date();
@@ -42,6 +51,10 @@ const Head = () => {
       return 'Good Night';
     }
   };
+
+  React.useEffect(() => {
+    getTaskPersonal();
+  }, [user.token, currentSemesterId]);
   return (
     <div className="head-container">
       <div className="head-container-left">
@@ -62,20 +75,19 @@ const Head = () => {
         <div className="head-container-right-task">
           <img src={taskImg} alt="this is img task" />
           <div className="head-container-right-task-content">
-
-            <span className="head-container-right-task-content-title">
-              Task
+            <span className="head-container-right-task-content-title">Task</span>
+            <span className="head-container-right-task-content-sum">
+              {personalTask.DOING.length || 0}
             </span>
-            <span className="head-container-right-task-content-sum">241</span>
           </div>
         </div>
         <div className="head-container-right-task">
           <img src={completeImg} alt="this is img task" />
           <div className="head-container-right-task-content">
-            <span className="head-container-right-task-content-title">
-              Complete
+            <span className="head-container-right-task-content-title">Complete</span>
+            <span className="head-container-right-task-content-sum">
+              {personalTask.COMPLETED.length}
             </span>
-            <span className="head-container-right-task-content-sum">241</span>
           </div>
         </div>
       </div>

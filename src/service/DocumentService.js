@@ -113,14 +113,20 @@ export const getDocumentByUserId = async (token, dispatch) => {
   try {
     if (!token) dispatch(setError('Missing token!'));
     dispatch(setPending(true));
+
     const res = await axios.get(`${DOCUMENT_API}/`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    dispatch(setDocumentPerson(res.data));
-    return res.data;
+    const userId = decodedToken(token).id;
+
+    const documentThatPerson = res.data.filter((doc) => doc.createdBy === userId);
+
+    dispatch(setDocumentPerson(documentThatPerson));
+
+    return documentThatPerson;
   } catch (e) {
     console.error('Something went wrong: ', e.message);
     dispatch(setError(e.message));

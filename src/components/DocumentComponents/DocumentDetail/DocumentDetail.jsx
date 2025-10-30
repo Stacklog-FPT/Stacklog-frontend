@@ -11,10 +11,9 @@ import { getDocumentDetail } from '../../../redux/slice/documentSlice';
 const DocumentDetail = ({ id, onClose }) => {
   const { user } = useAuth();
   const documentPerson = useSelector((state) => state.document.documentPerson ?? []);
-  const documentDetail = useSelector((state) => state.document.documentDetail);
-  console.log(documentDetail);
-  const documentDetailById = documentPerson?.find((doc) => doc.documentId === id);
-  console.log(documentDetailById);
+  // const documentDetail = useSelector((state) => state.document.documentDetail);
+  // console.log(documentDetail);
+  const documentDetail = documentPerson?.find((doc) => doc.documentId === id);
   const [title, setTitle] = useState(documentDetail?.documentTitle || '');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -24,11 +23,11 @@ const DocumentDetail = ({ id, onClose }) => {
   const isResizing = useRef(false);
   const dispatch = useDispatch();
 
-  const handleGetDetail = () => {
-    dispatch(getDocumentDetail(documentDetailById));
-  };
+  // const handleGetDetail = () => {
+  //   dispatch(getDocumentDetail(documentDetailById));
+  // };
   useEffect(() => {
-    handleGetDetail();
+    // handleGetDetail();
     setTitle(documentDetail?.documentTitle || '');
   }, [documentDetail]);
 

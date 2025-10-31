@@ -10,6 +10,7 @@ import Classes from '../../components/Modal/Classes/Classes';
 import Document from '../../components/ClassComponent/CheckTaskByType/Documents/Document';
 import Grade from '../../components/Modal/Grade/Grade';
 import DetailScore from '../../components/GradesComponents/DetailScore/DetailScore';
+import Overall from '../../pages/OverallGroup/OverallGroup';
 import { getScoreCategoriesByClass } from '../../service/ScoreService';
 import { useAuth } from '../../context/AuthProvider';
 const ClassPage = () => {
@@ -87,6 +88,7 @@ const ClassPage = () => {
           />
         )}
         {activeType === 'Chat' && <ClassList />}
+        {activeType === 'Overall' && <Overall />}
       </div>
     </div>
   );

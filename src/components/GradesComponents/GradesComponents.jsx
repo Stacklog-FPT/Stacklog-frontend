@@ -819,17 +819,22 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                       ) : (
                         pagedStudentClasses.map(({ class: cls, groups }) => (
                           <div key={cls.classesId || cls._id} className="student-class-item">
-                            <div className="student-class-name">
-                              {cls.classesName || cls.name || cls.className || "Unnamed class"}
-                            </div>
-                            <div className="student-groups">
-                              {groups.map((g) => {
-                                const gid = g.groupsId || g.groupId || g.id;
-                                const gname = g.groupsName || g.groupName || g.name || "Unnamed group";
-                                return (
+                            {groups.map((g) => {
+                              const gid = g.groupsId || g.groupId || g.id;
+                              const gname = g.groupsName || g.groupName || g.name || "Unnamed group";
+                              const cname = cls.classesName || cls.name || cls.className || "Unnamed class";
+                              // robust group description lookup (try several common fields)
+                              const gdesc =
+                                g.groupsDescriptions ||
+                                "Unassigned";
+                              const mainLabel = `Class ${cname}, Group ${gname}`;
+                              const fullLabel = gdesc
+                                ? `${mainLabel} (Descriptions: ${gdesc})`
+                                : mainLabel;
+                              return (
+                                <div key={gid} className="student-class-item--combined">
                                   <button
-                                    key={gid}
-                                    className="student-group-button"
+                                    className={`student-group-button ${gname === 'unassigned' ? 'unassigned' : ''}`}
                                     onClick={() =>
                                       handleActiveDetail({
                                         student: currentStudent,
@@ -837,12 +842,16 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                                         groupId: gid,
                                       })
                                     }
+                                    title={fullLabel}
                                   >
-                                    {gname}
+                                    <span className="student-group-button__main">{mainLabel}</span>
+                                    {gdesc ? (
+                                      <span className="student-group-button__desc">{`Descriptions: ${gdesc}`}</span>
+                                    ) : null}
                                   </button>
-                                );
-                              })}
-                            </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         ))
                       )}

@@ -4,8 +4,8 @@
   border-radius: 20px;
   background-color: var(--bg--nav);
   margin-top: 20px;
-  position: relative; /* allow absolute child positioning (pagination) */
-  padding-bottom: 84px; /* reserve space at bottom so pagination doesn't overlap content */
+  position: relative;
+  padding-bottom: 84px;
 
   &__container {
     display: flex;
@@ -122,11 +122,11 @@
             }
             &:nth-child(5) {
               width: 145px;
-              text-align: center; /* Average header centered to match pill */
+              text-align: center;
             }
             &:nth-child(6) {
               width: 127px;
-              text-align: center; /* Status header centered to match pill */
+              text-align: center;
             }
           }
         }
@@ -159,11 +159,11 @@
             }
             &:nth-child(5) {
               width: 145px;
-              text-align: center; /* center Average header */
+              text-align: center;
             }
             &:nth-child(6) {
               width: 127px;
-              text-align: center; /* center Status header */
+              text-align: center;
             }
 
             p {
@@ -211,7 +211,6 @@
       }
     }
 
-    /* Match DetailScore pills: larger, centered, with padding */
     .isPassed {
       display: inline-block;
       min-width: 56px;
@@ -237,20 +236,21 @@
       font-size: 13px;
       line-height: 1;
     }
-    /* Student class/group list (compact, matching site look) */
+
     .student-list-wrapper {
       display: flex;
       flex-direction: column;
-      align-items: flex-start; /* keep class list left-aligned inside wrapper */
+      align-items: flex-start;
       gap: 8px;
       padding: 0 12px 8px 12px;
-      width: 100%; /* span the full card width so pagination can center across the card */
+      width: 100%;
       box-sizing: border-box;
     }
 
     .student-class-list {
       width: 100%;
-      max-width: 420px; /* keep the list narrow so pagination centers under it */
+      max-width: 720px;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -264,7 +264,9 @@
       gap: 6px;
       align-items: flex-start;
     }
-
+    .student-class-item--combined {
+      width: 70%;
+    }
     .student-class-name {
       font-size: 14px;
       font-weight: 700;
@@ -279,36 +281,74 @@
     }
 
     .student-group-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(15, 23, 42, 0.06);
       background: #fff;
       color: #0f172a;
       font-weight: 600;
       font-size: 14px;
       cursor: pointer;
-      transition: transform 120ms ease, box-shadow 120ms ease,
-        background-color 120ms ease, color 120ms ease;
-      box-shadow: 0 1px 0 rgba(2, 6, 23, 0.03);
+      transition: transform 140ms ease, box-shadow 140ms ease,
+        background-color 140ms ease, color 140ms ease;
+      box-shadow: 0 6px 14px rgba(2, 6, 23, 0.04);
+      width: 100%;
+      min-height: 64px;
+      min-width: 0;
+      box-sizing: border-box;
+      word-break: break-word;
+    }
+
+    .student-group-button__main {
+      font-weight: 700;
+      font-size: 15px;
+      color: #0f172a;
+      line-height: 1.15;
+      text-align: left;
+    }
+
+    .student-group-button__desc {
+      font-weight: 500;
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.2;
+      text-align: left;
     }
 
     .student-group-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 24px rgba(4, 87, 69, 0.08);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(4, 87, 69, 0.08);
       background-color: var(--bg--primary-color);
       color: #fff;
       border-color: transparent;
     }
 
+    .student-group-button:hover .student-group-button__desc,
+    .student-group-button:hover .student-group-button__main {
+      color: #fff;
+    }
+
     .student-group-button.unassigned {
-      background: #f8fafc;
-      color: #6b7280;
+      color: #0f172a;
       border-color: #e6edf3;
-      font-weight: 600;
+      font-weight: 700;
+    }
+    /* Keep unassigned buttons readable on hover: don't invert to dark primary */
+    .student-group-button.unassigned:hover {
+      /* subtle lift but keep light background */
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(4, 87, 69, 0.08);
+      background-color: var(--bg--primary-color);
+      color: #fff;
+      border-color: transparent;
+    }
+    .student-group-button.unassigned:hover .student-group-button__main,
+    .student-group-button.unassigned:hover .student-group-button__desc {
+      color: #fff; /* ensure inner spans stay dark */
     }
     .pagination {
       display: flex;
@@ -355,9 +395,7 @@
       }
     }
 
-    /* center student-class list pagination and place at bottom space */
     .student-pagination {
-      /* pinned to bottom-center of the card */
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
@@ -372,7 +410,6 @@
     }
   }
 
-  /* Modal styles for Create score category */
   .modal__overlay {
     position: fixed;
     inset: 0;
@@ -412,7 +449,6 @@
     gap: 6px;
   }
 
-  /* New modal form field styles */
   .modal__fields {
     display: flex;
     flex-direction: column;
@@ -463,7 +499,6 @@
     font-size: 12px;
   }
 
-  /* percent input wrapper */
   .input--percent {
     position: relative;
     display: inline-flex;
@@ -531,7 +566,6 @@
     cursor: not-allowed;
   }
 
-  /* small responsive tweaks */
   @media (max-width: 1024px) {
     .grades__component {
       width: calc(100% - 48px);
@@ -545,7 +579,6 @@
     }
   }
 
-  /* tablet */
   @media (max-width: 768px) {
     .modal__card {
       padding: 16px;
@@ -553,13 +586,13 @@
     .grades__component {
       width: calc(100% - 32px);
     }
-    /* allow table horizontal scroll on smaller devices */
+
     .grades__component .grades__component__table__list {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
     .grades__component .grades__component__table__list table {
-      min-width: 820px; /* keep columns readable */
+      min-width: 820px;
     }
     .grades__component .grades__component__table__list tbody td {
       padding: 16px 10px 10px 12px;
@@ -567,7 +600,7 @@
     .grades__component .grades__component__table__list thead th:nth-child(n) {
       text-align: left;
     }
-    /* scale down pills for space */
+
     .grades__component .isPassed,
     .grades__component .notPassed {
       min-width: 48px;
@@ -576,7 +609,6 @@
     }
   }
 
-  /* mobile */
   @media (max-width: 480px) {
     .modal__card {
       padding: 12px;
@@ -598,7 +630,7 @@
       padding: 10px 8px;
       font-size: 13px;
     }
-    /* compact pagination */
+
     .grades__component .pagination {
       gap: 8px;
     }
@@ -606,7 +638,7 @@
       width: 32px;
       height: 32px;
     }
-    /* make modal actions touch friendly */
+
     .grades__component .modal__actions button {
       padding: 10px 12px;
       font-size: 13px;

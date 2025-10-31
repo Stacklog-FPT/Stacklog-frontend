@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import './ComposeMail.scss';
+import "./ComposeMail.scss";
 import {
   FaPaperPlane,
   FaPaperclip,
   FaSmile,
   FaBold,
   FaItalic,
-    FaUnderline,
-    FaLink,
+  FaUnderline,
+  FaLink,
   FaTimes,
   FaWindowMinimize,
   FaWindowMaximize,
@@ -154,29 +154,13 @@ const ComposeMail = ({
         {!minimized && (
           <>
             <div className="compose-to-row">
-              <div className="compose-to">
+              <div className="compose-to send-to-label">
                 <input
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
                   placeholder="To"
                   aria-label="To"
                 />
-              </div>
-              <div className="compose-cc-toggle">
-                <button
-                  className="btn small"
-                  onClick={() => setShowCc((s) => !s)}
-                  aria-expanded={!!showCc}
-                >
-                  Cc
-                </button>
-                <button
-                  className="btn small"
-                  onClick={() => setShowBcc((s) => !s)}
-                  aria-expanded={!!showBcc}
-                >
-                  Bcc
-                </button>
               </div>
             </div>
 
@@ -255,74 +239,6 @@ const ComposeMail = ({
                   </span>
                   <span className="send-caret">▾</span>
                 </button>
-                <button
-                  className="btn secondary"
-                  onClick={() => {
-                    if (!editorRef.current) return;
-                    const html = getEditorHtml();
-                    const text = getEditorText();
-                    console.log({
-                      to,
-                      cc,
-                      bcc,
-                      subject,
-                      html,
-                      text,
-                      attachments,
-                    });
-                    alert(
-                      "Message printed to console (demo). Replace onSend prop to integrate."
-                    );
-                  }}
-                >
-                  Save draft
-                </button>
-              </div>
-              <div className="compose-actions-right">
-                <div className="bottom-icons">
-                  <button
-                    className="btn"
-                    onClick={() => exec("bold")}
-                    title="Bold"
-                  >
-                    <FaBold />
-                  </button>
-                  <button
-                    className="btn"
-                    onClick={() => exec("italic")}
-                    title="Italic"
-                  >
-                    <FaItalic />
-                  </button>
-                  <button
-                    className="btn"
-                    onClick={() => exec("underline")}
-                    title="Underline"
-                  >
-                    <FaUnderline />
-                  </button>
-                  <button
-                    className="btn"
-                    onClick={() => exec("insertText", "🙂")}
-                    title="Insert emoji"
-                  >
-                    <FaSmile />
-                  </button>
-                  <button
-                    className="btn"
-                    onClick={handleAttachClick}
-                    title="Attach file"
-                  >
-                    <FaPaperclip />
-                  </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    style={{ display: "none" }}
-                    onChange={(e) => handleFiles(e.target.files)}
-                    multiple
-                  />
-                </div>
               </div>
             </div>
           </>

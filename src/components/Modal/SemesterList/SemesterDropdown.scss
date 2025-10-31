@@ -17,8 +17,8 @@ $color-hover: #045745;
     height: 44px;
     padding: 0 16px;
     border: 1.5px solid #b0b7c3;
-    background: #fff;
-    color: #222;
+    background: var(--bg--nav);
+    color: var(--text--color);
     border-radius: 14px;
     display: flex;
     align-items: center;
@@ -31,7 +31,7 @@ $color-hover: #045745;
 
     &:hover,
     &.open {
-      border-color: #045745;
+      border-color: var(--color--border-task);
       box-shadow: 0 2px 8px rgba(4, 87, 69, 0.08);
       background: #f7faf9;
     }

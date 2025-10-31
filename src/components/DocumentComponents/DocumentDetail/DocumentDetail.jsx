@@ -6,21 +6,28 @@ import { updateDocument } from '../../../service/DocumentService';
 import { useAuth } from '../../../context/AuthProvider';
 import Swal from 'sweetalert2';
 import { formatFileSize } from '../../../helper/calculateByte';
+import { getDocumentDetail } from '../../../redux/slice/documentSlice';
 
 const DocumentDetail = ({ id, onClose }) => {
   const { user } = useAuth();
   const documentPerson = useSelector((state) => state.document.documentPerson ?? []);
+  // const documentDetail = useSelector((state) => state.document.documentDetail);
+  // console.log(documentDetail);
   const documentDetail = documentPerson?.find((doc) => doc.documentId === id);
   const [title, setTitle] = useState(documentDetail?.documentTitle || '');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [previewHeightRatio, setPreviewHeightRatio] = useState(0.35); // tỉ lệ preview trong container
+  const [previewHeightRatio, setPreviewHeightRatio] = useState(0.35);
 
   const containerRef = useRef(null);
   const isResizing = useRef(false);
   const dispatch = useDispatch();
 
+  // const handleGetDetail = () => {
+  //   dispatch(getDocumentDetail(documentDetailById));
+  // };
   useEffect(() => {
+    // handleGetDetail();
     setTitle(documentDetail?.documentTitle || '');
   }, [documentDetail]);
 
@@ -33,9 +40,9 @@ const DocumentDetail = ({ id, onClose }) => {
   const handleMouseMove = (e) => {
     if (!isResizing.current || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
-    const relativeY = e.clientY - rect.top; // vị trí chuột tính từ top modal
-    const newRatio = Math.min(Math.max(relativeY / rect.height, 0.2), 0.85); // giữ giữa 20%–85%
-    setPreviewHeightRatio(1 - newRatio); // phần còn lại là preview
+    const relativeY = e.clientY - rect.top;
+    const newRatio = Math.min(Math.max(relativeY / rect.height, 0.2), 0.85);
+    setPreviewHeightRatio(1 - newRatio);
   };
 
   const handleMouseUp = () => {
@@ -44,9 +51,15 @@ const DocumentDetail = ({ id, onClose }) => {
   };
 
   useEffect(() => {
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') onClose();
+    });
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
     return () => {
+      window.removeEventListener('keydown', (e) => {
+        if (e.key === 'Escape') onClose();
+      });
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
@@ -55,25 +68,30 @@ const DocumentDetail = ({ id, onClose }) => {
   if (!documentDetail) return null;
 
   const handleTitleSave = () => {
-    const updatedDocuments = documentPerson.map((doc) =>
-      doc.documentId === id ? { ...doc, documentTitle: title } : doc,
-    );
+    const updatedDocuments = documentPerson.find((doc) => doc.documentId === id);
+
+    if (!updatedDocuments) toast.error('No permission to edit this document!');
 
     const payload = {
-      documents: updatedDocuments.map((doc) => ({
-        documentId: doc.documentId,
-        documentTitle: doc.documentTitle,
-        documentType: doc.documentType,
-        documentLocations: doc.documentLocations.map((loc) => ({
-          documentLocationId: loc.documentLocationId,
-          groupId: loc.groupId,
-        })),
+      documentId: updatedDocuments.documentId,
+      documentTitle: title,
+      documentType: updatedDocuments.documentType,
+      documentLocations: updatedDocuments.documentLocations.map((loc) => ({
+        documentLocationId: loc.documentLocationId,
+        groupId: loc.groupId,
       })),
     };
 
     updateDocument(payload, user.token, dispatch)
       .then(() => console.log('Documents saved!'))
-      .catch((err) => console.error(err));
+      .then((res) => {
+        if (res.status === 200) {
+          Swal.fire('Success!', 'Document title updated successfully.', 'success');
+        }
+      })
+      .catch((err) => {
+        Swal.fire('Error!', 'Failed to update document title.', 'error');
+      });
 
     setIsEditing(false);
   };
@@ -175,7 +193,7 @@ const DocumentDetail = ({ id, onClose }) => {
                 Open in new tab
               </a>
             </div>
-            {handleShowDownLoadFile}
+            {handleShowDownLoadFile()}
           </div>
 
           {previewUrl && (

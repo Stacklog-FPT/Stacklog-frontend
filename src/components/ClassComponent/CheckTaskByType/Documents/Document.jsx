@@ -15,10 +15,11 @@ import { formatFileSize } from '../../../../helper/calculateByte';
 const Document = () => {
   // Get id from param
   const { groupId } = useParams();
-  // Get user in auth contexr
+  // Get user in auth context
   const { user } = useAuth();
   // Get data from Redux and dispatch if have anything changes
   const { documents } = useSelector((state) => state.document);
+  console.log('Documents in document component: ', documents);
   const dispatch = useDispatch();
 
   // State to control show detail file
@@ -31,11 +32,14 @@ const Document = () => {
   const [isShowUpload, setIsShowUpload] = React.useState(false);
 
   // Variable for pagination
-  const itemsPerPage = 5;
+  const itemsPerPage = 4;
   const [currentPage, setCurrentPage] = React.useState(1);
 
-  const filteredDocuments = documents.filter(
-    (item) => item !== null && item.documentLocations?.some((loc) => loc.groupId === groupId),
+  const filteredDocuments = (documents || []).filter(
+    (item) =>
+      item &&
+      Array.isArray(item.documentLocations) &&
+      item.documentLocations.some((loc) => loc.groupId === groupId),
   );
 
   const currentItems = filteredDocuments.slice(
@@ -79,7 +83,6 @@ const Document = () => {
       confirmButtonText: 'Delete',
       cancelButtonText: 'Cancel',
     });
-    console.log(result);
     if (result.isConfirmed) {
       const res = await deleteDocumentApi(id, user.token, dispatch);
       console.log(res);

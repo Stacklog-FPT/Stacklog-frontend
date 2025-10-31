@@ -10,6 +10,13 @@
   justify-content: flex-start;
   gap: 20px;
   padding: 5px 10px;
+
+  &:hover {
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--bg--primary-color);
+  }
+
   .document__heading {
     width: 100%;
     display: flex;

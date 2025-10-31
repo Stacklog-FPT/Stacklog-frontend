@@ -26,6 +26,35 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
+
+    .title-input {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 1rem;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      color: #333;
+      transition: all 0.25s ease;
+      outline: none;
+
+      &:hover {
+        border-color: #046c54;
+        background-color: #ffffff;
+        box-shadow: 0 0 6px rgba(4, 108, 84, 0.3);
+      }
+
+      &:focus {
+        border-color: #046c54;
+        box-shadow: 0 0 8px rgba(4, 108, 84, 0.5);
+        background-color: #ffffff;
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
   }
 
   .document__detail__content {

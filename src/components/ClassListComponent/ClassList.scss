@@ -40,8 +40,8 @@
       letter-spacing: 1px;
     }
 
-    input[type="text"],
-    input[type="number"],
+    input[type='text'],
+    input[type='number'],
     select {
       padding: 10px;
       border-radius: 8px;
@@ -93,7 +93,7 @@
           margin-bottom: 0;
           width: 100%;
         }
-        input[type="checkbox"] {
+        input[type='checkbox'] {
           width: 18px;
           height: 18px;
           margin-right: 8px;
@@ -231,7 +231,7 @@
   margin: 18px 0 0 0;
 
   .pagination__button {
-    background: #3498db;
+    background: var(--bg--primary-color);
     color: #fff;
     border: none;
     padding: 7px 14px;
@@ -291,7 +291,7 @@
   font-weight: 600;
 }
 
-i{
+i {
   font-size: 15px;
   color: #fff;
   cursor: pointer;

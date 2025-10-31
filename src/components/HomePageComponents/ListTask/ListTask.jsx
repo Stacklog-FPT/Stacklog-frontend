@@ -1,198 +1,20 @@
-import React, { useState } from "react";
-import "./ListTask.scss";
-import addIcon from "../../../assets/home/list/add.png";
-import recycleBin from "../../../assets/home/planDocument/delete_outline.png";
-import filterList from "../../../assets/home/planDocument/filter_list.png";
-
+import React, { useState } from 'react';
+import './ListTask.scss';
+import addIcon from '../../../assets/home/list/add.png';
+import recycleBin from '../../../assets/home/planDocument/delete_outline.png';
+import filterList from '../../../assets/home/planDocument/filter_list.png';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 const ListTask = () => {
-  const taskList = [
-    {
-      id: 1,
-      title: "Read docs to understand structure of project",
-      members: [
-        {
-          id: 1,
-          name: "Long",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 2,
-          name: "Nhat",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 3,
-          name: "Thanh",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-      ],
-      note: "Jan 4, 2022",
-    },
-    {
-      id: 2,
-      title: "Analysis and building the base of project",
-      members: [
-        {
-          id: 1,
-          name: "Long",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 2,
-          name: "Nhat",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 3,
-          name: "Thanh",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-      ],
-      note: "Jan 4, 2022",
-    },
-    {
-      id: 3,
-      title:
-        "Long and Thanh Front - End, Nhat will Back - end and deployment server",
-      members: [
-        {
-          id: 1,
-          name: "Long",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 2,
-          name: "Nhat",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 3,
-          name: "Thanh",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 4,
-          name: "Yen",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-      ],
-      note: "Jan 4, 2022",
-    },
-    {
-      id: 4,
-      title:
-        "Long and Thanh Front - End, Nhat will Back - end and deployment server",
-      members: [
-        {
-          id: 1,
-          name: "Long",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 2,
-          name: "Nhat",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 3,
-          name: "Thanh",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 4,
-          name: "Yen",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-      ],
-      note: "Jan 4, 2022",
-    },
-    {
-      id: 5,
-      title:
-        "Long and Thanh Front - End, Nhat will Back - end and deployment server",
-      members: [
-        {
-          id: 1,
-          name: "Long",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 2,
-          name: "Nhat",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 3,
-          name: "Thanh",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 4,
-          name: "Yen",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-      ],
-      note: "Jan 4, 2022",
-    },
-    {
-      id: 6,
-      title:
-        "Long and Thanh Front - End, Nhat will Back - end and deployment server",
-      members: [
-        {
-          id: 1,
-          name: "Long",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 2,
-          name: "Nhat",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 3,
-          name: "Thanh",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-        {
-          id: 4,
-          name: "Yen",
-          avatar:
-            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-        },
-      ],
-      note: "Jan 4, 2022",
-    },
-  ];
-
+  const personalTask = useSelector((state) => state.task.personalTask);
+  const tasks = [...personalTask.DOING, ...personalTask.TODO];
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(taskList.length / itemsPerPage);
+  const totalPages = Math.ceil(tasks.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentItems = taskList.slice(startIndex, endIndex);
-
+  const currentItems = tasks.slice(startIndex, endIndex);
+  const navigate = useNavigate();
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -206,7 +28,7 @@ const ListTask = () => {
   };
 
   return (
-    <div className="list__task__container mt-3">
+    <div className="list__task__container mt-3" onClick={() => navigate('/tasks-self')}>
       <div className="list__task__heading">
         <div className="list__task__heading__text">
           <p className="text-center pt-3">List Task</p>
@@ -221,41 +43,31 @@ const ListTask = () => {
         <table>
           <thead>
             <tr>
-              <th>
-                <input type="checkbox" />
-              </th>
               <th>Task</th>
               <th>Team</th>
               <th>Priority</th>
-              <th>Note</th>
-              <th>Process</th>
             </tr>
           </thead>
           <tbody>
             {currentItems.length > 0 ? (
               currentItems.map((item) => {
-                const visibleMembers = item.members.slice(0, 3);
-                const extraCount = item.members.length - visibleMembers.length;
+                {
+                  /* const visibleMembers = item.members.slice(0, 3);
+                const extraCount = item.members.length - visibleMembers.length; */
+                }
                 return (
-                  <tr key={item.id} className="list__task__table__item">
+                  <tr key={item.taskId} className="list__task__table__item">
                     <td>
-                      <input type="checkbox" />
+                      <p>{item.taskTitle}</p>
                     </td>
                     <td>
-                      <p>{item.title}</p>
-                    </td>
-                    <td>
-                      <ul
+                      {/* <ul
                         className="class__and__member__content__member__student__list"
-                        data-extra-count={extraCount > 0 ? extraCount : ""}
+                        data-extra-count={extraCount > 0 ? extraCount : ''}
                       >
                         {visibleMembers.map((member) => (
                           <li key={member.id}>
-                            <img
-                              src={member.avatar}
-                              alt={member.name}
-                              className="member-avatar"
-                            />
+                            <img src={member.avatar} alt={member.name} className="member-avatar" />
                           </li>
                         ))}
                         {extraCount > 0 && (
@@ -263,13 +75,12 @@ const ListTask = () => {
                             <span>+{extraCount}</span>
                           </li>
                         )}
-                      </ul>
+                      </ul> */}
                     </td>
-                    <td>{/* Priority */}</td>
                     <td>
-                      <span className="text-note">{item.note}</span>
+                      {/* Priority */}
+                      {item.priority}
                     </td>
-                    <td>{/* Process */}</td>
                   </tr>
                 );
               })
@@ -282,7 +93,7 @@ const ListTask = () => {
             )}
           </tbody>
         </table>
-        {taskList.length > itemsPerPage && (
+        {tasks.length > itemsPerPage && (
           <div className="pagination">
             <button
               onClick={handlePreviousPage}

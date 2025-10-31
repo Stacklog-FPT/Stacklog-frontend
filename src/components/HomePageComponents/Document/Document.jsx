@@ -1,46 +1,47 @@
-import React, { useState } from "react";
-import "./Document.scss";
-import filterList from "../../../assets/home/planDocument/filter_list.png";
-import filterUpload from "../../../assets/home/planDocument/file_upload.png";
-import deleteOutline from "../../../assets/home/planDocument/delete_outline.png";
-import CardDocument from "./CardDocument/CardDocument";
-
+import React, { useState } from 'react';
+import './Document.scss';
+import filterList from '../../../assets/home/planDocument/filter_list.png';
+import filterUpload from '../../../assets/home/planDocument/file_upload.png';
+import deleteOutline from '../../../assets/home/planDocument/delete_outline.png';
+import CardDocument from './CardDocument/CardDocument';
+import { useNavigate } from 'react-router-dom';
 const Document = () => {
   // This is list of document from API
   const documents = [
     {
       id: 1,
-      title: "Tech requirements",
-      lastUpdated: "Jan 24, 2025",
-      size: "200KB",
+      title: 'Tech requirements',
+      lastUpdated: 'Jan 24, 2025',
+      size: '200KB',
     },
-    { id: 2, title: "File code", lastUpdated: "Jan 24, 2025", size: "200KB" },
+    { id: 2, title: 'File code', lastUpdated: 'Jan 24, 2025', size: '200KB' },
     {
       id: 3,
-      title: "File draw ERD",
-      lastUpdated: "Jan 24, 2025",
-      size: "200KB",
+      title: 'File draw ERD',
+      lastUpdated: 'Jan 24, 2025',
+      size: '200KB',
     },
     {
       id: 4,
-      title: "Business requirements",
-      lastUpdated: "Jan 24, 2025",
-      size: "200KB",
+      title: 'Business requirements',
+      lastUpdated: 'Jan 24, 2025',
+      size: '200KB',
     },
     {
       id: 5,
-      title: "Code base file",
-      lastUpdated: "Jan 24, 2025",
-      size: "200KB",
+      title: 'Code base file',
+      lastUpdated: 'Jan 24, 2025',
+      size: '200KB',
     },
     {
       id: 6,
-      title: "Java core and enviroment",
-      lastUpdated: "Jan 24, 2025",
-      size: "200KB",
+      title: 'Java core and enviroment',
+      lastUpdated: 'Jan 24, 2025',
+      size: '200KB',
     },
   ];
 
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -67,7 +68,7 @@ const Document = () => {
   };
 
   return (
-    <div className="document__container">
+    <div className="document__container" onClick={() => navigate('/documents')}>
       <div className="document__heading">
         <div className="document__heading_title">
           <p className="text-center pt-3">Document</p>
@@ -116,9 +117,7 @@ const Document = () => {
           <button
             key={index + 1}
             onClick={() => handlePageChange(index + 1)}
-            className={`button_index ${
-              currentPage === index + 1 ? "active" : ""
-            }`}
+            className={`button_index ${currentPage === index + 1 ? 'active' : ''}`}
           >
             {index + 1}
           </button>

@@ -6,6 +6,7 @@ const TaskByType = ({ activeType, setActiveType }) => {
   const taskTypes = [
     { type: 'TaskBoard', icon: 'fa-solid fa-globe' },
     { type: 'TaskList', icon: 'fa-solid fa-list' },
+    { type: 'Overall', icon: 'fa-solid fa-comment' },
     { type: 'Schedules', icon: 'fa-solid fa-list' },
     { type: 'Classes', icon: 'fa-solid fa-users' },
     { type: 'Documents', icon: 'fa-solid fa-folder-plus' },

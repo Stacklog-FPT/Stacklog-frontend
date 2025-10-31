@@ -80,3 +80,43 @@ export const deleteNotificationApi = async (token, id, dispatch) => {
     dispatch(setError(e.message));
   }
 };
+
+export const sendNotificationToClasses = async (token, body, dispatch) => {
+  try {
+    if (!token) {
+      dispatch(setError('The token is not valid!'));
+      return null;
+    }
+    dispatch(setPending(true));
+
+    const response = await axios.post(
+      `${REACT_API_URL}/notification/sendnoti`,
+      body,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    // server may return created notification(s) or a status object
+    const data = response?.data;
+    // if single notification returned, add to store; if array, add each
+    if (data) {
+      if (Array.isArray(data)) {
+        data.forEach((n) => dispatch(addNotifications(n)));
+      } else {
+        // dispatch single item
+        dispatch(addNotifications(data));
+      }
+    }
+
+    dispatch(setPending(false));
+    return response;
+  } catch (e) {
+    dispatch(setPending(false));
+    dispatch(setError(e?.message || 'Failed to send notification'));
+    throw e;
+  }
+};

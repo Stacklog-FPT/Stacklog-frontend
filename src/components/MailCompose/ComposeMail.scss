@@ -1,4 +1,3 @@
-/* Simple Gmail-like compose modal styles */
 .compose-overlay {
   position: fixed;
   right: 24px;
@@ -68,6 +67,76 @@
       color: #222;
       &:focus {
         border-bottom-color: rgba(26, 115, 232, 0.9);
+      }
+    }
+  }
+
+  .compose-to {
+    position: relative;
+    .selected-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 6px 0 10px 0;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(4, 87, 69, 0.08);
+      color: #045745;
+      padding: 6px 8px;
+      border-radius: 18px;
+      font-size: 13px;
+      .chip-label {
+        max-width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .chip-remove {
+        background: transparent;
+        border: none;
+        color: #045745;
+        cursor: pointer;
+        font-weight: 700;
+        padding: 0 6px;
+      }
+    }
+
+    .compose-suggestions {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: calc(100% + 6px);
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 6px;
+      box-shadow: 0 6px 18px rgba(60, 64, 67, 0.12);
+      z-index: 1200;
+      max-height: 220px;
+      overflow: auto;
+      list-style: none;
+      margin: 0;
+      padding: 6px 0;
+      li {
+        padding: 8px 12px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        &:hover {
+          background: rgba(4, 87, 69, 0.04);
+        }
+        .suggestion-main {
+          font-weight: 600;
+          color: #222;
+        }
+        .suggestion-sub {
+          font-size: 12px;
+          color: #666;
+        }
       }
     }
   }
@@ -258,7 +327,6 @@
   }
 }
 
-/* small responsive tweak */
 @media (max-width: 640px) {
   .compose-overlay .compose-window {
     width: 92vw;

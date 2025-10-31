@@ -7,7 +7,8 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 const ListTask = () => {
   const personalTask = useSelector((state) => state.task.personalTask);
-  const tasks = [...personalTask.DOING, ...personalTask.TODO];
+  console.log('personalTask', personalTask);
+  const tasks = personalTask ? [...(personalTask.DOING || []), ...(personalTask.TODO || [])] : [];
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(tasks.length / itemsPerPage);

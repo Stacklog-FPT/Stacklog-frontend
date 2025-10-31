@@ -1,8 +1,11 @@
 import React from 'react';
 import './DocumentRecent.scss';
 import { FaTrash } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { formatFileSize } from '../../../helper/calculateByte';
 
 const DocumentRecent = ({ title, data }) => {
+  const { documents } = useSelector((state) => state.document);
   const [recentDocuments, setRecentDocuments] = React.useState([
     {
       _id: 1,
@@ -27,10 +30,10 @@ const DocumentRecent = ({ title, data }) => {
   ]);
 
   const itemsPerPage = 5;
-  const totalPages = Math.ceil(recentDocuments.length / itemsPerPage);
+  const totalPages = Math.ceil(documents?.length / itemsPerPage);
   const [currentPage, setCurrentPage] = React.useState(1);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = recentDocuments.slice(startIndex, startIndex + itemsPerPage);
+  const currentItems = documents?.slice(startIndex, startIndex + itemsPerPage);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
@@ -56,14 +59,14 @@ const DocumentRecent = ({ title, data }) => {
             currentItems.map((item) => (
               <div
                 className="document__recent__container__main__content__item d-flex align-items-center justify-content-between"
-                key={item._id}
+                key={item.documentId}
               >
                 <div className="document__recent__container__main__content__item__content">
                   <span className="document__recent__container__main__content__item__content__title">
-                    {item.title}
+                    {item.documentTitle}
                   </span>
                   <span className="document__recent__container__main__content__item__content__description">
-                    {item.description}
+                    {formatFileSize(item.documentSize)}
                   </span>
                 </div>
                 <div

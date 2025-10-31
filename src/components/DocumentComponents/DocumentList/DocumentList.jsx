@@ -5,14 +5,13 @@ import DocumentCard from './DocumentCard/DocumentCard';
 import UploadFile from '../../ClassComponent/CheckTaskByType/Documents/UploadFile/UploadFile';
 import { useSelector, useDispatch } from 'react-redux';
 import { useAuth } from '../../../context/AuthProvider';
-import { getDocumentById, getDocumentByUserId } from '../../../service/DocumentService';
+import { getDocumentByUserId } from '../../../service/DocumentService';
 const DocumentList = () => {
   const [isOpenUpload, setIsOpenUpload] = React.useState(false);
   const { documentPerson } = useSelector((state) => state.document);
-  console.log('Debug documentPerson: ', documentPerson);
+  console.log('Person debug: ', documentPerson);
   const { documents } = useSelector((state) => state.document);
   const documentReport = documents.filter((doc) => doc.documentType === 'REPORT');
-  console.log('Document Report: ', documentReport);
   const dispatch = useDispatch();
   const { user } = useAuth();
 

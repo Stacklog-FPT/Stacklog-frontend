@@ -120,10 +120,11 @@ export const getDocumentByUserId = async (token, dispatch) => {
       },
     });
 
+    console.log(res.data);
     const userId = decodedToken(token).id;
 
     const documentThatPerson = res.data.filter((doc) => doc.createdBy === userId);
-
+    console.log('Document Person Service: ', documentThatPerson);
     dispatch(setDocumentPerson(documentThatPerson));
 
     return documentThatPerson;

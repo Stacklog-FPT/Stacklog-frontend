@@ -77,7 +77,7 @@ const Head = () => {
           <div className="head-container-right-task-content">
             <span className="head-container-right-task-content-title">Task</span>
             <span className="head-container-right-task-content-sum">
-              {personalTask.DOING.length || 0}
+              {personalTask?.DOING?.length || 0}
             </span>
           </div>
         </div>
@@ -86,7 +86,7 @@ const Head = () => {
           <div className="head-container-right-task-content">
             <span className="head-container-right-task-content-title">Complete</span>
             <span className="head-container-right-task-content-sum">
-              {personalTask.COMPLETED.length}
+              {personalTask?.COMPLETED?.length}
             </span>
           </div>
         </div>

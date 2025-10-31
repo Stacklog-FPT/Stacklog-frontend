@@ -12,6 +12,10 @@ import {
   FaWindowMinimize,
   FaWindowMaximize,
 } from "react-icons/fa";
+import { useDispatch, useSelector } from 'react-redux';
+import { getClasses } from '../../service/ClassService';
+import { sendNotificationToClasses } from '../../service/NotificationService';
+import { useAuth } from '../../context/AuthProvider';
 
 /**
  * Props:
@@ -27,6 +31,9 @@ const ComposeMail = ({
   const [isOpen, setIsOpen] = useState(open);
   const [minimized, setMinimized] = useState(false);
   const [to, setTo] = useState("");
+  const [selectedClasses, setSelectedClasses] = useState([]); // array of class objects
+  const [classesList, setClassesList] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [cc, setCc] = useState("");
   const [bcc, setBcc] = useState("");
   const [showCc, setShowCc] = useState(false);
@@ -36,6 +43,11 @@ const ComposeMail = ({
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
   const [sending, setSending] = useState(false);
+  const containerRef = useRef(null);
+  const reduxDispatch = useDispatch();
+  const semesterId = useSelector((s) => s.semester?.currentSemesterId);
+  const { user } = useAuth();
+  const token = user?.token || null;
 
   useEffect(() => setIsOpen(open), [open]);
 
@@ -45,6 +57,17 @@ const ComposeMail = ({
         if (editorRef.current) editorRef.current.focus();
       }, 120);
     }
+    // fetch classes for autocomplete when opening
+    (async () => {
+      try {
+        if (!token) return;
+        // call getClasses service which also dispatches into redux; it returns normalized array
+        const data = await getClasses(semesterId, token, reduxDispatch);
+        setClassesList(Array.isArray(data) ? data : []);
+      } catch (e) {
+        // ignore
+      }
+    })();
   }, [isOpen, minimized]);
 
   const exec = (cmd, value = null) => {
@@ -71,6 +94,43 @@ const ComposeMail = ({
     setAttachments((prev) => [...prev, ...list]);
   };
 
+  // suggestions logic for To input (class name autocomplete)
+  useEffect(() => {
+    if (!to || to.trim().length === 0) {
+      setSuggestions([]);
+      return;
+    }
+    const q = String(to).toLowerCase();
+    const matched = (classesList || []).filter((c) =>
+      String(c.classesName || '').toLowerCase().includes(q)
+    );
+    setSuggestions(matched.slice(0, 8));
+  }, [to, classesList]);
+
+  // click outside to close suggestions
+  useEffect(() => {
+    const onDoc = (e) => {
+      if (!containerRef.current) return;
+      if (!containerRef.current.contains(e.target)) {
+        setSuggestions([]);
+      }
+    };
+    document.addEventListener('click', onDoc);
+    return () => document.removeEventListener('click', onDoc);
+  }, []);
+
+  const addClassSelection = (cls) => {
+    if (!cls) return;
+    if (selectedClasses.find((s) => s.classesId === cls.classesId)) return;
+    setSelectedClasses((prev) => [...prev, cls]);
+    setTo('');
+    setSuggestions([]);
+  };
+
+  const removeClassSelection = (id) => {
+    setSelectedClasses((prev) => prev.filter((p) => p.classesId !== id));
+  };
+
   const removeAttachment = (id) =>
     setAttachments((prev) => prev.filter((a) => a.id !== id));
 
@@ -80,39 +140,58 @@ const ComposeMail = ({
     editorRef.current ? editorRef.current.innerText : "";
 
   const handleSend = async () => {
-    if (!to.trim()) {
-      alert("Please enter recipient (To).");
+    // if user selected classes, send using notification API
+    if (selectedClasses.length === 0 && (!to || !to.trim())) {
+      alert('Please enter recipient (To) or select a class.');
       return;
     }
     setSending(true);
     try {
-      const payload = {
-        to: to
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
-        cc: (cc || "")
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
-        bcc: (bcc || "")
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
-        subject,
-        html: getEditorHtml(),
-        text: getEditorText(),
-        attachments: attachments.map((a) => a.file),
-      };
-      await onSend(payload);
-      setTo("");
-      setSubject("");
-      if (editorRef.current) editorRef.current.innerHTML = "";
+      const html = getEditorHtml();
+      const text = getEditorText();
+
+      if (selectedClasses.length > 0) {
+        const body = {
+          listClassId: selectedClasses.map((c) => c.classesId),
+          subject: subject || '(no subject)',
+          content: text || html || '',
+        };
+        await sendNotificationToClasses(token, body, reduxDispatch);
+      }
+
+      // Fallback: if user typed raw emails in `to`, still call onSend prop so existing flows work
+      if (to && to.trim()) {
+        const payload = {
+          to: to
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean),
+          cc: (cc || '')
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean),
+          bcc: (bcc || '')
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean),
+          subject,
+          html,
+          text,
+          attachments: attachments.map((a) => a.file),
+        };
+        await onSend(payload);
+      }
+
+      // clear UI
+      setTo('');
+      setSubject('');
+      setSelectedClasses([]);
+      if (editorRef.current) editorRef.current.innerHTML = '';
       setAttachments([]);
       onClose && onClose();
     } catch (e) {
-      console.error("Send failed", e);
-      alert("Send failed. See console for details.");
+      console.error('Send failed', e);
+      alert('Send failed. See console for details.');
     } finally {
       setSending(false);
     }
@@ -122,6 +201,7 @@ const ComposeMail = ({
 
   return (
     <div
+      ref={containerRef}
       className={`compose-overlay ${minimized ? "minimized" : ""}`}
       role="dialog"
       aria-label="Compose email"
@@ -155,12 +235,51 @@ const ComposeMail = ({
           <>
             <div className="compose-to-row">
               <div className="compose-to send-to-label">
+                {/* selected class chips */}
+                {selectedClasses && selectedClasses.length > 0 && (
+                  <div className="selected-chips" aria-hidden={false}>
+                    {selectedClasses.map((c) => (
+                      <span className="chip" key={c.classesId}>
+                        <span className="chip-label">{c.classesName}</span>
+                        <button
+                          type="button"
+                          className="chip-remove"
+                          onClick={() => removeClassSelection(c.classesId)}
+                          aria-label={`Remove ${c.classesName}`}
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 <input
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
-                  placeholder="To"
+                  placeholder="To Class"
                   aria-label="To"
                 />
+
+                {/* suggestions dropdown */}
+                {suggestions && suggestions.length > 0 && (
+                  <ul className="compose-suggestions" role="listbox">
+                    {suggestions.map((s) => (
+                      <li
+                        key={s.classesId || s.id || s._id}
+                        role="option"
+                        tabIndex={0}
+                        onClick={() => addClassSelection(s)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') addClassSelection(s);
+                        }}
+                      >
+                        <div className="suggestion-main">{s.classesName}</div>
+                        <div className="suggestion-sub">{s.classesId}</div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
 
@@ -201,7 +320,7 @@ const ComposeMail = ({
                 className="editor"
                 contentEditable
                 suppressContentEditableWarning
-                placeholder="Soạn thư..."
+                placeholder="Content..."
                 onPaste={(e) => {
                   e.preventDefault();
                   const text = e.clipboardData.getData("text/plain");

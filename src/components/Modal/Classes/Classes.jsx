@@ -516,14 +516,14 @@ const ClassList = ({ handleActivityAddClass }) => {
             })()}
             {user.role === 'LECTURER' && (
               <>
-                <button className="btn-create-class" onClick={() => setShowCreateClass(true)}>
+                {/* <button className="btn-create-class" onClick={() => setShowCreateClass(true)}>
                   <i className="fa-solid fa-plus"></i>
                   <span>Class</span>
-                </button>
-                <button className="btn-gen-link" onClick={handleGenerateInviteCode}>
+                </button> */}
+                {/* <button className="btn-gen-link" onClick={handleGenerateInviteCode}>
                   <i className="fa-solid fa-link"></i>
                   <span>Link</span>
-                </button>
+                </button> */}
                 {/* Export/Import Excel buttons (temporarily visible for testing) */}
                 <div style={{ display: 'inline-flex', alignItems: 'center', marginLeft: 8 }}>
                   <ExportXlsxButton onExport={handleExportFullClass} />

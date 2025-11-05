@@ -464,14 +464,14 @@ const ClassList = ({ handleActivityAddClass }) => {
             })()}
             {user.role === 'LECTURER' && (
               <>
-                <button className="btn-create-class" onClick={() => setShowCreateClass(true)}>
+                {/* <button className="btn-create-class" onClick={() => setShowCreateClass(true)}>
                   <i className="fa-solid fa-plus"></i>
                   <span>Class</span>
-                </button>
-                <button className="btn-gen-link" onClick={handleGenerateInviteCode}>
+                </button> */}
+                {/* <button className="btn-gen-link" onClick={handleGenerateInviteCode}>
                   <i className="fa-solid fa-link"></i>
                   <span>Link</span>
-                </button>
+                </button> */}
               </>
             )}
           </div>

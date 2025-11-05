@@ -12,7 +12,7 @@ const TaskByType = ({ activeType, setActiveType }) => {
     { type: 'Documents', icon: 'fa-solid fa-folder-plus' },
     { type: 'Topic', icon: 'fas fa-tasks' },
     { type: 'Grade', icon: 'fa-solid fa-square-poll-vertical' },
-    { type: 'Chat', icon: 'fa-solid fa-comment' },
+    // { type: 'Chat', icon: 'fa-solid fa-comment' },
 
     // { type: "By Status", icon: "fa-solid fa-chart-line" },
     // {

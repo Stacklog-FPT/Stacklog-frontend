@@ -87,7 +87,7 @@ const ClassPage = () => {
             groupId={detailGroupId}
           />
         )}
-        {activeType === 'Chat' && <ClassList />}
+        {/* {activeType === 'Chat' && <ClassList />} */}
         {activeType === 'Overall' && <Overall />}
       </div>
     </div>

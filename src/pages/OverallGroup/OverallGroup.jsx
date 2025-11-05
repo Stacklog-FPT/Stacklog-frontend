@@ -11,7 +11,7 @@ export default function TaskDashboard() {
     {
       id: 1,
       percentage: 80,
-      title: "Upcoming task",
+      title: "long.le",
       description: "You have 0 task in total",
       total: 10,
       avatars: [avatarDefault, avatarDefault, avatarDefault],
@@ -21,7 +21,7 @@ export default function TaskDashboard() {
     {
       id: 2,
       percentage: 80,
-      title: "In Process task",
+      title: "Thanh.Truong",
       description: "You have 2 task in total",
       total: 10,
       avatars: [avatarDefault, avatarDefault, avatarDefault],
@@ -31,7 +31,7 @@ export default function TaskDashboard() {
     {
       id: 3,
       percentage: 80,
-      title: "Completed task",
+      title: "Nhat.Truong",
       description: "You have 8 tasks in total",
       total: 10,
       avatars: [avatarDefault, avatarDefault, avatarDefault],
@@ -41,7 +41,7 @@ export default function TaskDashboard() {
     {
       id: 4,
       percentage: 80,
-      title: "Overdue task",
+      title: "Yen.Hoang",
       description: "You have 8 tasks in total",
       total: 10,
       avatars: [avatarDefault, avatarDefault, avatarDefault],

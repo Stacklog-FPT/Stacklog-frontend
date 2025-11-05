@@ -6,7 +6,7 @@ const PlanPage = () => {
   return (
     <div className="plan__page__main">
       <PlanComponent />
-      <RecentComponent />
+      {/* <RecentComponent /> */}
     </div>
   );
 };

@@ -1,16 +1,19 @@
-import React from 'react';
-import './Document.scss';
-import { FaPlus } from 'react-icons/fa';
-import UploadFile from './UploadFile/UploadFile';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { useAuth } from '../../../../context/AuthProvider';
-import { deleteDocumentApi, getDocumentById } from '../../../../service/DocumentService';
-import { useDispatch } from 'react-redux';
-import { FaTrash } from 'react-icons/fa';
-import DocumentDetail from '../../../DocumentComponents/DocumentDetail/DocumentDetail';
-import Swal from 'sweetalert2';
-import { formatFileSize } from '../../../../helper/calculateByte';
+import React from "react";
+import "./Document.scss";
+import { FaPlus } from "react-icons/fa";
+import UploadFile from "./UploadFile/UploadFile";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../../../../context/AuthProvider";
+import {
+  deleteDocumentApi,
+  getDocumentById,
+} from "../../../../service/DocumentService";
+import { useDispatch } from "react-redux";
+import { FaTrash } from "react-icons/fa";
+import DocumentDetail from "../../../DocumentComponents/DocumentDetail/DocumentDetail";
+import Swal from "sweetalert2";
+import { formatFileSize } from "../../../../helper/calculateByte";
 
 const Document = () => {
   // Get id from param
@@ -19,12 +22,11 @@ const Document = () => {
   const { user } = useAuth();
   // Get data from Redux and dispatch if have anything changes
   const { documents } = useSelector((state) => state.document);
-  console.log('Documents in document component: ', documents);
   const dispatch = useDispatch();
 
   // State to control show detail file
   const [isShowDetail, setIsShowDetail] = React.useState({
-    documentId: '',
+    documentId: "",
     status: false,
   });
 
@@ -39,12 +41,12 @@ const Document = () => {
     (item) =>
       item &&
       Array.isArray(item.documentLocations) &&
-      item.documentLocations.some((loc) => loc.groupId === groupId),
+      item.documentLocations.some((loc) => loc.groupId === groupId)
   );
 
   const currentItems = filteredDocuments.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
   const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
@@ -74,22 +76,22 @@ const Document = () => {
   const handleDeleteDocument = async (e, id) => {
     e.stopPropagation();
     const result = await Swal.fire({
-      title: 'Are you sure to delete this doc?',
+      title: "Are you sure to delete this doc?",
       text: "This action can't completed!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#045745',
-      cancelButtonColor: '#c8cad4',
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel',
+      confirmButtonColor: "#045745",
+      cancelButtonColor: "#c8cad4",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
     });
     if (result.isConfirmed) {
       const res = await deleteDocumentApi(id, user.token, dispatch);
       console.log(res);
       if (res) {
-        Swal.fire('Deleted!', 'This doc was removed successfully.', 'success');
+        Swal.fire("Deleted!", "This doc was removed successfully.", "success");
       } else {
-        Swal.fire('Error!', 'Something went wrong during deletion.', 'error');
+        Swal.fire("Error!", "Something went wrong during deletion.", "error");
       }
     }
   };
@@ -102,8 +104,8 @@ const Document = () => {
   React.useEffect(() => {
     handleGetDocuments();
     // Event listener for esc key
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
         setIsShowUpload(false);
       }
     });
@@ -143,7 +145,11 @@ const Document = () => {
                       </span>
                     </div>
                     <div className="document__recent__container__main__content__item__bin">
-                      <FaTrash onClick={(e) => handleDeleteDocument(e, item.documentId)} />
+                      <FaTrash
+                        onClick={(e) =>
+                          handleDeleteDocument(e, item.documentId)
+                        }
+                      />
                     </div>
                   </div>
                 );
@@ -182,7 +188,7 @@ const Document = () => {
       {isShowDetail && (
         <DocumentDetail
           id={isShowDetail.documentId}
-          onClose={() => setIsShowDetail({ documentId: '', status: false })}
+          onClose={() => setIsShowDetail({ documentId: "", status: false })}
         />
       )}
     </>

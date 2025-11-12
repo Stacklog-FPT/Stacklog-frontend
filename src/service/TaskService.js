@@ -184,3 +184,51 @@ export const updateReviewApi = async (token, taskId, commentId, data, dispatch) 
     dispatch(setError(e.message));
   }
 };
+
+export const getOverallTask = async (token, groupId, dispatch) => {
+  try {
+    if (!token) {
+      dispatch && dispatch(setError('The token is invalid or missing!'));
+      return null;
+    }
+
+    dispatch && dispatch(setPending(true));
+    const response = await axios.get(`${API_TASK}/overall?groupId=${groupId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    dispatch && dispatch(setPending(false));
+    return response.data;
+  } catch (e) {
+    dispatch && dispatch(setPending(false));
+    dispatch && dispatch(setError(e?.message || 'Failed to fetch overall task'));
+    return null;
+  }
+};
+
+// Update group average score.
+// NOTE: backend endpoint path is an assumption. If your API exposes a different path,
+// adjust the URL (`/group/score`) accordingly.
+export const updateGroupScore = async (token, groupId, score, dispatch) => {
+  try {
+    if (!token) {
+      dispatch && dispatch(setError('The token is invalid or missing!'));
+      throw new Error('Unauthorized');
+    }
+
+    const payload = { groupId, groupAverageScore: score };
+    const response = await axios.post(`${API_TASK}/group/score`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.data;
+  } catch (e) {
+    dispatch && dispatch(setError(e?.message || 'Failed to update group score'));
+    throw e;
+  }
+};

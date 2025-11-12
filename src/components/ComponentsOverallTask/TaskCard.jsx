@@ -39,20 +39,16 @@ export default function TaskCard({
 
         <div className="task-card__footer">
           <div className="task-card__avatars">
-            {avatars.map((avatar, idx) => (
-              <div key={idx} className="avatar">
-                {typeof avatar === "string" ? (
-                  <img src={avatar} alt={`avatar-${idx}`} className="avatar-img" />
-                ) : (
-                  avatar
-                )}
-              </div>
-            ))}
-            <span className="avatar-count">+5</span>
+              {avatars.map((avatar, idx) => (
+                <div key={idx} className="avatar">
+                  {typeof avatar === "string" ? (
+                    <img src={avatar} alt={`avatar-${idx}`} className="avatar-img" />
+                  ) : (
+                    avatar
+                  )}
+                </div>
+              ))}
           </div>
-          <button className={`task-card__button task-card__button--${color}`}>
-            {buttonText} →
-          </button>
         </div>
       </div>
     </div>

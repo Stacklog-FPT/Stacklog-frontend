@@ -1,7 +1,7 @@
 .list__semester__container {
   margin-top: 10px;
   width: 1112px;
-  height: 646px;
+  height: 676px;
   background-color: var(--bg--nav);
   padding: 10px 12px 20px 12px;
   border-radius: 20px;
@@ -117,7 +117,6 @@
             font-size: 13px;
             line-height: 21px;
             color: #000;
-            border-bottom: 1px solid #edf2f2;
 
             &:nth-child(1) {
               width: 68px;
@@ -208,5 +207,15 @@
         }
       }
     }
+  }
+}
+
+.semester-select {
+  border-radius: 10px;
+  border: none;
+  padding: 5px 10px;
+
+  &:focus {
+    border: 1px solid #7a7777;
   }
 }

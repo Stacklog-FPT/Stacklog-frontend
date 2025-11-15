@@ -1,16 +1,17 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import logger from 'redux-logger';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import semesterReducer from './slice/semesterSlice';
-import statusReducer from './slice/statusSlice';
-import classesReducer from './slice/classSlice';
-import groupReducer from './slice/groupSlice';
-import taskReducer from './slice/taskSlice';
-import scheduleReducer from './slice/scheduleSlice';
-import planReducer from './slice/planSlice';
-import notificationReducer from './slice/notificationSlice';
-import documentReducer from './slice/documentSlice';
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import logger from "redux-logger";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import semesterReducer from "./slice/semesterSlice";
+import statusReducer from "./slice/statusSlice";
+import classesReducer from "./slice/classSlice";
+import groupReducer from "./slice/groupSlice";
+import taskReducer from "./slice/taskSlice";
+import scheduleReducer from "./slice/scheduleSlice";
+import planReducer from "./slice/planSlice";
+import notificationReducer from "./slice/notificationSlice";
+import documentReducer from "./slice/documentSlice";
+import userReducer from "./slice/userSilce";
 
 const rootReducer = combineReducers({
   semester: semesterReducer,
@@ -22,12 +23,23 @@ const rootReducer = combineReducers({
   plan: planReducer,
   notification: notificationReducer,
   document: documentReducer,
+  users: userReducer,
 });
 
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
-  whitelist: ['semester', 'class', 'status', 'group', 'task', 'plan', 'notification', 'document'],
+  whitelist: [
+    "semester",
+    "class",
+    "status",
+    "group",
+    "task",
+    "plan",
+    "notification",
+    "document",
+    "users",
+  ],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -37,7 +49,7 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
       },
     }).concat(logger),
 });

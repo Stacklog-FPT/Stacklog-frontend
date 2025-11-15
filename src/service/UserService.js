@@ -1,11 +1,11 @@
-import axios from 'axios';
-import usePostApi from '../hooks/usePost';
+import axios from "axios";
+import usePostApi from "../hooks/usePost";
 
-const API_AUTH = 'http://103.166.183.142:8080/api/';
+const API_AUTH = "http://103.166.183.142:8080/api/";
 // Standalone helper for non-hook callers (effects, services) to fetch a user by id
 export const fetchUserById = async (token, id) => {
-  if (!token) throw new Error('Unauthorized: No token provided');
-  if (!id) throw new Error('Invalid user ID');
+  if (!token) throw new Error("Unauthorized: No token provided");
+  if (!id) throw new Error("Invalid user ID");
   try {
     const response = await axios.get(`${API_AUTH}profile/user/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -17,8 +17,8 @@ export const fetchUserById = async (token, id) => {
 };
 
 export const updateUserProfile = async (token, userId, profileData) => {
-  if (!token) throw new Error('Unauthorized: No token provided');
-  if (!userId) throw new Error('Invalid user ID');
+  if (!token) throw new Error("Unauthorized: No token provided");
+  if (!userId) throw new Error("Invalid user ID");
 
   try {
     const response = await axios.post(`${API_AUTH}auth`);
@@ -26,16 +26,20 @@ export const updateUserProfile = async (token, userId, profileData) => {
     throw new Error(e.message);
   }
 };
+
 const userApi = () => {
   const { postData, isLoading, error, data } = usePostApi();
 
   const login = async (email, password) => {
     if (!email || !password) {
-      throw new Error('Please fill in both email and password');
+      throw new Error("Please fill in both email and password");
     }
 
     try {
-      const response = await postData(`${API_AUTH}auth/login`, { email, password });
+      const response = await postData(`${API_AUTH}auth/login`, {
+        email,
+        password,
+      });
       return response;
     } catch (err) {
       throw err;
@@ -43,10 +47,12 @@ const userApi = () => {
   };
 
   const loginGoogle = async (tokenGoogle) => {
-    if (!tokenGoogle) throw new Error('The token google is missing!');
+    if (!tokenGoogle) throw new Error("The token google is missing!");
 
     try {
-      const res = await axios.post(`${API_AUTH}auth/login-google`, { idToken: tokenGoogle });
+      const res = await axios.post(`${API_AUTH}auth/login-google`, {
+        idToken: tokenGoogle,
+      });
       return res;
     } catch (e) {
       throw new Error(e.message);
@@ -62,29 +68,33 @@ const userApi = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
+
       return response.data;
     } catch (e) {
-      console.error('Logout API failed:', e?.response || e.message);
+      console.error("Logout API failed:", e?.response || e.message);
       throw e;
     }
   };
 
   const getUserByEmail = async (token, email) => {
     if (!token) {
-      throw new Error('Unauthorized: No token provided');
+      throw new Error("Unauthorized: No token provided");
     }
     if (!email) {
-      throw new Error('Invalid email format');
+      throw new Error("Invalid email format");
     }
 
     try {
-      const response = await axios.get(`${API_AUTH}profile/user/email/${email}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${API_AUTH}profile/user/email/${email}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       return response.data;
     } catch (error) {
@@ -94,9 +104,9 @@ const userApi = () => {
 
   const getUserByRole = async (token, role) => {
     try {
-      if (!token) throw new Error('Unauthorized: No token provided');
+      if (!token) throw new Error("Unauthorized: No token provided");
 
-      if (!role) throw new Error('Invalid role or lack of the role');
+      if (!role) throw new Error("Invalid role or lack of the role");
 
       const response = await axios.get(`${API_AUTH}profile/user/role/${role}`, {
         headers: {
@@ -111,8 +121,8 @@ const userApi = () => {
   };
 
   const getUserById = async (token, id) => {
-    if (!token) throw new Error('Unauthorized: No token provided');
-    if (!id) throw new Error('Invalid user ID');
+    if (!token) throw new Error("Unauthorized: No token provided");
+    if (!id) throw new Error("Invalid user ID");
     try {
       const response = await axios.get(`${API_AUTH}profile/user/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -124,7 +134,7 @@ const userApi = () => {
   };
 
   const getAllUsers = async (token) => {
-    if (!token) throw new Error('Unauthorized: No token provided');
+    if (!token) throw new Error("Unauthorized: No token provided");
     try {
       const url = `${API_AUTH}profile/user/find/n`;
       const response = await axios.get(url, {

@@ -1,0 +1,68 @@
+.action-cell {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #f0f0f0;
+    }
+
+    &.btn-edit {
+      color: #f39c12;
+      &:hover {
+        background: #fef5e7;
+      }
+    }
+
+    &.btn-delete {
+      color: #e74c3c;
+      &:hover {
+        background: #fadbd8;
+      }
+    }
+  }
+}
+
+.user-avatar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  span {
+    font-weight: 500;
+  }
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  &.active {
+    background: #d5efdb;
+    color: #27ae60;
+  }
+
+  &.inactive {
+    background: #fadbd8;
+    color: #c0392b;
+  }
+}

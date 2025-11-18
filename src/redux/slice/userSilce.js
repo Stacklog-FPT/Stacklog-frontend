@@ -23,11 +23,22 @@ const userSlice = createSlice({
     setError: (state, action) => {
       state.error = action.payload;
     },
+    addSemeter: (state, action) => {
+      state.semesters = state.semesters.push(action.payload);
+    },
     getSemesters(state, action) {
       state.semesters = action.payload;
     },
+    deleteSemester: (state, action) => {
+      state.semesters = state.semesters.filter(
+        (item) => item.semesterId !== action.payload
+      );
+    },
     getClasses: (state, action) => {
       state.classes = action.payload;
+    },
+    resetClasses: (state, action) => {
+      state.classes = [];
     },
     getLectures: (state, action) => {
       state.lectures = action.payload;
@@ -43,11 +54,14 @@ const userSlice = createSlice({
 
 export const {
   getSemesters,
+  deleteSemester,
   getClasses,
   getLectures,
   getStudents,
   setPending,
   setError,
+  addSemeter,
+  resetClasses,
 } = userSlice.actions;
 
 export default userSlice.reducer;

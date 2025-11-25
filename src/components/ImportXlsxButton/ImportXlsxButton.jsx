@@ -5,7 +5,7 @@ const ImportXlsxButton = ({ onImport }) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = async (evt) => {
+      reader.onload = async (evt) => {
       try {
         const xlsxModule = await import("xlsx");
         const XLSX =
@@ -15,7 +15,8 @@ const ImportXlsxButton = ({ onImport }) => {
         const wsName = wb.SheetNames[0];
         const ws = wb.Sheets[wsName];
         const json = XLSX.utils.sheet_to_json(ws, { defval: "" });
-        if (onImport) onImport(json);
+        // forward both parsed rows and original File so callers can opt to send the file to server
+        if (onImport) onImport(json, file);
       } catch (err) {
         console.error("Import failed", err);
         alert("Import failed. See console for details.");

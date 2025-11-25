@@ -16,7 +16,7 @@ import PopupCreateGroup from '../../ClassListComponent/PopupCreateGroup/PopupCre
 import PopupInviteCode from '../../ClassListComponent/PopupInviteCode/PopupInviteCode';
 import ExportXlsxButton from '../../ExportXlsxButton/ExportXlsxButton';
 import ImportXlsxButton from '../../ImportXlsxButton/ImportXlsxButton';
-import { exportToXlsx } from '../../../service/exportXlsx';
+import { exportClassAndDownload, importClassByClassId } from '../../../service/ClassService';
 
 const {
   getClasses,
@@ -395,33 +395,16 @@ const ClassList = ({ handleActivityAddClass }) => {
         alert('No class selected to export');
         return;
       }
-      // collect all user ids across groups
-      const userIds = [];
-      currentClass.groups.forEach((g) => {
-        g.groupStudents.forEach((s) => userIds.push(s.userId));
-      });
-      const uniqueIds = [...new Set(userIds)];
-      // fetch user details in parallel
-      const rows = await Promise.all(
-        uniqueIds.map(async (id) => {
-          try {
-            const u = await getUserById(user.token, id);
-            return {
-              Name: u.full_name || '',
-              Email: u.email || '',
-              ID: u.work_id || u._id || '',
-              Avatar: u.avatar_link || '',
-            };
-          } catch (err) {
-            return { Name: '', Email: '', ID: id, Avatar: '' };
-          }
-        }),
-      );
+      if (!user || !user.token) {
+        alert('You must be logged in to export');
+        return;
+      }
 
-      await exportToXlsx(rows, `class-${currentClass.classesId || 'all'}-members.xlsx`);
+      // Call server export endpoint which returns the XLSX binary
+      await exportClassAndDownload(currentClass.classesId, user.token);
     } catch (err) {
       console.error('Export full class failed', err);
-      alert('Export failed. See console for details.');
+      alert(err?.message || 'Export failed. See console for details.');
     }
   };
 
@@ -528,10 +511,30 @@ const ClassList = ({ handleActivityAddClass }) => {
                 <div style={{ display: 'inline-flex', alignItems: 'center', marginLeft: 8 }}>
                   <ExportXlsxButton onExport={handleExportFullClass} />
                   <ImportXlsxButton
-                    onImport={(rows) => {
-                      // basic import preview — you can extend to add/import users
-                      console.log('Imported rows', rows);
-                      alert(`Imported ${rows.length} rows. See console for data.`);
+                    onImport={async (rows, file) => {
+                      // rows: parsed JSON rows from xlsx; file: original File object
+                      console.log('Imported rows', rows, file);
+                      if (!selectedClass) {
+                        alert('Please select a class before importing.');
+                        return;
+                      }
+                      if (!file) {
+                        alert('No file available to upload');
+                        return;
+                      }
+                      try {
+                        // call service to upload the original xlsx file to backend
+                        const res = await importClassByClassId(selectedClass, file, user.token, dispatch);
+                        // refresh classes for current semester if available
+                        if (currentSemesterId) {
+                          const data = await getClasses(currentSemesterId, user.token, dispatch);
+                          setClasses(data || []);
+                        }
+                        alert(res?.message || 'Import successful');
+                      } catch (err) {
+                        console.error('Import failed', err);
+                        alert(err?.message || 'Import failed. See console for details.');
+                      }
                     }}
                   />
                 </div>

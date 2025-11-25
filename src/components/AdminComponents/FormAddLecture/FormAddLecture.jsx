@@ -3,7 +3,7 @@ import "./FormAddLecture.scss";
 import LectureService from "../../../service/LectureStudentService";
 import { useAuth } from "../../../context/AuthProvider";
 
-const FormAddLecture = ({ onClose }) => {
+const FormAddLecture = ({ role, onClose }) => {
   const { createUser } = LectureService();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -12,7 +12,7 @@ const FormAddLecture = ({ onClose }) => {
     email: "",
     avatar_link: "",
     description: "",
-    role: "",
+    role: role,
   });
 
   const handleChange = (e) => {

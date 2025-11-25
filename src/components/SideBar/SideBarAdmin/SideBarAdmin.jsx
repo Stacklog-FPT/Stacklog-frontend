@@ -46,7 +46,7 @@ const SideBarAdmin = ({ isOpen, setIsOpen }) => {
         <div className="sidebar-admin-role-tabs">
           <NavbarList
             listByRole={
-              new URLSearchParams(location.search).get("role") || "Lecture"
+              new URLSearchParams(location.search).get("role") || "Semester"
             }
             setListByRole={(r) => {
               const params = new URLSearchParams(location.search);

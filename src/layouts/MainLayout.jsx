@@ -17,7 +17,7 @@ import "../styles/main.scss";
 import { useAuth } from "../context/AuthProvider";
 import SideBarAdmin from "../components/SideBar/SideBarAdmin/SideBarAdmin";
 import ComposeMail from "../components/MailCompose/ComposeMail";
-import { FaEnvelope } from 'react-icons/fa';
+import { FaEnvelope } from "react-icons/fa";
 
 const MainLayout = () => {
   const { user } = useAuth();
@@ -98,43 +98,47 @@ const MainLayout = () => {
         />
       </main>
       {/* Compose FAB only on Notification page */}
-      {(location.pathname === '/notification' || location.pathname.startsWith('/notification')) && !composeOpen && (user && (user.role || '').toString().toUpperCase() === 'LECTURER') && (
-        <>
-          <button
-            aria-label="Compose mail"
-            onClick={() => setComposeOpen(true)}
-            style={{
-              position: 'fixed',
-              right: 24,
-              bottom: 24,
-              zIndex: 1200,
-              width: 56,
-              height: 56,
-              borderRadius: '50%',
-              background: '#045745',
-              color: '#fff',
-              border: 'none',
-              boxShadow: '0 6px 12px rgba(0,0,0,0.18)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <FaEnvelope size={20} />
-          </button>
-        </>
-      )}
+      {(location.pathname === "/notification" ||
+        location.pathname.startsWith("/notification")) &&
+        !composeOpen &&
+        user &&
+        (user.role || "").toString().toUpperCase() === "LECTURER" && (
+          <>
+            <button
+              aria-label="Compose mail"
+              onClick={() => setComposeOpen(true)}
+              style={{
+                position: "fixed",
+                right: 24,
+                bottom: 24,
+                zIndex: 1200,
+                width: 56,
+                height: 56,
+                borderRadius: "50%",
+                background: "#045745",
+                color: "#fff",
+                border: "none",
+                boxShadow: "0 6px 12px rgba(0,0,0,0.18)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <FaEnvelope size={20} />
+            </button>
+          </>
+        )}
 
       {/* Always mount ComposeMail when needed (so it can control its open state) */}
       <ComposeMail
         open={composeOpen}
         onClose={() => setComposeOpen(false)}
         onSend={async (payload) => {
-          console.log('ComposeMail onSend payload', payload);
+          console.log("ComposeMail onSend payload", payload);
           await new Promise((r) => setTimeout(r, 600));
           setComposeOpen(false);
-          alert('Message sent (demo)');
+          alert("Message sent (demo)");
         }}
       />
     </div>

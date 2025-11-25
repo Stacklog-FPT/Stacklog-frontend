@@ -5,7 +5,6 @@ const AddClass = ({ handleActivityAddClass }) => {
   const excelInputRef = React.useRef();
   const [url, setUrl] = React.useState("");
 
-  // Đóng modal khi nhấn ESC
   React.useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") handleActivityAddClass();

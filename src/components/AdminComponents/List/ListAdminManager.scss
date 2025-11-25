@@ -1,0 +1,269 @@
+.list__semester__container {
+  margin-top: 10px;
+  width: 1112px;
+  max-width: 100%;
+  height: 676px;
+  background-color: var(--bg--nav);
+  padding: 20px;
+  border-radius: 20px;
+  box-sizing: border-box;
+}
+
+.list__semester {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+
+    &__title {
+      padding: 16px 32px;
+      background-color: var(--color--div-head);
+      border-radius: 20px 20px 20px 0;
+      h2 {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--text--color-manage);
+        margin: 0;
+      }
+    }
+
+    &__feature {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .semester-select {
+        padding: 10px 16px;
+        border: 1px solid #d0d5dd;
+        border-radius: 10px;
+        background: white;
+        font-size: 14px;
+        min-width: 200px;
+        outline: none;
+        transition: all 0.2s;
+
+        &:focus {
+          border-color: #7a7777;
+          box-shadow: 0 0 0 3px rgba(122, 119, 119, 0.1);
+        }
+      }
+
+      i {
+        font-size: 18px;
+        color: var(--text-color);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 8px;
+        transition: all 0.2s;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.05);
+          color: var(--color--active-line);
+        }
+      }
+    }
+  }
+
+  &__table {
+    flex: 1;
+    overflow: hidden;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed; /* QUAN TRỌNG: chia cột đều */
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 14px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    thead {
+      background-color: var(--bg--color--table, #f8f9fa);
+
+      th {
+        font-weight: 600;
+        color: #374151;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        &:first-child {
+          width: 50px;
+          text-align: center;
+        }
+        &:last-child {
+          width: 120px;
+          text-align: center;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        transition: background 0.2s;
+        &:hover {
+          background-color: #f9f9f9;
+        }
+      }
+
+      td {
+        color: #1f2937;
+        vertical-align: middle;
+
+        &:first-child {
+          text-align: center;
+        }
+
+        &:last-child {
+          text-align: center;
+        }
+
+        &.text-center {
+          text-align: center;
+          color: #6b7280;
+          font-style: italic;
+        }
+      }
+    }
+
+    // Cột Action đẹp
+    .action-cell {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+
+      button {
+        background: none;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 6px;
+        transition: all 0.2s;
+
+        &:hover {
+          background: #f3f4f6;
+        }
+
+        &.btn-edit {
+          color: #f59e0b;
+        }
+        &.btn-delete {
+          color: #ef4444;
+        }
+      }
+    }
+  }
+}
+
+.modern-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 16px;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  user-select: none;
+
+  .pagination-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: #f8fafc;
+    color: #64748b;
+    border-radius: 14px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    &:hover:not(:disabled) {
+      background: #3b82f6;
+      color: white;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.35);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+
+  .page-numbers {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+
+    button {
+      width: 44px;
+      height: 44px;
+      border: 1.5px solid #e2e8f0;
+      background: white;
+      color: #475569;
+      border-radius: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: #f1f5f9;
+        border-color: #94a3b8;
+        transform: translateY(-2px);
+      }
+
+      &.active {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        transform: translateY(-4px);
+        font-weight: 700;
+      }
+    }
+
+    .dots {
+      color: #94a3b8;
+      font-weight: 600;
+      padding: 0 4px;
+    }
+  }
+
+  .page-info {
+    min-width: 140px;
+    text-align: center;
+    font-size: 14px;
+    color: #64748b;
+    background: #f8fafc;
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    font-weight: 500;
+
+    strong {
+      color: #1e293b;
+      font-weight: 700;
+      margin: 0 4px;
+    }
+  }
+}

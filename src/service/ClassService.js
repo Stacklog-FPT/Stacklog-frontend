@@ -217,4 +217,104 @@ export const getClasses = async (semesterId, token, dispatch) => {
     return [];
   }
 };
+ 
+// Export class as an Excel file by classId (returns arraybuffer + filename)
+export const exportClassByClassId = async (classId, token) => {
+  if (!token) throw new Error('Missing token or Invalid Token');
+  if (!classId) throw new Error('Missing classId');
+
+  const url = `${CLASS_URI}/class/export-by-class?classId=${encodeURIComponent(
+    classId
+  )}`;
+
+  try {
+    const response = await axios.get(url, {
+      headers: { Authorization: `Bearer ${token}` },
+      responseType: 'arraybuffer',
+    });
+
+    // try to parse filename from Content-Disposition
+    const disposition =
+      response.headers['content-disposition'] || response.headers['Content-Disposition'];
+    let filename = 'class_export.xlsx';
+    if (disposition) {
+      const fileMatch = disposition.match(/filename\*?=(?:UTF-8'')?"?([^";]+)/i);
+      if (fileMatch && fileMatch[1]) {
+        try {
+          filename = decodeURIComponent(fileMatch[1]);
+        } catch (e) {
+          filename = fileMatch[1];
+        }
+      }
+    }
+
+    const contentType = response.headers['content-type'] || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+    return {
+      data: response.data,
+      filename,
+      contentType,
+      headers: response.headers,
+    };
+  } catch (e) {
+    const msg = e?.response?.data?.message || e?.message || 'Failed to export classes';
+    throw new Error(msg);
+  }
+};
+
+// Client helper: saves an ArrayBuffer (from exportClassByClassId.data) as a file in the browser
+export const saveArrayBufferAsFile = (arrayBuffer, filename = 'export.xlsx', contentType) => {
+  const blob = new Blob([arrayBuffer], { type: contentType || 'application/octet-stream' });
+  if (typeof window !== 'undefined' && window.navigator && window.navigator.msSaveOrOpenBlob) {
+    // IE/Edge
+    window.navigator.msSaveOrOpenBlob(blob, filename);
+    return;
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+};
+
+// Convenience: call exportClassByClassId and trigger browser download
+export const exportClassAndDownload = async (classId, token) => {
+  const res = await exportClassByClassId(classId, token);
+  saveArrayBufferAsFile(res.data, res.filename, res.contentType);
+  return res;
+};
+
+// Import (upload) an Excel file to populate/modify a class by classId
+// POST /api/class/class/import?classId={classId}
+export const importClassByClassId = async (classId, file /* File object */, token, dispatch) => {
+  if (!token) throw new Error('Missing token or Invalid Token');
+  if (!classId) throw new Error('Missing classId');
+  if (!file) throw new Error('Missing file to upload');
+
+  const url = `${CLASS_URI}/class/import?classId=${encodeURIComponent(classId)}`;
+  try {
+    dispatch && dispatch(apiStart());
+    const form = new FormData();
+    // backend expected field name is assumed to be 'file'
+    form.append('file', file);
+
+    const response = await axios.post(url, form, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        // Do NOT set Content-Type: let the browser set the multipart boundary
+      },
+    });
+
+    dispatch && dispatch(apiSuccess());
+    return response.data;
+  } catch (e) {
+    dispatch && dispatch(apiFailure(e.message));
+    const msg = e?.response?.data?.message || e?.message || 'Failed to import class';
+    throw new Error(msg);
+  }
+};
+
 export default ClassService;

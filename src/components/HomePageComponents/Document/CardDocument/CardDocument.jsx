@@ -1,6 +1,8 @@
 import React from "react";
 import fileDownload from "../../../../assets/home/planDocument/file_download.png";
 import "./CardDocument.scss";
+import { formatFileSize } from "../../../../helper/calculateByte";
+import { formatDateUI } from "../../../../helper/formatDate";
 const CardDocument = (props) => {
   const truncateTitle = (title, maxLength) => {
     if (title.length > maxLength) {
@@ -16,7 +18,7 @@ const CardDocument = (props) => {
           <i className="fa-solid fa-file"></i>
           <div className="name_title_document">
             <span className="title_name">{truncateTitle(props.title, 11)}</span>
-            <span>{props.size}</span>
+            <span>{formatFileSize(props.size)}</span>
           </div>
         </div>
       </div>
@@ -27,7 +29,7 @@ const CardDocument = (props) => {
         />
       </div>
       <div className="time_updated">
-        <span>{props.lastUpdated}</span>
+        <span>{formatDateUI(props.lastUpdated)}</span>
       </div>
       <div className="download_icon">
         <img src={fileDownload} alt="..." />

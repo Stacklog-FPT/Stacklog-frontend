@@ -6,6 +6,7 @@ $bp-md: 768px;
   display: grid;
   gap: 16px;
   align-items: start;
+  padding: 10px 10px;
 
   &.with-project {
     grid-template-columns: 400px minmax(0, 1fr);
@@ -13,6 +14,11 @@ $bp-md: 768px;
 
   &.no-project {
     grid-template-columns: 1fr;
+  }
+
+  &:hover {
+    border: 1px solid var(--bg--primary-color);
+    border-radius: 20px;
   }
 }
 

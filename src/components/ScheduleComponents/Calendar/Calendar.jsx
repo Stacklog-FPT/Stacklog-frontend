@@ -35,6 +35,7 @@ export default function Calendar({ groupId, isPage }) {
   } catch (e) {
     myId = null;
   }
+  console.log("MyId: ", myId);
   const { schedules, pending } = useSelector((s) => s.schedule);
   const [selectedEvent, setSelectedEvent] = useState(null);
   try {
@@ -80,8 +81,7 @@ export default function Calendar({ groupId, isPage }) {
             }))
           );
         }
-      } catch (err) {
-      }
+      } catch (err) {}
 
       scheduleList = schedules.filter((s) => {
         const assigns =
@@ -207,25 +207,25 @@ export default function Calendar({ groupId, isPage }) {
     const myIdStr = myId ? String(myId) : null;
     const createdByStr = createdBy ? String(createdBy) : null;
     if (!myIdStr || !createdByStr || myIdStr !== createdByStr) {
-      toast.error('Only the creator of this slot can delete it');
+      toast.error("Only the creator of this slot can delete it");
       return;
     }
 
     const result = await Swal.fire({
-      title: 'Are you sure to delete this task?',
+      title: "Are you sure to delete this task?",
       text: "This action can't completed!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#045745',
-      cancelButtonColor: '#c8cad4',
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel',
+      confirmButtonColor: "#045745",
+      cancelButtonColor: "#c8cad4",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
     });
 
     if (result.isConfirmed) {
       await deleteScheduleSlot(user?.token, id, dispatch);
       setSelectedEvent(null);
-      toast.success('Delete slot successfully!');
+      toast.success("Delete slot successfully!");
     }
   };
 
@@ -268,11 +268,15 @@ export default function Calendar({ groupId, isPage }) {
         <Modal
           event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
-          onDelete={() => handleDelete(selectedEvent.id, selectedEvent.createdBy)}
+          onDelete={() =>
+            handleDelete(selectedEvent.id, selectedEvent.createdBy)
+          }
           onEdit={() => alert(`You want fix: ${selectedEvent.title}`)}
           onUpdate={handleUpdate}
           canDelete={
-            myId && selectedEvent && String(selectedEvent.createdBy) === String(myId)
+            myId &&
+            selectedEvent &&
+            String(selectedEvent.createdBy) === String(myId)
           }
         />
       )}

@@ -13,6 +13,9 @@ const Head = () => {
     (state) => state.semester.currentSemesterId
   );
   const personalTask = useSelector((state) => state.task.personalTask);
+  const totalTaskCount = Object.values(personalTask)
+    .filter(Array.isArray)
+    .reduce((sum, arr) => sum + arr.length, 0);
   const dispatch = useDispatch();
   const today = new Date();
   const days = [
@@ -44,7 +47,6 @@ const Head = () => {
   const date = today.getDate();
 
   const getTaskPersonal = async () => {
-    getTotalTask();
     await getPersonalTaskApi(user.token, currentSemesterId, dispatch);
   };
 
@@ -90,7 +92,7 @@ const Head = () => {
               Task
             </span>
             <span className="head-container-right-task-content-sum">
-              {personalTask?.DOING?.length || 0}
+              {totalTaskCount || 0}
             </span>
           </div>
         </div>
@@ -101,7 +103,7 @@ const Head = () => {
               Complete
             </span>
             <span className="head-container-right-task-content-sum">
-              {personalTask?.COMPLETED?.length}
+              {personalTask?.COMPLETED?.length || 0}
             </span>
           </div>
         </div>

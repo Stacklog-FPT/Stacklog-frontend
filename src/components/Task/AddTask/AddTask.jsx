@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import './AddTask.scss';
-import avatar_add_button from '../../../assets/icon/avatar_add_button.png';
-import assignUser from '../../../assets/task/assign-user.png';
-import userApi from '../../../service/UserService';
-import iconPriority from '../../../assets/task/icon-priority.png';
-import { useAuth } from '../../../context/AuthProvider';
-import axios from 'axios';
-import decodeToken from '../../../service/DecodeJwt';
-import { addTask } from '../../../service/TaskService';
-import { useDispatch } from 'react-redux';
-import { toast } from 'sonner';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect, useMemo } from "react";
+import "./AddTask.scss";
+import avatar_add_button from "../../../assets/icon/avatar_add_button.png";
+import assignUser from "../../../assets/task/assign-user.png";
+import userApi from "../../../service/UserService";
+import iconPriority from "../../../assets/task/icon-priority.png";
+import { useAuth } from "../../../context/AuthProvider";
+import axios from "axios";
+import decodeToken from "../../../service/DecodeJwt";
+import { addTask } from "../../../service/TaskService";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const AddTask = ({ status, onCancel, group }) => {
   const { user } = useAuth();
@@ -18,47 +18,50 @@ const AddTask = ({ status, onCancel, group }) => {
   const groupList = useSelector((state) => state.group.groups);
   const currentGroup = groupList.find((g) => g.groupsId === group);
   const dispatch = useDispatch();
-  const visibleMembers = currentGroup.groupStudents?.slice(0, 3);
-  const extraCount = currentGroup.groupStudents?.length - visibleMembers.length;
-  const { getUserById } = userApi();
+  const getUserById = userApi().getUserById;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
-  const [selectedPriority, setSelectedPriority] = useState('LOW');
+  const [selectedPriority, setSelectedPriority] = useState("LOW");
   const [studentInformation, setStudentInformation] = useState([]);
   const [taskData, setTaskData] = useState({
-    taskId: '',
-    taskTitle: '',
-    taskDescription: '',
+    taskId: "",
+    taskTitle: "",
+    taskDescription: "",
     groupId: group,
-    documentId: '',
+    documentId: "",
     taskPoint: 0,
-    taskDueDate: '',
-    taskStartTime: '',
+    taskDueDate: "",
+    taskStartTime: "",
     priority: selectedPriority,
-    createdBy: '',
-    createdAt: '',
-    updateBy: '',
-    updateAt: '',
+    createdBy: "",
+    createdAt: "",
+    updateBy: "",
+    updateAt: "",
     statusTaskId: status.statusTaskId,
     review: [],
     parentTask: null,
     assignTo: [],
   });
-  const selectedMembers = studentInformation
-    ? studentInformation.filter((m) => taskData.assignTo.includes(m._id))
+
+  const selectedMembers = Array.isArray(studentInformation)
+    ? studentInformation.filter(
+        (m) => m && m._id && taskData.assignTo.includes(m._id)
+      )
     : [];
 
   const [colorPriority, setColorPriority] = useState([
-    { id: 1, color: '#FF6B6B', content: 'HIGH', borderColor: '#DC2626' },
-    { id: 2, color: '#FFD60A', content: 'MEDIUM', borderColor: '#D97706' },
-    { id: 3, color: '#22C55E', content: 'LOW', borderColor: '#15803D' },
+    { id: 1, color: "#FF6B6B", content: "HIGH", borderColor: "#DC2626" },
+    { id: 2, color: "#FFD60A", content: "MEDIUM", borderColor: "#D97706" },
+    { id: 3, color: "#22C55E", content: "LOW", borderColor: "#15803D" },
   ]);
 
   const selectedColor =
-    colorPriority.find((item) => item.content === selectedPriority)?.color || '#FFFFFF';
+    colorPriority.find((item) => item.content === selectedPriority)?.color ||
+    "#FFFFFF";
   const selectedBorderColor =
-    colorPriority.find((item) => item.content === selectedPriority)?.borderColor || '#000000';
+    colorPriority.find((item) => item.content === selectedPriority)
+      ?.borderColor || "#000000";
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -90,12 +93,12 @@ const AddTask = ({ status, onCancel, group }) => {
 
   const validateForm = () => {
     if (!taskData.taskTitle.trim()) {
-      toast.error('Task title is required!');
+      toast.error("Task title is required!");
       return false;
     }
 
     if (!taskData.taskDescription.trim()) {
-      toast.error('Task description is required!');
+      toast.error("Task description is required!");
       return false;
     }
 
@@ -105,7 +108,7 @@ const AddTask = ({ status, onCancel, group }) => {
     if (taskData.taskStartTime) {
       const startDate = new Date(taskData.taskStartTime);
       if (startDate < today) {
-        toast.error('Start date must be today or later!');
+        toast.error("Start date must be today or later!");
         return false;
       }
     }
@@ -113,7 +116,7 @@ const AddTask = ({ status, onCancel, group }) => {
     if (taskData.taskDueDate) {
       const dueDate = new Date(taskData.taskDueDate);
       if (dueDate < today) {
-        toast.error('Due date must be today or later!');
+        toast.error("Due date must be today or later!");
         return false;
       }
     }
@@ -122,13 +125,14 @@ const AddTask = ({ status, onCancel, group }) => {
       const startDate = new Date(taskData.taskStartTime);
       const dueDate = new Date(taskData.taskDueDate);
       if (startDate > dueDate) {
-        toast.error('Start date must be before or equal to due date!');
+        toast.error("Start date must be before or equal to due date!");
         return false;
       }
     }
 
-    if (taskData.assignTo.length < 0) {
-      toast.error('The task must have member');
+    // Fix: < 1 thay vì < 0 (length không âm)
+    if (taskData.assignTo.length < 1) {
+      toast.error("The task must have at least one member!");
       return false;
     }
 
@@ -145,64 +149,46 @@ const AddTask = ({ status, onCancel, group }) => {
     setIsSubmitting(true);
     try {
       const now = new Date();
-      const currentTime = now.toTimeString().split(' ')[0];
+      const currentTime = now.toTimeString().split(" ")[0];
       let formattedStartTime = taskData.taskStartTime
         ? `${taskData.taskStartTime}T${currentTime}`
-        : '';
+        : "";
 
-      let formattedDueDate = taskData.taskDueDate ? `${taskData.taskDueDate}T${currentTime}` : '';
+      let formattedDueDate = taskData.taskDueDate
+        ? `${taskData.taskDueDate}T${currentTime}`
+        : "";
 
       const payload = {
-        taskId: '',
+        taskId: "",
         groupId: taskData.groupId,
         taskTitle: taskData.taskTitle,
         taskDescription: taskData.taskDescription,
         statusTaskId: taskData.statusTaskId,
-        documentId: '',
+        documentId: "",
         taskPoint: 0,
-        taskParentId: '',
+        taskParentId: "",
         taskStartTime: formattedStartTime,
         taskDueDate: formattedDueDate,
-        createdBy: userData?.id || 'Unknown',
-        updatedBy: '',
+        createdBy: userData?.id || "Unknown",
+        updatedBy: "",
         priority: taskData.priority,
         listUserAssign: taskData.assignTo,
         subTasks: [],
         reviews: [],
         checkLists: [],
       };
-
-      console.log(payload);
       const response = await addTask(payload, user.token, dispatch);
-      console.log(response);
       if (response.status === 200) {
-        toast.success('Add task success');
+        toast.success("Add task success");
       }
-
-      // if (response.data) {
-      //   toast.success('Add Task successfully!');
-      //   await axios.post('http://localhost:3000/notifications', {
-      //     title: `Announce add task ${taskData.taskTitle} by ${user.username}`,
-      //     author: {
-      //       _id: Math.random(),
-      //       name: user.username || userData?.username || 'Unknown',
-      //       avatar:
-      //         user.avatar ||
-      //         'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
-      //     },
-      //     createdAt: new Date().toISOString().split('T')[0],
-      //     isRead: false,
-      //     _id: Math.random(),
-      //   });
-      // }
       onCancel();
     } catch (e) {
       console.error(
-        'Failed to add task:',
+        "Failed to add task:",
         e.response ? e.response.data : e.message,
-        e.response ? e.response.status : '',
+        e.response ? e.response.status : ""
       );
-      toast.error('Add task failure');
+      toast.error("Add task failure");
       onCancel();
     } finally {
       setIsSubmitting(false);
@@ -210,33 +196,39 @@ const AddTask = ({ status, onCancel, group }) => {
   };
 
   useEffect(() => {
-    let userId = [];
-    if (currentGroup) {
-      userId = currentGroup.groupStudents.map((item) => item.userId);
-    }
     const fetchStudent = async () => {
+      if (
+        !currentGroup?.groupStudents ||
+        currentGroup.groupStudents.length === 0
+      ) {
+        setStudentInformation([]);
+        return;
+      }
+
+      const userIds = currentGroup.groupStudents.map((item) => item.userId);
+
       const studentInfos = await Promise.all(
-        userId.map(async (id) => {
+        userIds.map(async (id) => {
           try {
             const u = await getUserById(user.token, id);
+            if (!u?._id) return null;
             return {
               _id: u._id,
-              name: u.full_name,
-              email: u.email,
-              id: u.work_id,
+              name: u.full_name || "Unknown",
               avatar: u.avatar_link,
             };
-          } catch {
+          } catch (err) {
+            console.warn("User not found:", id);
             return null;
           }
-        }),
+        })
       );
 
-      setStudentInformation(studentInfos);
+      setStudentInformation(studentInfos.filter(Boolean));
     };
 
     fetchStudent();
-  }, [group]);
+  }, [currentGroup, user?.token]);
 
   return (
     <div className="add-task">
@@ -278,20 +270,20 @@ const AddTask = ({ status, onCancel, group }) => {
                     <img
                       src={
                         member.avatar ||
-                        'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                        "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
                       }
-                      alt={`${member.name || member.userName}'s Avatar`}
+                      alt={`${member.name}'s Avatar`}
                       className="user-avatar"
                       onError={(e) => {
                         e.currentTarget.src =
-                          'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg';
+                          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg";
                       }}
                     />
                     <div className="check-icon">
                       <i className="fa-solid fa-check"></i>
                     </div>
                   </div>
-                  <span className="user-name">{member.name || member.userName}</span>
+                  <span className="user-name">{member.name}</span>
                 </div>
                 <button
                   type="button"
@@ -309,45 +301,52 @@ const AddTask = ({ status, onCancel, group }) => {
               className="add-member-btn"
               onClick={() => setShowAssignDropdown(!showAssignDropdown)}
             >
-              <img src={avatar_add_button || '/placeholder.svg'} alt="add_button_icon" />
+              <img
+                src={avatar_add_button || "/placeholder.svg"}
+                alt="add_button_icon"
+              />
               <span>Add Member</span>
             </button>
           </div>
           {showAssignDropdown && (
             <div className="assign-dropdown">
               <div className="assign-checkbox-list">
-                {studentInformation?.map((member) => (
-                  <label key={member._id} className="member-option">
-                    <input
-                      type="checkbox"
-                      value={member._id}
-                      checked={taskData.assignTo?.includes(member._id)}
-                      onChange={handleAssignChange}
-                    />
-                    <div className="member-info">
-                      <img
-                        src={
-                          member.avatar ||
-                          'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                {studentInformation
+                  .filter((member) => member && member._id)
+                  .map((member) => (
+                    <label key={member._id} className="member-option">
+                      <input
+                        type="checkbox"
+                        value={member._id}
+                        checked={
+                          taskData.assignTo?.includes(member._id) || false
                         }
-                        alt={member.name || member.userName}
-                        className="member-avatar"
-                        onError={(e) =>
-                          (e.target.src =
-                            'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg')
-                        }
+                        onChange={handleAssignChange}
                       />
-                      <span className="member-name">{member.name || member.userName}</span>
-                    </div>
-                  </label>
-                ))}
+                      <div className="member-info">
+                        <img
+                          src={
+                            member.avatar ||
+                            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                          }
+                          alt={member.name}
+                          className="member-avatar"
+                          onError={(e) =>
+                            (e.target.src =
+                              "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                          }
+                        />
+                        <span className="member-name">{member.name}</span>
+                      </div>
+                    </label>
+                  ))}
               </div>
             </div>
           )}
         </div>
         <div className="wrapper-priority">
           <div className="wrapper-priority-heading">
-            <img src={iconPriority || '/placeholder.svg'} alt="..." />
+            <img src={iconPriority || "/placeholder.svg"} alt="..." />
             <h2>Priority</h2>
           </div>
           <div className="priority-selector">
@@ -366,16 +365,18 @@ const AddTask = ({ status, onCancel, group }) => {
               ></span>
               <span>{selectedPriority}</span>
               <i
-                className={`fa-solid ${showPriorityDropdown ? 'fa-chevron-up' : 'fa-chevron-down'}`}
+                className={`fa-solid ${
+                  showPriorityDropdown ? "fa-chevron-up" : "fa-chevron-down"
+                }`}
               ></i>
             </button>
             {showPriorityDropdown && (
               <div className="priority-dropdown">
-                {colorPriority?.map((item) => (
+                {colorPriority.map((item) => (
                   <div
                     key={item.id}
                     className={`priority-option ${
-                      selectedPriority === item.content ? 'selected' : ''
+                      selectedPriority === item.content ? "selected" : ""
                     }`}
                     onClick={() => handlePrioritySelect(item.content)}
                   >
@@ -418,7 +419,7 @@ const AddTask = ({ status, onCancel, group }) => {
         </div>
         <div className="wrapper-btn-submit">
           <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Submitting...' : 'Submit'}
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </div>
       </form>

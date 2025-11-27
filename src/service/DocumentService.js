@@ -119,16 +119,12 @@ export const getDocumentByUserId = async (token, dispatch) => {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    console.log("Service call get document of User: ", res.data);
     const userId = decodedToken(token).id;
 
     const documentThatPerson = res.data.filter(
       (doc) => doc.createdBy === userId
     );
-    console.log("Document Person Service: ", documentThatPerson);
     dispatch(setDocumentPerson(documentThatPerson));
-
     return documentThatPerson;
   } catch (e) {
     console.error("Something went wrong: ", e.message);

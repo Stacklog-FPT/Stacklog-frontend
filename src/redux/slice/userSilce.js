@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  userInfo: {},
   semesters: [],
   classes: [],
   lectures: [],
@@ -28,6 +29,12 @@ const userSlice = createSlice({
     },
     getSemesters(state, action) {
       state.semesters = action.payload;
+    },
+    setUserInfo(state, action) {
+      state.userInfo = action.payload;
+    },
+    updateUserInfo(state, action) {
+      state.userInfo = { ...state.userInfo, ...action.payload };
     },
     deleteSemester: (state, action) => {
       state.semesters = state.semesters.filter(
@@ -62,6 +69,8 @@ export const {
   setError,
   addSemeter,
   resetClasses,
+  setUserInfo,
+  updateUserInfo,
 } = userSlice.actions;
 
 export default userSlice.reducer;

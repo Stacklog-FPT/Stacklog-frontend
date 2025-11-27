@@ -1,24 +1,26 @@
-import React, { useState } from 'react';
-import './LoginPage.scss';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import userApi from '../../service/UserService';
-import logo from '../../assets/logo-login.png';
-import { useAuth } from '../../context/AuthProvider';
-import { MdOutlineVisibility } from 'react-icons/md';
-import { MdOutlineVisibilityOff } from 'react-icons/md';
+import React, { useState } from "react";
+import "./LoginPage.scss";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import userApi from "../../service/UserService";
+import logo from "../../assets/logo-login.png";
+import { useAuth } from "../../context/AuthProvider";
+import { MdOutlineVisibility } from "react-icons/md";
+import { MdOutlineVisibilityOff } from "react-icons/md";
+import { useDispatch } from "react-redux";
 
 const LoginPage = () => {
   const { loginSave } = useAuth();
-  const { login, loginGoogle, error, isLoading } = userApi();
+  const { login, loginGoogle, getUserById, error, isLoading } = userApi();
   const [user, setUser] = useState({});
-  const [email, setEmail] = useState('');
-  const [password, setPassWord] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassWord] = useState("");
   const [showPassWord, setShowPassWord] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const redirect = searchParams.get('redirect') || '/';
+  const redirect = searchParams.get("redirect") || "/";
+  const dispatch = useDispatch();
   const handleLoginGoogle = async (response) => {
     const { credential } = response;
     if (credential) {
@@ -30,6 +32,7 @@ const LoginPage = () => {
           token: response.data.token,
           role: response.data.role,
         };
+
         loginSave(userData);
         navigate(redirect);
       }
@@ -46,16 +49,16 @@ const LoginPage = () => {
           token: response.token,
           role: response.role,
         };
-
-        loginSave(userData);
-        if (userData.role === 'ADMIN') {
-          navigate('/admin');
+        await loginSave(userData);
+        await getUserById(response.token, response._id, dispatch);
+        if (userData.role === "ADMIN") {
+          navigate("/admin");
           return;
         }
         navigate(redirect);
       }
     } catch (e) {
-      console.error('Login Failed', e || e.message);
+      console.error("Login Failed", e || e.message);
     }
   };
 
@@ -66,7 +69,9 @@ const LoginPage = () => {
           <div className="form_text">
             <img src={logo} alt="this is my logo" className="form_text_logo" />
             <h1 className="form_text_heading">Welcome back</h1>
-            <p className="form_text_content">Welcome back! Please enter your details.</p>
+            <p className="form_text_content">
+              Welcome back! Please enter your details.
+            </p>
           </div>
           <form className="form" onSubmit={handleLogin}>
             <div className="form_wrapper_input">
@@ -80,7 +85,9 @@ const LoginPage = () => {
                 />
               </div>
               <div className="form_wrapper_input_field">
-                <label className="form_wrapper_input_field_label">Password</label>
+                <label className="form_wrapper_input_field_label">
+                  Password
+                </label>
                 {showPassWord ? (
                   <input
                     type="type"
@@ -113,7 +120,10 @@ const LoginPage = () => {
               <div className="form_wrapper_checkbox">
                 <div className="form_wrapper_checkbox_field">
                   <input type="checkbox" id="remember-checkbox" />
-                  <label htmlFor="remember-checkbox" className="form_wrapper_checkbox_field_label">
+                  <label
+                    htmlFor="remember-checkbox"
+                    className="form_wrapper_checkbox_field_label"
+                  >
                     Remember for 30 days
                   </label>
                 </div>
@@ -125,13 +135,13 @@ const LoginPage = () => {
             </div>
             <div className="form_wrapper_button">
               <button className="form_wrapper_button_field">
-                {isLoading ? 'Signing in...' : 'Sign in'}
+                {isLoading ? "Signing in..." : "Sign in"}
               </button>
               <GoogleLogin
                 className="google-login-btn"
                 onSuccess={handleLoginGoogle}
                 onError={() => {
-                  console.log('Login failure!');
+                  console.log("Login failure!");
                 }}
                 text="signin_with"
                 logo_alignment="left"

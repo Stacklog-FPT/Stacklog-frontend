@@ -6,43 +6,29 @@ import { Link } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import decodeToken from "../../service/DecodeJwt";
+import { toast } from "sonner";
+import { updateUserProfile } from "../../service/UserService";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
   const { user, logoutAuth } = useAuth();
-  const { logout, getUserById } = userApi();
+  const { logout } = userApi();
   const userData = decodeToken(user?.token);
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [profileData, setProfileData] = useState({});
-  const [tempImage, setTempImage] = useState("");
-
-  const handleGetDetail = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await getUserById(user.token, userData?.id);
-      if (response) {
-        console.log(response);
-        setProfileData(response);
-        setTempImage(response.avatar_link || "avatar/default.png");
-      }
-    } catch (e) {
-      setError(e.message || "Failed to fetch user details");
-      console.error("Failed to fetch user details:", e);
-    } finally {
-      setLoading(false);
+  const { userInfo } = useSelector((state) => state.users);
+  const [profileData, setProfileData] = useState({
+    ...userInfo,
+  });
+  const [loading, setLoading] = useState(() => {
+    if (profileData) {
+      return false;
     }
-  };
-
-  useEffect(() => {
-    if (user?.token && user?.email) {
-      handleGetDetail();
-    } else {
-      setError("User not authenticated");
-      setLoading(false);
-    }
-  }, []);
+    return true;
+  });
+  const [tempImage, setTempImage] = useState(profileData.avatar_link);
+  const dispatch = useDispatch();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,13 +38,22 @@ const Profile = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.warning("Image size must be under 5MB");
+        return;
+      }
+
       const imageUrl = URL.createObjectURL(file);
       setTempImage(imageUrl);
-      setProfileData((prev) => ({ ...prev, avatar_link: imageUrl }));
+      setProfileData((prev) => ({ ...prev, avatar_link: file }));
     }
   };
 
   const toggleEdit = () => {
+    if (isEditing) {
+      handleGetDetail();
+      setTempImage(profileData.avatar_link || defaultAvatar);
+    }
     setIsEditing((prev) => !prev);
   };
 
@@ -71,6 +66,37 @@ const Profile = () => {
       }
     } catch (e) {
       console.error("Logout failed:", e.message);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!profileData.full_name?.trim()) {
+      alert("Full name is required!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await updateUserProfile(
+        user.token,
+        userData.id,
+        {
+          ...profileData,
+          avatar_link: profileData.avatar_link,
+        },
+        dispatch
+      );
+
+      if (response.status === 200) {
+        toast.success("Profile updated successfully!");
+        setIsEditing(false);
+        setProfileData(response.data || response);
+        setTempImage(response.data?.avatar_link || response.avatar_link);
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to save profile");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -116,9 +142,16 @@ const Profile = () => {
           ) : (
             <p>{profileData?.role}</p>
           )}
-          <button onClick={toggleEdit}>
+          <button
+            onClick={isEditing ? handleSaveProfile : toggleEdit}
+            disabled={loading}
+          >
             <i className="fa-solid fa-pen-to-square"></i>
-            {isEditing ? "Save Profile" : "Edit Profile"}
+            {loading
+              ? "Saving..."
+              : isEditing
+              ? "Save Profile"
+              : "Edit Profile"}
           </button>
           <button onClick={handleLogout}>
             <i className="fa-solid fa-right-from-bracket"></i>
@@ -174,36 +207,7 @@ const Profile = () => {
             </div>
           </div>
         </div>
-        {loading ? (
-          <Skeleton width={200} height={30} />
-        ) : profileData?.role === "STUDENT" ||
-          profileData?.role === "LECTURER" ? (
-          <>
-            <div className="profile-popup-information-heading">
-              <h3>Current Class</h3>
-            </div>
-            <div className="profile-popup-information-content">
-              <div className="profile-popup-information-content-element">
-                <h4>Class</h4>
-                <p>SDN301c</p>
-              </div>
-              <div className="profile-popup-information-content-element">
-                <h4>Class</h4>
-                <p>MMA301c</p>
-              </div>
-            </div>
-            <div className="profile-popup-information-content">
-              <div className="profile-popup-information-content-element">
-                <h4>Class</h4>
-                <p>SWD301c</p>
-              </div>
-              <div className="profile-popup-information-content-element">
-                <h4>Class</h4>
-                <p>EXE101c</p>
-              </div>
-            </div>
-          </>
-        ) : (
+        {profileData?.role === "ADMIN" && (
           <button className="btn__admin">
             <Link to={"/admin"}>Go to AdminDashboard</Link>
           </button>

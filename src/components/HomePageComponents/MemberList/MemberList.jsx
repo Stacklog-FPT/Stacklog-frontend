@@ -1,20 +1,12 @@
 import React from "react";
 import "./MemberList.scss";
+import { useSelector } from "react-redux";
 const MemberList = () => {
-  // Get From Api
-  const [classes, setClasses] = React.useState([
-    { _id: "class-01", name: "SDN301c" },
-    { _id: "class-02", name: "SWD301c" },
-    { _id: "class-03", name: "MMA102c" },
-    { _id: "class-04", name: "EXE101c" },
-  ]);
-
-  // Get From Api
-  const [cities, setCities] = React.useState([
-    { _id: 1, city: "HCM202" },
-    { _id: 2, city: "DN202" },
-    { _id: 3, city: "HN202" },
-  ]);
+  const classes = useSelector((state) => state.class.classes);
+  const [selectedClassId, setSelectedClassId] = React.useState("");
+  const selectedClass = classes.find(
+    (cls) => cls.classesId === selectedClassId
+  );
 
   const [members, setMemebers] = React.useState([
     {
@@ -73,7 +65,7 @@ const MemberList = () => {
       <div className="member__list__container">
         <div className="member__list__heading">
           <div className="member__list__heading__title">
-            <h2>Member list</h2>
+            <h2>Member List</h2>
           </div>
 
           <div className="member__list__heading__feature">
@@ -84,21 +76,28 @@ const MemberList = () => {
         </div>
         <div className="member__list__feature">
           <div className="member__list__feature__filter">
-            <select>
+            <select
+              value={selectedClassId}
+              onChange={(e) => setSelectedClassId(e.target.value)}
+            >
               {classes.map((item) => {
-                return <option key={item._id}>{item.name}</option>;
+                return (
+                  <option key={item.classesId} value={item.classesId}>
+                    {item.classesName}
+                  </option>
+                );
               })}
             </select>
             <select>
-              {cities.map((item) => {
-                return <option key={item._id}>{item.city}</option>;
-              })}
+              {(selectedClass
+                ? selectedClass.groups
+                : classes.flatMap((cls) => cls.groups)
+              ).map((group) => (
+                <option key={group.groupsId} value={group.groupsId}>
+                  {group.groupsName}
+                </option>
+              ))}
             </select>
-          </div>
-          <div className="member__list__feature__date__of__public">
-            <p>
-              Date of publish: <span>14/4 - 1/5/2025</span>
-            </p>
           </div>
         </div>
         <div className="member__list__table">

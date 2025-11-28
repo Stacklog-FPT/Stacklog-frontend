@@ -1,4 +1,3 @@
-// src/components/ListAdminManager/ListSemester.jsx
 import { useEffect, useState } from "react";
 import "./ListAdminManager.scss";
 import {
@@ -18,7 +17,6 @@ const ListAdminManager = ({ role }) => {
   const { semesters, classes, lectures, pending } = useSelector(
     (state) => state.users
   );
-
   const [showUi, setShowUi] = useState({
     row1: "",
     row2: "",
@@ -31,10 +29,10 @@ const ListAdminManager = ({ role }) => {
     semesterName: "",
   });
 
-  const [selectedClass, setSelectedClass] = useState({
-    classesId: "",
-    classesName: "",
-  });
+  const [selectedClassId, setSelectedClassId] = useState("");
+  const selectedClass = classes.find(
+    (cls) => cls.classesId === selectedClassId
+  );
 
   const dataByRole = {
     Semester: semesters,
@@ -105,20 +103,6 @@ const ListAdminManager = ({ role }) => {
     setSelectedSemester({
       semesterId: selected.semesterId || "",
       semesterName: selected.semesterName || "Unknown",
-    });
-  };
-
-  const handleClassesChange = (e) => {
-    const id = e.target.value;
-    if (!id) {
-      selectedClass({ classesId: "", classesName: "" });
-      return;
-    }
-
-    const selected = classes.find((item) => item.classesId === id);
-    setSelectedClass({
-      classesId: selected.classesId || "",
-      classesName: selected.classesName || "Unknown",
     });
   };
 
@@ -193,9 +177,6 @@ const ListAdminManager = ({ role }) => {
                   — {selectedSemester.semesterName}
                 </span>
               )}
-              {role === "Student" && selectedClass.classesName && (
-                <span className="subtitle"> — {selectedClass.classesName}</span>
-              )}
             </h2>
           </div>
 
@@ -215,18 +196,31 @@ const ListAdminManager = ({ role }) => {
               </select>
             )}
             {role === "Student" && (
-              <select
-                value={selectedClass.classesId}
-                onChange={handleClassesChange}
-                className="semester-select"
-              >
-                <option value="">-- Select Class --</option>
-                {classes.map((sem) => (
-                  <option key={sem.classesId} value={sem.classesId}>
-                    {sem.classesName}
-                  </option>
-                ))}
-              </select>
+              <>
+                <select
+                  value={selectedClass}
+                  onChange={(e) => setSelectedClassId(e.target.value)}
+                  className="semester-select"
+                >
+                  <option value="">-- Select Class --</option>
+                  {classes.map((sem) => (
+                    <option key={sem.classesId} value={sem.classesId}>
+                      {sem.classesName}
+                    </option>
+                  ))}
+                </select>
+                <select className="semester-select">
+                  <option value="">-- Select Group --</option>
+                  {(selectedClass
+                    ? selectedClass.groups
+                    : classes.flatMap((cls) => cls.groups)
+                  ).map((group) => (
+                    <option key={group.groupsId} value={group.groupsId}>
+                      {group.groupsName}
+                    </option>
+                  ))}
+                </select>
+              </>
             )}
             <i className="fa-solid fa-filter"></i>
             <i

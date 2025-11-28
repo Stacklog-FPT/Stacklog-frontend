@@ -25,14 +25,16 @@ const LoginPage = () => {
     const { credential } = response;
     if (credential) {
       const response = await loginGoogle(credential);
+
       if (response) {
+        console.log(response);
         const userData = {
           email: response.data.email,
           username: response.data.username,
           token: response.data.token,
           role: response.data.role,
         };
-
+        await getUserById(response.data.token, response.data._id, dispatch);
         loginSave(userData);
         navigate(redirect);
       }

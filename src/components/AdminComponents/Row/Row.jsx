@@ -8,10 +8,105 @@ import FormAddLecture from "../FormAddLecture/FormAddLecture";
 import { deleteSemesterService } from "../../../service/AdminService";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDispatch } from "react-redux";
-const Row = ({ role, data, semesterName, lectures, addForm, closeAdd }) => {
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css"; // Đừng quên import CSS
+
+const Row = ({
+  role,
+  data,
+  semesterName,
+  lectures,
+  addForm,
+  closeAdd,
+  isLoading = false,
+}) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
-  if (!data) return null;
+
+  // Nếu đang loading (hoặc data chưa có), hiển thị skeleton
+  if (isLoading || !data) {
+    return (
+      <tr>
+        {role === "Semester" && (
+          <>
+            <td>
+              <Skeleton width={120} />
+            </td>
+            <td>
+              <Skeleton width={100} />
+            </td>
+            <td>
+              <Skeleton width={100} />
+            </td>
+            <td className="action-cell">
+              <Skeleton
+                circle
+                width={36}
+                height={36}
+                inline
+                style={{ marginRight: 8 }}
+              />
+              <Skeleton circle width={36} height={36} />
+            </td>
+          </>
+        )}
+
+        {role === "Class" && (
+          <>
+            <td>
+              <Skeleton width={130} />
+            </td>
+            <td>
+              <Skeleton width={110} />
+            </td>
+            <td>
+              <Skeleton width={140} />
+            </td>
+            <td className="action-cell">
+              <Skeleton
+                circle
+                width={36}
+                height={36}
+                inline
+                style={{ marginRight: 8 }}
+              />
+              <Skeleton circle width={36} height={36} />
+            </td>
+          </>
+        )}
+
+        {(role === "Lecture" || role === "Student") && (
+          <>
+            <td>
+              <div
+                className="user-avatar"
+                style={{ display: "flex", alignItems: "center", gap: 10 }}
+              >
+                <Skeleton circle width={40} height={40} />
+                <Skeleton width={120} />
+              </div>
+            </td>
+            <td>
+              <Skeleton width={180} />
+            </td>
+            <td>
+              <Skeleton width={role === "Lecture" ? 80 : 100} />
+            </td>
+            <td className="action-cell">
+              <Skeleton
+                circle
+                width={36}
+                height={36}
+                inline
+                style={{ marginRight: 8 }}
+              />
+              <Skeleton circle width={36} height={36} />
+            </td>
+          </>
+        )}
+      </tr>
+    );
+  }
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -19,16 +114,15 @@ const Row = ({ role, data, semesterName, lectures, addForm, closeAdd }) => {
   };
 
   const getLecturerName = (lectureId) => {
-    if (!lectures.users) return "No Lecturer";
-    const lecturer = lectures.users?.find((lec) => lec._id === lectureId);
+    if (!lectures?.users) return "No Lecturer";
+    const lecturer = lectures.users.find((lec) => lec._id === lectureId);
     return lecturer?.full_name || "Unknown Lecturer";
   };
 
   const handleDeleteSemester = async (semesterId) => {
-    console.log(semesterId);
     const result = await Swal.fire({
       title: "Are you sure to delete this semester?",
-      text: "This action can't completed!",
+      text: "This action can't be undone!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#045745",
@@ -39,12 +133,11 @@ const Row = ({ role, data, semesterName, lectures, addForm, closeAdd }) => {
 
     if (result.isConfirmed) {
       try {
-        const resp = await await deleteSemesterService(
+        const resp = await deleteSemesterService(
           semesterId,
           user.token,
           dispatch
         );
-
         if (resp.data === "Delete success") {
           Swal.fire(
             "Deleted!",
@@ -52,13 +145,12 @@ const Row = ({ role, data, semesterName, lectures, addForm, closeAdd }) => {
             "success"
           );
         }
-      } catch (e) {
+      } catch (error) {
         console.error("Delete failed:", error);
         Swal.fire("Error!", "Something went wrong during deletion.", "error");
       }
     }
   };
-
   switch (role) {
     case "Semester":
       return (
@@ -78,9 +170,7 @@ const Row = ({ role, data, semesterName, lectures, addForm, closeAdd }) => {
               <FaTrash />
             </button>
           </td>
-          {role === "Semester" && addForm && (
-            <FormSemester onClose={closeAdd} />
-          )}
+          {addForm && <FormSemester onClose={closeAdd} />}
         </>
       );
 
@@ -91,10 +181,10 @@ const Row = ({ role, data, semesterName, lectures, addForm, closeAdd }) => {
           <td>{semesterName || "Unknown Semester"}</td>
           <td>{upperCaseFirstChart(getLecturerName(data.lectureId))}</td>
           <td className="action-cell">
-            <button className="btn-edit">
+            <button className="btn-edit" title="Edit">
               <MdModeEdit />
             </button>
-            <button className="btn-delete">
+            <button className="btn-delete" title="Delete">
               <FaTrash />
             </button>
           </td>
@@ -124,17 +214,14 @@ const Row = ({ role, data, semesterName, lectures, addForm, closeAdd }) => {
             </span>
           </td>
           <td className="action-cell">
-            <button className="btn-edit">
+            <button className="btn-edit" title="Edit">
               <MdModeEdit />
             </button>
-            <button className="btn-delete">
+            <button className="btn-delete" title="Delete">
               <FaTrash />
             </button>
           </td>
-
-          {role === "Lecture" && addForm && (
-            <FormAddLecture onClose={closeAdd} role={role} />
-          )}
+          {addForm && <FormAddLecture onClose={closeAdd} role={role} />}
         </>
       );
 
@@ -159,17 +246,14 @@ const Row = ({ role, data, semesterName, lectures, addForm, closeAdd }) => {
             {data.class?.class_name || data.class?.classesName || "No class"}
           </td>
           <td className="action-cell">
-            <button className="btn-edit">
+            <button className="btn-edit" title="Edit">
               <MdModeEdit />
             </button>
-            <button className="btn-delete">
+            <button className="btn-delete" title="Delete">
               <FaTrash />
             </button>
           </td>
-
-          {role === "Student" && addForm && (
-            <FormAddLecture onClose={closeAdd} role={role} />
-          )}
+          {addForm && <FormAddLecture onClose={closeAdd} role={role} />}
         </>
       );
 

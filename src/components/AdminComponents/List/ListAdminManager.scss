@@ -80,8 +80,9 @@
 
     table {
       width: 100%;
+      height: 450px;
       border-collapse: collapse;
-      table-layout: fixed; /* QUAN TRỌNG: chia cột đều */
+      table-layout: fixed;
     }
 
     th,
@@ -140,8 +141,6 @@
         }
       }
     }
-
-    // Cột Action đẹp
     .action-cell {
       display: flex;
       justify-content: center;
@@ -197,7 +196,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
     &:hover:not(:disabled) {
-      background: #3b82f6;
+      background: var(--bg--primary-color);
       color: white;
       transform: translateY(-4px);
       box-shadow: 0 10px 25px rgba(59, 130, 246, 0.35);
@@ -233,10 +232,10 @@
       }
 
       &.active {
-        background: #3b82f6;
+        background: var(--bg--primary-color);
         color: white;
-        border-color: #3b82f6;
-        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        border-color: var(--bg--primary-color);
+        box-shadow: 0 8px 20px rgba(24, 122, 73, 0.4);
         transform: translateY(-4px);
         font-weight: 700;
       }

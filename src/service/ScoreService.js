@@ -118,3 +118,59 @@ export const deleteScoreCategory = async (categoryId, token, dispatch) => {
   }
 };
 
+// Export scores as Excel by classId. Returns { arrayBuffer, filename, contentType }
+export const exportScoreByClass = async (classId, token, dispatch) => {
+  if (!classId) throw new Error('Missing classId');
+  try {
+    if (dispatch) dispatch(apiStart());
+    const url = `${SCORE_API}/export-by-class?classId=${encodeURIComponent(classId)}`;
+    const res = await axios.get(url, {
+      responseType: 'arraybuffer',
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+
+    // try extract filename from Content-Disposition header
+    const contentDisp = res.headers && (res.headers['content-disposition'] || res.headers['Content-Disposition']);
+    let filename = 'export.xlsx';
+    if (contentDisp) {
+      const match = /filename\*=UTF-8''([^;\n\r]+)|filename="?([^";]+)"?/i.exec(contentDisp);
+      if (match) {
+        filename = decodeURIComponent(match[1] || match[2] || filename);
+      }
+    }
+
+    const contentType = (res.headers && (res.headers['content-type'] || res.headers['Content-Type'])) || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+    if (dispatch) dispatch(apiSuccess(res.data));
+    return { arrayBuffer: res.data, filename, contentType };
+  } catch (err) {
+    if (dispatch) dispatch(apiFailure(err.message || 'Failed to export scores'));
+    throw err;
+  }
+};
+
+// Helper: save an ArrayBuffer as a downloadable file in the browser
+export const saveArrayBufferAsFile = (arrayBuffer, filename = 'export.xlsx', contentType = 'application/octet-stream') => {
+  try {
+    const blob = new Blob([arrayBuffer], { type: contentType });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (e) {
+    // fallback: try to open in new tab (may prompt download)
+    console.warn('saveArrayBufferAsFile failed', e);
+  }
+};
+
+// Convenience: export and trigger download
+export const exportScoreAndDownload = async (classId, token, dispatch) => {
+  const { arrayBuffer, filename, contentType } = await exportScoreByClass(classId, token, dispatch);
+  saveArrayBufferAsFile(arrayBuffer, filename, contentType);
+};
+

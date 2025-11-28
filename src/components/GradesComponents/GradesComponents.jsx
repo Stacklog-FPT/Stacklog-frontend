@@ -8,6 +8,7 @@ import { fetchUserById } from "../../service/UserService";
 import {
   saveScoreCategory,
   getScoreCategoriesByClass,
+  exportScoreAndDownload,
 } from "../../service/ScoreService";
 import AddCategoryByReuse from "./AddCategoryByReuse/AddCategoryByReuse";
 import { canViewGroup } from "../../helper/validateStudentGroup";
@@ -57,6 +58,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
     scoreCategoryComment: "",
   });
   const [savingCategory, setSavingCategory] = React.useState(false);
+  const [exporting, setExporting] = React.useState(false);
 
   // pagination for student-class list (when role === STUDENT)
   const [studentPage, setStudentPage] = React.useState(1);
@@ -750,6 +752,22 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
     }
     setCurrentPage(1);
   };
+
+  const handleExport = async () => {
+    if (!selectedClassId) {
+      alert("Please select a class first");
+      return;
+    }
+    setExporting(true);
+    try {
+      await exportScoreAndDownload(selectedClassId, token, dispatch);
+    } catch (e) {
+      console.error("Export failed", e);
+      alert("Export failed: " + (e?.message || e));
+    } finally {
+      setExporting(false);
+    }
+  };
   return (
     <div className="grades__component">
       <div className="grades__component__container">
@@ -942,6 +960,14 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
             <i className="fa-solid fa-file-arrow-up"></i>
             {user?.role === "LECTURER" && (
               <>
+                <button
+                  onClick={handleExport}
+                  title={selectedClassId ? "Export scores" : "Select a class first"}
+                  disabled={!selectedClassId || exporting}
+                >
+                  <i className="fa-solid fa-file-arrow-down" style={{ marginRight: 6 }}></i>
+                  <span>{exporting ? "Exporting..." : "Export"}</span>
+                </button>
                 <button onClick={() => setIsAddOpen(true)} title="Add">
                   <i className="fa-solid fa-plus"></i>
                   <span>Category</span>

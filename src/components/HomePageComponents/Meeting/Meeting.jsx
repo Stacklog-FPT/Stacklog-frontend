@@ -20,7 +20,7 @@ const Meeting = () => {
         navigate("/schedule");
       }}
     >
-      {isLecture && <OverallProject />}
+      {/* {isLecture && <OverallProject />} */}
       <div className="meeting">
         <div className="meeting__title">
           <h2>Next Upcoming Meeting</h2>
@@ -29,7 +29,8 @@ const Meeting = () => {
           <div className="meeting__calendar">
             <Calendar isPage={true} />
           </div>
-          {isLecture ? "" : <DetailMeeting />}
+          <DetailMeeting />
+          {/* {isLecture ? "" : <DetailMeeting />} */}
         </div>
       </div>
     </div>

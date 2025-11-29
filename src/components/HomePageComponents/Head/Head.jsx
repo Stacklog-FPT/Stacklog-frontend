@@ -85,6 +85,8 @@ const Head = () => {
         </div>
       </div>
       <div className="head-container-right">
+          {user?.role !== 'LECTURER' && ( 
+        <>
         <div className="head-container-right-task">
           <img src={taskImg} alt="this is img task" />
           <div className="head-container-right-task-content">
@@ -107,6 +109,8 @@ const Head = () => {
             </span>
           </div>
         </div>
+         </>
+       )}
       </div>
     </div>
   );

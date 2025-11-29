@@ -9,7 +9,7 @@ $bp-md: 768px;
   padding: 10px 10px;
 
   &.with-project {
-    grid-template-columns: 400px minmax(0, 1fr);
+    // grid-template-columns: 400px minmax(0, 1fr);
   }
 
   &.no-project {
@@ -25,8 +25,9 @@ $bp-md: 768px;
 .meeting {
   min-width: 0;
   width: 100%;
-  height: 598px;
-  overflow-y: auto;
+  /* allow the meeting container to expand to fit its content so nothing is clipped */
+  height: auto;
+  overflow-y: visible;
   background-color: var(--bg--nav);
   border-radius: 20px;
   padding-bottom: 20px;
@@ -65,7 +66,8 @@ $bp-md: 768px;
 
 .meeting__calendar {
   width: 100%;
-  overflow-x: auto;
+  /* prevent horizontal scroll by allowing calendar to shrink */
+  overflow-x: hidden;
   overscroll-behavior: contain;
   padding-bottom: 6px;
 
@@ -78,28 +80,30 @@ $bp-md: 768px;
   }
 }
 
+/* make the calendar child responsive instead of forcing a large min-width */
 .meeting__calendar > * {
-  min-width: 960px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
-@media (max-width: 1280px) {
-  .meeting__calendar > * {
-    min-width: 900px;
-  }
+
+/* Layout helpers: allow calendar to grow and right-side cards to have a fixed column */
+.meeting__content {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
 }
-@media (max-width: 1024px) {
-  .meeting__calendar > * {
-    min-width: 820px;
-  }
+
+.meeting__calendar {
+  flex: 1 1 0%;
+  min-width: 0;
 }
-@media (max-width: 768px) {
-  .meeting__calendar > * {
-    min-width: 700px;
-  }
-}
-@media (max-width: 640px) {
-  .meeting__calendar > * {
-    min-width: 640px;
-  }
+
+.detail__meeting__container,
+.overall__project {
+  flex: 0 0 340px;
+  max-width: 380px;
+  width: 100%;
 }
 
 // responsive
@@ -108,7 +112,7 @@ $bp-md: 768px;
     grid-template-columns: 1fr;
   }
   .meeting {
-    height: auto;
+    /* keep auto height on smaller screens as well */
     padding-right: 12px;
   }
   .meeting__content {

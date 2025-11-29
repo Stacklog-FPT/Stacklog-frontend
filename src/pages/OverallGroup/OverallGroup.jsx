@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from 'react-dom';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../../context/AuthProvider";
 import { useParams } from "react-router-dom";
+import { selectCurrentSemesterId } from "../../redux/slice/semesterSlice";
+import { getClasses } from "../../service/ClassService";
 import TaskCard from "../../components/ComponentsOverallTask/TaskCard";
 import IncompleteTasksChart from "../../components/ComponentsOverallTask/IncompleteTasksChart";
 import TaskCompletionChart from "../../components/ComponentsOverallTask/TaskCompletionChart";
@@ -23,6 +25,8 @@ export default function TaskDashboard() {
   const [overall, setOverall] = useState(null);
   const [loading, setLoading] = useState(false);
   const [usersMap, setUsersMap] = useState({});
+  const currentSemesterId = useSelector(selectCurrentSemesterId);
+  const [classesId, setClassesId] = useState(null);
   
 
   useEffect(() => {
@@ -33,6 +37,12 @@ export default function TaskDashboard() {
         setLoading(true);
         const data = await getOverallTask(token, groupId, dispatch);
         setOverall(data);
+        // Debug: log potential class id fields for the selected group
+        console.debug('OverallGroup - paramGroupId:', groupId);
+        console.debug('OverallGroup - overall data keys:', data ? Object.keys(data) : data);
+        console.debug('OverallGroup - possible classId fields:', {
+          classId: data?.classId || data?.classesId || data?.classes?.classesId || data?.class?._id || null,
+        });
         // fetch user profiles for userOverviews to get names & avatars
         if (data?.userOverviews && Array.isArray(data.userOverviews) && data.userOverviews.length > 0) {
           try {
@@ -114,6 +124,32 @@ export default function TaskDashboard() {
       }
     })();
   }, [paramGroupId, token]);
+
+  // If we have a selected semester and the groupId, try to find the class that contains this group
+  useEffect(() => {
+    const groupId = paramGroupId || null;
+    if (!groupId || !token || !currentSemesterId) return;
+
+    (async () => {
+      try {
+        const classes = await getClasses(currentSemesterId, token, dispatch);
+        if (Array.isArray(classes) && classes.length > 0) {
+          const found = classes.find((c) =>
+            Array.isArray(c.groups) && c.groups.some((g) => g.groupsId === groupId),
+          );
+          if (found) {
+            const cid = found.classesId || found.classId || found._id || null;
+            setClassesId(cid);
+            console.debug('OverallGroup - resolved classesId for group:', groupId, '=>', cid);
+          } else {
+            console.debug('OverallGroup - no class found containing group:', groupId);
+          }
+        }
+      } catch (e) {
+        console.warn('OverallGroup - failed to resolve classes for group', e);
+      }
+    })();
+  }, [paramGroupId, token, currentSemesterId]);
 
   
 

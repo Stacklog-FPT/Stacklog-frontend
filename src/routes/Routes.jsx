@@ -22,6 +22,7 @@ import LayoutAdmin from '../layouts/LayoutAdmin/LayoutAdmin';
 import JoinClass from '../pages/JoinClass/JoinClass';
 import TaskSelfPage from '../pages/TaskSelfPage/TaskSelfPage';
 import NotificationPage from '../pages/NotificationPage/NotificationPage';
+import LoginPageAdmin from '../pages/LoginPage/LoginPageAdmin';
 
 const routes = [
   {
@@ -73,6 +74,14 @@ const routes = [
     element: (
       <AuthProvider>
         <LoginPage />
+      </AuthProvider>
+    ),
+  },
+  {
+    path: '/login-admin',
+    element: (
+      <AuthProvider>
+        <LoginPageAdmin />
       </AuthProvider>
     ),
   },

@@ -17,6 +17,7 @@ import PopupInviteCode from '../../ClassListComponent/PopupInviteCode/PopupInvit
 import ExportXlsxButton from '../../ExportXlsxButton/ExportXlsxButton';
 import ImportXlsxButton from '../../ImportXlsxButton/ImportXlsxButton';
 import { exportClassAndDownload, importClassByClassId } from '../../../service/ClassService';
+import { fetchUserById } from "../../../service/UserService";
 
 const {
   getClasses,
@@ -65,7 +66,6 @@ const ClassList = ({ handleActivityAddClass }) => {
   const [inviteCode, setInviteCode] = useState('');
   const [showInvitePopup, setShowInvitePopup] = useState(false);
 
-  const { getUserById } = userApi();
 
   useEffect(() => {
     if (!selectedClass) return;
@@ -85,7 +85,7 @@ const ClassList = ({ handleActivityAddClass }) => {
         const studentInfos = await Promise.all(
           userIds.map(async (id) => {
             try {
-              const u = await getUserById(user.token, id);
+              const u = await fetchUserById(user.token, id);
               return {
                 _id: u._id,
                 name: u.full_name,
@@ -112,6 +112,7 @@ const ClassList = ({ handleActivityAddClass }) => {
         let data = [];
         if (currentSemesterId) {
           data = await getClasses(currentSemesterId, user.token, dispatch);
+          console.log('Fetched classes for semester', currentSemesterId, data);
         }
         setClasses(data || []);
         if (data && data.length > 0) {
@@ -177,7 +178,7 @@ const ClassList = ({ handleActivityAddClass }) => {
       const studentInfos = await Promise.all(
         userIds.map(async (id) => {
           try {
-            const u = await getUserById(user.token, id);
+            const u = await fetchUserById(user.token, id);
             return {
               _id: u._id,
               name: u.full_name,

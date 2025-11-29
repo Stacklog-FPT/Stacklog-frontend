@@ -9,7 +9,7 @@ import { MdOutlineVisibility } from "react-icons/md";
 import { MdOutlineVisibilityOff } from "react-icons/md";
 import { useDispatch } from "react-redux";
 
-const LoginPage = () => {
+const LoginPageAdmin = () => {
   const { loginSave } = useAuth();
   const { login, loginGoogle, getUserById, error, isLoading } = userApi();
   const [user, setUser] = useState({});
@@ -76,7 +76,7 @@ const LoginPage = () => {
             </p>
           </div>
           <form className="form" onSubmit={handleLogin}>
-            {/* <div className="form_wrapper_input">
+            <div className="form_wrapper_input">
               <div className="form_wrapper_input_field">
                 <label className="form_wrapper_input_field_label">Email</label>
                 <input
@@ -134,20 +134,11 @@ const LoginPage = () => {
                 </div>
               </div>
               <div className="error-login">{error && <span>{error}</span>}</div>
-            </div> */}
+            </div>
             <div className="form_wrapper_button">
-              {/* <button className="form_wrapper_button_field">
+              <button className="form_wrapper_button_field">
                 {isLoading ? "Signing in..." : "Sign in"}
-              </button> */}
-              <GoogleLogin
-                className="google-login-btn"
-                onSuccess={handleLoginGoogle}
-                onError={() => {
-                  console.log("Login failure!");
-                }}
-                text="signin_with"
-                logo_alignment="left"
-              />
+              </button>
             </div>
           </form>
         </div>
@@ -156,4 +147,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default LoginPageAdmin;

@@ -972,7 +972,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                   <i className="fa-solid fa-plus"></i>
                   <span>Category</span>
                 </button>
-                <button
+                {/* <button
                   onClick={() => setIsReuseOpen(true)}
                   title={
                     selectedClassId ? "Add (Reuse)" : "Select a class first"
@@ -984,7 +984,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                 >
                   <i className="fa-solid fa-copy" style={{ marginLeft: 6 }}></i>
                   <span>Category (Reuse)</span>
-                </button>
+                </button> */}
               </>
             )}
           </div>

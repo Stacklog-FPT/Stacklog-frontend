@@ -7,6 +7,7 @@ import { useAuth } from "../../../context/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 import chatApi from "../../../service/ChatService";
 import userApi from "../../../service/UserService";
+import { fetchUserById } from "../../../service/UserService";
 
 const GroupChat = ({
   showAddGroup: externalShowAddGroup,
@@ -28,7 +29,7 @@ const GroupChat = ({
   const [newGroupName, setNewGroupName] = useState("");
   const [newGroupAvatar, setNewGroupAvatar] = useState(null);
   const [previewAvatar, setPreviewAvatar] = useState(null);
-  const { getUserByEmail, getUserById, getAllUsers } = userApi();
+  const { getUserByEmail, getAllUsers } = userApi();
   const [membersEmails, setMembersEmails] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [memberQuery, setMemberQuery] = useState("");
@@ -126,7 +127,7 @@ const GroupChat = ({
           const idsToFetch = Array.from(personalOtherIds);
           try {
             const respPromises = idsToFetch.map((id) =>
-              getUserById(user.token, id)
+              fetchUserById(user.token, id)
                 .then((r) => r)
                 .catch(() => null)
             );
@@ -150,9 +151,7 @@ const GroupChat = ({
                     prof.email ||
                     prof._id ||
                     m.boxChat.nameBox;
-                  m.boxChat.avaBox = prof.avatar_link
-                    ? `https://stacklog.id.vn/${prof.avatar_link}`
-                    : m.boxChat.avaBox;
+                  m.boxChat.avaBox = prof.avatar_link;
                 }
               }
             });
@@ -545,7 +544,7 @@ const GroupChat = ({
                               setMemberQuery("");
                             }}
                           >
-                            <img src={u.avatar_link ? `https://stacklog.id.vn/${u.avatar_link}` : avatar} alt={u.full_name || u.email} />
+                            <img src={u.avatar_link} alt={u.full_name || u.email} />
                             <div className="member-suggestion-info">
                               <div className="member-name">{u.full_name || u.email}</div>
                               <div className="member-email">{u.email}</div>
@@ -563,7 +562,7 @@ const GroupChat = ({
                         );
                         const ava = userObj
                           ? userObj.avatar_link
-                            ? `https://stacklog.id.vn/${userObj.avatar_link}`
+                            ? userObj.avatar_link
                             : null
                           : null;
                         const displayName = userObj

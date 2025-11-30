@@ -6,12 +6,13 @@ import userApi from "../../../service/UserService";
 import defaulfAvatar from "../../../assets/logo-login.png";
 import chatApi from "../../../service/ChatService";
 import { jwtDecode } from "jwt-decode";
+import { fetchUserById } from "../../../service/UserService";
 
 const FeatureChat = () => {
   const { selectedBox, setSelectedBox, isFeatureChatOpen, setBoxesVersion } =
     useContext(ChatContext);
   const { user } = useAuth();
-  const { getUserById, getUserByEmail, getAllUsers } = userApi();
+  const { getUserByEmail, getAllUsers } = userApi();
   const [isFeatureOpen, setIsFeatureOpen] = useState(false);
   const [userList, setUserList] = useState([]);
   const [emailToAdd, setEmailToAdd] = useState("");
@@ -87,7 +88,7 @@ const FeatureChat = () => {
       const fetchPromises = uniqueIds.map(async (id) => {
         if (preloaded[id]) return preloaded[id];
         try {
-          const res = await getUserById(user.token, id);
+          const res = await fetchUserById(user.token, id);
           return res;
         } catch (e) {
           return {
@@ -622,8 +623,6 @@ const FeatureChat = () => {
                         <img
                           src={
                             user.avatar_link
-                              ? `https://stacklog.id.vn/${user.avatar_link}`
-                              : defaulfAvatar
                           }
                           alt={user.full_name}
                           onError={(e) =>
@@ -743,10 +742,7 @@ const FeatureChat = () => {
                           >
                             <img
                               src={
-                                u.avatar_link
-                                  ? `https://stacklog.id.vn/${u.avatar_link}`
-                                  : defaulfAvatar
-                              }
+                                u.avatar_link}
                               alt={u.full_name || u.email}
                             />
                             <div className="add-user-suggestion-info">
@@ -766,10 +762,7 @@ const FeatureChat = () => {
                       <div key={u._id || u.email} className="selected-add-chip">
                         <img
                           src={
-                            u.avatar_link
-                              ? `https://stacklog.id.vn/${u.avatar_link}`
-                              : defaulfAvatar
-                          }
+                            u.avatar_link}
                           alt={u.full_name || u.email}
                         />
                         <div className="selected-add-info">

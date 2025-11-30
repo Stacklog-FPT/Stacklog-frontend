@@ -11,6 +11,7 @@ import userApi from "../../../service/UserService";
 import "./ChatWindow.scss";
 import chatApi from "../../../service/ChatService";
 import { REACT_API_URL } from "../../../api/apiConfig";
+import { fetchUserById } from "../../../service/UserService";
 
 // derive socket endpoint from API base. Some servers mount socket.io at
 // the HTTP root (e.g. /socket.io) while the REST API is under /api.
@@ -32,7 +33,6 @@ const ChatWindow = () => {
   const { selectedBox, setSelectedBox, toggleFeatureChat, setBoxesVersion } =
     useContext(ChatContext);
   const { user } = useAuth();
-  const { getUserById } = userApi();
   const [myMessage, setMyMessage] = useState("");
   const [error, setError] = useState(null);
   const [userCache, setUserCache] = useState({});
@@ -375,7 +375,7 @@ const ChatWindow = () => {
   const fetchUser = async (id) => {
     if (!id || userCache[id]) return;
     try {
-      const userInfo = await getUserById(user.token, id);
+      const userInfo = await fetchUserById(user.token, id);
       setUserCache((prev) => ({ ...prev, [id]: userInfo }));
     } catch (e) {
       setUserCache((prev) => ({
@@ -396,7 +396,7 @@ const ChatWindow = () => {
       return {
         id,
         display: info.full_name || info.email || id,
-        avatar: info.avatar_link ? `https://stacklog.id.vn/${info.avatar_link}` : avatarDefault,
+        avatar: info.avatar_link,
       };
     });
     setMentionSuggestions(items);
@@ -665,9 +665,7 @@ const ChatWindow = () => {
                   senderInfo?.work_id ||
                   senderInfo?.email ||
                   msg.createdBy;
-                const senderAvatar = senderInfo?.avatar_link
-                  ? `https://stacklog.id.vn/${senderInfo.avatar_link}`
-                  : avatarDefault;
+                const senderAvatar = senderInfo?.avatar_link;
 
                 // If the message was deleted (DELETE) it should not be shown to the deleter
                 if (isMe && msg.state === "DELETE") return null;
@@ -727,9 +725,7 @@ const ChatWindow = () => {
                               .filter((id) => id && id !== msg.createdBy)
                               .map((readerId) => {
                                 const info = userCache[readerId] || {};
-                                const avatar = info.avatar_link
-                                  ? `https://stacklog.id.vn/${info.avatar_link}`
-                                  : avatarDefault;
+                                const avatar = info.avatar_link;
                                 const name = info.full_name || info.email || readerId;
                                 return (
                                   <span key={readerId} className="chat__message__reader_wrapper">
@@ -763,9 +759,7 @@ const ChatWindow = () => {
                               .filter((id) => id && id !== msg.createdBy)
                               .map((readerId) => {
                                 const info = userCache[readerId] || {};
-                                const avatar = info.avatar_link
-                                  ? `https://stacklog.id.vn/${info.avatar_link}`
-                                  : avatarDefault;
+                                const avatar = info.avatar_link;
                                 const name = info.full_name || info.email || readerId;
                                 return (
                                   <span key={readerId} className="chat__message__reader_wrapper">

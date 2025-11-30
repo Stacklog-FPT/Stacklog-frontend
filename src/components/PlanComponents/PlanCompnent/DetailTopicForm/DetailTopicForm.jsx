@@ -3,6 +3,7 @@ import "./DetailTopicForm.scss";
 import { FiX, FiCheckCircle, FiXCircle, FiPaperclip } from "react-icons/fi";
 import { useAuth } from "../../../../context/AuthProvider";
 import userApi from "../../../../service/UserService";
+import { fetchUserById } from "../../../../service/UserService";
 
 const DetailTopicForm = ({
   open,
@@ -42,7 +43,6 @@ const DetailTopicForm = ({
   const [localTopic, setLocalTopic] = React.useState(topic);
   const { user } = useAuth();
   const token = user?.token;
-  const { getUserById } = userApi();
   const [leaderName, setLeaderName] = useState(null);
   const [memberNames, setMemberNames] = useState([]);
 
@@ -67,7 +67,7 @@ const DetailTopicForm = ({
 
       if (leaderId) {
         try {
-          const u = await getUserById(token, leaderId);
+          const u = await fetchUserById(token, leaderId);
           if (!cancelled)
             setLeaderName(
               u?.full_name || u?.fullName || u?.work_id || leaderId
@@ -83,7 +83,7 @@ const DetailTopicForm = ({
         const results = await Promise.all(
           memberIds.map(async (id) => {
             try {
-              const u = await getUserById(token, id);
+              const u = await fetchUserById(token, id);
               return u?.full_name || u?.fullName || u?.work_id || id;
             } catch {
               return id;
@@ -404,7 +404,7 @@ const DetailTopicForm = ({
         {canAct && (
           <div className="sl-actions">
             <button
-              className="sl-btn sl-btn--success"
+              className="sl-btn sl-btn--success" style={{background: "#045745"}}
               disabled={actionLoading}
               onClick={handleApprove}
             >
@@ -464,7 +464,7 @@ const DetailTopicForm = ({
         {canEdit && editMode && (
           <div className="sl-actions">
             <button
-              className="sl-btn sl-btn--success"
+              className="sl-btn sl-btn--success" style={{background: "#045745"}}
               disabled={actionLoading}
               onClick={handleSaveEdit}
             >

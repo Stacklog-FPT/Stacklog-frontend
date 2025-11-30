@@ -80,10 +80,11 @@
   color: white;
   font-weight: 500;
   cursor: pointer;
+  background: var(--bg--primary-color);
 }
 
 .modal-actions .edit {
-  background-color: #007bff;
+  background-color: var(--bg--primary-color);
 }
 
 .modal-actions .delete {

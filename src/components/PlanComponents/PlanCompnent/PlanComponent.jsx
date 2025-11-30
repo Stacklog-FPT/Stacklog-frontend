@@ -12,6 +12,7 @@ import decodeToken from "../../../service/DecodeJwt";
 import { getClasses } from "../../../service/ClassService";
 import { FiFilter, FiSearch, FiRefreshCcw } from "react-icons/fi";
 import userApi from "../../../service/UserService";
+import {fetchUserById} from "../../../service/UserService";
 
 const StatusBadge = ({ status }) => {
   const s = (status || "").toLowerCase();
@@ -191,14 +192,14 @@ const PlanComponent = () => {
     });
   }, [currentSemesterId, classesRaw, classes, selectedClass, normalizedPlans]);
 
-  const { getUserById } = userApi();
+
   const [userCache, setUserCache] = useState({});
 
   const fetchUserName = async (id) => {
     if (!id) return "-";
     if (userCache[id]) return userCache[id];
     try {
-      const u = await getUserById(token, id);
+      const u = await fetchUserById(token, id);
       const name = u?.full_name || u?.fullName || u?.work_id || id;
       setUserCache((s) => ({ ...s, [id]: name }));
       return name;
@@ -281,7 +282,7 @@ const PlanComponent = () => {
       const res = await Promise.all(
         missing.map(async (id) => {
           try {
-            const u = await getUserById(token, id);
+            const u = await fetchUserById(token, id);
             return {
               id,
               name: u?.full_name || u?.fullName || u?.work_id || id,

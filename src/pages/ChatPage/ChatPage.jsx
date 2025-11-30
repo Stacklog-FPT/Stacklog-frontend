@@ -109,7 +109,7 @@ const ChatPage = () => {
                 const info = await fetchUserById(user.token, other);
                 if (mounted && info) {
                   normalized.boxChat.nameBox = info.full_name || info.email || other;
-                  normalized.boxChat.avaBox = info.avatar_link ? `https://stacklog.id.vn/${info.avatar_link}` : normalized.boxChat.avaBox;
+                  normalized.boxChat.avaBox = info.avatar_link ? `${info.avatar_link}` : normalized.boxChat.avaBox;
                 }
               } catch (e) {
                 // ignore enrich errors

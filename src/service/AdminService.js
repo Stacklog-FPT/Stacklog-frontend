@@ -121,7 +121,7 @@ export const getAllLecture = async (token, dispatch) => {
   }
 };
 
-export const getAllStudent = async (role, token, dispatch) => {
+export const getAllStudent = async (token, dispatch) => {
   try {
     if (!token) {
       setError("The token is required!");
@@ -129,11 +129,14 @@ export const getAllStudent = async (role, token, dispatch) => {
     }
 
     dispatch(setPending(true));
-    const response = await axios.get(``, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(
+      `${REACT_API_URL}profile/user/role/STUDENT`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     dispatch(setPending(false));
     dispatch(getStudents(response.data));

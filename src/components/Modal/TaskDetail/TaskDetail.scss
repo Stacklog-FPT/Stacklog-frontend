@@ -101,6 +101,11 @@
   background: #f3f4f6;
 }
 
+.taskdetail_section {
+  width: 100%;
+  height: 200px;
+}
+
 .taskdetail__meta {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -152,6 +157,15 @@
   padding: 4px 8px;
   border-radius: 999px;
   background: #f9fafb;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  .chip-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 100px;
+  }
 }
 
 .taskdetail_comments {
@@ -210,15 +224,15 @@
 }
 
 .taskdetail__edit {
-  position: 'relative';
+  position: "relative";
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 'none';
-  background: '#fff';
-  cursor: 'pointer';
-  display: 'grid';
-  place-items: 'center';
+  border: "none";
+  background: "#fff";
+  cursor: "pointer";
+  display: "grid";
+  place-items: "center";
   border: 4px solid #096e58;
   background-color: transparent;
   padding: 0px 4px 4px 5px;

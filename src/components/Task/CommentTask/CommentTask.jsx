@@ -1,34 +1,28 @@
-import { useState, useEffect, useRef } from 'react';
-import './CommentTask.scss';
-import ReviewService from '../../../service/ReviewService';
-import { useAuth } from '../../../context/AuthProvider';
-import { BsFillSendFill } from 'react-icons/bs';
-import decodeToken from '../../../service/DecodeJwt';
-import Swal from 'sweetalert2';
-import axios from 'axios';
-import { createReview } from '../../../service/ReviewService';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState, useEffect, useRef } from "react";
+import "./CommentTask.scss";
+import ReviewService from "../../../service/ReviewService";
+import { useAuth } from "../../../context/AuthProvider";
+import decodeToken from "../../../service/DecodeJwt";
+import Swal from "sweetalert2";
+import { useDispatch, useSelector } from "react-redux";
+import CommentTaskBody from "./CommentBody";
+import CommentTaskFooter from "./CommentFooter";
 
-import CommentTaskBody from './CommentBody';
-import CommentTaskFooter from './CommentFooter';
-import { useParams } from 'react-router';
-import { updateTaskApi, updateReviewApi } from '../../../service/TaskService';
+import { updateTaskApi, updateReviewApi } from "../../../service/TaskService";
 
 const CommentTask = ({ task, isClose }) => {
   const tasks = useSelector((t) => t.task.tasks);
   const currentTask = tasks.find((t) => t.taskId === task.taskId);
   const reviews = currentTask?.reviews || [];
-
-  const [newComment, setNewComment] = useState('');
+  const [newComment, setNewComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState(null);
-  const [editedComment, setEditedComment] = useState('');
+  const [editedComment, setEditedComment] = useState("");
   const { user } = useAuth();
+  const userInfo = useSelector((state) => state.users.userInfo);
   const decoded = decodeToken(user.token);
   const decodedId = decoded?.id;
   const { deleteReview } = ReviewService();
   const dispatch = useDispatch();
-
-  //
   const wrapperRef = useRef(null);
 
   const handleSendComment = async () => {
@@ -44,24 +38,7 @@ const CommentTask = ({ task, isClose }) => {
         ],
       };
 
-      const res = await updateTaskApi(payload, user?.token, dispatch);
-      if (res) {
-        setNewComment('');
-        await axios.post('http://localhost:3000/notifications', {
-          id: Math.random().toString(16).slice(2, 6),
-          title: `Comment by ${user.username}`,
-          author: {
-            _id: Math.random(),
-            name: user.username || 'Unknown',
-            avatar:
-              user.avatar ||
-              'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
-          },
-          createdAt: new Date().toISOString().split('T')[0],
-          isRead: false,
-          _id: Math.random(),
-        });
-      }
+      await updateTaskApi(payload, user?.token, dispatch);
     } catch (e) {
       console.error(e.message);
     }
@@ -69,15 +46,15 @@ const CommentTask = ({ task, isClose }) => {
 
   const handleDeleteComment = async (commentId) => {
     const result = await Swal.fire({
-      title: 'Are you sure to delete this comment?',
+      title: "Are you sure to delete this comment?",
       text: "This action can't be undone!",
-      icon: 'warning',
-      customClass: { container: 'swal-on-top' },
+      icon: "warning",
+      customClass: { container: "swal-on-top" },
       showCancelButton: true,
-      confirmButtonColor: '#045745',
-      cancelButtonColor: '#c8cad4',
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel',
+      confirmButtonColor: "#045745",
+      cancelButtonColor: "#c8cad4",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
     });
     if (result.isConfirmed) {
       const updateTask = task.reviews.filter((rv) => rv.reviewId !== commentId);
@@ -86,7 +63,7 @@ const CommentTask = ({ task, isClose }) => {
         reviews: updateTask,
       };
       await updateTaskApi(payload, user.token, dispatch);
-      Swal.fire('Deleted!', 'Your comment has been deleted.', 'success');
+      Swal.fire("Deleted!", "Your comment has been deleted.", "success");
     }
   };
 
@@ -115,14 +92,14 @@ const CommentTask = ({ task, isClose }) => {
         currentTask.taskId,
         editingCommentId,
         payload,
-        dispatch,
+        dispatch
       );
       if (res.status === 200) {
         setEditingCommentId(null);
-        setEditedComment('');
+        setEditedComment("");
       }
     } catch (e) {
-      console.error('Update failed:', e.message);
+      console.error("Update failed:", e.message);
     }
   };
 
@@ -134,16 +111,16 @@ const CommentTask = ({ task, isClose }) => {
     };
 
     const handleEscKey = (e) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         isClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscKey);
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscKey);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscKey);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscKey);
     };
   }, [isClose]);
 
@@ -167,8 +144,8 @@ const CommentTask = ({ task, isClose }) => {
 
       <CommentTaskFooter
         avatar={
-          user.avatar ||
-          'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+          userInfo.avatar_link ||
+          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
         }
         newComment={newComment}
         onChangeNew={setNewComment}

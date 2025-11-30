@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { FaPen, FaTrashAlt, FaCheck } from 'react-icons/fa';
-import { formatDateUI } from '../../../helper/formatDate';
-import userApi from '../../../service/UserService';
-import { useAuth } from '../../../context/AuthProvider';
+import { useMemo, useState, useEffect } from "react";
+import { FaPen, FaTrashAlt, FaCheck } from "react-icons/fa";
+import { formatDateUI } from "../../../helper/formatDate";
+import { fetchUserById } from "../../../service/UserService";
+import { useAuth } from "../../../context/AuthProvider";
 
 const CommentBody = ({
   reviews = [],
@@ -16,47 +16,58 @@ const CommentBody = ({
 }) => {
   const { user } = useAuth();
   const [userMap, setUserMap] = useState({});
-  const { getUserById } = userApi();
+  const sortedReviews = useMemo(() => {
+    if (!Array.isArray(reviews)) return [];
+
+    return [...reviews].sort((a, b) => {
+      const aTime = new Date(a.createdAt || a.updateAt || 0).getTime();
+      const bTime = new Date(b.createdAt || b.updateAt || 0).getTime();
+      return bTime - aTime;
+    });
+  }, [reviews]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      if (!user?.token) return;
-      const uniqueUserIds = [...new Set(reviews.map((r) => r.createdBy).filter(Boolean))];
-      if (uniqueUserIds.length === 0) return;
+    if (!user?.token || reviews.length === 0) {
+      setUserMap({});
+      return;
+    }
 
+    const uniqueUserIds = [
+      ...new Set(reviews.map((r) => r.createdBy).filter(Boolean)),
+    ];
+
+    // Nếu tất cả user đã có trong userMap rồi → không cần fetch lại
+    const missingIds = uniqueUserIds.filter((id) => !userMap[id]);
+
+    if (missingIds.length === 0) {
+      return; // đã có đủ thông tin rồi
+    }
+
+    const fetchUsers = async () => {
       try {
         const responses = await Promise.all(
-          uniqueUserIds.map((id) =>
-            getUserById(user.token, id).catch((err) => {
-              console.error(`Failed to fetch user ${id}:`, err?.message || err);
-              return null;
-            }),
-          ),
+          missingIds.map((id) =>
+            fetchUserById(user.token, id).catch(() => null)
+          )
         );
 
-        const newUserMap = {};
-        uniqueUserIds.forEach((id, idx) => {
-          const u = responses[idx];
-          if (u) newUserMap[id] = u;
+        const newData = {};
+        missingIds.forEach((id, i) => {
+          if (responses[i]) {
+            newData[id] = responses[i];
+          }
         });
 
-        setUserMap((prev) => ({ ...prev, ...newUserMap }));
-      } catch (e) {
-        console.error('Failed to fetch comment users', e.message || e);
+        setUserMap((prev) => ({ ...prev, ...newData })); // giữ lại dữ liệu cũ + thêm mới
+      } catch (err) {
+        console.error("Fetch user failed:", err);
       }
     };
 
     fetchUsers();
-  }, [user?.token]);
+  }, [user?.token, reviews, userMap]); // thêm userMap để kiểm tra missing
 
-  const sortedReviews = Array.isArray(reviews)
-    ? [...reviews].sort((a, b) => {
-        const aTime = new Date(a.createdAt || a.updateAt || 0).getTime();
-        const bTime = new Date(b.createdAt || b.updateAt || 0).getTime();
-        return bTime - aTime;
-      })
-    : [];
-
+  console.log(sortedReviews);
   return (
     <div className="comment__task__body">
       {sortedReviews?.length > 0 ? (
@@ -67,15 +78,17 @@ const CommentBody = ({
                 <img
                   src={
                     item.avatar_link ||
-                    'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                    "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
                   }
                   alt="avatar"
                 />
                 <div>
                   <p className="infor__user__name">
-                    {userMap[item.createdBy]?.full_name || item.authorName || 'User'}
+                    {userMap[item.createdBy]?.full_name || "User"}
                   </p>
-                  <p className="infor__user__create">{formatDateUI?.(item.createdAt)}</p>
+                  <p className="infor__user__create">
+                    {formatDateUI?.(item.createdAt)}
+                  </p>
                 </div>
               </div>
             </div>

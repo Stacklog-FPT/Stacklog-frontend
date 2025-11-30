@@ -4,6 +4,7 @@ import {
   getAllClasses,
   getAllLecture,
   getAllSemester,
+  getAllStudent,
 } from "../../../service/AdminService";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,7 +15,7 @@ const ListAdminManager = ({ role }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
   const [showAddForm, setShowAddForm] = useState(false);
-  const { semesters, classes, lectures, pending } = useSelector(
+  const { semesters, classes, lectures, pending, students } = useSelector(
     (state) => state.users
   );
   const [showUi, setShowUi] = useState({
@@ -29,16 +30,11 @@ const ListAdminManager = ({ role }) => {
     semesterName: "",
   });
 
-  const [selectedClassId, setSelectedClassId] = useState("");
-  const selectedClass = classes.find(
-    (cls) => cls.classesId === selectedClassId
-  );
-
   const dataByRole = {
     Semester: semesters,
     Class: classes,
     Lecture: lectures.users,
-    Student: [],
+    Student: students.users,
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -160,7 +156,7 @@ const ListAdminManager = ({ role }) => {
     } else if (role === "Lecture") {
       getAllLecture(user.token, dispatch);
     } else if (role === "Student") {
-      getAllClasses(selectedSemester.semesterId, user.token, dispatch);
+      getAllStudent(user.token, dispatch);
     }
   }, [selectedSemester.semesterId, role, user?.token, dispatch]);
 
@@ -194,33 +190,6 @@ const ListAdminManager = ({ role }) => {
                   </option>
                 ))}
               </select>
-            )}
-            {role === "Student" && (
-              <>
-                <select
-                  value={selectedClass}
-                  onChange={(e) => setSelectedClassId(e.target.value)}
-                  className="semester-select"
-                >
-                  <option value="">-- Select Class --</option>
-                  {classes.map((sem) => (
-                    <option key={sem.classesId} value={sem.classesId}>
-                      {sem.classesName}
-                    </option>
-                  ))}
-                </select>
-                <select className="semester-select">
-                  <option value="">-- Select Group --</option>
-                  {(selectedClass
-                    ? selectedClass.groups
-                    : classes.flatMap((cls) => cls.groups)
-                  ).map((group) => (
-                    <option key={group.groupsId} value={group.groupsId}>
-                      {group.groupsName}
-                    </option>
-                  ))}
-                </select>
-              </>
             )}
             <i className="fa-solid fa-filter"></i>
             <i

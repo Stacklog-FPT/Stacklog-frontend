@@ -17,7 +17,7 @@ import Checklist from "./Checklist/Checklist";
 import SubTask from "./SubTask/SubTask";
 import HoldDeleteButton from "./ButtonDelete";
 import { deleteTaskApi, updateTaskApi } from "../../../service/TaskService";
-import userApi from "../../../service/UserService";
+import userApi, { fetchUserById } from "../../../service/UserService";
 import { toast } from "sonner";
 
 const toLocalInput = (iso) => {
@@ -239,7 +239,7 @@ const TaskDetails = ({ task, onClose }) => {
       const results = await Promise.all(
         ids.map(async (id) => {
           try {
-            const u = await getUserById(user.token, id);
+            const u = await fetchUserById(user.token, id);
             return {
               _id: u._id,
               name: u.full_name || u.username || "Unknown",

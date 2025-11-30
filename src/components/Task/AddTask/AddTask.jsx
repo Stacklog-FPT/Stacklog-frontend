@@ -11,6 +11,7 @@ import { addTask } from "../../../service/TaskService";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
+import { fetchUserById } from "../../../service/UserService";
 
 const AddTask = ({ status, onCancel, group }) => {
   const { user } = useAuth();
@@ -18,7 +19,6 @@ const AddTask = ({ status, onCancel, group }) => {
   const groupList = useSelector((state) => state.group.groups);
   const currentGroup = groupList.find((g) => g.groupsId === group);
   const dispatch = useDispatch();
-  const getUserById = userApi().getUserById;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
@@ -210,7 +210,7 @@ const AddTask = ({ status, onCancel, group }) => {
       const studentInfos = await Promise.all(
         userIds.map(async (id) => {
           try {
-            const u = await getUserById(user.token, id);
+            const u = await fetchUserById(user.token, id);
             if (!u?._id) return null;
             return {
               _id: u._id,

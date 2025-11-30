@@ -1,46 +1,17 @@
 import React from "react";
 import "./MemberList.scss";
 import { useSelector } from "react-redux";
+import { useAuth } from "../../../context/AuthProvider";
+import { fetchUserById } from "../../../service/UserService";
 const MemberList = () => {
+  const { user } = useAuth();
   const classes = useSelector((state) => state.class.classes);
   const [selectedClassId, setSelectedClassId] = React.useState("");
+  const [selectedGroupId, setSelectedGroupId] = React.useState("");
   const selectedClass = classes.find(
     (cls) => cls.classesId === selectedClassId
   );
-
-  const [members, setMemebers] = React.useState([
-    {
-      _id: "DE170481",
-      full_name: "Long Bua Dinh",
-      ava: "https://blogchiasekienthuc.com/wp-content/uploads/2022/12/meme-duong-tang-8.jpg",
-      gmail: "longlhde170481@gmail.com",
-    },
-    {
-      _id: "DE170482",
-      full_name: "Master Tran",
-      ava: "https://blogchiasekienthuc.com/wp-content/uploads/2022/12/meme-duong-tang-8.jpg",
-      gmail: "vuttde170482@gmail.com",
-    },
-    {
-      _id: "DE170483",
-      full_name: "Nhat Thum Thim",
-      ava: "https://blogchiasekienthuc.com/wp-content/uploads/2022/12/meme-duong-tang-8.jpg",
-      gmail: "nhattv170483@gmail.com",
-    },
-    {
-      _id: "DE170484",
-      full_name: "Thanh 52 cay",
-      ava: "https://blogchiasekienthuc.com/wp-content/uploads/2022/12/meme-duong-tang-8.jpg",
-      gmail: "thanhtc170484@gmail.com",
-    },
-    {
-      _id: "DE170485",
-      full_name: "Viet Dau An",
-      ava: "https://blogchiasekienthuc.com/wp-content/uploads/2022/12/meme-duong-tang-8.jpg",
-      gmail: "vietda170485@gmail.com",
-    },
-  ]);
-
+  const [members, setMemebers] = React.useState([]);
   const itemsPerPage = 3;
   const totalPages = Math.ceil(members.length / itemsPerPage);
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -60,6 +31,59 @@ const MemberList = () => {
     }
   };
 
+  React.useEffect(() => {
+    const fetchStudent = async () => {
+      setMemebers([]);
+
+      if (!selectedClassId || !selectedGroupId) {
+        return;
+      }
+
+      const currentClass = classes.find(
+        (cls) => cls.classesId === selectedClassId
+      );
+      const currentGroup = currentClass?.groups.find(
+        (gr) => gr.groupsId === selectedGroupId
+      );
+
+      if (
+        !currentGroup?.groupStudent ||
+        currentGroup.groupStudent.length === 0
+      ) {
+        setMemebers([]);
+        return;
+      }
+
+      const userIds = currentGroup.groupStudent;
+
+      try {
+        const studentInfos = await Promise.all(
+          userIds.map(async (id) => {
+            try {
+              const u = await fetchUserById(user.token, id);
+              if (!u?._id) return null;
+              return {
+                _id: u._id,
+                name: u.full_name || "Unknown",
+                avatar: u.avatar_link || "",
+              };
+            } catch (err) {
+              console.warn("User not found or error:", id, err);
+              return null;
+            }
+          })
+        );
+
+        setMemebers(studentInfos.filter(Boolean));
+      } catch (error) {
+        console.error("Error fetching students:", error);
+        setMemebers([]);
+      }
+    };
+
+    fetchStudent();
+  }, [selectedGroupId, selectedClassId, user?.token, classes]);
+
   return (
     <div className="member__list">
       <div className="member__list__container">
@@ -78,21 +102,24 @@ const MemberList = () => {
           <div className="member__list__feature__filter">
             <select
               value={selectedClassId}
-              onChange={(e) => setSelectedClassId(e.target.value)}
+              onChange={(e) => {
+                setSelectedClassId(e.target.value);
+                setSelectedGroupId("");
+              }}
             >
-              {classes.map((item) => {
-                return (
-                  <option key={item.classesId} value={item.classesId}>
-                    {item.classesName}
-                  </option>
-                );
-              })}
+              <option>Select class</option>
+              {classes.map((item) => (
+                <option key={item.classesId} value={item.classesId}>
+                  {item.classesName}
+                </option>
+              ))}
             </select>
-            <select>
-              {(selectedClass
-                ? selectedClass.groups
-                : classes.flatMap((cls) => cls.groups)
-              ).map((group) => (
+            <select
+              value={selectedGroupId}
+              onChange={(e) => setSelectedGroupId(e.target.value)}
+            >
+              <option value="">Chọn nhóm</option>
+              {selectedClass?.groups?.map((group) => (
                 <option key={group.groupsId} value={group.groupsId}>
                   {group.groupsName}
                 </option>
@@ -106,8 +133,7 @@ const MemberList = () => {
               <tr>
                 <th>No.</th>
                 <th>Student</th>
-                <th>ID</th>
-                <th>Gmail</th>
+                <th>Name</th>
               </tr>
             </thead>
             <tbody>
@@ -117,8 +143,8 @@ const MemberList = () => {
                     <td>{index + 1}</td>
                     <td>
                       <div className="name__ava">
-                        {item?.ava ? (
-                          <img src={item?.ava} />
+                        {item?.avatar ? (
+                          <img src={item?.avatar} />
                         ) : (
                           <img src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" />
                         )}
@@ -126,8 +152,8 @@ const MemberList = () => {
                         <p>{item.full_name}</p>
                       </div>
                     </td>
-                    <td>{item._id}</td>
-                    <td className="text-note">{item.gmail}</td>
+
+                    <td className="text-note">{item.name}</td>
                   </tr>
                 );
               })}

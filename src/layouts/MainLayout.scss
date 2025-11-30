@@ -11,6 +11,7 @@ $color-primary: #045745;
     padding: 20px;
     transition: margin-left 0.3s ease;
     overflow-y: auto;
+    overflow-x: hidden;
     max-height: 100vh;
     background-color: var(--bg-color);
     .main-content-area {

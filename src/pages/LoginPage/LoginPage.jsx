@@ -23,11 +23,12 @@ const LoginPage = () => {
   const dispatch = useDispatch();
   const handleLoginGoogle = async (response) => {
     const { credential } = response;
+    console.log(credential);
     if (credential) {
       const response = await loginGoogle(credential);
 
       if (response) {
-        console.log(response);
+        console.log("Gg login call: ", response);
         const userData = {
           email: response.data.email,
           username: response.data.username,

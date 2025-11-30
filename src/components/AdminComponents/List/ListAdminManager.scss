@@ -75,7 +75,7 @@
     flex: 1;
     overflow: hidden;
     border-radius: 12px;
-    background: white;
+    background: var(--bg-color);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
     table {
@@ -176,7 +176,7 @@
   justify-content: center;
   gap: 12px;
   padding: 24px 16px;
-  background: white;
+  background: var(--bg-color);
   border-top: 1px solid #e5e7eb;
   user-select: none;
 
@@ -184,7 +184,7 @@
     width: 44px;
     height: 44px;
     border: none;
-    background: #f8fafc;
+    background: var(--bg-color);
     color: #64748b;
     border-radius: 14px;
     font-size: 16px;
@@ -218,7 +218,7 @@
       width: 44px;
       height: 44px;
       border: 1.5px solid #e2e8f0;
-      background: white;
+      background: var(--bg-color);
       color: #475569;
       border-radius: 14px;
       font-weight: 600;
@@ -253,7 +253,7 @@
     text-align: center;
     font-size: 14px;
     color: #64748b;
-    background: #f8fafc;
+    background: var(--bg-color);
     padding: 10px 20px;
     border-radius: 12px;
     border: 1px solid #e2e8f0;

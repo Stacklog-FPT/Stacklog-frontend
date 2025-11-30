@@ -9,7 +9,7 @@ import { deleteSemesterService } from "../../../service/AdminService";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDispatch } from "react-redux";
 import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css"; // Đừng quên import CSS
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Row = ({
   role,
@@ -23,7 +23,6 @@ const Row = ({
   const { user } = useAuth();
   const dispatch = useDispatch();
 
-  // Nếu đang loading (hoặc data chưa có), hiển thị skeleton
   if (isLoading || !data) {
     return (
       <tr>

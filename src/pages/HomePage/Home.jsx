@@ -74,9 +74,10 @@ const Home = () => {
         />
         <Document />
       </div>
-      <ListTask />
-
-      {isLecture && <MemberList />}
+      <div className="d-flex flex-column align-items-center justify-content-centar gap-1">
+        <ListTask />
+        {isLecture && <MemberList />}
+      </div>
     </div>
   );
 };

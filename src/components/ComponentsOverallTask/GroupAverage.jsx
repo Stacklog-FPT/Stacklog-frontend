@@ -17,18 +17,19 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate })
   }, [initialScore]);
 
   const handleSave = async () => {
-    if (!token) return alert('Bạn cần đăng nhập để lưu điểm');
-    if (modalScore === null || isNaN(modalScore)) return alert('Hãy nhập điểm hợp lệ');
+    if (!token) return alert('Please log in to save the score');
+    if (modalScore === null || isNaN(modalScore)) return alert('Please enter a valid score');
+    if (modalScore < 0 || modalScore > 10) return alert('Score must be between 0 and 10');
     setSaving(true);
     try {
       await updateGroupScore(token, groupId, modalScore);
       setScore(modalScore);
       if (typeof onUpdate === 'function') onUpdate(modalScore);
       setShowEditModal(false);
-      alert('Lưu điểm thành công');
+      alert('Score saved successfully');
     } catch (err) {
       console.error('Failed to save group score', err);
-      alert('Lưu điểm thất bại: ' + (err?.message || 'Unknown'));
+      alert('Failed to save score: ' + (err?.message || 'Unknown'));
     } finally {
       setSaving(false);
     }
@@ -47,7 +48,7 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate })
           <div className="group-score-progress" aria-hidden>
             <div
               className="group-score-progress__fill"
-              style={{ width: `${Math.max(0, Math.min(100, score || 0))}%` }}
+              style={{ width: `${Math.max(0, Math.min(10, score || 0)) * 10}%` }}
             />
           </div>
         </div>
@@ -82,13 +83,13 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate })
                   <h4>Edit group average score</h4>
                 </div>
                 <div className="overallgroup-modal-body">
-                  <label className="group-score-label">Score (0 - 100)</label>
+                  <label className="group-score-label">Score (0 - 10)</label>
                   <input
                     className="group-score-input"
                     type="number"
                     step="0.01"
                     min="0"
-                    max="100"
+                    max="10"
                     value={modalScore === null || typeof modalScore === 'undefined' ? '' : modalScore}
                     onChange={(e) => setModalScore(e.target.value === '' ? null : Number(e.target.value))}
                     onKeyDown={(e) => {

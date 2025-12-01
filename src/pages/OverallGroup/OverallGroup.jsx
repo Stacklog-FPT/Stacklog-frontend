@@ -190,7 +190,14 @@ export default function TaskDashboard() {
 
   // member contributions for IncompleteTasksChart
   const memberData = overall
-    ? Object.keys(overall.memberContribution || {}).map((uid) => ({ name: (usersMap[uid] && usersMap[uid].full_name) || uid, value: overall.memberContribution[uid] }))
+    ? Object.keys(overall.memberContribution || {}).map((uid) => ({
+        name: (usersMap[uid] && usersMap[uid].full_name) || uid,
+        value:
+          // prefer computed per-member scores if available, otherwise fall back to raw contribution value
+          typeof overall.memberComputedScores !== 'undefined' && overall.memberComputedScores[uid] !== undefined
+            ? overall.memberComputedScores[uid]
+            : overall.memberContribution[uid],
+      }))
     : null;
 
   // upcoming deadlines
@@ -213,7 +220,26 @@ export default function TaskDashboard() {
           initialScore={overall?.groupAverageScore}
           groupId={paramGroupId}
           token={token}
-          onUpdate={(newScore) => setOverall((o) => ({ ...(o || {}), groupAverageScore: newScore }))}
+          classId={classesId}
+          memberContribution={overall?.memberContribution}
+          usersMap={usersMap}
+          onUpdate={(newScore) =>
+            setOverall((o) => {
+              const prev = o || {};
+              const memberContrib = prev.memberContribution || {};
+              const memberIds = Object.keys(memberContrib);
+              const totalMembers = memberIds.length || 1;
+              const memberComputedScores = {};
+              // formula: (groupAverage * contributionPercent) / (100 / totalMembers)
+              memberIds.forEach((uid) => {
+                const contribPercent = Number(memberContrib[uid]) || 0;
+                const computed = (Number(newScore) * contribPercent) / (100 / totalMembers);
+                  const capped = Math.min(10, computed);
+                  memberComputedScores[uid] = Number(Number(capped).toFixed(2));
+              });
+              return { ...prev, groupAverageScore: newScore, memberComputedScores };
+            })
+          }
         />
 
         {/* Charts Section */}

@@ -36,10 +36,10 @@ const Card = (props) => {
       style={props.onClick ? { cursor: 'pointer' } : undefined}
     >
       <div className="avatar-title">
-        <div className="avatar">
+        {/* <div className="avatar">
           <img src={props.avatar} alt="Avatar" />
           <i className="fa-solid fa-bell"></i>
-        </div>
+        </div> */}
         <div className="announcement-content">
           <p className="announcement-content-title">
             <b>{props.name}:</b> {props.title}

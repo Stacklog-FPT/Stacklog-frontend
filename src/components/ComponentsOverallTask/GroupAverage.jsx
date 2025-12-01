@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { updateGroupScore } from '../../service/TaskService';
+import { createAvgGroupScore } from '../../service/ScoreService';
+import { useAuth } from '../../context/AuthProvider';
+import { useDispatch } from 'react-redux';
+import avatarDefault from '../../assets/ava-chat.png';
 
-export default function GroupAverage({ initialScore, groupId, token, onUpdate }) {
+export default function GroupAverage({ initialScore, groupId, token, onUpdate, classId, memberContribution: propsMemberContribution, usersMap: propsUsersMap }) {
   const [score, setScore] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [modalScore, setModalScore] = useState(null);
   const [saving, setSaving] = useState(false);
+  const { user } = useAuth();
+  const dispatch = useDispatch();
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewList, setPreviewList] = useState([]);
 
   useEffect(() => {
     if (typeof initialScore !== 'undefined' && initialScore !== null) {
@@ -20,16 +27,76 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate })
     if (!token) return alert('Please log in to save the score');
     if (modalScore === null || isNaN(modalScore)) return alert('Please enter a valid score');
     if (modalScore < 0 || modalScore > 10) return alert('Score must be between 0 and 10');
+    if (!classId) return alert('Missing class information. Please wait and try again.');
     setSaving(true);
     try {
-      await updateGroupScore(token, groupId, modalScore);
-      setScore(modalScore);
+      // Immediately persist average score to backend (no intermediate confirmation popup)
+      await createAvgGroupScore(classId, groupId, Number(modalScore), token, dispatch);
+      // update parent computed values
       if (typeof onUpdate === 'function') onUpdate(modalScore);
       setShowEditModal(false);
-      alert('Score saved successfully');
+      alert('Average score saved successfully');
     } catch (err) {
-      console.error('Failed to save group score', err);
-      alert('Failed to save score: ' + (err?.message || 'Unknown'));
+      console.error('Failed to save avg group score (direct save)', err);
+      console.error('Request config:', err?.config);
+      console.error('Response:', err?.response && { status: err.response.status, data: err.response.data });
+      const serverMsg = err?.response?.data?.message || err?.response?.data || err?.message;
+      alert('Failed to save average score: ' + (serverMsg || 'Unknown'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // live-preview: compute preview list whenever modalScore (or member contributions) change
+  useEffect(() => {
+    if (modalScore === null || typeof modalScore === 'undefined' || isNaN(modalScore)) {
+      setPreviewList([]);
+      return;
+    }
+    // validate range
+    if (modalScore < 0 || modalScore > 10) {
+      setPreviewList([]);
+      return;
+    }
+    try {
+      const memberContrib = (propsMemberContribution) || {};
+      const memberIds = Object.keys(memberContrib);
+      const totalMembers = memberIds.length || 1;
+      const preview = memberIds.map((uid) => {
+        const contribPercent = Number(memberContrib[uid]) || 0;
+        const computed = (Number(modalScore) * contribPercent) / (100 / totalMembers);
+        const capped = Math.min(10, computed);
+        return {
+          uid,
+          name: (propsUsersMap && propsUsersMap[uid] && propsUsersMap[uid].full_name) || uid,
+          contribution: contribPercent,
+          computed: Number(Number(capped).toFixed(2)),
+        };
+      });
+      setPreviewList(preview);
+    } catch (e) {
+      setPreviewList([]);
+    }
+  }, [modalScore, propsMemberContribution, propsUsersMap]);
+
+  const handleConfirm = async () => {
+    // call backend createAvgGroupScore
+    if (!classId) return alert('Missing classId to save average score');
+    try {
+      setSaving(true);
+      // pass redux dispatch so service can emit apiStart/apiSuccess/apiFailure if desired
+      await createAvgGroupScore(classId, groupId, Number(modalScore), token, dispatch);
+      // notify parent to update computed values
+      if (typeof onUpdate === 'function') onUpdate(modalScore);
+      setPreviewOpen(false);
+      alert('Average score saved successfully');
+    } catch (err) {
+      // richer logging to help diagnose 404/other HTTP errors
+      console.error('Failed to create avg group score', err);
+      console.error('Request config:', err?.config);
+      console.error('Response:', err?.response && { status: err.response.status, data: err.response.data });
+      const serverMsg = err?.response?.data?.message || err?.response?.data || err?.message;
+      alert('Failed to save average score: ' + (serverMsg || 'Unknown'));
     } finally {
       setSaving(false);
     }
@@ -55,15 +122,27 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate })
 
         <div className="group-score-right">
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
-            <button
-              className="group-score-save"
-              onClick={() => {
-                setModalScore(score);
-                setShowEditModal(true);
-              }}
-            >
-              Edit
-            </button>
+            {user?.role === 'LECTURER' && score !== null && Number(score) === 0 && (
+              <button
+                className="group-score-save"
+                onClick={() => {
+                  if (!classId) {
+                    // classId not yet resolved by parent; show helpful message instead of opening modal
+                    return alert('Class information still resolving. Please wait a moment and try again.');
+                  }
+                  const confirmed = typeof window !== 'undefined' ? window.confirm('Do you want to enter the group average score?') : true;
+                  if (confirmed) {
+                    setModalScore(score);
+                    setShowEditModal(true);
+                  }
+                }}
+                // visually indicate the button is disabled when classId is missing
+                disabled={!classId}
+                title={!classId ? 'Class info not available yet' : 'Enter group average score'}
+              >
+                Scoring
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -101,6 +180,35 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate })
                     }}
                     autoFocus
                   />
+                  {/* Inline live preview while typing */}
+                  <div style={{ marginTop: 12 }}>
+                    <strong style={{ display: 'block', marginBottom: 8 }}>Live preview</strong>
+                    {previewList && previewList.length ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        {previewList.map((p) => (
+                          <div key={p.uid} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 8px', borderRadius: 6, background: '#fff', border: '1px solid #eee', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <img
+                                src={(propsUsersMap && propsUsersMap[p.uid] && propsUsersMap[p.uid].avatar) || avatarDefault}
+                                alt={p.name}
+                                style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 0 0 1px rgba(0,0,0,0.03) inset' }}
+                              />
+                              <div style={{ color: '#333' }}>{p.name}</div>
+                            </div>
+                            <div style={{ fontWeight: 600 }}>{p.computed}</div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ color: '#666' }}>No preview available</div>
+                    )}
+                  </div>
+                </div>
+                <div style={{ textAlign: 'center', fontSize: 13, color: '#6b7280', marginTop: 12, lineHeight: '1.4' }}>
+                  <strong style={{ display: 'block', marginBottom: 6, color: '#374151' }}>Note</strong>
+                  <div>
+                    The maximum score for a member is <strong>10</strong>. If the score is higher than 10, the system automatically reduces it to 10. Therefore, the final group average might be lower than the figure the instructor just entered.
+                  </div>
                 </div>
                 <div className="overallgroup-modal-actions">
                   <button className="overallgroup-modal-btn overallgroup-modal-cancel" onClick={() => setShowEditModal(false)}>
@@ -112,6 +220,58 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate })
                     disabled={saving || modalScore === score}
                   >
                     {saving ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
+      {previewOpen && typeof document !== 'undefined'
+        ? createPortal(
+            <div
+              className="overallgroup-modal-overlay"
+              role="dialog"
+              aria-modal="true"
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setPreviewOpen(false);
+              }}
+            >
+              <div className="overallgroup-modal" role="document">
+                <div className="overallgroup-modal-header">
+                  <h4>Preview computed member scores</h4>
+                </div>
+                <div className="overallgroup-modal-body">
+                  {previewList && previewList.length ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {previewList.map((p) => (
+                        <div key={p.uid} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #eee', alignItems: 'center' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <img
+                              src={(propsUsersMap && propsUsersMap[p.uid] && propsUsersMap[p.uid].avatar) || avatarDefault}
+                              alt={p.name}
+                              style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }}
+                            />
+                            <div>{p.name}</div>
+                          </div>
+                          <div style={{ fontWeight: 600 }}>{p.computed}</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div>No member contributions available to compute.</div>
+                  )}
+                </div>
+                <div className="overallgroup-modal-actions">
+                  <button className="overallgroup-modal-btn overallgroup-modal-cancel" onClick={() => setPreviewOpen(false)}>
+                    Cancel
+                  </button>
+                  <button
+                    className="overallgroup-modal-btn overallgroup-modal-save"
+                    onClick={handleConfirm}
+                    disabled={saving}
+                  >
+                    {saving ? 'Saving...' : 'Confirm'}
                   </button>
                 </div>
               </div>

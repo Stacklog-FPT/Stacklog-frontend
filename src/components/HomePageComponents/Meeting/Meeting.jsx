@@ -15,10 +15,6 @@ const Meeting = () => {
         navigate("/schedule");
       }}
     >
-<<<<<<< HEAD
-=======
-      {/* {isLecture && <OverallProject />} */}
->>>>>>> 3990268b468b90373a267000fd4c4de07b4d183a
       <div className="meeting">
         <div className="meeting__title">
           <h2>Next Upcoming Meeting</h2>
@@ -28,10 +24,6 @@ const Meeting = () => {
             <Calendar isPage={true} />
           </div>
           <DetailMeeting />
-<<<<<<< HEAD
-=======
-          {/* {isLecture ? "" : <DetailMeeting />} */}
->>>>>>> 3990268b468b90373a267000fd4c4de07b4d183a
         </div>
       </div>
     </div>

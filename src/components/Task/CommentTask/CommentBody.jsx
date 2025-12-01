@@ -36,11 +36,10 @@ const CommentBody = ({
       ...new Set(reviews.map((r) => r.createdBy).filter(Boolean)),
     ];
 
-    // Nếu tất cả user đã có trong userMap rồi → không cần fetch lại
     const missingIds = uniqueUserIds.filter((id) => !userMap[id]);
 
     if (missingIds.length === 0) {
-      return; // đã có đủ thông tin rồi
+      return;
     }
 
     const fetchUsers = async () => {
@@ -58,15 +57,14 @@ const CommentBody = ({
           }
         });
 
-        setUserMap((prev) => ({ ...prev, ...newData })); // giữ lại dữ liệu cũ + thêm mới
+        setUserMap((prev) => ({ ...prev, ...newData }));
       } catch (err) {
         console.error("Fetch user failed:", err);
       }
     };
 
     fetchUsers();
-  }, [user?.token, reviews, userMap]); // thêm userMap để kiểm tra missing
-
+  }, [user?.token, reviews, userMap]);
   console.log(sortedReviews);
   return (
     <div className="comment__task__body">

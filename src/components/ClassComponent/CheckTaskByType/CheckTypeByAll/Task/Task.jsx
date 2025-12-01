@@ -56,6 +56,7 @@ const Task = ({
   const [editedStartTime, setEditedStartTime] = useState(
     props.task?.taskStartTime || ""
   );
+  console.log("Props: ", props.task);
   const [editedDueDate, setEditedDueDate] = useState(
     props.task?.taskDueDate || ""
   );

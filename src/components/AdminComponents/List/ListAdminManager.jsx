@@ -161,143 +161,151 @@ const ListAdminManager = ({ role }) => {
   }, [selectedSemester.semesterId, role, user?.token, dispatch]);
 
   return (
-    <div className="list__semester__container">
-      <div className="list__semester">
-        <div className="list__semester__heading">
-          <div className="list__semester__heading__title">
-            <h2>
-              Manage {upperCaseFirstChart(role)}
-              {role === "Class" && selectedSemester.semesterName && (
-                <span className="subtitle">
-                  {" "}
-                  — {selectedSemester.semesterName}
-                </span>
-              )}
-            </h2>
-          </div>
-
-          <div className="list__semester__heading__feature">
-            {role === "Class" && (
-              <select
-                value={selectedSemester.semesterId}
-                onChange={handleSemesterChange}
-                className="semester-select"
-              >
-                <option value="">-- Select Semester --</option>
-                {semesters.map((sem) => (
-                  <option key={sem.semesterId} value={sem.semesterId}>
-                    {sem.semesterName}
-                  </option>
-                ))}
-              </select>
-            )}
-            <i className="fa-solid fa-filter"></i>
-            <i
-              className="fa-solid fa-plus"
-              style={{ cursor: "pointer" }}
-              onClick={() => setShowAddForm({ flag: true, role: role })}
-            ></i>
-          </div>
-        </div>
-
-        <div className="list__semester__table">
-          <table>
-            <thead>
-              <tr>
-                <th>
-                  <input type="checkbox" />
-                </th>
-                <th>{showUi.row1}</th>
-                <th>{showUi.row2}</th>
-                <th>{showUi.row3}</th>
-                <th>{showUi.row4}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pending ? (
-                <tr>
-                  <td colSpan="5" className="text-center">
-                    Loading...
-                  </td>
-                </tr>
-              ) : isClassWithoutSemester ? (
-                <tr>
-                  <td colSpan="5" className="text-center">
-                    Please select a semester to view classes
-                  </td>
-                </tr>
-              ) : paginatedData.length > 0 ? (
-                paginatedData.map((item) => (
-                  <tr key={item._id}>
-                    <td>
-                      <input type="checkbox" />
-                    </td>
-                    <Row
-                      role={role}
-                      data={item}
-                      semesterName={selectedSemester.semesterName}
-                      lectures={lectures}
-                      addForm={showAddForm.flag}
-                      closeAdd={showAddClose}
-                    />
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="text-center">
-                    No {role.toLowerCase()} available
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          {totalPages > 1 && !pending && !isClassWithoutSemester && (
-            <div className="modern-pagination">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="pagination-btn prev"
-              >
-                <i className="fa-solid fa-chevron-left"></i>
-              </button>
-
-              <div className="page-numbers">
-                {getPageNumbers().map((page, i) =>
-                  page === "..." ? (
-                    <span key={i} className="dots">
-                      ...
-                    </span>
-                  ) : (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentPage(page)}
-                      className={currentPage === page ? "active" : ""}
-                    >
-                      {page}
-                    </button>
-                  )
+    <>
+      <div className="list__semester__container">
+        <div className="list__semester">
+          <div className="list__semester__heading">
+            <div className="list__semester__heading__title">
+              <h2>
+                Manage {upperCaseFirstChart(role)}
+                {role === "Class" && selectedSemester.semesterName && (
+                  <span className="subtitle">
+                    {" "}
+                    — {selectedSemester.semesterName}
+                  </span>
                 )}
-              </div>
-
-              <div className="page-info">
-                Page <strong>{currentPage}</strong> / {totalPages}
-              </div>
-
-              <button
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
-                disabled={currentPage === totalPages}
-                className="pagination-btn next"
-              >
-                <i className="fa-solid fa-chevron-right"></i>
-              </button>
+              </h2>
             </div>
-          )}
+
+            <div className="list__semester__heading__feature">
+              {role === "Class" && (
+                <select
+                  value={selectedSemester.semesterId}
+                  onChange={handleSemesterChange}
+                  className="semester-select"
+                >
+                  <option value="">-- Select Semester --</option>
+                  {semesters.map((sem) => (
+                    <option key={sem.semesterId} value={sem.semesterId}>
+                      {sem.semesterName}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <i className="fa-solid fa-filter"></i>
+              <i
+                className="fa-solid fa-plus"
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowAddForm({ flag: true, role: role })}
+              ></i>
+            </div>
+          </div>
+
+          <div className="list__semester__table">
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    <input type="checkbox" />
+                  </th>
+                  <th>{showUi.row1}</th>
+                  <th>{showUi.row2}</th>
+                  <th>{showUi.row3}</th>
+                  <th>{showUi.row4}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pending ? (
+                  <tr>
+                    <td colSpan="5" className="text-center">
+                      Loading...
+                    </td>
+                  </tr>
+                ) : isClassWithoutSemester ? (
+                  <tr>
+                    <td colSpan="5" className="text-center">
+                      Please select a semester to view classes
+                    </td>
+                  </tr>
+                ) : paginatedData.length > 0 ? (
+                  paginatedData.map((item) => (
+                    <tr key={item._id}>
+                      <td>
+                        <input type="checkbox" />
+                      </td>
+                      <Row
+                        role={role}
+                        data={item}
+                        semesterName={selectedSemester.semesterName}
+                        lectures={lectures}
+                        addForm={showAddForm.flag}
+                        closeAdd={showAddClose}
+                      />
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="text-center">
+                      No {role.toLowerCase()} available
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {totalPages > 1 && !pending && !isClassWithoutSemester && (
+              <div className="modern-pagination">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="pagination-btn prev"
+                >
+                  <i className="fa-solid fa-chevron-left"></i>
+                </button>
+
+                <div className="page-numbers">
+                  {getPageNumbers().map((page, i) =>
+                    page === "..." ? (
+                      <span key={i} className="dots">
+                        ...
+                      </span>
+                    ) : (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentPage(page)}
+                        className={currentPage === page ? "active" : ""}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
+                </div>
+
+                <div className="page-info">
+                  Page <strong>{currentPage}</strong> / {totalPages}
+                </div>
+
+                <button
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="pagination-btn next"
+                >
+                  <i className="fa-solid fa-chevron-right"></i>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+      {showAddForm.flag && (
+        <FormAddLecture
+          onClose={() => setShowAddForm({ flag: false })}
+          role={showAddForm.role}
+        />
+      )}
+    </>
   );
 };
 

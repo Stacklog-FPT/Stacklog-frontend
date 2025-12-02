@@ -52,6 +52,9 @@ const userSlice = createSlice({
     getClasses: (state, action) => {
       state.classes = action.payload;
     },
+    addClass: (state, action) => {
+      state.classes = action.payload;
+    },
     resetClasses: (state, action) => {
       state.classes = [];
     },

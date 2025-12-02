@@ -1,26 +1,28 @@
-import React from 'react';
-import { FaPlus } from 'react-icons/fa';
-import { RiDeleteBin5Fill } from 'react-icons/ri';
-import './Checklist.scss';
-import { updateTaskApi } from '../../../../service/TaskService';
-import { useAuth } from '../../../../context/AuthProvider';
-import { useDispatch } from 'react-redux';
+import React from "react";
+import { FaPlus } from "react-icons/fa";
+import { RiDeleteBin5Fill } from "react-icons/ri";
+import "./Checklist.scss";
+import { updateTaskApi } from "../../../../service/TaskService";
+import { useAuth } from "../../../../context/AuthProvider";
+import { useDispatch } from "react-redux";
 
 const Checklist = ({ checkList, task }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
 
   const [isAddingList, setIsAddingList] = React.useState(false);
-  const [newCheckListName, setNewCheckListName] = React.useState('');
+  const [newCheckListName, setNewCheckListName] = React.useState("");
   const [activeId, setActiveId] = React.useState(null);
-  const [newItem, setNewItem] = React.useState('');
+  const [newItem, setNewItem] = React.useState("");
 
   const [editCheckListId, setEditCheckListId] = React.useState(null);
-  const [editCheckListName, setEditCheckListName] = React.useState('');
+  const [editCheckListName, setEditCheckListName] = React.useState("");
 
   const toggleAddItemRow = (checkListId) => {
-    setActiveId((prev) => (String(prev) === String(checkListId) ? null : checkListId));
-    setNewItem('');
+    setActiveId((prev) =>
+      String(prev) === String(checkListId) ? null : checkListId
+    );
+    setNewItem("");
   };
 
   const handleAddChecklist = async () => {
@@ -35,7 +37,7 @@ const Checklist = ({ checkList, task }) => {
     const current = Array.isArray(task.checkLists) ? task.checkLists : [];
     const payload = { ...task, checkLists: [...current, newChecklist] };
     await updateTaskApi(payload, user.token, dispatch);
-    setNewCheckListName('');
+    setNewCheckListName("");
     setIsAddingList(false);
   };
 
@@ -51,17 +53,19 @@ const Checklist = ({ checkList, task }) => {
     });
 
     const payload = { ...task, checkLists: updatedCheckLists };
-    await updateTaskApi(payload, user.token, dispatch);
 
+    await updateTaskApi(payload, user.token, dispatch);
+    console.log("Payload checkListName: ", payload);
     setEditCheckListId(null);
-    setEditCheckListName('');
+    setEditCheckListName("");
   };
 
   const handleDeleteChecklist = async (checkListId) => {
     const updatedCheckLists = (task.checkLists || []).filter(
-      (cl) => String(cl.checkListId) !== String(checkListId),
+      (cl) => String(cl.checkListId) !== String(checkListId)
     );
     const payload = { ...task, checkLists: updatedCheckLists };
+    console.log("Payload: ", payload);
     await updateTaskApi(payload, user.token, dispatch);
   };
 
@@ -87,7 +91,7 @@ const Checklist = ({ checkList, task }) => {
 
     const payload = { ...task, checkLists: updatedCheckLists };
     await updateTaskApi(payload, user.token, dispatch);
-    setNewItem('');
+    setNewItem("");
     setActiveId(null);
   };
 
@@ -95,12 +99,14 @@ const Checklist = ({ checkList, task }) => {
     const updatedCheckLists = (task.checkLists || []).map((cl) => {
       if (String(cl.checkListId) === String(checkListId)) {
         const items = (cl.listItems || []).filter(
-          (it) => String(it.checkItemId) !== String(checkItemId),
+          (it) => String(it.checkItemId) !== String(checkItemId)
         );
         return { ...cl, listItems: items };
       }
       return cl;
     });
+
+    console.log("Updated Checklist: ", updatedCheckLists);
 
     const payload = { ...task, checkLists: updatedCheckLists };
     await updateTaskApi(payload, user.token, dispatch);
@@ -110,7 +116,9 @@ const Checklist = ({ checkList, task }) => {
     const updatedCheckLists = (task.checkLists || []).map((cl) => {
       if (String(cl.checkListId) === String(checkListId)) {
         const updatedItems = (cl.listItems || []).map((it) =>
-          String(it.checkItemId) === String(checkItemId) ? { ...it, isChecked: !it.isChecked } : it,
+          String(it.checkItemId) === String(checkItemId)
+            ? { ...it, isChecked: !it.isChecked }
+            : it
         );
         return { ...cl, listItems: updatedItems };
       }
@@ -139,10 +147,10 @@ const Checklist = ({ checkList, task }) => {
                       onChange={(e) => setEditCheckListName(e.target.value)}
                       onBlur={() => handleUpdateChecklistName(cid)}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleUpdateChecklistName(cid);
-                        if (e.key === 'Escape') {
+                        if (e.key === "Enter") handleUpdateChecklistName(cid);
+                        if (e.key === "Escape") {
                           setEditCheckListId(null);
-                          setEditCheckListName('');
+                          setEditCheckListName("");
                         }
                       }}
                       autoFocus
@@ -193,16 +201,20 @@ const Checklist = ({ checkList, task }) => {
                           <input
                             type="checkbox"
                             checked={!!it.isChecked}
-                            onChange={() => handleToggleChecklistItem(cid, it.checkItemId)}
+                            onChange={() =>
+                              handleToggleChecklistItem(cid, it.checkItemId)
+                            }
                           />
-                          <span className={it.isChecked ? 'completed' : ''}>
+                          <span className={it.isChecked ? "completed" : ""}>
                             {it.checkItemTitle}
                           </span>
                         </div>
                         <button
                           type="button"
                           className="btn_add_check_list_item"
-                          onClick={() => handleDeleteChecklistItem(cid, it.checkItemId)}
+                          onClick={() =>
+                            handleDeleteChecklistItem(cid, it.checkItemId)
+                          }
                           title="Delete item"
                         >
                           <RiDeleteBin5Fill size={14} />
@@ -259,7 +271,7 @@ const Checklist = ({ checkList, task }) => {
                 className="btn_cancel"
                 onClick={() => {
                   setIsAddingList(false);
-                  setNewCheckListName('');
+                  setNewCheckListName("");
                 }}
               >
                 Cancel

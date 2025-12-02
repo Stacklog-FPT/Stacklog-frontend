@@ -55,8 +55,6 @@ const FormSemester = ({ onClose }) => {
       semesterStartDate: semesterData.semesterStartDate,
       semesterEndDate: semesterData.semesterEndDate,
     };
-
-    console.log("Payload semester: ", payload);
     setLoading(true);
     try {
       await createNewSemester(payload, user.token, dispatch);

@@ -45,9 +45,11 @@ const ListAdminManager = ({ role }) => {
     Lecture: lectures.users,
     Student: students.users,
   };
+  console.log("Data by role: ", dataByRole);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const currentData = dataByRole[role];
+  console.log("currentData: ", currentData);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const paginatedData = currentData.slice(indexOfFirstItem, indexOfLastItem);

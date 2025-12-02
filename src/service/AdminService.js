@@ -194,3 +194,19 @@ export const getAllStudent = async (token, dispatch) => {
     setError(e.message || "Something went wrong!");
   }
 };
+
+export const createNewClass = async (data, token, dispatch) => {
+  try {
+    if (!token) {
+      dispatch(setError("Invalid token!"));
+      throw new Error("Invalid token!");
+    }
+
+    const response = await axios.post(
+      `${API_URL}class/class?semesterId=${data.semesterId}`
+    );
+  } catch (e) {
+    dispatch(setError(e.message));
+    throw new Error(e.message);
+  }
+};

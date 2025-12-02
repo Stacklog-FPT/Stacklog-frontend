@@ -42,7 +42,7 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate, canDelete = false }
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Slot Details</h2>
+          <h2>Details</h2>
           <button className="close-button" onClick={onClose}>
             ×
           </button>

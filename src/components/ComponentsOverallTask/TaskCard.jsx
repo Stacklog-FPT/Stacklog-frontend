@@ -12,6 +12,7 @@ export default function TaskCard({
   return (
     <div className={`task-card task-card--${color}`}>
       <div className="task-card__content">
+        <h3 style={{fontSize: 16, color: "#1f2937"}}>Member Overview</h3>
         <div className="task-card__header">
           <div
             className={`task-card__percentage task-card__percentage--${color}`}

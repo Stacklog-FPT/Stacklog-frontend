@@ -9,9 +9,54 @@ import {
   resetClasses,
   setError,
   setPending,
+  setAllAdminData,
 } from "../redux/slice/userSilce";
 import { REACT_API_URL } from "../api/apiConfig";
 
+export const getAllAdminDataOnce = async (token, dispatch) => {
+  if (!token) return;
+
+  try {
+    dispatch(setPending(true));
+
+    const { data: semesters } = await axios.get(
+      `${REACT_API_URL}class/semester/getall`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const classPromises = (semesters || []).map((sem) =>
+      axios.get(`${REACT_API_URL}class/class/${sem.semesterId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    );
+
+    const classResponses = await Promise.all(classPromises);
+    const allClasses = classResponses.flatMap((res) => res.data || []);
+
+    const [lecturesRes, studentsRes] = await Promise.all([
+      axios.get(`${REACT_API_URL}profile/user/role/LECTURER`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      axios.get(`${REACT_API_URL}profile/user/role/STUDENT`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    ]);
+
+    dispatch(
+      setAllAdminData({
+        semesters: semesters || [],
+        classes: allClasses,
+        lectures: lecturesRes.data || { users: [] },
+        students: studentsRes.data || { users: [] },
+      })
+    );
+  } catch (error) {
+    const message = error.response?.data?.message || error.message;
+    dispatch(setError(message));
+    throw error;
+  } finally {
+    dispatch(setPending(false));
+  }
+};
 export const getAllSemester = async (token, dispatch) => {
   try {
     dispatch(setPending(true));

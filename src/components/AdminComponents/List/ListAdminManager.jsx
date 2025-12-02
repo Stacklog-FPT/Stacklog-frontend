@@ -11,14 +11,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { upperCaseFirstChart } from "../../../helper/upperCaseFirstChart";
 import Row from "../Row/Row";
 import { BiExport } from "react-icons/bi";
+import { CgImport } from "react-icons/cg";
 import { exportByRole } from "../../../service/ExportImportService";
 import downloadFile from "../../../helper/downloadFile";
 import { toast } from "sonner";
+import FormExcel from "../FormExcel/FormExcel";
 
 const ListAdminManager = ({ role }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddExcel, setShowAddExcel] = useState(false);
   const { semesters, classes, lectures, pending, students } = useSelector(
     (state) => state.users
   );
@@ -45,7 +48,6 @@ const ListAdminManager = ({ role }) => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const paginatedData = currentData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(currentData.length / itemsPerPage);
-
   const [exporting, setExporting] = useState(false);
   const isClassWithoutSemester =
     role === "Class" && !selectedSemester.semesterId;
@@ -235,6 +237,15 @@ const ListAdminManager = ({ role }) => {
                   <BiExport size={20} />
                 </button>
               )}
+              {["Lecture", "Student"].includes(role) && (
+                <button
+                  className="export-btn"
+                  onClick={() => setShowAddExcel(true)}
+                  title="Import to Excel"
+                >
+                  <CgImport size={20} />
+                </button>
+              )}
             </div>
           </div>
 
@@ -341,6 +352,9 @@ const ListAdminManager = ({ role }) => {
           onClose={() => setShowAddForm({ flag: false })}
           role={showAddForm.role}
         />
+      )}
+      {showAddExcel && (
+        <FormExcel role={role} onClose={() => setShowAddExcel(false)} />
       )}
     </>
   );

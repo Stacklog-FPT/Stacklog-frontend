@@ -4,8 +4,8 @@ const initialState = {
   userInfo: {},
   semesters: [],
   classes: [],
-  lectures: [],
-  students: [],
+  lectures: { users: [] },
+  students: { users: [] },
   semesterDetail: {},
   classDetail: {},
   lectureDetail: {},
@@ -23,6 +23,14 @@ const userSlice = createSlice({
     },
     setError: (state, action) => {
       state.error = action.payload;
+    },
+    setAllAdminData: (state, action) => {
+      return {
+        ...state,
+        ...action.payload,
+        pending: false,
+        error: null,
+      };
     },
     addSemeter: (state, action) => {
       state.semesters = state.semesters.push(action.payload);
@@ -71,6 +79,7 @@ export const {
   resetClasses,
   setUserInfo,
   updateUserInfo,
+  setAllAdminData,
 } = userSlice.actions;
 
 export default userSlice.reducer;

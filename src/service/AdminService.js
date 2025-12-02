@@ -49,6 +49,7 @@ export const getAllAdminDataOnce = async (token, dispatch) => {
         students: studentsRes.data || { users: [] },
       })
     );
+    dispatch(setPending(false));
   } catch (error) {
     const message = error.response?.data?.message || error.message;
     dispatch(setError(message));
@@ -83,11 +84,15 @@ export const createNewSemester = async (data, token, dispatch) => {
     }
 
     dispatch(setPending(true));
-    const response = await axios.post(`${REACT_API_URL}class/semester/`, data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.post(
+      `${REACT_API_URL}class/semester/save`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     dispatch(addSemeter(response.data));
     dispatch(setPending(false));

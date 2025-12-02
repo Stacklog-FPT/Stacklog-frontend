@@ -4,7 +4,6 @@ import { MdModeEdit } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 import { upperCaseFirstChart } from "../../../helper/upperCaseFirstChart";
 import FormSemester from "../FormAddLecture/Semester/FormSemester";
-import FormAddLecture from "../FormAddLecture/FormAddLecture";
 import { deleteSemesterService } from "../../../service/AdminService";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDispatch } from "react-redux";
@@ -21,6 +20,7 @@ const Row = ({
   closeAdd,
   isLoading = false,
 }) => {
+  console.log(data);
   const { user } = useAuth();
   const dispatch = useDispatch();
 
@@ -187,6 +187,7 @@ const Row = ({
             <button className="btn-delete" title="Delete">
               <FaTrash />
             </button>
+            <ExportXlsxButton />
           </td>
         </>
       );
@@ -221,7 +222,6 @@ const Row = ({
               <FaTrash />
             </button>
           </td>
-          {addForm && <FormAddLecture onClose={closeAdd} role={role} />}
         </>
       );
 
@@ -242,19 +242,16 @@ const Row = ({
             </div>
           </td>
           <td>{data.email || "N/A"}</td>
-          <td>
-            {data.class?.class_name || data.class?.classesName || "No class"}
-          </td>
+          <td>K{data?.work_id?.slice(2, 4)}</td>
           <td className="action-cell">
             <button className="btn-edit" title="Edit">
               <MdModeEdit />
             </button>
-           
+
             <button className="btn-delete" title="Delete">
               <FaTrash />
             </button>
           </td>
-          {addForm && <FormAddLecture onClose={closeAdd} role={role} />}
         </>
       );
 

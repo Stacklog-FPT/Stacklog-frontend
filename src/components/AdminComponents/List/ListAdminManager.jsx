@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./ListAdminManager.scss";
 import {
+  getAllAdminDataOnce,
   getAllClasses,
   getAllLecture,
   getAllSemester,
@@ -16,11 +17,14 @@ import { exportByRole } from "../../../service/ExportImportService";
 import downloadFile from "../../../helper/downloadFile";
 import { toast } from "sonner";
 import FormExcel from "../FormExcel/FormExcel";
+import FormAddLecture from "../FormAddLecture/FormAddLecture";
+import FormSemester from "../FormAddLecture/Semester/FormSemester";
+import LoadingComponent from "../../Loading/LoadingComponent";
 
 const ListAdminManager = ({ role }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [addFormType, setAddFormType] = useState(null);
   const [showAddExcel, setShowAddExcel] = useState(false);
   const { semesters, classes, lectures, pending, students } = useSelector(
     (state) => state.users
@@ -43,7 +47,7 @@ const ListAdminManager = ({ role }) => {
   };
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  const currentData = dataByRole[role] || [];
+  const currentData = dataByRole[role];
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const paginatedData = currentData.slice(indexOfFirstItem, indexOfLastItem);
@@ -82,7 +86,7 @@ const ListAdminManager = ({ role }) => {
         setShowUi({
           row1: "Student",
           row2: "Email",
-          row3: "Class",
+          row3: "Course",
           row4: "Action",
         });
         break;
@@ -168,30 +172,15 @@ const ListAdminManager = ({ role }) => {
   };
 
   useEffect(() => {
-    if (!user?.token) return;
+    const fetchData = async () => {
+      await getAllAdminDataOnce(user.token, dispatch);
+    };
 
-    if (role === "Semester") {
-      getAllSemester(user.token, dispatch);
-    }
-
-    showUIByRole();
-    setCurrentPage(1);
-    setSelectedSemester({ semesterId: "", semesterName: "" });
-  }, [role, user?.token, dispatch]);
-
-  useEffect(() => {
-    if (role === "Class" && selectedSemester.semesterId && user?.token) {
-      getAllClasses(selectedSemester.semesterId, user.token, dispatch);
-      getAllLecture(user.token, dispatch);
-    } else if (role === "Lecture") {
-      getAllLecture(user.token, dispatch);
-    } else if (role === "Student") {
-      getAllStudent(user.token, dispatch);
-    }
-  }, [selectedSemester.semesterId, role, user?.token, dispatch]);
-
+    fetchData();
+  }, [user.token]);
   return (
     <>
+      <LoadingComponent isLoading={pending} />
       <div className="list__semester__container">
         <div className="list__semester">
           <div className="list__semester__heading">
@@ -202,6 +191,17 @@ const ListAdminManager = ({ role }) => {
                   <span className="subtitle">
                     {" "}
                     — {selectedSemester.semesterName}
+                  </span>
+                )}
+                {role === "Student" && (
+                  <span>
+                    <span> </span>K{students.users[0].work_id.slice(2, 4)}
+                    {role === "Class" && selectedSemester.semesterName && (
+                      <span className="subtitle">
+                        {" "}
+                        — {selectedSemester.semesterName}
+                      </span>
+                    )}
                   </span>
                 )}
               </h2>
@@ -226,7 +226,7 @@ const ListAdminManager = ({ role }) => {
               <i
                 className="fa-solid fa-plus"
                 style={{ cursor: "pointer" }}
-                onClick={() => setShowAddForm({ flag: true, role: role })}
+                onClick={() => setAddFormType(role)}
               ></i>
               {["Lecture", "Student"].includes(role) && (
                 <button
@@ -286,7 +286,6 @@ const ListAdminManager = ({ role }) => {
                         data={item}
                         semesterName={selectedSemester.semesterName}
                         lectures={lectures}
-                        addForm={showAddForm.flag}
                         closeAdd={showAddClose}
                       />
                     </tr>
@@ -347,14 +346,15 @@ const ListAdminManager = ({ role }) => {
           </div>
         </div>
       </div>
-      {showAddForm.flag && (
-        <FormAddLecture
-          onClose={() => setShowAddForm({ flag: false })}
-          role={showAddForm.role}
-        />
+      {addFormType === "Semester" && (
+        <FormSemester onClose={() => setAddFormType(null)} />
       )}
-      {showAddExcel && (
-        <FormExcel role={role} onClose={() => setShowAddExcel(false)} />
+
+      {(addFormType === "Lecture" || addFormType === "Student") && (
+        <FormAddLecture
+          onClose={() => setAddFormType(null)}
+          role={addFormType}
+        />
       )}
     </>
   );

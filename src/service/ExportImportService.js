@@ -72,7 +72,7 @@ export const importByRole = async (role, file, token, dispatch) => {
       }
     );
 
-    console.log(response.data);
+    return response;
   } catch (e) {
     throw new Error();
   }

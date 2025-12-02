@@ -4,7 +4,7 @@ import LectureService from "../../../service/LectureStudentService";
 import { useAuth } from "../../../context/AuthProvider";
 
 const FormAddLecture = ({ role, onClose }) => {
-  const { createUser } = LectureService();
+  // const { createUser } = LectureService();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     full_name: "",
@@ -52,7 +52,7 @@ const FormAddLecture = ({ role, onClose }) => {
   return (
     <div className="add-user-overlay">
       <div className="add-user-popup">
-        <h2>Add User</h2>
+        <h2>Add {role}</h2>
         <form onSubmit={handleSubmit}>
           <select
             name="role"

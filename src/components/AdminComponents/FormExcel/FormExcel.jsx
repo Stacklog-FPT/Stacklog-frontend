@@ -39,7 +39,11 @@ const FormExcel = ({ role, onClose }) => {
     setUploading(true);
     const roleForSend = role === "Lecture" ? "lecturer" : role;
     try {
-      await importByRole(roleForSend.toUpperCase(), file, user.token);
+      const response = await importByRole(
+        roleForSend.toUpperCase(),
+        file,
+        user.token
+      );
       toast.success("Import completed successfully!");
       onClose();
     } catch (err) {

@@ -1,0 +1,31 @@
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.3s ease;
+
+  .loading-content {
+    text-align: center;
+    padding: 30px 50px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e0e0e0;
+
+    .loading-text {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      color: #045745;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+  }
+}

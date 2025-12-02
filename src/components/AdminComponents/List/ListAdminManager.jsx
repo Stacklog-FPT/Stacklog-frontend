@@ -10,6 +10,10 @@ import { useAuth } from "../../../context/AuthProvider";
 import { useDispatch, useSelector } from "react-redux";
 import { upperCaseFirstChart } from "../../../helper/upperCaseFirstChart";
 import Row from "../Row/Row";
+import { BiExport } from "react-icons/bi";
+import { exportByRole } from "../../../service/ExportImportService";
+import downloadFile from "../../../helper/downloadFile";
+import { toast } from "sonner";
 
 const ListAdminManager = ({ role }) => {
   const { user } = useAuth();
@@ -24,19 +28,16 @@ const ListAdminManager = ({ role }) => {
     row3: "",
     row4: "Action",
   });
-
   const [selectedSemester, setSelectedSemester] = useState({
     semesterId: "",
     semesterName: "",
   });
-
   const dataByRole = {
     Semester: semesters,
     Class: classes,
     Lecture: lectures.users,
     Student: students.users,
   };
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const currentData = dataByRole[role] || [];
@@ -45,6 +46,7 @@ const ListAdminManager = ({ role }) => {
   const paginatedData = currentData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(currentData.length / itemsPerPage);
 
+  const [exporting, setExporting] = useState(false);
   const isClassWithoutSemester =
     role === "Class" && !selectedSemester.semesterId;
 
@@ -95,7 +97,6 @@ const ListAdminManager = ({ role }) => {
     }
 
     const selected = semesters.find((sem) => sem.semesterId === id);
-    console.log(selected);
     setSelectedSemester({
       semesterId: selected.semesterId || "",
       semesterName: selected.semesterName || "Unknown",
@@ -135,6 +136,33 @@ const ListAdminManager = ({ role }) => {
 
   const showAddClose = () => {
     setShowAddForm(false);
+  };
+
+  const handleExportByRole = async () => {
+    if (exporting) return;
+    setExporting(true);
+
+    const roleForLecture = role === "Lecture" ? "lecturer" : role;
+    try {
+      const result = await exportByRole(
+        roleForLecture.toUpperCase(),
+        user.token
+      );
+
+      downloadFile(
+        result.data,
+        `${role.toLowerCase()}_export.xlsx`,
+        result.contentType,
+        result.headers
+      );
+
+      toast.success(`Downloaded ${result.filename} successfully! `);
+    } catch (e) {
+      toast.error("Something went wrong! ");
+    } finally {
+      setExporting(false);
+    }
+    await exportByRole(role.toUpperCase(), user.token);
   };
 
   useEffect(() => {
@@ -198,6 +226,15 @@ const ListAdminManager = ({ role }) => {
                 style={{ cursor: "pointer" }}
                 onClick={() => setShowAddForm({ flag: true, role: role })}
               ></i>
+              {["Lecture", "Student"].includes(role) && (
+                <button
+                  className="export-btn"
+                  onClick={handleExportByRole}
+                  title="Export to Excel"
+                >
+                  <BiExport size={20} />
+                </button>
+              )}
             </div>
           </div>
 

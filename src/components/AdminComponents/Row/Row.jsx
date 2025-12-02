@@ -10,6 +10,7 @@ import { useAuth } from "../../../context/AuthProvider";
 import { useDispatch } from "react-redux";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import ExportXlsxButton from "../../ExportXlsxButton/ExportXlsxButton";
 
 const Row = ({
   role,
@@ -248,6 +249,7 @@ const Row = ({
             <button className="btn-edit" title="Edit">
               <MdModeEdit />
             </button>
+           
             <button className="btn-delete" title="Delete">
               <FaTrash />
             </button>

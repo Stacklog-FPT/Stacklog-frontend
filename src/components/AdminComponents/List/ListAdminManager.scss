@@ -267,3 +267,17 @@
     }
   }
 }
+
+.export-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  color: var(--bg--primary-color);
+  transition: all 0.2s;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}

@@ -14,40 +14,69 @@ class NotificationSocketService {
 
     let connectUrl = url;
     let pathOption;
-    try {
-      const parsed = new URL(url);
-      if (parsed.protocol === "ws:") parsed.protocol = "http:";
-      if (parsed.protocol === "wss:") parsed.protocol = "https:";
-      connectUrl = `${parsed.protocol}//${parsed.host}`;
-      pathOption = parsed.pathname + (parsed.search || "");
-      pathOption = pathOption.replace(/([?&])userId=(?:undefined|null)(&|$)/g, (m, p1, p2) => (p2 ? p1 : ""));
-    } catch (e) {
-      connectUrl = url;
+    
+    if (url.match(/^(ws|wss|http|https):\/\//)) {
+      try {
+        const parsed = new URL(url);
+        if (parsed.protocol === "ws:") parsed.protocol = "http:";
+        if (parsed.protocol === "wss:") parsed.protocol = "https:";
+        connectUrl = `${parsed.protocol}//${parsed.host}`;
+        pathOption = parsed.pathname + (parsed.search || "");
+        pathOption = pathOption.replace(/([?&])userId=(?:undefined|null)(&|$)/g, (m, p1, p2) => (p2 ? p1 : ""));
+      } catch (e) {
+        connectUrl = url;
+      }
+    } else {
+      // Relative URL in dev
+      connectUrl = window.location.origin;
+      pathOption = url;
     }
 
     this.url = url;
     const auth = token ? { token } : undefined;
+    let cleanQuery;
+    if (query && typeof query === 'object') {
+      cleanQuery = Object.fromEntries(Object.entries(query).filter(([, v]) => v !== undefined && v !== null));
+      if (Object.keys(cleanQuery).length === 0) cleanQuery = undefined;
+    }
+    if (token && !cleanQuery) {
+      cleanQuery = { token };
+    } else if (token && cleanQuery) {
+      cleanQuery.token = token;
+    }
 
     const options = {
       auth,
-      query: query && typeof query === 'object' ? Object.fromEntries(Object.entries(query).filter(([, v]) => v !== undefined && v !== null)) : undefined,
+      query: cleanQuery,
       path: pathOption,
       autoConnect: true,
       reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 10,
+      timeout: 20000,
+      transports: ['polling', 'websocket'],
+      withCredentials: true,
+      transportOptions: {
+        polling: {
+          extraHeaders: token ? { Authorization: `Bearer ${token}` } : undefined,
+        },
+      },
     };
 
+    console.debug('[NotificationSocketService] Connecting to', connectUrl, 'with path', pathOption);
     this.socket = io(connectUrl, options);
 
     this.socket.on("connect_error", (err) => {
-      try {
-        console.error("Notification socket connect_error:", err && err.message ? err.message : err, "data:", err && err.data ? err.data : undefined);
-      } catch (e) {
-        console.error("Notification socket connect_error (unknown error)");
-      }
+      console.error("[NotificationSocketService] connect_error:", {
+        message: err?.message,
+        type: err?.type,
+        description: err?.description,
+        data: err?.data
+      });
     });
 
     this.socket.on("connect", () => {
-      console.log("Notification socket connected", this.socket.id);
+      console.log("[NotificationSocketService] ✅ Connected! Socket ID:", this.socket.id, "Transport:", this.socket.io.engine.transport.name);
     });
 
     this.socket.on("disconnect", (reason) => {

@@ -22,55 +22,75 @@ class SocketService {
     // normalize ws:// -> http:// and wss:// -> https:// for socket.io-client
     let connectUrl = url;
     let pathOption;
-    try {
-      const parsed = new URL(url);
-      if (parsed.protocol === "ws:") parsed.protocol = "http:";
-      if (parsed.protocol === "wss:") parsed.protocol = "https:";
-      // use origin as base and keep path in options.path so socket.io handles it
-      connectUrl = `${parsed.protocol}//${parsed.host}`;
-      pathOption = parsed.pathname + (parsed.search || "");
-      // strip any userId=undefined or other undefined/null query entries that may have been
-      // accidentally embedded in the URL string
-      pathOption = pathOption.replace(/([?&])userId=(?:undefined|null)(&|$)/g, (m, p1, p2) => (p2 ? p1 : ""));
-    } catch (e) {
-      connectUrl = url;
+    
+    if (url.match(/^(ws|wss|http|https):\/\//)) {
+      try {
+        const parsed = new URL(url);
+        if (parsed.protocol === "ws:") parsed.protocol = "http:";
+        if (parsed.protocol === "wss:") parsed.protocol = "https:";
+        connectUrl = `${parsed.protocol}//${parsed.host}`;
+        pathOption = parsed.pathname + (parsed.search || "");
+        // strip any userId=undefined or other undefined/null query entries
+        pathOption = pathOption.replace(/([?&])userId=(?:undefined|null)(&|$)/g, (m, p1, p2) => (p2 ? p1 : ""));
+      } catch (e) {
+        connectUrl = url;
+      }
+    } else {
+      // Relative URL in dev: use current origin
+      connectUrl = window.location.origin;
+      pathOption = url;
     }
 
     this.url = url;
-    // attach token via auth (preferred) or via query
+    // attach token via auth (preferred) and optionally via query
     const auth = token ? { token } : undefined;
-    // sanitize query object: remove undefined/null values so socket.io doesn't serialize them
+    // sanitize query object: remove undefined/null values
     let cleanQuery;
     if (query && typeof query === "object") {
       cleanQuery = Object.fromEntries(
         Object.entries(query).filter(([, v]) => v !== undefined && v !== null)
       );
       if (Object.keys(cleanQuery).length === 0) cleanQuery = undefined;
-    } else {
-      cleanQuery = undefined;
+    }
+    // add token to query as fallback
+    if (token && !cleanQuery) {
+      cleanQuery = { token };
+    } else if (token && cleanQuery) {
+      cleanQuery.token = token;
     }
 
     const options = {
-      // allow engine.io to pick polling then upgrade to websocket if needed
       auth,
       query: cleanQuery,
       path: pathOption,
       autoConnect: true,
       reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 10,
+      timeout: 20000,
+      transports: ['polling', 'websocket'],
+      withCredentials: true,
+      transportOptions: {
+        polling: {
+          extraHeaders: token ? { Authorization: `Bearer ${token}` } : undefined,
+        },
+      },
     };
 
+    console.debug('[SocketService] Connecting to', connectUrl, 'with path', pathOption, 'options', options);
     this.socket = io(connectUrl, options);
 
     this.socket.on("connect_error", (err) => {
-      try {
-        console.error("Socket connect_error:", err && err.message ? err.message : err);
-      } catch (e) {
-        console.error("Socket connect_error (unknown error)");
-      }
+      console.error("[SocketService] connect_error:", {
+        message: err?.message,
+        type: err?.type,
+        description: err?.description,
+        data: err?.data
+      });
     });
 
     this.socket.on("connect", () => {
-      console.log("Socket connected", this.socket.id);
+      console.log("[SocketService] ✅ Connected! Socket ID:", this.socket.id, "Transport:", this.socket.io.engine.transport.name);
     });
 
     this.socket.on("disconnect", (reason) => {

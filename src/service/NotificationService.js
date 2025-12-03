@@ -1,18 +1,18 @@
-import axios from 'axios';
+import axios from "axios";
 import {
   setError,
   setPending,
   getNotifications,
   addNotifications,
   deleteNotification,
-} from '../redux/slice/notificationSlice';
-const NOTIFI_API = 'https://stacklog.id.vn/api/notification';
+} from "../redux/slice/notificationSlice";
+const NOTIFI_API = "https://stacklog.id.vn/api/notification";
 import { REACT_API_URL } from "../api/apiConfig";
 
 export const getAllNotification = async (token, dispatch) => {
   try {
     if (!token) {
-      dispatch(setError('The token is not valid!'));
+      dispatch(setError("The token is not valid!"));
       return [];
     }
     dispatch(setPending(true));
@@ -27,26 +27,26 @@ export const getAllNotification = async (token, dispatch) => {
     // map server shape to UI-friendly shape
     const mapped = restNotifs.map((n) => ({
       id: n._id || n.id,
-      title: n.content || n.title || '',
+      title: n.content || n.title || "",
       createdAt: n.createdAt,
       starred: false,
       receivers: n.receivers || [],
-      __receivedVia: 'rest',
-      path: n.path || '',
+      __receivedVia: "rest",
+      path: n.path || "",
     }));
 
     dispatch(getNotifications(mapped));
     dispatch(setPending(false));
   } catch (e) {
     dispatch(setPending(false));
-    dispatch(setError(e?.message || 'Something went wrong!'));
+    dispatch(setError(e?.message || "Something went wrong!"));
     throw e;
   }
 };
 
 export const createNotification = async (token, data, dispatch) => {
   try {
-    if (!token) dispatch(setError('The token is not valid!'));
+    if (!token) dispatch(setError("The token is not valid!"));
     dispatch(setPending(true));
     const response = await axios.post(`${REACT_API_URL}/notification/`, data, {
       headers: {
@@ -58,13 +58,13 @@ export const createNotification = async (token, data, dispatch) => {
     dispatch(setPending(false));
     return response;
   } catch (e) {
-    dispatch(setError(e.message) || 'Something went wrong');
+    dispatch(setError(e.message) || "Something went wrong");
   }
 };
 
 export const deleteNotificationApi = async (token, id, dispatch) => {
   try {
-    if (!token) dispatch(setError('The token is not valid!'));
+    if (!token) dispatch(setError("The token is not valid!"));
     dispatch(setPending(true));
 
     const response = await axios.delete(`${REACT_API_URL}/notification/${id}`, {
@@ -84,7 +84,7 @@ export const deleteNotificationApi = async (token, id, dispatch) => {
 export const sendNotificationToClasses = async (token, body, dispatch) => {
   try {
     if (!token) {
-      dispatch(setError('The token is not valid!'));
+      dispatch(setError("The token is not valid!"));
       return null;
     }
     dispatch(setPending(true));
@@ -95,7 +95,7 @@ export const sendNotificationToClasses = async (token, body, dispatch) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
@@ -116,7 +116,7 @@ export const sendNotificationToClasses = async (token, body, dispatch) => {
     return response;
   } catch (e) {
     dispatch(setPending(false));
-    dispatch(setError(e?.message || 'Failed to send notification'));
+    dispatch(setError(e?.message || "Failed to send notification"));
     throw e;
   }
 };

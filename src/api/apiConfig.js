@@ -6,4 +6,4 @@ export const REACT_API_URL = import.meta.env.DEV ? '/api/' : 'https://stacklog.i
 // For socket connections: use same strategy as REACT_API_URL
 // In dev: '/api/' goes through Vite proxy (avoids CORS)
 // In prod: 'https://stacklog.id.vn/api/' connects directly
-export const SOCKET_BASE_URL = REACT_API_URL;
+export const SOCKET_BASE_URL = "wss://stacklog.id.vn/api/";

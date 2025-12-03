@@ -19,29 +19,45 @@ export default function useSocketChat(
   useEffect(() => {
     if (!serverUrl || !roomId) return;
 
-  // We'll try websocket-first (so Network shows ws://...&transport=websocket)
-  // but fall back to polling+upgrade if websocket handshake fails.
-  const opts = { autoConnect: true, reconnection: true };
+    // Build socket.io client options
+    const opts = {
+      autoConnect: true,
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 10,
+      timeout: 20000,
+      transports: ['polling', 'websocket'],
+      withCredentials: true,
+    };
 
-    // Normalize serverUrl: if it's a full ws(s) URL, convert to origin and put path in options
+    // Handle both relative URLs (dev: '/api/chat/socket.io') and full URLs (prod: 'wss://...')
     let connectUrl = serverUrl;
-    try {
-      const parsed = new URL(serverUrl);
-      // convert ws/wss to http/https so socket.io-client can use origin + path
-      if (parsed.protocol === "ws:") parsed.protocol = "http:";
-      if (parsed.protocol === "wss:") parsed.protocol = "https:";
-      const origin = `${parsed.protocol}//${parsed.host}`;
-      const pathAndQuery = parsed.pathname + (parsed.search || "");
-      opts.path = pathAndQuery;
-      connectUrl = origin;
-    } catch (e) {
-      // keep serverUrl as-is if it's not a full URL
-      connectUrl = serverUrl;
+    let pathOption;
+
+    // If serverUrl is a full URL (ws://, wss://, http://, https://), parse it
+    if (serverUrl.match(/^(ws|wss|http|https):\/\//)) {
+      try {
+        const parsed = new URL(serverUrl);
+        // Convert ws/wss to http/https for socket.io-client
+        if (parsed.protocol === 'ws:') parsed.protocol = 'http:';
+        if (parsed.protocol === 'wss:') parsed.protocol = 'https:';
+        connectUrl = `${parsed.protocol}//${parsed.host}`;
+        pathOption = parsed.pathname + (parsed.search || '');
+        opts.path = pathOption;
+      } catch (e) {
+        console.warn('[ueSocket] Failed to parse serverUrl', serverUrl, e);
+      }
+    } else {
+      // Relative URL (dev): '/api/chat/socket.io' -> extract path for socket.io
+      // Socket.io needs the path to be just '/api/chat/socket.io'
+      connectUrl = window.location.origin; // connect to current origin
+      opts.path = serverUrl; // use the relative path as-is
     }
 
-    // add userId to query so it shows in inspector and server can authenticate/identify
+    // Add userId to query AND auth for better compatibility
     if (userId) {
-      opts.query = { ...(opts.query || {}), userId };
+      opts.query = { userId };
+      opts.auth = { token: userId }; // some backends expect token in auth
     }
 
     // helper to attach handlers to a socket instance
@@ -93,7 +109,12 @@ export default function useSocketChat(
       });
       s.on("connect_error", (err) => {
         // eslint-disable-next-line no-console
-        console.error("[ueSocket] connect_error", err && err.message ? err.message : err);
+        console.error("[ueSocket] connect_error:", {
+          message: err?.message,
+          type: err?.type,
+          description: err?.description,
+          data: err?.data
+        });
         setConnected(false);
       });
 
@@ -133,28 +154,10 @@ export default function useSocketChat(
       return { onConnect, tracer, handleNew };
     };
 
-    // First attempt: force websocket transport to get ws:// handshake quickly
-    socketRef.current = io(connectUrl, { ...opts, transports: ["websocket"] });
+    // Create socket with full options (both websocket and polling enabled)
+    console.log('[ueSocket] Connecting to', connectUrl, 'with opts', opts);
+    socketRef.current = io(connectUrl, opts);
     const handlers = attachHandlers(socketRef.current);
-
-    // If websocket-first doesn't connect within 2s, fallback to default transports (polling -> upgrade)
-    fallbackTimer = setTimeout(() => {
-      if (!socketRef.current) return;
-      const s = socketRef.current;
-      if (!s.connected) {
-        try {
-          s.off("message:new");
-          s.off("connect");
-          s.off("disconnect");
-          s.off("connect_error");
-          if (s.offAny && handlers && handlers.tracer) s.offAny(handlers.tracer);
-          s.disconnect();
-        } catch (e) {}
-        // create new socket without forcing transports
-        socketRef.current = io(connectUrl, opts);
-        attachHandlers(socketRef.current);
-      }
-    }, 2000);
 
     return () => {
       try {
@@ -167,7 +170,6 @@ export default function useSocketChat(
         }
       } catch (e) {}
       socketRef.current = null;
-      if (fallbackTimer) clearTimeout(fallbackTimer);
     };
     // Reconnect if serverUrl, roomId or userId change
     // eslint-disable-next-line

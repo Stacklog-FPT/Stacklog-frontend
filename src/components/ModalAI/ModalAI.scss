@@ -34,9 +34,11 @@
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 12px 40px rgba(15, 23, 42, 0.18);
-  overflow: visible;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  /* keep modal within viewport and allow internal scrolling */
+  max-height: 92vh;
 }
 .modal-ai-header {
   display: flex;
@@ -62,6 +64,11 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  /* make body scrollable when content overflows */
+  /* keep the overall body static and let the history area handle scrolling
+     to avoid double vertical scrollbars (outer + inner) */
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 .modal-ai-tabs {
   display: flex;
@@ -137,7 +144,11 @@
 .modal-ai-priority-medium { background: #f59e0b; }
 .modal-ai-priority-low { background: #10b981; }
 .modal-ai-history {
-  max-height: 320px;
+  /* Reserve the scrolling to this area only so the modal body doesn't show
+     a second scrollbar. It will expand to available space and scroll if
+     content overflows. */
+  flex: 1 1 auto;
+  min-height: 160px;
   overflow: auto;
   display: flex;
   flex-direction: column;
@@ -174,6 +185,26 @@
   padding: 8px 10px;
   font-size: 14px;
 }
+
+/* Description textarea styling: larger, responsive, and resizable vertically */
+.modal-ai-textarea {
+  width: 100%;
+  min-height: 88px;
+  max-height: 360px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  resize: vertical;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+/* Make sure textarea matches input visual when used inside flex rows */
+.modal-ai-form .modal-ai-textarea {
+  margin-bottom: 6px;
+}
 .modal-ai-send {
   background: #045745;
   color: white;
@@ -181,6 +212,49 @@
   padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+/* Make JSON preview wrap and avoid breaking layout horizontally */
+.modal-ai-history pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+  /* Let the history container handle scrolling. The <pre> should size to
+     its content within that scrollable area instead of forcing its own
+     independent overflow (which produced nested scrollbars). */
+  flex: none;
+  min-height: 220px;
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+  overflow: visible;
+}
+
+/* Keep footer pinned to bottom of history area */
+.modal-ai-history .modal-ai-footer {
+  margin-top: auto;
+  background: transparent;
+  padding-top: 8px;
+}
+
+/* Responsive: stack form rows on small screens */
+@media (max-width: 640px) {
+  .modal-ai-box { max-width: 95%; height: 90vh; }
+  .modal-ai-body { padding: 10px; }
+  /* force form rows to stack vertically on small screens */
+  .modal-ai-form > div[style],
+  .modal-ai-form > div {
+    flex-direction: column !important;
+  }
+  .modal-ai-form .modal-ai-input,
+  .modal-ai-form input[type="date"],
+  .modal-ai-form .modal-ai-textarea,
+  .modal-ai-form .modal-ai-priority-select {
+    width: 100% !important;
+  }
+  /* On small screens, allow the history area to use the remaining vertical
+     space but don't force an additional outer scrollbar. */
+  .modal-ai-history { max-height: 40vh; }
 }
 
 .modal-ai-footer {

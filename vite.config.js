@@ -14,12 +14,13 @@ export default defineConfig({
   },
   server: {
     // Proxy /api requests in development to the real backend to avoid CORS.
+    // ws: true enables WebSocket proxying for socket.io connections
     proxy: {
-      '^/api/.*': {
-        target: 'https://stacklog.id.vn',
+      "/api": {
+        target: "https://stacklog.io.vn",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/api'),
+        // ws: true, // Enable WebSocket proxying for socket.io
       },
     },
   },

@@ -3,18 +3,15 @@
 import { createContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthProvider";
 import socketService from "../service/SocketService";
-import { REACT_API_URL } from "../api/apiConfig";
+import { SOCKET_BASE_URL } from "../api/apiConfig";
 
 export const ChatContext = createContext();
 
-let apiOrigin = REACT_API_URL;
-try {
-  apiOrigin = new URL(REACT_API_URL).origin;
-} catch (e) {
-  apiOrigin = REACT_API_URL.replace(/\/.*$/, "");
-}
-const socketScheme = apiOrigin.replace(/^https/, "wss");
-const SOCKET_URL = socketScheme + "/api/chat/socket.io";
+// Build socket URL for chat socket
+// In dev: SOCKET_BASE_URL is '/api/' (relative) -> '/api/chat/socket.io' goes through Vite proxy
+// In prod: SOCKET_BASE_URL is 'https://...' (absolute) -> direct connection
+const SOCKET_URL = SOCKET_BASE_URL.replace(/\/$/, '') + '/chat/socket.io';
+console.log('[ChatContext] SOCKET_BASE_URL:', SOCKET_BASE_URL, '-> SOCKET_URL:', SOCKET_URL);
 
 const ChatProvider = ({ children }) => {
   const { user } = useAuth();
@@ -35,6 +32,7 @@ const ChatProvider = ({ children }) => {
 
   // connect shared socket (kept for app lifetime). Pass token in auth to avoid
   // serializing userId=undefined into the handshake URL when user id is not present yet.
+  console.log('[ChatContext] Connecting socket with URL:', SOCKET_URL, 'token:', user?.token ? 'present' : 'missing');
   socketService.connect({ url: SOCKET_URL, token: user?.token });
 
     const handleUsers = (incoming) => {

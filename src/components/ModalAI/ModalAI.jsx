@@ -1,8 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import './ModalAI.scss';
+import { postAiTaskAndDispatch } from '../../service/AiService';
+import { useDispatch } from 'react-redux';
+import { useAuth } from '../../context/AuthProvider';
 
 export default function ModalAI({ placement = 'bottom-right' }) {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,6 +27,7 @@ export default function ModalAI({ placement = 'bottom-right' }) {
   const [listDueDate, setListDueDate] = useState(todayStr);
   const [showListPriorityDropdown, setShowListPriorityDropdown] = useState(false);
   const listPriorityRef = useRef(null);
+  const dispatch = useDispatch();
 
  
 
@@ -97,10 +102,27 @@ export default function ModalAI({ placement = 'bottom-right' }) {
     return arr;
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (mode === 'single') {
-      const obj = buildSingleTask();
-      setGeneratedJson(JSON.stringify(obj, null, 2));
+      const body = {
+        taskTitle: taskTitle || '',
+        taskDescription: taskDescription || '',
+        priority: priority || '',
+        taskDueDate: taskDueDate || '',
+      };
+
+      setLoading(true);
+      try {
+        // use the title entered by the user as the API path (fallback to 'task')
+        const apiTitle = (taskTitle && String(taskTitle).trim()) || 'task';
+        const data = await postAiTaskAndDispatch({ title: apiTitle, payload: body, token: user?.token, dispatch });
+        setGeneratedJson(JSON.stringify(data, null, 2));
+        setHistory((h) => [...h, { from: 'ai', text: `AI response received (${Array.isArray(data) ? data.length : 1} items)` }]);
+      } catch (err) {
+        setHistory((h) => [...h, { from: 'ai', text: `AI request failed: ${err?.response?.data || err.message || 'Unknown error'}` }]);
+      } finally {
+        setLoading(false);
+      }
     } else {
       const arr = buildListTemplate();
       setGeneratedJson(JSON.stringify(arr, null, 2));
@@ -192,7 +214,7 @@ export default function ModalAI({ placement = 'bottom-right' }) {
                     </button>
                     <div style={{ flex: 1 }} />
                     <button className="modal-ai-clear" onClick={handleClear}>
-                      Clear preview
+                      Clear
                     </button>
                   </div>
 
@@ -201,7 +223,12 @@ export default function ModalAI({ placement = 'bottom-right' }) {
                       <label>Title</label>
                       <input placeholder="Enter task title" className="modal-ai-input" value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} />
                       <label>Description</label>
-                      <input placeholder="Enter task description" className="modal-ai-input" value={taskDescription} onChange={(e) => setTaskDescription(e.target.value)} />
+                      <textarea
+                        placeholder="Enter task description"
+                        className="modal-ai-textarea"
+                        value={taskDescription}
+                        onChange={(e) => setTaskDescription(e.target.value)}
+                      />
                       <div style={{ display: 'flex', gap: 8 }}>
                         <div style={{ flex: 1 }}>
                           <label>Priority</label>
@@ -277,7 +304,9 @@ export default function ModalAI({ placement = 'bottom-right' }) {
                   )}
 
                   <div style={{ display: 'flex', gap: 8, marginTop: 8, alignItems: 'center' }}>
-                    <button className="modal-ai-send" onClick={handleGenerate}>Generate Task</button>
+                    <button className="modal-ai-send" onClick={handleGenerate} disabled={loading}>
+                      {loading ? 'Loading Data...' : 'Generate Task'}
+                    </button>
                     <button className="modal-ai-send" onClick={handleCopy} disabled={!generatedJson}>Copy Task</button>
                     <div style={{ flex: 1 }} />
                     <div style={{ color: '#6b7280' }}>{generatedJson ? 'Preview task' : 'No tasks previewed'}</div>

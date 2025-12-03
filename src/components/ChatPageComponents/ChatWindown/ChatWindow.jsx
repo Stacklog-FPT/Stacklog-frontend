@@ -10,24 +10,13 @@ import smileIcon from "../../../assets/chatPageIcon/smile.png";
 import userApi from "../../../service/UserService";
 import "./ChatWindow.scss";
 import chatApi from "../../../service/ChatService";
-import { REACT_API_URL } from "../../../api/apiConfig";
+import { SOCKET_BASE_URL } from "../../../api/apiConfig";
 import { fetchUserById } from "../../../service/UserService";
 
-// derive socket endpoint from API base. Some servers mount socket.io at
-// the HTTP root (e.g. /socket.io) while the REST API is under /api.
-// If REACT_API_URL contains `/api`, strip it so the socket path becomes
-// ws://host[:port]/socket.io which matches the inspector URL.
-// Build SOCKET_URL using the API origin so we connect to
-// ws://<host>/api/chat/socket.io (matches server path)
-let apiOrigin = REACT_API_URL;
-try {
-  apiOrigin = new URL(REACT_API_URL).origin;
-} catch (e) {
-  // fallback: strip path, keep host
-  apiOrigin = REACT_API_URL.replace(/\/.*$/, "");
-}
-const socketScheme = apiOrigin.replace(/^https/, "wss");
-const SOCKET_URL = socketScheme + "/api/chat/socket.io";
+// Build socket URL
+// In dev: SOCKET_BASE_URL is '/api/' -> '/api/chat/socket.io' (Vite proxy)
+// In prod: SOCKET_BASE_URL is 'https://...' -> direct connection
+const SOCKET_URL = SOCKET_BASE_URL.replace(/\/$/, '') + '/chat/socket.io';
 
 const ChatWindow = () => {
   const { selectedBox, setSelectedBox, toggleFeatureChat, setBoxesVersion } =

@@ -23,6 +23,7 @@ import { getAllTask, updateTaskApi } from '../../../../service/TaskService';
 import { getStatus } from '../../../../service/ColumnService';
 import { isLeader } from '../../../../helper/validateStudentGroup';
 import decodeToken from '../../../../service/DecodeJwt';
+import ModalAI from '../../../ModalAI/ModalAI';
 
 const CheckTypeByList = () => {
   const { user } = useAuth();
@@ -161,6 +162,7 @@ const CheckTypeByList = () => {
   }, [groupId]);
 
   return (
+    <>
     <DndContext
       sensors={sensors}
       collisionDetection={closestCorners}
@@ -239,6 +241,9 @@ const CheckTypeByList = () => {
         ) : null}
       </DragOverlay>
     </DndContext>
+      {/* AI Assistant floating button + modal (bottom-right) */}
+      <ModalAI placement="bottom-right" />
+      </>
   );
 };
 

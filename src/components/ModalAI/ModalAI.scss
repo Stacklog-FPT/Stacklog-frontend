@@ -1,0 +1,219 @@
+.modal-ai-fab {
+  position: fixed;
+  z-index: 1400;
+}
+.modal-ai-bottom-right {
+  bottom: 22px;
+  right: 22px;
+}
+.modal-ai-fab-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: none;
+  background: #045745;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(4, 87, 69, 0.18);
+  cursor: pointer;
+}
+
+.modal-ai-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+  padding: 20px;
+}
+.modal-ai-box {
+  width: 100%;
+  max-width: 720px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.18);
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+}
+.modal-ai-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+.modal-ai-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #0f172a;
+}
+.modal-ai-actions button {
+  background: transparent;
+  border: none;
+  margin-left: 8px;
+  cursor: pointer;
+  color: #6b7280;
+}
+.modal-ai-body {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.modal-ai-tabs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.modal-ai-tab {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #374151;
+}
+.modal-ai-tab.active {
+  background: #045745;
+  color: #fff;
+  border-color: #045745;
+}
+.modal-ai-clear {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: transparent;
+  color: #374151;
+  cursor: pointer;
+  font-size: 14px;
+}
+.modal-ai-clear:hover {
+  background: #f8fafb;
+}
+.modal-ai-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #374151;
+}
+.modal-ai-priority-select { position: relative; }
+.modal-ai-priority-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+}
+.modal-ai-priority-dropdown {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(15,23,42,0.06);
+  padding: 8px;
+  z-index: 1600;
+  min-width: 180px;
+  z-index: 2400;
+}
+.modal-ai-priority-item {
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 6px;
+}
+.modal-ai-priority-item:hover { background: #f8fafb; }
+.modal-ai-priority-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.modal-ai-priority-high { background: #ef4444; }
+.modal-ai-priority-medium { background: #f59e0b; }
+.modal-ai-priority-low { background: #10b981; }
+.modal-ai-history {
+  max-height: 320px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.modal-ai-empty {
+  color: #6b7280;
+  font-size: 14px;
+}
+.modal-ai-msg {
+  padding: 8px 10px;
+  border-radius: 8px;
+  max-width: 90%;
+}
+.modal-ai-msg-user {
+  align-self: flex-end;
+  background: #e6ffef;
+  color: #044a3b;
+}
+.modal-ai-msg-ai {
+  align-self: flex-start;
+  background: #f3f4f6;
+  color: #0f172a;
+}
+.modal-ai-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.modal-ai-input {
+  flex: 1 1 auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+.modal-ai-send {
+  background: #045745;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.modal-ai-footer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 0 6px;
+}
+.modal-ai-btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 14px;
+}
+.modal-ai-btn-cancel {
+  background: transparent;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+.modal-ai-btn-confirm {
+  background: #045745;
+  color: #fff;
+  border-color: #045745;
+}
+
+@media (max-width: 640px) {
+  .modal-ai-box {
+    max-width: 100%;
+    height: 80vh;
+  }
+  .modal-ai-fab-btn {
+    width: 48px;
+    height: 48px;
+  }
+}

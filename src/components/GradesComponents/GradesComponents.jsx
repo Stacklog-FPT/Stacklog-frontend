@@ -126,11 +126,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
         status: typeof user.isActive === "boolean" ? user.isActive : true,
         average:
           typeof user.personal_score === "number" ? user.personal_score : 0,
-        avatar: user.avatar_link
-          ? user.avatar_link.startsWith("http")
-            ? user.avatar_link
-            : `${user.avatar_link}`
-          : "",
+        avatar: user.avatar_link,
       }));
 
       // Try to compute per-student average from score categories for the selected class so the list matches DetailScore

@@ -219,7 +219,7 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate, c
                     onClick={handleSave}
                     disabled={saving || modalScore === score}
                   >
-                    {saving ? 'Saving...' : 'Save'}
+                    {saving ? 'Confirm...' : 'Comfirm'}
                   </button>
                 </div>
               </div>

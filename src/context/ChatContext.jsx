@@ -13,7 +13,7 @@ try {
 } catch (e) {
   apiOrigin = REACT_API_URL.replace(/\/.*$/, "");
 }
-const socketScheme = apiOrigin.replace(/^http/, "ws");
+const socketScheme = apiOrigin.replace(/^https/, "wss");
 const SOCKET_URL = socketScheme + "/api/chat/socket.io";
 
 const ChatProvider = ({ children }) => {

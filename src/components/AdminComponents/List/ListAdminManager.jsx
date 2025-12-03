@@ -20,6 +20,7 @@ import FormExcel from "../FormExcel/FormExcel";
 import FormAddLecture from "../FormAddLecture/FormAddLecture";
 import FormSemester from "../FormAddLecture/Semester/FormSemester";
 import LoadingComponent from "../../Loading/LoadingComponent";
+import FormAddNewClass from "../FormAddNewClass/FormAddNewClass";
 
 const ListAdminManager = ({ role }) => {
   const { user } = useAuth();
@@ -45,11 +46,9 @@ const ListAdminManager = ({ role }) => {
     Lecture: lectures.users,
     Student: students.users,
   };
-  console.log("Data by role: ", dataByRole);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const currentData = dataByRole[role];
-  console.log("currentData: ", currentData);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const paginatedData = currentData.slice(indexOfFirstItem, indexOfLastItem);
@@ -180,6 +179,35 @@ const ListAdminManager = ({ role }) => {
 
     fetchData();
   }, [user.token]);
+
+  useEffect(() => {
+    if (role === "Class" && selectedSemester.semesterId && user?.token) {
+      getAllClasses(selectedSemester.semesterId, user.token, dispatch);
+    }
+  }, [selectedSemester.semesterId, role, user?.token, dispatch]);
+
+  // useEffect(() => {
+  //   if (
+  //     role === "Class" &&
+  //     semesters.length > 0 &&
+  //     !selectedSemester.semesterId
+  //   ) {
+  //     const latestSemester = semesters.reduce((latest, current) => {
+  //       if (current.semesterYear > latest.semesterYear) return current;
+  //       if (current.semesterYear < latest.semesterYear) return latest;
+
+  //       const order = { FA: 3, SP: 2, SU: 1 };
+  //       return (order[current.quarter] || 0) > (order[latest.quarter] || 0)
+  //         ? current
+  //         : latest;
+  //     }, semesters[0]);
+
+  //     setSelectedSemester({
+  //       semesterId: latestSemester.semesterId,
+  //       semesterName: latestSemester.semesterName,
+  //     });
+  //   }
+  // }, [role, semesters, selectedSemester.semesterId]);
   return (
     <>
       <LoadingComponent isLoading={pending} />
@@ -216,10 +244,10 @@ const ListAdminManager = ({ role }) => {
                   onChange={handleSemesterChange}
                   className="semester-select"
                 >
-                  <option value="">-- Select Semester --</option>
+                  <option>-- Select Semester --</option>
                   {semesters.map((sem) => (
                     <option key={sem.semesterId} value={sem.semesterId}>
-                      {sem.semesterName}
+                      {sem.semesterName} ({sem.semesterYear})
                     </option>
                   ))}
                 </select>
@@ -350,6 +378,14 @@ const ListAdminManager = ({ role }) => {
       </div>
       {addFormType === "Semester" && (
         <FormSemester onClose={() => setAddFormType(null)} />
+      )}
+
+      {addFormType === "Class" && (
+        <FormAddNewClass
+          onClose={() => setAddFormType(null)}
+          user={user}
+          lectures={dataByRole.Lecture}
+        />
       )}
 
       {(addFormType === "Lecture" || addFormType === "Student") && (

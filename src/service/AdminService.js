@@ -6,10 +6,10 @@ import {
   getLectures,
   getSemesters,
   getStudents,
-  resetClasses,
   setError,
   setPending,
   setAllAdminData,
+  resetClasses,
 } from "../redux/slice/userSilce";
 import { REACT_API_URL } from "../api/apiConfig";
 
@@ -23,14 +23,6 @@ export const getAllAdminDataOnce = async (token, dispatch) => {
       `${REACT_API_URL}class/semester/getall`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    const classPromises = (semesters || []).map((sem) =>
-      axios.get(`${REACT_API_URL}class/class/${sem.semesterId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-    );
-
-    const classResponses = await Promise.all(classPromises);
-    const allClasses = classResponses.flatMap((res) => res.data || []);
 
     const [lecturesRes, studentsRes] = await Promise.all([
       axios.get(`${REACT_API_URL}profile/user/role/LECTURER`, {
@@ -44,7 +36,6 @@ export const getAllAdminDataOnce = async (token, dispatch) => {
     dispatch(
       setAllAdminData({
         semesters: semesters || [],
-        classes: allClasses,
         lectures: lecturesRes.data || { users: [] },
         students: studentsRes.data || { users: [] },
       })
@@ -130,10 +121,9 @@ export const deleteSemesterService = async (semesterId, token, dispatch) => {
 
 export const getAllClasses = async (semesterId, token, dispatch) => {
   if (!semesterId) return;
-
   try {
     dispatch(setPending(true));
-    // dispatch(resetClasses());
+    dispatch(resetClasses());
     const response = await axios.get(
       `${REACT_API_URL}class/class/${semesterId}`,
       {
@@ -143,6 +133,7 @@ export const getAllClasses = async (semesterId, token, dispatch) => {
       }
     );
 
+    console.log("Service Response:", response);
     dispatch(getClasses(response.data));
   } catch (error) {
     dispatch(setError(error.message));
@@ -201,10 +192,23 @@ export const createNewClass = async (data, token, dispatch) => {
       dispatch(setError("Invalid token!"));
       throw new Error("Invalid token!");
     }
-
+    dispatch(setPending(true));
+    console.log("Service data: ", data);
     const response = await axios.post(
-      `${API_URL}class/class?semesterId=${data.semesterId}`
+      `${API_URL}class/class?semesterId=${data.semesterId}`,
+      {
+        classesName: data.className,
+        lectureId: data.lectureId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
+
+    console.log(response);
+    return response;
   } catch (e) {
     dispatch(setError(e.message));
     throw new Error(e.message);

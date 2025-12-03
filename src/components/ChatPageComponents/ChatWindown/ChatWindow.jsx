@@ -26,7 +26,7 @@ try {
   // fallback: strip path, keep host
   apiOrigin = REACT_API_URL.replace(/\/.*$/, "");
 }
-const socketScheme = apiOrigin.replace(/^https/, "wss");
+const socketScheme = apiOrigin.replace(/^http/, "ws");
 const SOCKET_URL = socketScheme + "/api/chat/socket.io";
 
 const ChatWindow = () => {

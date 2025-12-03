@@ -7,7 +7,6 @@ import { importByRole } from "../../../service/ExportImportService";
 import { useAuth } from "../../../context/AuthProvider";
 
 const FormExcel = ({ role, onClose }) => {
-  console.log("Role in form: ", role);
   const { user } = useAuth();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);

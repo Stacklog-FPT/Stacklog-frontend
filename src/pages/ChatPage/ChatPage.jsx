@@ -64,12 +64,13 @@ const ChatPage = () => {
     const ensureSelect = async () => {
       if (!boxId) return;
 
-      // try to find locally
+      // try to find locally first
       let raw = (boxes || []).find((b) => {
         const id = b._id || b.id || (b.boxChat && b.boxChat.boxChatId) || b.boxId;
         return String(id) === String(boxId);
       });
 
+      // Only fetch if box not found locally AND we have a token
       if (!raw && user?.token) {
         try {
           const fetched = await service.getBoxes(user.token, dispatch);
@@ -126,7 +127,7 @@ const ChatPage = () => {
     return () => {
       mounted = false;
     };
-  }, [boxId, boxes, user?.token]);
+  }, [boxId, user?.token]); // Removed 'boxes' dependency to prevent infinite loop
 
   return (
     <div className="main__chat__page">

@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setBoxes } from '../../../redux/slice/chatSlice';
 import avatar from "../../../assets/logo-login.png";
 import "./GroupChat.scss";
 import { ChatContext } from "../../../context/ChatContext";
@@ -16,6 +18,7 @@ const GroupChat = ({
 }) => {
   const { setSelectedBox } = useContext(ChatContext);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [groupChatDetails, setGroupChatDetails] = useState([]);
   const [localShowAddGroup, setLocalShowAddGroup] = useState(false);
   const showAddGroup =
@@ -165,6 +168,9 @@ const GroupChat = ({
         }
 
         if (mounted) {
+          // Update Redux store with fetched boxes
+          dispatch(setBoxes(mapped));
+          
           // For any box that doesn't have normalized messages, fetch its messages
           // and normalize them so the left-hand list can show the last message text.
           const boxesToFetch = mapped.filter(

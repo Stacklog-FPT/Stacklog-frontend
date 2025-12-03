@@ -46,7 +46,7 @@ const GroupChat = ({
   }
 
   // Load groups via REST API (getBoxes)
-  const { boxesVersion } = useContext(ChatContext) || {};
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const service = chatApi();
@@ -246,7 +246,7 @@ const GroupChat = ({
     return () => {
       mounted = false;
     };
-  }, [user?.token, currentUserId, boxesVersion]);
+  }, [user?.token, currentUserId, refreshTrigger]); // Only refresh when user changes or manual trigger
 
   // Xử lý chọn ảnh và preview
   const handleAvatarChange = (e) => {
@@ -326,11 +326,14 @@ const GroupChat = ({
 
       const saved = await service.createBox(user.token, payload);
 
-  setShowAddGroup(false);
-  setNewGroupName("");
-  setNewGroupAvatar(null);
-  setPreviewAvatar(null);
-  setMembersEmails([]);
+      setShowAddGroup(false);
+      setNewGroupName("");
+      setNewGroupAvatar(null);
+      setPreviewAvatar(null);
+      setMembersEmails([]);
+
+      // Trigger refresh to reload boxes from server
+      setRefreshTrigger(prev => prev + 1);
 
       // Normalize saved box to the same internal shape
       const savedMembers = Array.isArray(saved.memberIds)

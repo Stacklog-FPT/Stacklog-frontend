@@ -11,4 +11,15 @@ export default defineConfig({
       external: ['xlsx', 'file-saver'],
     },
   },
+  server: {
+    // Proxy /api requests in development to the real backend to avoid CORS.
+    proxy: {
+      '^/api/.*': {
+        target: 'https://stacklog.id.vn',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
+      },
+    },
+  },
 });

@@ -2,8 +2,9 @@ import axios from "axios";
 import usePostApi from "../hooks/usePost";
 import { useDispatch } from "react-redux";
 import { setUserInfo, updateUserInfo } from "../redux/slice/userSilce";
+import { REACT_API_URL } from "../api/apiConfig";
 
-const API_AUTH = "http://103.166.183.142:8080/api/";
+const API_AUTH = REACT_API_URL;
 
 export const fetchUserById = async (token, id) => {
   if (!token) throw new Error("Unauthorized: No token provided");

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import notificationSocket from "../service/NotificationSocketService";
-import { REACT_API_URL } from "../api/apiConfig";
+import { SOCKET_BASE_URL } from "../api/apiConfig";
 import { useAuth } from "./AuthProvider";
 import { useDispatch } from "react-redux";
 import { addNotifications } from "../redux/slice/notificationSlice";
@@ -16,18 +16,10 @@ export const NotificationProvider = ({ children }) => {
 
   useEffect(() => {
     if (!user || !user.token) return; // wait for auth
-    // build ws path for notification endpoint preserving any existing pathname (eg. `/api`)
-    let NOTIFI_URL = REACT_API_URL;
-    try {
-      const parsed = new URL(REACT_API_URL);
-      const scheme = parsed.protocol === 'https:' ? 'wss:' : 'ws:';
-      const host = parsed.host; // host:port if any
-      const prefix = parsed.pathname.replace(/\/$/, ''); // keep /api if present, remove trailing slash
-      NOTIFI_URL = `${scheme}//${host}${prefix}/notification/socket.io`;
-    } catch (e) {
-      // fallback: try to replace protocol
-      NOTIFI_URL = REACT_API_URL.replace(/^http/, 'ws').replace(/\/$/, '') + '/notification/socket.io';
-    }
+    // Build socket URL
+    // In dev: SOCKET_BASE_URL is '/api/' -> '/api/notification/socket.io' (Vite proxy)
+    // In prod: SOCKET_BASE_URL is 'https://...' -> direct connection
+    const NOTIFI_URL = SOCKET_BASE_URL.replace(/\/$/, '') + '/notification/socket.io';
 
     // derive userId for query: prefer explicit user._id, fall back to token decode
     const userId = (user && user._id) || decodeToken(user.token)?.id;

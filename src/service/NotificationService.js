@@ -6,7 +6,7 @@ import {
   addNotifications,
   deleteNotification,
 } from "../redux/slice/notificationSlice";
-const NOTIFI_API = "https://stacklog.io.vn/api/notification";
+const NOTIFI_API = "https://stacklog.id.vn/api/notification";
 import { REACT_API_URL } from "../api/apiConfig";
 
 export const getAllNotification = async (token, dispatch) => {

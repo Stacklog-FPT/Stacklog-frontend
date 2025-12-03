@@ -14,6 +14,7 @@ import TaskCompletionOverTime from "../../components/ComponentsOverallTask/TaskC
 import { getOverallTask } from "../../service/TaskService";
 import GroupAverage from "../../components/ComponentsOverallTask/GroupAverage";
 import { fetchUserById } from "../../service/UserService";
+import { REACT_API_URL } from "../../api/apiConfig";
 import "./OverallGroup.scss";
 
 export default function TaskDashboard() {
@@ -46,7 +47,7 @@ export default function TaskDashboard() {
         // fetch user profiles for userOverviews to get names & avatars
         if (data?.userOverviews && Array.isArray(data.userOverviews) && data.userOverviews.length > 0) {
           try {
-            const baseAuth = 'http://103.166.183.142:8080/api/';
+            const baseAuth = REACT_API_URL;
             const profiles = await Promise.all(
               data.userOverviews.map(async (u) => {
                 try {
@@ -103,7 +104,7 @@ export default function TaskDashboard() {
                 const avatarUrl = avatar_link
                   ? avatar_link.startsWith('http')
                     ? avatar_link
-                    : `http://103.166.183.142:8080/api/${avatar_link}`
+                    : `${REACT_API_URL}${avatar_link}`
                   : null;
                 map2[id] = {
                   full_name: p.full_name || p.fullName || p.fullname || p.name || id,

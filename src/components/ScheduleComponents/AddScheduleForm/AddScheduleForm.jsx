@@ -1,4 +1,5 @@
 import axios from "axios";
+import { REACT_API_URL } from "../../../api/apiConfig";
 import { useEffect, useState, useRef } from "react";
 import "./AddScheduleForm.scss";
 import { FaPlus, FaTrash } from "react-icons/fa";
@@ -137,7 +138,7 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
       try {
         const promises = ids.map((id) =>
           axios
-            .get(`http://103.166.183.142:8080/api/profile/user/${id}`, {
+            .get(`${REACT_API_URL}profile/user/${id}`, {
               headers: { Authorization: `Bearer ${user?.token}` },
             })
             .then((res) => res.data?.user ?? res.data)

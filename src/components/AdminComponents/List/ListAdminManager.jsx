@@ -394,6 +394,14 @@ const ListAdminManager = ({ role }) => {
           role={addFormType}
         />
       )}
+      {showAddExcel && (
+        <FormExcel
+          role={role}
+          onClose={() => {
+            setShowAddExcel(false);
+          }}
+        />
+      )}
     </>
   );
 };

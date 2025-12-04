@@ -13,6 +13,7 @@ import {
 } from "../redux/slice/userSilce";
 import { REACT_API_URL } from "../api/apiConfig";
 
+const API_URL = REACT_API_URL;
 export const getAllAdminDataOnce = async (token, dispatch) => {
   if (!token) return;
 
@@ -85,7 +86,8 @@ export const createNewSemester = async (data, token, dispatch) => {
       }
     );
 
-    dispatch(addSemeter(response.data));
+    console.log(response.data);
+    // dispatch(addSemeter(response.data));
     dispatch(setPending(false));
   } catch (e) {
     setError(e.message);

@@ -13,7 +13,7 @@ const FormAddNewClass = ({ lectures = [], user, onClose }) => {
     semesterId: "",
   });
 
-  console.log(lectures);
+  console.log("New class: ", newClass);
   const dispatch = useDispatch();
   const { semesters, pending } = useSelector((state) => state.users);
   const handleChange = (e) => {
@@ -21,10 +21,11 @@ const FormAddNewClass = ({ lectures = [], user, onClose }) => {
     setNewClass((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     console.log("Call me submit");
     if (
-      !newClass.classId.trim() ||
       !newClass.className.trim() ||
       !newClass.lectureId ||
       !newClass.semesterId
@@ -34,13 +35,12 @@ const FormAddNewClass = ({ lectures = [], user, onClose }) => {
     }
 
     const payload = {
-      classId: "",
       className: newClass.className,
       semesterId: newClass.semesterId,
       lectureId: newClass.lectureId,
     };
 
-    console.log(payload);
+    console.log("Payload send", payload);
     const response = await createNewClass(payload, user, dispatch);
 
     console.log(response);
@@ -121,7 +121,11 @@ const FormAddNewClass = ({ lectures = [], user, onClose }) => {
             <button type="button" className="btn-cancel" onClick={onClose}>
               Cancle
             </button>
-            <button type="submit" className="btn-add">
+            <button
+              type="submit"
+              className="btn-add"
+              onClick={(e) => e.stopPropagation()}
+            >
               <FaPlus />
               {pending ? "Adding...." : "Add"}
             </button>

@@ -20,7 +20,6 @@ const Row = ({
   closeAdd,
   isLoading = false,
 }) => {
-  console.log(data);
   const { user } = useAuth();
   const dispatch = useDispatch();
 

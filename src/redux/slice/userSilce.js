@@ -83,6 +83,7 @@ export const {
   setUserInfo,
   updateUserInfo,
   setAllAdminData,
+  addClass
 } = userSlice.actions;
 
 export default userSlice.reducer;

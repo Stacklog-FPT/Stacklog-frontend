@@ -383,7 +383,7 @@ const ListAdminManager = ({ role }) => {
       {addFormType === "Class" && (
         <FormAddNewClass
           onClose={() => setAddFormType(null)}
-          user={user}
+          user={user.token}
           lectures={dataByRole.Lecture}
         />
       )}

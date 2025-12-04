@@ -10,6 +10,7 @@ import {
   setPending,
   setAllAdminData,
   resetClasses,
+  addClass
 } from "../redux/slice/userSilce";
 import { REACT_API_URL } from "../api/apiConfig";
 
@@ -209,7 +210,12 @@ export const createNewClass = async (data, token, dispatch) => {
       }
     );
 
-    console.log(response);
+    if (response.data) {
+      dispatch(setPending(false));
+      console.log("Service response data: ", response.data);
+      // dispatch(addClass(response.data));
+    }
+
     return response;
   } catch (e) {
     dispatch(setError(e.message));

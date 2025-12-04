@@ -4,6 +4,7 @@ import './ModalAI.scss';
 import { postAiTaskAndDispatch } from '../../service/AiService';
 import { useDispatch } from 'react-redux';
 import { useAuth } from '../../context/AuthProvider';
+import ModalAITaskItem from './ModalAITaskItem';
 
 export default function ModalAI({ placement = 'bottom-right' }) {
   const { user } = useAuth();
@@ -34,6 +35,8 @@ export default function ModalAI({ placement = 'bottom-right' }) {
   // for list template
   const [listCount, setListCount] = useState(1);
   const [generatedJson, setGeneratedJson] = useState('');
+  const [generatedList, setGeneratedList] = useState([]);
+  const [selectedTaskIds, setSelectedTaskIds] = useState([]);
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -117,6 +120,31 @@ export default function ModalAI({ placement = 'bottom-right' }) {
         const apiTitle = (taskTitle && String(taskTitle).trim()) || 'task';
         const data = await postAiTaskAndDispatch({ title: apiTitle, payload: body, token: user?.token, dispatch });
         setGeneratedJson(JSON.stringify(data, null, 2));
+        // If the API returned an array or object that represents tasks,
+        // normalize and store it so the modal can render it with the item component.
+        if (Array.isArray(data) && data.length > 0) {
+          const normalized = data.map((it, idx) => ({
+            taskId: it.taskId || it.TaskId || `gen-${idx}`,
+            taskTitle: it.taskTitle || it.Title || it.title || '',
+            taskDescription: it.taskDescription || it.Description || it.description || '',
+            taskStartTime: it.taskStartTime || it.StartTime || it.startTime || '',
+            taskDueDate: it.taskDueDate || it.DueDate || it.dueDate || '',
+            priority: it.priority || it.Priority || '',
+            taskPoint: it.taskPoint || it.point || null,
+          }));
+          setGeneratedList(normalized);
+        } else if (data && typeof data === 'object') {
+          const it = data;
+          setGeneratedList([{
+            taskId: it.taskId || it.TaskId || 'gen-0',
+            taskTitle: it.taskTitle || it.Title || it.title || '',
+            taskDescription: it.taskDescription || it.Description || it.description || '',
+            taskStartTime: it.taskStartTime || it.StartTime || it.startTime || '',
+            taskDueDate: it.taskDueDate || it.DueDate || it.dueDate || '',
+            priority: it.priority || it.Priority || '',
+            taskPoint: it.taskPoint || it.point || null,
+          }]);
+        }
         setHistory((h) => [...h, { from: 'ai', text: `AI response received (${Array.isArray(data) ? data.length : 1} items)` }]);
       } catch (err) {
         setHistory((h) => [...h, { from: 'ai', text: `AI request failed: ${err?.response?.data || err.message || 'Unknown error'}` }]);
@@ -126,7 +154,27 @@ export default function ModalAI({ placement = 'bottom-right' }) {
     } else {
       const arr = buildListTemplate();
       setGeneratedJson(JSON.stringify(arr, null, 2));
+      const normalized = arr.map((it, idx) => ({
+        taskId: it.taskId || it.TaskId || `gen-${idx}`,
+        taskTitle: it.taskTitle || it.Title || it.title || '',
+        taskDescription: it.taskDescription || it.Description || it.description || '',
+        taskStartTime: it.taskStartTime || it.StartTime || it.startTime || '',
+        taskDueDate: it.taskDueDate || it.DueDate || it.dueDate || '',
+        priority: it.priority || it.Priority || '',
+        taskPoint: it.taskPoint || it.point || null,
+      }));
+      setGeneratedList(normalized);
     }
+  };
+
+  const onSelectTask = (task) => {
+    if (!task) return;
+    const id = task.taskId || task.TaskId || task.id || null;
+    if (!id) return;
+    setSelectedTaskIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      return [...prev, id];
+    });
   };
 
   const handleCopy = async () => {
@@ -171,6 +219,7 @@ export default function ModalAI({ placement = 'bottom-right' }) {
     setTaskStartTime(todayStr);
     setTaskDueDate(todayStr);
     setListCount(1);
+    setGeneratedList([]);
   };
 
   return (
@@ -299,7 +348,23 @@ export default function ModalAI({ placement = 'bottom-right' }) {
                         </div>
                       </div>
 
-                      {/* <div style={{ color: '#6b7280', marginTop: 6 }}>Generates an array of empty task templates. Start date will be set to today for all tasks.</div> */}
+                      <div style={{ marginTop: 12 }}>
+                        <div style={{ color: '#6b7280', marginBottom: 8 }}>Example task list (from built-in data):</div>
+                        <div className="modal-ai-task-list" style={{ maxHeight: 320, overflow: 'auto', paddingRight: 6 }}>
+                          {(generatedList && generatedList.length > 0 ? generatedList : tasks) && ( (generatedList && generatedList.length > 0) || (tasks && tasks.length > 0) ) ? (
+                            (generatedList && generatedList.length > 0 ? generatedList : tasks).map((t) => (
+                              <ModalAITaskItem
+                                key={t.taskId || t.TaskId || t.id || Math.random()}
+                                task={t}
+                                selected={selectedTaskIds.includes(t.taskId || t.TaskId || t.id)}
+                                onSelect={onSelectTask}
+                              />
+                            ))
+                          ) : (
+                            <div style={{ color: '#6b7280' }}>No tasks available</div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
 
@@ -313,7 +378,18 @@ export default function ModalAI({ placement = 'bottom-right' }) {
                   </div>
 
                   <div className="modal-ai-history">
-                    {generatedJson ? (
+                    {generatedList && generatedList.length > 0 ? (
+                      <div className="modal-ai-generated-list">
+                        {generatedList.map((t) => (
+                          <ModalAITaskItem
+                            key={t.taskId || t.TaskId || t.id || Math.random()}
+                            task={t}
+                            selected={selectedTaskIds.includes(t.taskId || t.TaskId || t.id)}
+                            onSelect={onSelectTask}
+                          />
+                        ))}
+                      </div>
+                    ) : generatedJson ? (
                       <pre style={{ background: '#f9fafb', padding: 10, borderRadius: 8, overflow: 'auto' }}>{generatedJson}</pre>
                     ) : (
                       history.length === 0 ? (

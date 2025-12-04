@@ -8,8 +8,13 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ["xlsx", "file-saver"],
-      makeAbsoluteExternalsRelative: false,
+      // Remove external declaration so xlsx and file-saver are bundled in production
+      output: {
+        manualChunks: {
+          // Optionally split xlsx into its own chunk for better caching
+          xlsx: ['xlsx'],
+        },
+      },
     },
   },
   server: {

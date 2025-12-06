@@ -18,7 +18,7 @@ import { fetchUserById } from "../../../service/UserService";
 // In prod: SOCKET_BASE_URL is 'https://...' -> direct connection
 const SOCKET_URL = SOCKET_BASE_URL.replace(/\/$/, '') + '/chat/socket.io';
 
-const ChatWindow = () => {
+const ChatWindow = ({ onBack, onShowInfo, showMobileNav }) => {
   const { selectedBox, setSelectedBox, toggleFeatureChat, setBoxesVersion } =
     useContext(ChatContext);
   const { user } = useAuth();
@@ -616,7 +616,12 @@ const ChatWindow = () => {
   return (
     <div className="chat__window">
       <div className="chat__page__container">
-        <div className="chat__heading">
+        <div className={`chat__heading ${showMobileNav && onBack ? 'has-back-btn' : ''}`}>
+          {showMobileNav && onBack && (
+            <button className="chat__back-btn" onClick={onBack}>
+              <i className="fa-solid fa-arrow-left"></i>
+            </button>
+          )}
           <div className="chat__heading__left">
             <img
               src={selectedBox?.boxChat?.avaBox || "/placeholder.svg"}
@@ -631,7 +636,7 @@ const ChatWindow = () => {
             <i className="fa-solid fa-video" onClick={() => startCall('video')} style={{ cursor: 'pointer' }}></i>
             <i
               className="fa-solid fa-circle-info"
-              onClick={toggleFeatureChat}
+              onClick={showMobileNav && onShowInfo ? onShowInfo : toggleFeatureChat}
             ></i>
           </div>
         </div>

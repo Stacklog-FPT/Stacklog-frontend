@@ -1,8 +1,9 @@
 import "./ChatPage.scss";
 import FeatureChat from "../../components/ChatPageComponents/FeatureChat/FeatureChat";
 import ChatWindow from "../../components/ChatPageComponents/ChatWindown/ChatWindow";
-import { useParams } from 'react-router-dom';
-import { useContext, useEffect } from 'react';
+import GroupComponent from "../../components/ChatPageComponents/GroupComponent/GroupComponent";
+import { useParams, useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import chatApi from '../../service/ChatService';
 import { ChatContext } from '../../context/ChatContext';
@@ -13,9 +14,11 @@ import { fetchUserById } from '../../service/UserService';
 const ChatPage = () => {
   const { boxId } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const boxes = useSelector((s) => s.chat?.boxes || []);
-  const { setSelectedBox } = useContext(ChatContext);
+  const { setSelectedBox, selectedBox } = useContext(ChatContext);
   const { user } = useAuth();
+  const [mobileView, setMobileView] = useState('chat'); // 'list' | 'chat' | 'info'
 
   // helper to normalize raw server box into UI shape (minimal)
   const normalize = (b) => {
@@ -57,6 +60,24 @@ const ChatPage = () => {
       boxType,
     };
   };
+
+  // Detect mobile view
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 1024) {
+        // On mobile, show list if no boxId, otherwise show chat
+        if (!boxId) {
+          setMobileView('list');
+        } else {
+          setMobileView('chat');
+        }
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [boxId]);
 
   useEffect(() => {
     let mounted = true;
@@ -129,10 +150,40 @@ const ChatPage = () => {
     };
   }, [boxId, user?.token]); // Removed 'boxes' dependency to prevent infinite loop
 
+  const handleBackToList = () => {
+    setMobileView('list');
+    navigate('/chatbox');
+  };
+
+  const handleShowInfo = () => {
+    setMobileView('info');
+  };
+
+  const handleBackToChat = () => {
+    setMobileView('chat');
+  };
+
   return (
     <div className="main__chat__page">
-      <ChatWindow />
-      <FeatureChat />
+      {/* Desktop: Show all, Mobile: Show based on mobileView */}
+      <div className={`chat-group-container ${mobileView === 'list' || window.innerWidth > 1024 ? 'show' : 'hide'}`}>
+        <GroupComponent />
+      </div>
+
+      <div className={`chat-window-container ${mobileView === 'chat' || window.innerWidth > 1024 ? 'show' : 'hide'}`}>
+        <ChatWindow 
+          onBack={handleBackToList} 
+          onShowInfo={handleShowInfo}
+          showMobileNav={window.innerWidth <= 1024 && boxId && mobileView === 'chat'}
+        />
+      </div>
+
+      <div className={`chat-feature-container ${mobileView === 'info' || window.innerWidth > 1024 ? 'show' : 'hide'}`}>
+        <FeatureChat 
+          onBack={handleBackToChat}
+          showMobileBack={window.innerWidth <= 1024 && mobileView === 'info'}
+        />
+      </div>
     </div>
   );
 };

@@ -8,7 +8,7 @@ $color-text-ov: #ffffff;
   align-items: start;
   justify-content: start;
   gap: 24px;
-  overflow-y: hidden;
+  overflow: auto;
   margin-top: 20px;
 
   &-overview {
@@ -19,7 +19,6 @@ $color-text-ov: #ffffff;
     border-top-left-radius: 16px;
     border-bottom-right-radius: 16px;
     padding: 8px 24px;
-    overflow-y: hidden;
     margin-bottom: 20px;
     h2 {
       text-align: center;

@@ -3,8 +3,9 @@ $color-background-white: #ffffff;
 $color-border-input: #e8e8e8;
 
 .profile-popup {
-  width: 1000px;
-  height: 580px;
+  max-width: 100%;
+  width: 100%;
+  min-height: 580px;
   display: flex;
   gap: 20px;
   align-items: stretch;
@@ -19,8 +20,9 @@ $color-border-input: #e8e8e8;
     align-items: center;
     justify-content: center;
     gap: 20px;
-    width: 400px;
-    height: 560px;
+    width: 100%;
+    max-width: 400px;
+    min-height: 560px;
     padding: 20px;
     border-radius: 15px;
 
@@ -91,8 +93,9 @@ $color-border-input: #e8e8e8;
     flex-direction: column;
     background-color: var(--bg--nav);
     color: var(--text-color);
-    width: 600px;
-    height: 560px;
+    width: 100%;
+    max-width: 600px;
+    min-height: 560px;
     padding: 20px;
     border-radius: 15px;
     gap: 20px;
@@ -198,6 +201,261 @@ $color-border-input: #e8e8e8;
     &:hover {
       background-color: var(--color--hover--button);
       transform: scaleY(1.1);
+    }
+  }
+
+  // Responsive breakpoints
+  @media (max-width: 1024px) {
+    max-width: 900px;
+    gap: 15px;
+    padding: 15px;
+
+    &-avatar {
+      max-width: 350px;
+      min-height: 500px;
+      padding: 15px;
+
+      img {
+        width: 120px;
+        height: 120px;
+      }
+
+      &-content {
+        h2 {
+          font-size: 24px;
+        }
+
+        p {
+          font-size: 14px;
+        }
+
+        button {
+          width: 180px;
+          padding: 10px 18px;
+          font-size: 14px;
+        }
+      }
+    }
+
+    &-information {
+      max-width: 550px;
+      min-height: 500px;
+      padding: 15px;
+
+      &-heading {
+        font-size: 18px;
+      }
+
+      &-container-content-element {
+        h4 {
+          font-size: 16px;
+        }
+
+        p {
+          font-size: 11px;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    max-width: 100%;
+    gap: 20px;
+    padding: 15px;
+
+    &-avatar {
+      max-width: 100%;
+      min-height: auto;
+      padding: 30px 20px;
+
+      img {
+        width: 100px;
+        height: 100px;
+      }
+
+      &-content {
+        h2 {
+          font-size: 22px;
+        }
+
+        p {
+          font-size: 13px;
+        }
+
+        button {
+          width: 160px;
+          padding: 10px 16px;
+          font-size: 13px;
+        }
+      }
+    }
+
+    &-information {
+      max-width: 100%;
+      min-height: auto;
+      padding: 20px;
+
+      &-heading {
+        font-size: 18px;
+      }
+
+      &-container-content {
+        gap: 12px;
+
+        &-element {
+          width: calc(50% - 6px);
+          padding: 12px;
+
+          h4 {
+            font-size: 15px;
+          }
+
+          p {
+            font-size: 11px;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    padding: 10px;
+    gap: 15px;
+
+    &-avatar {
+      padding: 25px 15px;
+      gap: 15px;
+
+      img {
+        width: 90px;
+        height: 90px;
+      }
+
+      &-content {
+        gap: 6px;
+
+        h2 {
+          font-size: 20px;
+        }
+
+        p {
+          font-size: 12px;
+        }
+
+        button {
+          width: 150px;
+          padding: 9px 14px;
+          font-size: 12px;
+        }
+      }
+    }
+
+    &-information {
+      padding: 15px;
+
+      &-heading {
+        font-size: 16px;
+      }
+
+      &-container-content {
+        gap: 10px;
+
+        &-element {
+          padding: 10px;
+
+          h4 {
+            font-size: 14px;
+          }
+
+          p {
+            font-size: 10px;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px;
+    gap: 12px;
+    border-radius: 10px;
+
+    &-avatar {
+      padding: 20px 10px;
+      gap: 12px;
+      border-radius: 10px;
+
+      img {
+        width: 80px;
+        height: 80px;
+        border-width: 2px;
+      }
+
+      &-content {
+        gap: 5px;
+
+        h2 {
+          font-size: 18px;
+        }
+
+        p {
+          font-size: 11px;
+        }
+
+        button {
+          width: 140px;
+          padding: 8px 12px;
+          font-size: 11px;
+          gap: 6px;
+
+          i {
+            font-size: 10px;
+          }
+        }
+      }
+
+      input {
+        width: 90px;
+        padding: 4px;
+        font-size: 14px;
+      }
+    }
+
+    &-information {
+      padding: 12px;
+      border-radius: 10px;
+
+      &-heading {
+        font-size: 15px;
+        padding-bottom: 8px;
+
+        h3 {
+          font-size: 15px;
+        }
+      }
+
+      &-container-content {
+        gap: 8px;
+
+        &-element {
+          width: 100%;
+          padding: 10px;
+
+          h4 {
+            font-size: 13px;
+          }
+
+          p {
+            font-size: 10px;
+          }
+        }
+      }
+    }
+
+    .btn__admin {
+      padding: 8px 15px;
+      font-size: 12px;
     }
   }
 }

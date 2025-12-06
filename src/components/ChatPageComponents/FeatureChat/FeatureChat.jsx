@@ -8,7 +8,7 @@ import chatApi from "../../../service/ChatService";
 import { jwtDecode } from "jwt-decode";
 import { fetchUserById } from "../../../service/UserService";
 
-const FeatureChat = () => {
+const FeatureChat = ({ onBack, showMobileBack }) => {
   const { selectedBox, setSelectedBox, isFeatureChatOpen, setBoxesVersion } =
     useContext(ChatContext);
   const { user } = useAuth();
@@ -505,6 +505,15 @@ const FeatureChat = () => {
         isFeatureChatOpen ? "visible" : ""
       }`}
     >
+      {showMobileBack && onBack && (
+        <div className="feature__header">
+          <button className="feature__back-btn" onClick={onBack}>
+            <i className="fa-solid fa-arrow-left"></i>
+          </button>
+          <h2>Chat Info</h2>
+        </div>
+      )}
+      
       <div className="feature__dropdown">
         <div
           className="feature__dropdown__heading"

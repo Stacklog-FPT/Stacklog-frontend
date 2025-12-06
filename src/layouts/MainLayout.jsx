@@ -10,7 +10,6 @@ import {
   GroupChatContext,
   GroupChatProvider,
 } from "../context/GroupChatContext";
-import GroupComponent from "../components/ChatPageComponents/GroupComponent/GroupComponent";
 import { SidebarContext } from "../context/SideBarContext";
 import { Toaster } from "sonner";
 import "../styles/main.scss";
@@ -30,19 +29,14 @@ const MainLayout = () => {
   // const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // setIsLoading(true);
-    // const timer = setTimeout(() => {
-    //   setIsLoading(false);
-    // }, 3000);
-
-    if (
-      location.pathname === "/chatbox" ||
-      location.pathname.startsWith("/chatbox")
-    ) {
-      setIsShowGroupChat(true);
-      setIsOpen(false);
-    } else {
+    // Keep sidebar open by default on desktop, let ChatPage handle its own layout
+    if (window.innerWidth > 1024) {
       setIsOpen(true);
+    } else {
+      // On mobile, close sidebar when navigating to chat
+      if (location.pathname.startsWith("/chatbox")) {
+        setIsOpen(false);
+      }
     }
 
     if (location.pathname === "/class") {
@@ -78,13 +72,10 @@ const MainLayout = () => {
       <div className="announcement-place">
         {isAnnouncementVisible && <Announcement />}
       </div>
-      {location.pathname.startsWith("/chatbox") && isShowGroupChat && (
-        <GroupComponent />
-      )}
       <main
         className={`main-content ${
           location.pathname === "/class-page" ? "no-scroll" : ""
-        }`}
+        } ${location.pathname.startsWith("/chat") ? "chat-page" : ""}`}
       >
         <InputSearch />
         <Toaster

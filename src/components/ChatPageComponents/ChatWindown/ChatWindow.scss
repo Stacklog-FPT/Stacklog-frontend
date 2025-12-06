@@ -2,15 +2,15 @@ $color-i: #045745;
 $color-border-input: #b5b5b5;
 
 .chat__page__container {
-  margin-top: 2px;
   display: flex;
   flex-direction: column;
-  width: 684px;
-  height: 650px;
-  margin-bottom: 25px;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
   background-color: #fff;
   border-radius: 20px;
   border: 1px solid #e8e8e8;
+  overflow: hidden;
 
   .chat__heading {
     width: 100%;
@@ -19,11 +19,47 @@ $color-border-input: #b5b5b5;
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid #e8e8e8;
+    position: relative;
+
+    .chat__back-btn {
+      position: absolute;
+      left: 15px;
+      top: 70%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 10;
+
+      i {
+        font-size: 20px;
+        color: $color-i;
+      }
+
+      &:hover {
+        background-color: #f0f0f0;
+      }
+
+      &:active {
+        transform: translateY(-50%) scale(0.95);
+      }
+    }
+
+    &.has-back-btn {
+      padding-left: 65px;
+    }
 
     &__left {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 20px;
       position: relative;
 
@@ -74,22 +110,26 @@ $color-border-input: #b5b5b5;
 
   .chat__content {
     width: 100%;
-    padding: 0 32px 32px 32px;
+    flex: 1 1 auto;
+    padding: 16px 32px;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    flex: 1 1 auto;
     min-height: 0;
   }
 
   .chat__footer {
-    position: relative; /* allow suggestion box to position relative to footer */
+    position: relative;
     width: 100%;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 15px 19px;
+    border-top: 1px solid #e8e8e8;
+    background-color: #fff;
 
     input[type="text"] {
       width: 650px;
@@ -580,5 +620,258 @@ $color-border-input: #b5b5b5;
   font-weight: 700;
   cursor: pointer;
 }
+.chat__window {
+  width: 100%;
+  padding: 15px;
+}
 
 .chat__call__retry:hover { opacity: 0.95; transform: translateY(-1px); }
+
+// Responsive breakpoints
+@media (max-width: 1280px) {
+  .chat__page__container {
+    max-width: 600px;
+    min-height: 600px;
+    border-radius: 18px;
+  }
+
+  .chat__message__avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .chat__message__content {
+    max-width: 380px;
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+
+  .chat__message__name {
+    font-size: 12px;
+  }
+
+  .chat__message__time {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .chat__page__container {
+    max-width: 100%;
+    min-height: 550px;
+  }
+
+  .chat__mention_suggestions {
+    max-width: 90%;
+    font-size: 13px;
+  }
+
+  .chat__message__content {
+    max-width: 340px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chat__page__container {
+    min-height: 500px;
+    border-radius: 15px;
+  }
+
+  .chat__message__row {
+    gap: 8px;
+  }
+
+  .chat__message__avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .chat__message__content {
+    max-width: 280px;
+    font-size: 11px;
+    padding: 8px 10px;
+    border-radius: 10px;
+  }
+
+  .chat__message__name {
+    font-size: 11px;
+  }
+
+  .chat__message__time {
+    font-size: 9px;
+  }
+
+  .chat__mention {
+    padding: 1px 5px;
+    font-size: 11px;
+  }
+
+  .chat__message__readers {
+    gap: 3px;
+  }
+
+  .chat__message__reader_avatar {
+    width: 18px;
+    height: 18px;
+  }
+
+  .msg-more-btn {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+
+  .msg-more-menu {
+    min-width: 100px;
+    padding: 4px;
+  }
+
+  .msg-more-menu button {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .chat__page__container {
+    min-height: 450px;
+    border-radius: 12px;
+  }
+
+  .chat__message__row {
+    gap: 6px;
+  }
+
+  .chat__message__avatar {
+    width: 26px;
+    height: 26px;
+  }
+
+  .chat__message__content {
+    max-width: 220px;
+    font-size: 10px;
+    padding: 7px 9px;
+  }
+
+  .chat__message__name {
+    font-size: 10px;
+  }
+
+  .chat__message__time {
+    font-size: 8px;
+  }
+
+  .chat__mention_suggestions {
+    max-width: 85%;
+    font-size: 11px;
+    padding: 6px;
+  }
+
+  .chat__mention_item {
+    padding: 6px;
+  }
+
+  .chat__mention_item img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .chat__call {
+    max-width: 240px;
+    padding: 10px;
+  }
+
+  .chat__call__title {
+    font-size: 14px;
+  }
+
+  .chat__call__sub {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat__page__container {
+    min-height: 400px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+
+  .chat__message__row {
+    gap: 5px;
+  }
+
+  .chat__message__avatar {
+    width: 24px;
+    height: 24px;
+  }
+
+  .chat__message__content {
+    max-width: 180px;
+    font-size: 9px;
+    padding: 6px 8px;
+    border-radius: 8px;
+  }
+
+  .chat__message__name {
+    font-size: 9px;
+  }
+
+  .chat__message__time {
+    font-size: 7px;
+  }
+
+  .chat__mention {
+    padding: 1px 4px;
+    font-size: 9px;
+    border-radius: 3px;
+  }
+
+  .chat__message__readers {
+    gap: 2px;
+  }
+
+  .chat__message__reader_avatar {
+    width: 16px;
+    height: 16px;
+  }
+
+  .msg-more-btn {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+
+  .msg-more-menu {
+    min-width: 90px;
+    padding: 3px;
+  }
+
+  .msg-more-menu button {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+
+  .chat__call {
+    max-width: 200px;
+    padding: 8px;
+  }
+
+  .chat__call__icon i {
+    font-size: 14px;
+  }
+
+  .chat__call__title {
+    font-size: 12px;
+  }
+
+  .chat__call__sub {
+    font-size: 10px;
+  }
+
+  .chat__call__retry {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+}

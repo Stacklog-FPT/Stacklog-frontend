@@ -22,7 +22,7 @@
       gap: 20px;
       padding: 20px 20px 0 25px;
       &__feature {
-        width: 50%;
+        width: 100%;
         display: flex;
         align-items: flex-start;
         justify-content: flex-start;
@@ -53,7 +53,7 @@
         }
       }
       &__icon {
-        width: 50%;
+        width: auto;
         display: flex;
         align-items: flex-end;
         justify-content: flex-end;
@@ -238,46 +238,51 @@
     }
 
     .student-list-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-      padding: 0 12px 8px 12px;
+      display: block;
       width: 100%;
+      padding: 0;
       box-sizing: border-box;
     }
 
     .student-class-list {
       width: 100%;
-      max-width: 720px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 8px 0;
+      max-width: 100%;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 20px;
+      row-gap: 16px;
+      padding: 12px 20px 20px 20px;
       box-sizing: border-box;
     }
 
     .student-class-item {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 10px;
       align-items: flex-start;
+      width: 100%;
+      box-sizing: border-box;
     }
+    
     .student-class-item--combined {
-      width: 70%;
+      width: 100%;
+      box-sizing: border-box;
     }
     .student-class-name {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text-color);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      padding-left: 4px;
     }
 
     .student-groups {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      gap: 10px;
+      width: 100%;
     }
 
     .student-group-button {
@@ -285,9 +290,9 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 4px;
-      padding: 14px 16px;
-      border-radius: 8px;
-      border: 1px solid rgba(15, 23, 42, 0.06);
+      padding: 16px 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
       background: #fff;
       color: #0f172a;
       font-weight: 600;
@@ -295,9 +300,9 @@
       cursor: pointer;
       transition: transform 140ms ease, box-shadow 140ms ease,
         background-color 140ms ease, color 140ms ease;
-      box-shadow: 0 6px 14px rgba(2, 6, 23, 0.04);
+      box-shadow: 0 4px 12px rgba(2, 6, 23, 0.05);
       width: 100%;
-      min-height: 64px;
+      min-height: 72px;
       min-width: 0;
       box-sizing: border-box;
       word-break: break-word;
@@ -577,6 +582,18 @@
     .grades__component .grades__component__table__list tbody td {
       padding: 18px 10px 0 12px;
     }
+    .student-class-list {
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 16px;
+      row-gap: 14px;
+      padding: 12px 16px 20px 16px;
+    }
+    .student-groups {
+      gap: 8px;
+    }
+    .student-class-item {
+      gap: 8px;
+    }
   }
 
   @media (max-width: 768px) {
@@ -606,6 +623,16 @@
       min-width: 48px;
       padding: 4px 10px;
       font-size: 12px;
+    }
+    
+    .student-class-list {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 12px 14px 18px 14px;
+    }
+    
+    .student-groups {
+      gap: 8px;
     }
   }
 
@@ -642,6 +669,34 @@
     .grades__component .modal__actions button {
       padding: 10px 12px;
       font-size: 13px;
+    }
+    
+    .student-class-list {
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 10px 12px;
+    }
+    
+    .student-groups {
+      gap: 8px;
+    }
+    
+    .student-group-button {
+      min-height: 64px;
+      padding: 14px 16px;
+    }
+    
+    .student-group-button__main {
+      font-size: 14px;
+    }
+    
+    .student-group-button__desc {
+      font-size: 12px;
+    }
+    
+    .student-class-name {
+      font-size: 14px;
+      margin-bottom: 5px;
     }
   }
 }

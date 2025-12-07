@@ -295,14 +295,14 @@ export default function ModalAI({ placement = "bottom-right" }) {
                     >
                       Single task
                     </button>
-                    <button
+                    {/* <button
                       className={`modal-ai-tab ${
                         mode === "list" ? "active" : ""
                       }`}
                       onClick={() => setMode("list")}
                     >
                       Task list template
-                    </button>
+                    </button> */}
                     <div style={{ flex: 1 }} />
                     <button className="modal-ai-clear" onClick={handleClear}>
                       Clear

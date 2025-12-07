@@ -62,7 +62,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
 
   // pagination for student-class list (when role === STUDENT)
   const [studentPage, setStudentPage] = React.useState(1);
-  const classesPerPage = 6; // adjust as desired
+  const classesPerPage = 10; // adjust as desired
 
   const itemsPerPage = 5;
   const totalPages = Math.ceil(students.length / itemsPerPage);

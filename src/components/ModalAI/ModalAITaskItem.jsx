@@ -59,7 +59,7 @@ export default function ModalAITaskItem({ task, selected = false, onSelect }) {
               else if (p === 'critical') cls = 'priority-critical';
               else cls = 'priority-default';
               return (
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div className="modal-ai-task-meta-inner">
                   <div className={`modal-ai-priority ${cls}`}>{priority || '—'}</div>
                   <div className="modal-ai-points">{taskPoint ? `${taskPoint} pts` : ''}</div>
                 </div>
@@ -72,7 +72,7 @@ export default function ModalAITaskItem({ task, selected = false, onSelect }) {
         </div>
 
         <div className="modal-ai-task-footer">
-          <span className="modal-ai-badge">{id}</span>
+          {/* <span className="modal-ai-badge">{id}</span> */}
           <div className="modal-ai-dates">Start: {taskStartTime || '-'} &nbsp; Due: {taskDueDate || '-'}</div>
         </div>
       </div>

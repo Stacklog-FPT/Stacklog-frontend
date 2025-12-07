@@ -5,6 +5,7 @@ $color-border: #c8cad4;
 $color-hover: #045745;
 
 .navbar-container {
+  overflow: auto;
   display: flex;
   flex-direction: column;
   width: 300px;

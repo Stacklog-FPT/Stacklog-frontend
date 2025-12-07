@@ -68,7 +68,7 @@
   /* keep the overall body static and let the history area handle scrolling
      to avoid double vertical scrollbars (outer + inner) */
   flex: 1 1 auto;
-  overflow: hidden;
+  overflow: auto;
 }
 .modal-ai-tabs {
   display: flex;
@@ -154,29 +154,52 @@
   flex-direction: column;
   gap: 8px;
 }
+/* generated tasks list container */
 .modal-ai-generated-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 6px 2px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  padding: 8px;
+  background: transparent;
+}
+
+/* responsive: two columns for larger screens */
+@media (min-width: 880px) {
+  .modal-ai-generated-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+/* Make generated list occupy more of the modal's vertical space */
+.modal-ai-generated-list {
+  /* allow the generated list to grow inside the history area */
+  flex: 1 1 auto;
+  max-height: 56vh;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+@media (max-width: 640px) {
+  .modal-ai-generated-list { max-height: 42vh; }
 }
 
 .modal-ai-task-item {
   display: flex;
   gap: 12px;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 14px;
+  border-radius: 12px;
   background: #ffffff;
-  box-shadow: 0 1px 2px rgba(2,6,23,0.04);
+  border: 1px solid rgba(15,23,42,0.04);
+  box-shadow: 0 4px 12px rgba(2,6,23,0.04);
   align-items: flex-start;
   cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.12s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
 }
-.modal-ai-task-item:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(2,6,23,0.06); }
-.modal-ai-task-item.selected { border: 1px solid #045745; background: #f7fffb; }
-.modal-ai-task-left { display: flex; align-items: center; }
+.modal-ai-task-item:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(2,6,23,0.06); }
+.modal-ai-task-item.selected { border-color: #10b981; background: #f0ffef; box-shadow: 0 6px 20px rgba(16,185,129,0.06); }
+.modal-ai-task-left { display: flex; align-items: flex-start; }
 .modal-ai-task-select input {
-  /* keep the native radio interactive but visually hidden so clicks and keyboard work */
+  /* keep the native checkbox interactive but visually hidden so clicks and keyboard work */
   position: absolute;
   opacity: 0;
   width: 18px;
@@ -184,12 +207,27 @@
   margin: 0;
   cursor: pointer;
 }
-.modal-ai-checkbox-fake { width: 18px; height: 18px; border-radius: 4px; border: 2px solid #cbd5e1; display: inline-block; box-sizing: border-box; }
-.modal-ai-task-item.selected .modal-ai-checkbox-fake { background: #045745; border-color: #045745; }
+.modal-ai-checkbox-fake {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 2px solid #e6e9ef;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background: #fff;
+  color: transparent;
+  font-size: 12px;
+  line-height: 1;
+}
+.modal-ai-task-item.selected .modal-ai-checkbox-fake { background: #10b981; border-color: #10b981; color: #ffffff; }
+.modal-ai-task-item.selected .modal-ai-checkbox-fake::after { content: '✓'; font-weight: 700; }
 .modal-ai-task-main { flex: 1; display: flex; flex-direction: column; }
-.modal-ai-task-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.modal-ai-task-title { font-weight: 700; color: #0f172a; }
+.modal-ai-task-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.modal-ai-task-title { font-weight: 700; color: #0f172a; font-size: 15px; }
 .modal-ai-task-meta { display: flex; gap: 8px; align-items: center; }
+.modal-ai-task-meta-inner { display: flex; gap: 8px; align-items: center; }
 .modal-ai-priority { font-size: 12px; color: #374151; background: #f3f4f6; padding: 4px 8px; border-radius: 8px; }
 .modal-ai-priority.priority-default { background: #f3f4f6; color: #374151; }
 .modal-ai-priority.priority-high { background: #fff1f2; color: #b91c1c; border: 1px solid rgba(185,28,28,0.08); }
@@ -212,11 +250,25 @@
 .modal-ai-priority.priority-critical::before { background: #7f1d1d; }
 .modal-ai-priority.priority-medium::before { background: #f59e0b; }
 .modal-ai-priority.priority-low::before { background: #10b981; }
-.modal-ai-points { font-size: 12px; color: #6b7280; }
-.modal-ai-task-desc { color: #374151; margin-top: 8px; font-size: 13px; }
-.modal-ai-task-footer { display: flex; justify-content: space-between; margin-top: 10px; align-items: center; gap: 12px; }
+.modal-ai-points { font-size: 12px; color: #374151; font-weight: 600; }
+.modal-ai-task-desc {
+  color: #374151;
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  /* standard hint for newer user agents */
+  line-clamp: 3;
+}
+.modal-ai-task-footer { display: flex; justify-content: space-between; margin-top: 12px; align-items: center; gap: 12px; }
 .modal-ai-badge { font-size: 12px; color: #6b7280; background: #f3f4f6; padding: 4px 8px; border-radius: 8px; }
 .modal-ai-dates { font-size: 12px; color: #6b7280; }
+
+/* example task list inside the "Task list template" tab */
+.modal-ai-task-list { max-height: 32vh; overflow: auto; padding-right: 6px; }
 
 .modal-ai-empty {
   color: #6b7280;
@@ -287,7 +339,8 @@
      its content within that scrollable area instead of forcing its own
      independent overflow (which produced nested scrollbars). */
   flex: none;
-  min-height: 220px;
+  min-height: 160px;
+  max-height: 56vh;
   background: #f9fafb;
   padding: 12px;
   border-radius: 8px;

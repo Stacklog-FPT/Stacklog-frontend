@@ -4,20 +4,28 @@ $color-primary: #045745;
 .layout {
   display: flex;
   min-height: 100vh;
+  height: 100vh;
   position: relative;
+  overflow: hidden;
 
   .main-content {
     flex: 1;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
     transition: margin-left 0.3s ease;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     max-height: 100vh;
     background-color: var(--bg-color);
+    padding: 20px;
+    
+    &.chat-page {
+      padding: 0;
+    }
+    
     .main-content-area {
-      margin-top: 20px;
-      // min-height: calc(100% - 20px);
-      overflow: inherit;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
   }
 }

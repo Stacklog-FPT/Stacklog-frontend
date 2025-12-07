@@ -35,6 +35,8 @@ export default function ModalAI({ placement = "bottom-right" }) {
   // for list template
   const [listCount, setListCount] = useState(1);
   const [generatedJson, setGeneratedJson] = useState("");
+  const [generatedList, setGeneratedList] = useState([]);
+  const [selectedTaskIds, setSelectedTaskIds] = useState([]);
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -130,6 +132,28 @@ export default function ModalAI({ placement = "bottom-right" }) {
         });
         console.log("Generate response: ", data);
         setGeneratedJson(JSON.stringify(data, null, 2));
+        // normalize response into generatedList so UI renders cards instead of raw JSON
+        try {
+          const normalize = (it, idx) => ({
+            taskId: it.taskId || it.TaskId || it.id || `gen-${idx}`,
+            taskTitle: it.taskTitle || it.Title || it.title || "",
+            taskDescription:
+              it.taskDescription || it.Description || it.description || "",
+            taskStartTime:
+              it.taskStartTime || it.StartTime || it.startTime || "",
+            taskDueDate: it.taskDueDate || it.DueDate || it.dueDate || "",
+            priority: it.priority || it.Priority || "",
+            taskPoint: it.taskPoint || it.point || null,
+          });
+          let normalized = [];
+          if (Array.isArray(data)) normalized = data.map((it, i) => normalize(it, i));
+          else if (data && typeof data === "object") normalized = [normalize(data, 0)];
+          setGeneratedList(normalized);
+          setSelectedTaskIds([]);
+        } catch (e) {
+          // if normalization fails, keep generatedList empty and keep JSON for debugging
+          setGeneratedList([]);
+        }
         setHistory((h) => [
           ...h,
           {
@@ -248,7 +272,7 @@ export default function ModalAI({ placement = "bottom-right" }) {
         ? createPortal(
             <div className="modal-ai-overlay" role="dialog" aria-modal="true">
               <div className="modal-ai-box">
-                <div className="modal-ai-header">
+                {/* <div className="modal-ai-header">
                   <h4>AI Agents</h4>
                   <div className="modal-ai-actions">
                     <button
@@ -259,7 +283,7 @@ export default function ModalAI({ placement = "bottom-right" }) {
                       ✕
                     </button>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="modal-ai-body">
                   <div className="modal-ai-tabs">
@@ -467,14 +491,7 @@ export default function ModalAI({ placement = "bottom-right" }) {
                         <div style={{ color: "#6b7280", marginBottom: 8 }}>
                           Example task list (from built-in data):
                         </div>
-                        <div
-                          className="modal-ai-task-list"
-                          style={{
-                            maxHeight: 320,
-                            overflow: "auto",
-                            paddingRight: 6,
-                          }}
-                        >
+                        <div className="modal-ai-task-list">
                           {(generatedList && generatedList.length > 0
                             ? generatedList
                             : tasks) &&
@@ -534,7 +551,18 @@ export default function ModalAI({ placement = "bottom-right" }) {
                   </div>
 
                   <div className="modal-ai-history">
-                    {generatedJson ? (
+                    {generatedList && generatedList.length > 0 ? (
+                      <div className="modal-ai-generated-list">
+                        {generatedList.map((t) => (
+                          <ModalAITaskItem
+                            key={t.taskId || t.TaskId || t.id || Math.random()}
+                            task={t}
+                            selected={selectedTaskIds.includes(t.taskId || t.TaskId || t.id)}
+                            onSelect={onSelectTask}
+                          />
+                        ))}
+                      </div>
+                    ) : generatedJson ? (
                       <pre
                         style={{
                           background: "#f9fafb",

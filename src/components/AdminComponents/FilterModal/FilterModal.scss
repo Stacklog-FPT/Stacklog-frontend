@@ -1,0 +1,134 @@
+.filter-modal {
+  position: absolute;
+  width: 340px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(4, 87, 69, 0.18);
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+  z-index: 1000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  animation: slideDown 0.25s ease-out;
+
+  &__header {
+    background: linear-gradient(135deg, #045745, #057a55);
+    color: white;
+    padding: 18px 24px;
+    font-size: 17px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  &__body {
+    padding: 20px 24px;
+    max-height: 70vh;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #045745;
+      border-radius: 10px;
+    }
+  }
+
+  .filter-group__options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .filter-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14.5px;
+
+    &:hover {
+      background: #f0fdf4;
+      transform: translateX(4px);
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #045745;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    span {
+      color: #1f2937;
+      user-select: none;
+    }
+  }
+
+  .no-filter-text {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+  }
+
+  &__footer {
+    padding: 16px 24px;
+    background: #f8fff9;
+    border-top: 1px solid #dcfce7;
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn-cancel {
+    flex: 1;
+    padding: 12px;
+    background: white;
+    color: #045745;
+    border: 2px solid #045745;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #f0fdf4;
+      transform: translateY(-2px);
+    }
+  }
+
+  .btn-apply {
+    flex: 1;
+    padding: 12px;
+    background: linear-gradient(135deg, #045745, #057a55);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(4, 87, 69, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: linear-gradient(135deg, #034235, #046645);
+      transform: translateY(-3px);
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

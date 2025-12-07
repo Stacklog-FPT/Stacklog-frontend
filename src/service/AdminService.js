@@ -10,7 +10,7 @@ import {
   setPending,
   setAllAdminData,
   resetClasses,
-  addClass
+  addClass,
 } from "../redux/slice/userSilce";
 import { REACT_API_URL } from "../api/apiConfig";
 
@@ -87,7 +87,6 @@ export const createNewSemester = async (data, token, dispatch) => {
       }
     );
 
-    console.log(response.data);
     // dispatch(addSemeter(response.data));
     dispatch(setPending(false));
   } catch (e) {

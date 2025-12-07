@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { role } from "react";
 import "./ListAdminManager.scss";
 import {
   getAllAdminDataOnce,
   getAllClasses,
-  getAllLecture,
-  getAllSemester,
-  getAllStudent,
 } from "../../../service/AdminService";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,79 +19,186 @@ import FormAddLecture from "../FormAddLecture/FormAddLecture";
 import FormSemester from "../FormAddLecture/Semester/FormSemester";
 import LoadingComponent from "../../Loading/LoadingComponent";
 import FormAddNewClass from "../FormAddNewClass/FormAddNewClass";
+import FilterModal from "../FilterModal/FilterModal";
 
 const ListAdminManager = ({ role }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
+
   const [addFormType, setAddFormType] = useState(null);
   const [showAddExcel, setShowAddExcel] = useState(false);
   const { semesters, classes, lectures, pending, students } = useSelector(
     (state) => state.users
   );
+
   const [showUi, setShowUi] = useState({
     row1: "",
     row2: "",
     row3: "",
     row4: "Action",
   });
+
   const [selectedSemester, setSelectedSemester] = useState({
     semesterId: "",
     semesterName: "",
   });
+  const [isShowFilter, setIsShowFilter] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState([]);
+  const [filterOptions, setFilterOptions] = useState([]);
+
+  const filterRef = useRef(null);
+
   const dataByRole = {
     Semester: semesters,
     Class: classes,
-    Lecture: lectures.users,
-    Student: students.users,
+    Lecture: lectures.users || [],
+    Student: students.users || [],
   };
+
+  useEffect(() => {
+    let options = [];
+
+    switch (role) {
+      case "Semester":
+        options = [
+          { id: "cur", label: "Current Year (2025)", value: "current-year" },
+          { id: "asc", label: "Asc by year", value: "asc-year" },
+          { id: "desc", label: "Desc by year", value: "desc-year" },
+          { id: "fa", label: "Fall semester (FA)", value: "FA" },
+          { id: "su", label: "Summer semester(SU)", value: "SU" },
+          { id: "sp", label: "Spring semester(SP)", value: "SP" },
+        ];
+        break;
+
+      case "Lecture":
+        options = [
+          { id: "az", label: "Sort Name A to Z", value: "az" },
+          { id: "za", label: "Sort Name Z to A", value: "za" },
+        ];
+        break;
+
+      case "Student":
+        options = [
+          { id: "az", label: "Sort Name A to Z", value: "az" },
+          { id: "za", label: "Sort Name Z to A", value: "za" },
+          {
+            id: "work-asc",
+            label: "Sort Work ID Ascending",
+            value: "work-asc",
+          },
+          {
+            id: "work-desc",
+            label: "Sort Work ID Descending",
+            value: "work-desc",
+          },
+        ];
+        break;
+
+      case "Class":
+        options = [
+          { id: "has-lec", label: "Have lecture", value: "has-lecture" },
+          { id: "no-lec", label: "Don't have lecture", value: "no-lecture" },
+        ];
+        break;
+
+      default:
+        options = [];
+    }
+
+    setFilterOptions(options);
+    setSelectedFilters([]);
+  }, [role]);
+
+  // useEffect(() => {
+  //   if (role === "Semester") {
+  //     setFilterOptions([
+  //       { id: "cur", label: "Current year", value: "current-year" },
+  //       {
+  //         id: "asc",
+  //         label: "Arrange the years in ascending order",
+  //         value: "asc-year",
+  //       },
+  //       {
+  //         id: "desc",
+  //         label: "Arrange the years in descending order",
+  //         value: "desc-year",
+  //       },
+  //       { id: "fa", label: "Fall semester (FA)", value: "FA" },
+  //       { id: "su", label: "Summer semester (SU)", value: "SU" },
+  //       { id: "sp", label: "Spring semester (SP)", value: "SP" },
+  //     ]);
+  //   } else {
+  //     setFilterOptions([]);
+  //     setSelectedFilters([]);
+  //   }
+  // }, [role]);
+
+  const getFilteredData = () => {
+    let data = [...(dataByRole[role] || [])];
+    console.log(data);
+    if (selectedFilters.length === 0) return data;
+
+    switch (role) {
+      // === SEMESTER ===
+      case "Semester":
+        if (selectedFilters.includes("current-year"))
+          data = data.filter((s) => s.semesterYear === 2025);
+        if (selectedFilters.includes("FA"))
+          data = data.filter((s) => s.quarter === "FA");
+        if (selectedFilters.includes("SU"))
+          data = data.filter((s) => s.quarter === "SU");
+        if (selectedFilters.includes("SP"))
+          data = data.filter((s) => s.quarter === "SP");
+        if (selectedFilters.includes("asc-year"))
+          data.sort((a, b) => (a.semesterYear || 0) - (b.semesterYear || 0));
+        if (selectedFilters.includes("desc-year"))
+          data.sort((a, b) => (b.semesterYear || 0) - (a.semesterYear || 0));
+        break;
+
+      // === LECTURE & STUDENT:
+      case "Lecture":
+      case "Student":
+        if (selectedFilters.includes("az")) {
+          data.sort((a, b) =>
+            (a.full_name || "").localeCompare(b.full_name || "")
+          );
+        }
+        if (selectedFilters.includes("za")) {
+          data.sort((a, b) =>
+            (b.full_name || "").localeCompare(a.full_name || "")
+          );
+        }
+        break;
+
+      // === CLASS ===
+      case "Class":
+        if (selectedFilters.includes("has-lecture"))
+          data = data.filter((c) => c.lectureId);
+        if (selectedFilters.includes("no-lecture"))
+          data = data.filter((c) => !c.lectureId);
+        break;
+    }
+
+    return data;
+  };
+  const displayData = getFilteredData();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  const currentData = dataByRole[role];
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const paginatedData = currentData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(currentData.length / itemsPerPage);
+  const paginatedData = displayData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(displayData.length / itemsPerPage);
+
   const [exporting, setExporting] = useState(false);
   const isClassWithoutSemester =
     role === "Class" && !selectedSemester.semesterId;
 
-  const showUIByRole = () => {
-    switch (role) {
-      case "Semester":
-        setShowUi({
-          row1: "Semester",
-          row2: "Start Date",
-          row3: "End Date",
-          row4: "Action",
-        });
-        break;
-      case "Class":
-        setShowUi({
-          row1: "Class Name",
-          row2: "Semester",
-          row3: "Lecture",
-          row4: "Action",
-        });
-        break;
-      case "Lecture":
-        setShowUi({
-          row1: "Lecture",
-          row2: "Email",
-          row3: "Status",
-          row4: "Action",
-        });
-        break;
-      case "Student":
-        setShowUi({
-          row1: "Student",
-          row2: "Email",
-          row3: "Course",
-          row4: "Action",
-        });
-        break;
-      default:
-        setShowUi({ row1: "", row2: "", row3: "", row4: "Action" });
-    }
+  const handleFilterChange = (value) => {
+    setSelectedFilters((prev) =>
+      prev.includes(value) ? prev.filter((f) => f !== value) : [...prev, value]
+    );
+
+    setCurrentPage(1);
   };
 
   const handleSemesterChange = (e) => {
@@ -102,7 +207,6 @@ const ListAdminManager = ({ role }) => {
       setSelectedSemester({ semesterId: "", semesterName: "" });
       return;
     }
-
     const selected = semesters.find((sem) => sem.semesterId === id);
     setSelectedSemester({
       semesterId: selected.semesterId || "",
@@ -141,44 +245,32 @@ const ListAdminManager = ({ role }) => {
     return pages;
   };
 
-  const showAddClose = () => {
-    setShowAddForm(false);
-  };
-
   const handleExportByRole = async () => {
     if (exporting) return;
     setExporting(true);
-
     const roleForLecture = role === "Lecture" ? "lecturer" : role;
     try {
       const result = await exportByRole(
         roleForLecture.toUpperCase(),
         user.token
       );
-
       downloadFile(
         result.data,
         `${role.toLowerCase()}_export.xlsx`,
         result.contentType,
         result.headers
       );
-
-      toast.success(`Downloaded ${result.filename} successfully! `);
+      toast.success(`Downloaded ${result.filename} successfully!`);
     } catch (e) {
-      toast.error("Something went wrong! ");
+      toast.error("Something went wrong!");
     } finally {
       setExporting(false);
     }
-    await exportByRole(role.toUpperCase(), user.token);
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      await getAllAdminDataOnce(user.token, dispatch);
-    };
-
-    fetchData();
-  }, [user.token]);
+    getAllAdminDataOnce(user.token, dispatch);
+  }, [user.token, dispatch]);
 
   useEffect(() => {
     if (role === "Class" && selectedSemester.semesterId && user?.token) {
@@ -186,28 +278,6 @@ const ListAdminManager = ({ role }) => {
     }
   }, [selectedSemester.semesterId, role, user?.token, dispatch]);
 
-  // useEffect(() => {
-  //   if (
-  //     role === "Class" &&
-  //     semesters.length > 0 &&
-  //     !selectedSemester.semesterId
-  //   ) {
-  //     const latestSemester = semesters.reduce((latest, current) => {
-  //       if (current.semesterYear > latest.semesterYear) return current;
-  //       if (current.semesterYear < latest.semesterYear) return latest;
-
-  //       const order = { FA: 3, SP: 2, SU: 1 };
-  //       return (order[current.quarter] || 0) > (order[latest.quarter] || 0)
-  //         ? current
-  //         : latest;
-  //     }, semesters[0]);
-
-  //     setSelectedSemester({
-  //       semesterId: latestSemester.semesterId,
-  //       semesterName: latestSemester.semesterName,
-  //     });
-  //   }
-  // }, [role, semesters, selectedSemester.semesterId]);
   return (
     <>
       <LoadingComponent isLoading={pending} />
@@ -223,16 +293,8 @@ const ListAdminManager = ({ role }) => {
                     — {selectedSemester.semesterName}
                   </span>
                 )}
-                {role === "Student" && (
-                  <span>
-                    <span> </span>K{students.users[0].work_id.slice(2, 4)}
-                    {role === "Class" && selectedSemester.semesterName && (
-                      <span className="subtitle">
-                        {" "}
-                        — {selectedSemester.semesterName}
-                      </span>
-                    )}
-                  </span>
+                {role === "Student" && students.users[0]?.work_id && (
+                  <span> K{students.users[0].work_id.slice(2, 4)}</span>
                 )}
               </h2>
             </div>
@@ -252,33 +314,66 @@ const ListAdminManager = ({ role }) => {
                   ))}
                 </select>
               )}
-              <i className="fa-solid fa-filter"></i>
+              <div style={{ position: "relative", display: "inline-block" }}>
+                <i
+                  className="fa-solid fa-filter"
+                  ref={filterRef}
+                  onClick={() => setIsShowFilter(!isShowFilter)}
+                  style={{
+                    cursor: "pointer",
+                    fontSize: "18px",
+                    color: selectedFilters.length > 0 ? "#045745" : "#666",
+                  }}
+                ></i>
+                {selectedFilters.length > 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: -8,
+                      right: -8,
+                      background: "#045745",
+                      color: "white",
+                      borderRadius: "50%",
+                      width: "18px",
+                      height: "18px",
+                      fontSize: "11px",
+                      display: "grid",
+                      placeItems: "center",
+                    }}
+                  >
+                    {selectedFilters.length}
+                  </span>
+                )}
+              </div>
+
               <i
                 className="fa-solid fa-plus"
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", marginLeft: "12px" }}
                 onClick={() => setAddFormType(role)}
               ></i>
+
               {["Lecture", "Student"].includes(role) && (
-                <button
-                  className="export-btn"
-                  onClick={handleExportByRole}
-                  title="Export to Excel"
-                >
-                  <BiExport size={20} />
-                </button>
-              )}
-              {["Lecture", "Student"].includes(role) && (
-                <button
-                  className="export-btn"
-                  onClick={() => setShowAddExcel(true)}
-                  title="Import to Excel"
-                >
-                  <CgImport size={20} />
-                </button>
+                <>
+                  <button
+                    className="export-btn"
+                    onClick={handleExportByRole}
+                    title="Export to Excel"
+                  >
+                    <BiExport size={20} />
+                  </button>
+                  <button
+                    className="export-btn"
+                    onClick={() => setShowAddExcel(true)}
+                    title="Import to Excel"
+                  >
+                    <CgImport size={20} />
+                  </button>
+                </>
               )}
             </div>
           </div>
 
+          {/* BẢNG DỮ LIỆU */}
           <div className="list__semester__table">
             <table>
               <thead>
@@ -307,7 +402,7 @@ const ListAdminManager = ({ role }) => {
                   </tr>
                 ) : paginatedData.length > 0 ? (
                   paginatedData.map((item) => (
-                    <tr key={item._id}>
+                    <tr key={item._id || item.semesterId}>
                       <td>
                         <input type="checkbox" />
                       </td>
@@ -316,7 +411,7 @@ const ListAdminManager = ({ role }) => {
                         data={item}
                         semesterName={selectedSemester.semesterName}
                         lectures={lectures}
-                        closeAdd={showAddClose}
+                        closeAdd={() => {}}
                       />
                     </tr>
                   ))
@@ -330,6 +425,7 @@ const ListAdminManager = ({ role }) => {
               </tbody>
             </table>
 
+            {/* PHÂN TRANG */}
             {totalPages > 1 && !pending && !isClassWithoutSemester && (
               <div className="modern-pagination">
                 <button
@@ -376,10 +472,11 @@ const ListAdminManager = ({ role }) => {
           </div>
         </div>
       </div>
+
+      {/* CÁC FORM */}
       {addFormType === "Semester" && (
         <FormSemester onClose={() => setAddFormType(null)} />
       )}
-
       {addFormType === "Class" && (
         <FormAddNewClass
           onClose={() => setAddFormType(null)}
@@ -387,7 +484,6 @@ const ListAdminManager = ({ role }) => {
           lectures={dataByRole.Lecture}
         />
       )}
-
       {(addFormType === "Lecture" || addFormType === "Student") && (
         <FormAddLecture
           onClose={() => setAddFormType(null)}
@@ -395,11 +491,18 @@ const ListAdminManager = ({ role }) => {
         />
       )}
       {showAddExcel && (
-        <FormExcel
+        <FormExcel role={role} onClose={() => setShowAddExcel(false)} />
+      )}
+
+      {isShowFilter && filterOptions.length > 0 && (
+        <FilterModal
+          isOpen={isShowFilter}
+          onClose={() => setIsShowFilter(false)}
+          anchorRef={filterRef}
+          filters={filterOptions}
           role={role}
-          onClose={() => {
-            setShowAddExcel(false);
-          }}
+          selectedFilters={selectedFilters}
+          onFilterChange={handleFilterChange}
         />
       )}
     </>

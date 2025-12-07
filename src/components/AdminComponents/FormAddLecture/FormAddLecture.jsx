@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import "./FormAddLecture.scss";
 import LectureService from "../../../service/LectureStudentService";
 import { useAuth } from "../../../context/AuthProvider";
-
 const FormAddLecture = ({ role, onClose }) => {
-  // const { createUser } = LectureService();
+  const { createUser } = LectureService();
+
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     full_name: "",
@@ -30,13 +30,14 @@ const FormAddLecture = ({ role, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const roleForSend = role === "Lecture" ? "LECTURER" : role;
       const payload = {
         full_name: formData.full_name,
         work_id: formData.work_id,
         email: formData.email,
         avatar_link: formData.avatar_link,
         description: formData.description,
-        role: formData.role,
+        role: roleForSend,
       };
       const response = await createUser(user.token, payload);
 
@@ -54,7 +55,7 @@ const FormAddLecture = ({ role, onClose }) => {
       <div className="add-user-popup">
         <h2>Add {role}</h2>
         <form onSubmit={handleSubmit}>
-          <select
+          {/* <select
             name="role"
             value={formData.role}
             onChange={handleChange}
@@ -62,7 +63,7 @@ const FormAddLecture = ({ role, onClose }) => {
           >
             <option value="LECTURER">Lecturer</option>
             <option value="STUDENT">Student</option>
-          </select>
+          </select> */}
           <input
             type="text"
             name="full_name"
@@ -75,7 +76,7 @@ const FormAddLecture = ({ role, onClose }) => {
             type="text"
             name="work_id"
             placeholder={
-              formData.role === "STUDENT" ? "Student ID" : "Lecture ID"
+              formData.role === "Student" ? "Student ID" : "Lecture ID"
             }
             value={formData.work_id}
             onChange={handleChange}

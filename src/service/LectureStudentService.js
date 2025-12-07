@@ -5,7 +5,7 @@ const LectureService = () => {
   const createUser = async (token, payload) => {
     try {
       if (!token) throw new Error("Token is missing!");
-      const response = await axios.post(`${LECTURER_API}`, payload, {
+      const response = await axios.post(`${LECTURER_API}/save`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -98,6 +98,26 @@ const ListAdminManager = ({ role }) => {
         options = [
           { id: "has-lec", label: "Have lecture", value: "has-lecture" },
           { id: "no-lec", label: "Don't have lecture", value: "no-lecture" },
+          {
+            id: "class-az",
+            label: "Sort Class Name A to Z",
+            value: "class-az",
+          },
+          {
+            id: "class-za",
+            label: "Sort Class Name Z to A",
+            value: "class-za",
+          },
+          {
+            id: "newest",
+            label: "Created Date – Newest First",
+            value: "created-newest",
+          },
+          {
+            id: "oldest",
+            label: "Created Date – Oldest First",
+            value: "created-oldest",
+          },
         ];
         break;
 
@@ -108,30 +128,6 @@ const ListAdminManager = ({ role }) => {
     setFilterOptions(options);
     setSelectedFilters([]);
   }, [role]);
-
-  // useEffect(() => {
-  //   if (role === "Semester") {
-  //     setFilterOptions([
-  //       { id: "cur", label: "Current year", value: "current-year" },
-  //       {
-  //         id: "asc",
-  //         label: "Arrange the years in ascending order",
-  //         value: "asc-year",
-  //       },
-  //       {
-  //         id: "desc",
-  //         label: "Arrange the years in descending order",
-  //         value: "desc-year",
-  //       },
-  //       { id: "fa", label: "Fall semester (FA)", value: "FA" },
-  //       { id: "su", label: "Summer semester (SU)", value: "SU" },
-  //       { id: "sp", label: "Spring semester (SP)", value: "SP" },
-  //     ]);
-  //   } else {
-  //     setFilterOptions([]);
-  //     setSelectedFilters([]);
-  //   }
-  // }, [role]);
 
   const getFilteredData = () => {
     let data = [...(dataByRole[role] || [])];
@@ -176,6 +172,26 @@ const ListAdminManager = ({ role }) => {
           data = data.filter((c) => c.lectureId);
         if (selectedFilters.includes("no-lecture"))
           data = data.filter((c) => !c.lectureId);
+        if (selectedFilters.includes("class-az")) {
+          data.sort((a, b) =>
+            (a.classesName || a.className || "").localeCompare(
+              b.classesName || b.className || ""
+            )
+          );
+        }
+        if (selectedFilters.includes("class-za")) {
+          data.sort((a, b) =>
+            (b.classesName || b.className || "").localeCompare(
+              a.classesName || a.className || ""
+            )
+          );
+        }
+        if (selectedFilters.includes("created-newest")) {
+          data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+        if (selectedFilters.includes("created-oldest")) {
+          data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        }
         break;
     }
 

@@ -8,10 +8,10 @@ const FormAddLecture = ({ role, onClose }) => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     full_name: "",
-    work_id: "",
     email: "",
     avatar_link: "",
     description: "",
+    work_id: "",
     role: role,
   });
 
@@ -33,10 +33,10 @@ const FormAddLecture = ({ role, onClose }) => {
       const roleForSend = role === "Lecture" ? "LECTURER" : role;
       const payload = {
         full_name: formData.full_name,
-        work_id: formData.work_id,
         email: formData.email,
         avatar_link: formData.avatar_link,
         description: formData.description,
+        work_id: formData.work_id,
         role: roleForSend,
       };
       const response = await createUser(user.token, payload);

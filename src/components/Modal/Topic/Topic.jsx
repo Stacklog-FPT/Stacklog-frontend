@@ -323,9 +323,10 @@ const PlanComponent = () => {
         allowEdit: false,
         approvedBy: userId,
         approvedAt: new Date().toISOString(),
-        rejectReason: null,
+        rejectReason: rejectReason && rejectReason.trim() ? rejectReason.trim() : null,
       };
       await updatePlanApi(payload, token, dispatch);
+      setRejectReason("");
       setModal({ open: false, topic: null });
     } catch {
       setLocalError("Failed to approve topic");
@@ -544,7 +545,7 @@ const PlanComponent = () => {
               <th>Members</th>
               <th>Topic</th>
               <th>Status</th>
-              <th>Reject reason</th>
+              <th>Note</th>
               <th>Details</th>
             </tr>
           </thead>
@@ -598,7 +599,9 @@ const PlanComponent = () => {
                     <StatusBadge status={item.status} />
                   </td>
                   <td className="sl-cell-muted">
-                    {item.status === "Rejected" ? item.rejectReason : "—"}
+                    {(item.status === "Rejected" || item.status === "Accepted") && item.rejectReason 
+                      ? item.rejectReason 
+                      : "—"}
                   </td>
                   <td>
                     <button

@@ -143,7 +143,8 @@ const DetailTopicForm = ({
 
   const canGrantEdit = role === "LECTURER" && status === "Accepted";
 
-  const canEdit = false;
+  const isLeader = false; // DetailTopicForm is for lecturer view, students don't have edit rights here
+  const canEdit = false; // Students cannot edit from this form
 
   const handleGrant = () => {
     if (!onUpdate) return;
@@ -155,7 +156,12 @@ const DetailTopicForm = ({
   const handleApprove = () => {
     if (!onApprove) return;
 
-  setLocalTopic((t) => ({ ...t, status: "Accepted", allowEdit: false }));
+    setLocalTopic((t) => ({ 
+      ...t, 
+      status: "Accepted", 
+      allowEdit: false,
+      rejectReason: rejectReason && rejectReason.trim() ? rejectReason.trim() : t.rejectReason
+    }));
     onApprove(topic.topicId);
   };
 
@@ -379,9 +385,9 @@ const DetailTopicForm = ({
             )}
           </div>
 
-          {topic.status === "Rejected" && (
+          {(topic.status === "Rejected" || topic.status === "Accepted") && topic.rejectReason && (
             <div style={{ gridColumn: "1 / -1" }}>
-              <div className="sl-label">Reject reason</div>
+              <div className="sl-label">{topic.status === "Rejected" ? "Reject reason" : "Approval note"}</div>
               <div className="sl-preline">{topic.rejectReason}</div>
             </div>
           )}
@@ -422,7 +428,7 @@ const DetailTopicForm = ({
             <input
               type="text"
               className="sl-input sl-input--inline"
-              placeholder="Enter reject reason…"
+              placeholder="Enter reason…"
               value={rejectReason}
               onChange={(e) =>
                 setRejectReason && setRejectReason(e.target.value)

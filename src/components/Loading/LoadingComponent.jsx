@@ -1,20 +1,31 @@
-import React from "react";
-import { ClipLoader, BarLoader, SyncLoader } from "react-spinners";
 import "./LoadingComponent.scss";
+import mainLogo from "../../assets/main-logo.png";
 
-const LoadingComponent = ({ isLoading, message = "Loading..." }) => {
+const LoadingComponent = ({
+  isLoading,
+  message = "Đang chuẩn bị bảng công việc...",
+  subMessage = "Chờ xíu nha",
+}) => {
   if (!isLoading) return null;
 
   return (
-    <div className="loading-overlay">
-      <div className="loading-content">
-        <SyncLoader
-          color="#045745"
-          size={15}
-          speedMultiplier={0.8}
-          margin={8}
-        />
-        <p className="loading-text">{message}</p>
+    <div className="global-loading">
+      <div className="loading-card">
+        <div className="logo-bounce">
+          <img src={mainLogo} alt="Logo" className="app-logo" />
+        </div>
+
+        <div className="dots-wave">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        {/* <div className="loading-text">
+          <p className="main">{message}</p>
+          <p className="sub">{subMessage}</p>
+        </div> */}
       </div>
     </div>
   );

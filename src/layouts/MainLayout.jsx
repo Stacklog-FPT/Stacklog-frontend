@@ -17,6 +17,8 @@ import { useAuth } from "../context/AuthProvider";
 import SideBarAdmin from "../components/SideBar/SideBarAdmin/SideBarAdmin";
 import ComposeMail from "../components/MailCompose/ComposeMail";
 import { FaEnvelope } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import LoadingComponent from "../components/Loading/LoadingComponent";
 
 const MainLayout = () => {
   const { user } = useAuth();
@@ -26,10 +28,20 @@ const MainLayout = () => {
   const { isShowGroupChat, setIsShowGroupChat } = useContext(GroupChatContext);
   const location = useLocation();
   const [composeOpen, setComposeOpen] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
+  const isAnyPending = useSelector((state) => {
+    return (
+      state.semester.pending,
+      state.class.pending,
+      state.document.pending,
+      state.group.pending,
+      state.schedule.pending,
+      state.status.pending,
+      state.task.pending
+    );
+  });
 
+  console.log("Pending in layout: ", isAnyPending);
   useEffect(() => {
-    // Keep sidebar open by default on desktop, let ChatPage handle its own layout
     if (window.innerWidth > 1024) {
       setIsOpen(true);
     } else {
@@ -56,83 +68,76 @@ const MainLayout = () => {
   }, [mode]);
 
   return (
-    <div className="layout">
-      {/* {isLoading && (
-        <div className={`spinner-overlay ${isLoading ? "open" : ""}`}>
-          <ClockLoader
-            color={mode === "light" ? "#045745" : "#ffffff"}
-            loading={isLoading}
-            size={200}
-            aria-label="Loading Spinner"
-            data-testid="loader"
-          />
+    <>
+      <LoadingComponent isLoading={isAnyPending} />
+      <div className="layout">
+        <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+        <div className="announcement-place">
+          {isAnnouncementVisible && <Announcement />}
         </div>
-      )} */}
-      <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
-      <div className="announcement-place">
-        {isAnnouncementVisible && <Announcement />}
-      </div>
-      <main
-        className={`main-content ${
-          location.pathname === "/class-page" ? "no-scroll" : ""
-        } ${location.pathname.startsWith("/chat") ? "chat-page" : ""}`}
-      >
-        <InputSearch />
-        <Toaster
-          position="bottom-right"
-          richColors
-          duration={4000}
-          closeButton
-        />
-        <Outlet
-          className={`main-content-area ${mode === "light" ? "light" : "dark"}`}
-        />
-      </main>
-      {/* Compose FAB only on Notification page */}
-      {(location.pathname === "/notification" ||
-        location.pathname.startsWith("/notification")) &&
-        !composeOpen &&
-        user &&
-        (user.role || "").toString().toUpperCase() === "LECTURER" && (
-          <>
-            <button
-              aria-label="Compose mail"
-              onClick={() => setComposeOpen(true)}
-              style={{
-                position: "fixed",
-                right: 24,
-                bottom: 24,
-                zIndex: 1200,
-                width: 56,
-                height: 56,
-                borderRadius: "50%",
-                background: "#045745",
-                color: "#fff",
-                border: "none",
-                boxShadow: "0 6px 12px rgba(0,0,0,0.18)",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <FaEnvelope size={20} />
-            </button>
-          </>
-        )}
+        <main
+          className={`main-content ${
+            location.pathname === "/class-page" ? "no-scroll" : ""
+          } ${location.pathname.startsWith("/chat") ? "chat-page" : ""}`}
+        >
+          <InputSearch />
+          <Toaster
+            position="bottom-right"
+            richColors
+            duration={4000}
+            closeButton
+          />
+          <Outlet
+            className={`main-content-area ${
+              mode === "light" ? "light" : "dark"
+            }`}
+          />
+        </main>
 
-      {/* Always mount ComposeMail when needed (so it can control its open state) */}
-      <ComposeMail
-        open={composeOpen}
-        onClose={() => setComposeOpen(false)}
-        onSend={async (payload) => {
-          console.log("ComposeMail onSend payload", payload);
-          await new Promise((r) => setTimeout(r, 600));
-          setComposeOpen(false);
-          alert("Message sent (demo)");
-        }}
-      />
-    </div>
+        {(location.pathname === "/notification" ||
+          location.pathname.startsWith("/notification")) &&
+          !composeOpen &&
+          user &&
+          (user.role || "").toString().toUpperCase() === "LECTURER" && (
+            <>
+              <button
+                aria-label="Compose mail"
+                onClick={() => setComposeOpen(true)}
+                style={{
+                  position: "fixed",
+                  right: 24,
+                  bottom: 24,
+                  zIndex: 1200,
+                  width: 56,
+                  height: 56,
+                  borderRadius: "50%",
+                  background: "#045745",
+                  color: "#fff",
+                  border: "none",
+                  boxShadow: "0 6px 12px rgba(0,0,0,0.18)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <FaEnvelope size={20} />
+              </button>
+            </>
+          )}
+
+        <ComposeMail
+          open={composeOpen}
+          onClose={() => setComposeOpen(false)}
+          onSend={async (payload) => {
+            console.log("ComposeMail onSend payload", payload);
+            await new Promise((r) => setTimeout(r, 600));
+            setComposeOpen(false);
+            alert("Message sent (demo)");
+          }}
+        />
+      </div>
+    </>
   );
 };
 

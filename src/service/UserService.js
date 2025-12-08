@@ -1,7 +1,11 @@
 import axios from "axios";
 import usePostApi from "../hooks/usePost";
 import { useDispatch } from "react-redux";
-import { setUserInfo, updateUserInfo } from "../redux/slice/userSilce";
+import {
+  setUserInfo,
+  updateUserInfo,
+  setPending,
+} from "../redux/slice/userSilce";
 import { REACT_API_URL } from "../api/apiConfig";
 
 const API_AUTH = REACT_API_URL;
@@ -24,6 +28,7 @@ export const updateUserProfile = async (token, userId, data, dispatch) => {
     if (!token) throw new Error("Unauthorized: No token provided");
     if (!userId) throw new Error("Invalid user ID");
 
+    dispatch(setPending(true));
     let avatarUrl = data.avatar_link;
     if (data.avatar_link && typeof data.avatar_link !== "string") {
       const file = data.avatar_link;
@@ -60,6 +65,7 @@ export const updateUserProfile = async (token, userId, data, dispatch) => {
     );
 
     dispatch(updateUserInfo(response.data));
+    dispatch(setPending(true));
     return response;
   } catch (error) {
     console.error("Update profile error:", error);

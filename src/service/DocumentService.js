@@ -20,7 +20,7 @@ export const uploadDocument = async (data, token, dispatch) => {
     if (!token) return dispatch(setError("Token is missing!"));
     if (!data.file) return dispatch(setError("File is required!"));
     const user = decodedToken(token);
-    dispatch(setPending());
+    dispatch(setPending(true));
 
     const formData = new FormData();
     formData.append("file", data.file);
@@ -60,6 +60,7 @@ export const uploadDocument = async (data, token, dispatch) => {
     }
 
     dispatch(addDocument(backendRes.data));
+    dispatch(setPending(false));
     return backendRes;
   } catch (e) {
     console.error("Something went wrong when upload:", e);
@@ -72,7 +73,7 @@ export const uploadDocumentByGroup = async (data, token, dispatch) => {
     if (!token) return dispatch(setError("Token is missing!"));
     const user = decodedToken(token);
 
-    dispatch(setPending());
+    dispatch(setPending(true));
     const backendRes = await axios.post(`${DOCUMENT_API}/save`, data, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -82,6 +83,7 @@ export const uploadDocumentByGroup = async (data, token, dispatch) => {
     }
 
     dispatch(addDocument(backendRes.data));
+    dispatch(setPending(false));
     return backendRes;
   } catch (e) {
     dispatch(setError(e.message));
@@ -103,6 +105,7 @@ export const getDocumentById = async (groupId, token, dispatch) => {
     });
 
     dispatch(setDocuments(res.data || []));
+    dispatch(setPending(false));
     return res;
   } catch (e) {
     dispatch(setError(e.message));
@@ -125,6 +128,7 @@ export const getDocumentByUserId = async (token, dispatch) => {
       (doc) => doc.createdBy === userId
     );
     dispatch(setDocumentPerson(documentThatPerson));
+    dispatch(setPending(false));
     return documentThatPerson;
   } catch (e) {
     console.error("Something went wrong: ", e.message);
@@ -144,7 +148,7 @@ export const deleteDocumentApi = async (documentId, token, dispatch) => {
     });
 
     dispatch(deleteDocument(documentId));
-
+    dispatch(setPending(false));
     return res;
   } catch (e) {
     dispatch(setError(e.message));
@@ -154,7 +158,7 @@ export const deleteDocumentApi = async (documentId, token, dispatch) => {
 export const updateDocument = async (data, token, dispatch) => {
   try {
     if (!token) return dispatch(setError("The token is missing!"));
-
+    dispatch(setPending(true));
     const res = await axios.post(`${DOCUMENT_API}/save`, data, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -168,6 +172,7 @@ export const updateDocument = async (data, token, dispatch) => {
     dispatch(setDocuments(documentsArray));
     dispatch(updateDocumentRedux(res.data));
     dispatch(updateDocumentPersonRedux(res.data));
+    dispatch(setPending(true));
     return res;
   } catch (e) {
     dispatch(setError(e.message));

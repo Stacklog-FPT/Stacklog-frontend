@@ -248,7 +248,7 @@ export default function Calendar({ groupId, isPage }) {
   return (
     <div className="calendar-wrapper">
       <Toaster position="bottom-right" richColors closeButton />
-      {pending && <div className="loading-overlay">Waiting for minutes...</div>}
+      {/* {pending && <div className="loading-overlay">Waiting for minutes...</div>} */}
       <DndProvider backend={HTML5Backend}>
         <DragAndDropCalendar
           localizer={localizer}

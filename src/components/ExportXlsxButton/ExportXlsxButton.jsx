@@ -18,6 +18,7 @@ const ExportXlsxButton = ({
       }
       return;
     }
+    ư;
 
     try {
       const rows = transform ? data.map(transform) : data;

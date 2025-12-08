@@ -186,7 +186,7 @@ const Row = ({
             <button className="btn-delete" title="Delete">
               <FaTrash />
             </button>
-            <ExportXlsxButton />
+            <ExportXlsxButton data={data} />
           </td>
         </>
       );

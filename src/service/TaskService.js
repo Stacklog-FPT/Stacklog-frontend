@@ -66,14 +66,15 @@ export const addTask = async (taskData, token, dispatch) => {
     throw new Error("Unauthorized!");
   }
   try {
+    dispatch(setPending(true));
     const response = await axios.post(`${API_TASK}/save`, taskData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
-    console.log(response);
     dispatch(addTasks(response.data));
+    dispatch(setPending(false));
     return response;
   } catch (e) {
     dispatch(setError(err.message));
@@ -106,7 +107,11 @@ export const deleteTaskApi = async (token, taskId, dispatch) => {
 export const updateTaskApi = async (taskData, token, dispatch) => {
   try {
     console.log("Call me: ", taskData);
-    if (!token) dispatch(setError("The token is missing!"));
+    if (!token) {
+      dispatch(setError("The token is missing!"));
+      return;
+    }
+    dispatch(setPending(true));
     const response = await axios.post(`${API_TASK}/save`, taskData, {
       //Change taskId before mockup with BE
       headers: {
@@ -126,7 +131,12 @@ export const updateTaskApi = async (taskData, token, dispatch) => {
 
 export const createSubtaskApi = async (taskData, token, dispatch) => {
   try {
-    if (!token) dispatch(setError("The token is missing!"));
+    if (!token) {
+      dispatch(setError("The token is missing!"));
+      return;
+    }
+
+    dispatch(setPending(true));
     const response = await axios.post(`${API_TASK}/subtask/save`, taskData, {
       //Change taskId before mockup with BE
       headers: {
@@ -160,7 +170,6 @@ export const getPersonalTaskApi = async (token, semesterId, dispatch) => {
         },
       }
     );
-    console.log("Personal Task: ", response);
     dispatch(getPersonalTask(response.data));
     dispatch(setPending(false));
     return response.data;
@@ -230,6 +239,7 @@ export const updateGroupScore = async (token, groupId, score, dispatch) => {
     }
 
     const payload = { groupId, groupAverageScore: score };
+    dispatch(setPending(true));
     const response = await axios.post(`${API_TASK}/group/score`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -237,6 +247,7 @@ export const updateGroupScore = async (token, groupId, score, dispatch) => {
       },
     });
 
+    dispatch(setPending(false));
     return response.data;
   } catch (e) {
     dispatch &&

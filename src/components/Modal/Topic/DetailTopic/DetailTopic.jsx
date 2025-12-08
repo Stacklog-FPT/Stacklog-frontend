@@ -158,7 +158,9 @@ const DetailTopic = ({
     role === "STUDENT" &&
     !!isLeader &&
     localTopic &&
-    localTopic?.status !== "Approved";
+    (localTopic?.status === "Rejected" ||
+      (localTopic?.status === "Pending" && localTopic?.allowEdit === true) ||
+      (localTopic?.status === "Accepted" && localTopic?.allowEdit === true));
 
   const handleGrant = () => {
     if (!onUpdate) return;
@@ -170,7 +172,12 @@ const DetailTopic = ({
   const handleApprove = () => {
     if (!onApprove) return;
 
-  setLocalTopic((t) => ({ ...t, status: "Accepted", allowEdit: false }));
+    setLocalTopic((t) => ({ 
+      ...t, 
+      status: "Accepted", 
+      allowEdit: false,
+      rejectReason: rejectReason && rejectReason.trim() ? rejectReason.trim() : t.rejectReason
+    }));
     onApprove(topic.topicId);
   };
 
@@ -394,9 +401,9 @@ const DetailTopic = ({
             )}
           </div>
 
-          {topic.status === "Rejected" && (
+          {(topic.status === "Rejected" || topic.status === "Accepted") && topic.rejectReason && (
             <div style={{ gridColumn: "1 / -1" }}>
-              <div className="sl-label">Reject reason</div>
+              <div className="sl-label">{topic.status === "Rejected" ? "Reject reason" : "Approval note"}</div>
               <div className="sl-preline">{topic.rejectReason}</div>
             </div>
           )}
@@ -437,7 +444,7 @@ const DetailTopic = ({
             <input
               type="text"
               className="sl-input sl-input--inline"
-              placeholder="Enter reject reason…"
+              placeholder="Enter reason…"
               value={rejectReason}
               onChange={(e) =>
                 setRejectReason && setRejectReason(e.target.value)

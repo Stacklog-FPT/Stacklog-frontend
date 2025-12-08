@@ -77,18 +77,27 @@ export const createNewSemester = async (data, token, dispatch) => {
     }
 
     dispatch(setPending(true));
+    console.log(data);
     const response = await axios.post(
-      `${REACT_API_URL}class/semester/save`,
-      data,
+      `https://stacklog.id.vn/api/class/semester/save`,
+      {
+        semesterName: data.semesterName,
+        semesterYear: data.semesterYear,
+        quarter: data.quarter,
+        semesterStartDate: data.semesterStartDate,
+        semesterEndDate: data.semesterEndDate,
+      },
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
-
+    console.log(response);
     // dispatch(addSemeter(response.data));
-    dispatch(setPending(false));
+    if (response.data) {
+      dispatch(setPending(false));
+    }
   } catch (e) {
     setError(e.message);
     throw new Error(e.message);
@@ -104,7 +113,7 @@ export const deleteSemesterService = async (semesterId, token, dispatch) => {
 
     dispatch(setPending(true));
     const response = await axios.delete(
-      `${REACT_API_URL}class/semester/?semesterId=${semesterId}`,
+      `https://stacklog.id.vn/api/class/semester/?semesterId=${semesterId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -230,6 +230,45 @@ const ListAdminManager = ({ role }) => {
     });
   };
 
+  const handleGetUiHead = () => {
+    switch (role) {
+      case "Semester":
+        setShowUi((prev) => ({
+          ...prev,
+          row1: "Semster",
+          row2: "Start date",
+          row3: "End date",
+        }));
+        break;
+      case "Class":
+        setShowUi((prev) => ({
+          ...prev,
+          row1: "Class Name",
+          row2: "Semester",
+          row3: "Lecture",
+        }));
+        break;
+      case "Lecture":
+        setShowUi((prev) => ({
+          ...prev,
+          row1: "Lecture",
+          row2: "Email",
+          row3: "Status",
+        }));
+        break;
+      case "Student":
+        setShowUi((prev) => ({
+          ...prev,
+          row1: "Student",
+          row2: "Email",
+          row3: "Intake",
+        }));
+        break;
+      default:
+        break;
+    }
+  };
+
   const getPageNumbers = () => {
     const pages = [];
     const max = 5;
@@ -292,6 +331,7 @@ const ListAdminManager = ({ role }) => {
     if (role === "Class" && selectedSemester.semesterId && user?.token) {
       getAllClasses(selectedSemester.semesterId, user.token, dispatch);
     }
+    handleGetUiHead();
   }, [selectedSemester.semesterId, role, user?.token, dispatch]);
 
   return (
@@ -389,14 +429,10 @@ const ListAdminManager = ({ role }) => {
             </div>
           </div>
 
-          {/* BẢNG DỮ LIỆU */}
           <div className="list__semester__table">
             <table>
               <thead>
                 <tr>
-                  <th>
-                    <input type="checkbox" />
-                  </th>
                   <th>{showUi.row1}</th>
                   <th>{showUi.row2}</th>
                   <th>{showUi.row3}</th>
@@ -419,9 +455,6 @@ const ListAdminManager = ({ role }) => {
                 ) : paginatedData.length > 0 ? (
                   paginatedData.map((item) => (
                     <tr key={item._id || item.semesterId}>
-                      <td>
-                        <input type="checkbox" />
-                      </td>
                       <Row
                         role={role}
                         data={item}

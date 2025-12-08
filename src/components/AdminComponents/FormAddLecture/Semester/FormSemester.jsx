@@ -49,9 +49,9 @@ const FormSemester = ({ onClose }) => {
     }
 
     const payload = {
-      quarter: semesterData.quarter,
       semesterName: semesterData.semesterName.trim(),
       semesterYear: Number(semesterData.semesterYear),
+      quarter: semesterData.quarter,
       semesterStartDate: semesterData.semesterStartDate,
       semesterEndDate: semesterData.semesterEndDate,
     };
@@ -85,6 +85,7 @@ const FormSemester = ({ onClose }) => {
               onChange={handleChange}
               required
             >
+              <option value="null">Select Quarter</option>
               <option value="SP">Spring (SP)</option>
               <option value="SU">Summer (SU)</option>
               <option value="FA">Fall (FA)</option>

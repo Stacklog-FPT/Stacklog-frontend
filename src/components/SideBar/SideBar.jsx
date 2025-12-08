@@ -1,17 +1,17 @@
-import { useContext, useEffect, useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import logo from '../../assets/main-logo.png';
-import logoClose from '../../assets/Logo.png';
-import logoDark from '../../assets/darkMode/logo-darkmode.png';
-import './SideBar.scss';
-import { ColorModeContext } from '../../context/ColorModeContext';
-import { GroupChatContext } from '../../context/GroupChatContext';
-import { useAuth } from '../../context/AuthProvider';
-import { fetchSemesters } from '../../service/SemesterService';
-import { getClasses } from '../../service/ClassService';
-import SemesterDropdown from '../Modal/SemesterList/SemesterDropdown';
-import ClassDropdown from '../../components/Modal/ClassList/ClassDropDown';
+import { useContext, useEffect, useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import logo from "../../assets/main-logo.png";
+import logoClose from "../../assets/Logo.png";
+import logoDark from "../../assets/darkMode/logo-darkmode.png";
+import "./SideBar.scss";
+import { ColorModeContext } from "../../context/ColorModeContext";
+import { GroupChatContext } from "../../context/GroupChatContext";
+import { useAuth } from "../../context/AuthProvider";
+import { fetchSemesters } from "../../service/SemesterService";
+import { getClasses } from "../../service/ClassService";
+import SemesterDropdown from "../Modal/SemesterList/SemesterDropdown";
+import ClassDropdown from "../../components/Modal/ClassList/ClassDropDown";
 
 import {
   selectSemester,
@@ -19,7 +19,7 @@ import {
   selectPending,
   selectCurrentSemesterId,
   selectError,
-} from '../../redux/slice/semesterSlice';
+} from "../../redux/slice/semesterSlice";
 
 const SideBar = ({ isOpen, setIsOpen }) => {
   const { mode } = useContext(ColorModeContext);
@@ -32,30 +32,39 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   const [showClasses, setShowClasses] = useState(false);
 
   const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' ? window.innerWidth <= 600 : false,
+    typeof window !== "undefined" ? window.innerWidth <= 600 : false
   );
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 600);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const toggleSidebar = () => setIsOpen((prev) => !prev);
   const handleChatClick = () => {
     toggleGroupChat();
     setIsOpen(!isOpen);
-    navigate('/chatbox');
+    navigate("/chatbox");
   };
 
   const dashBoardItems = [
-    { name: 'Home', path: '/', icon: 'fa-solid fa-house' },
-    { name: 'Schedule', path: '/schedule', icon: 'fa-solid fa-calendar-days' },
-    { name: 'Documents', path: '/documents', icon: 'fa-solid fa-folder-plus' },
-    { name: 'Chat', path: '/chatbox', icon: 'fa-solid fa-comment', onClick: handleChatClick },
-    { name: 'Grades', path: '/grades', icon: 'fa-solid fa-square-poll-vertical' },
-    { name: 'Topic', path: '/plan', icon: 'fa-solid fa-diagram-project' },
-    { name: 'Task', path: '/tasks-self', icon: 'fa-solid fa-list-check' },
-    { name: 'Class', path: '/class', icon: 'fa-solid fa-users' },
+    { name: "Home", path: "/", icon: "fa-solid fa-house" },
+    { name: "Schedule", path: "/schedule", icon: "fa-solid fa-calendar-days" },
+    { name: "Documents", path: "/documents", icon: "fa-solid fa-folder-plus" },
+    {
+      name: "Chat",
+      path: "/chatbox",
+      icon: "fa-solid fa-comment",
+      onClick: handleChatClick,
+    },
+    {
+      name: "Grades",
+      path: "/grades",
+      icon: "fa-solid fa-square-poll-vertical",
+    },
+    { name: "Topic", path: "/plan", icon: "fa-solid fa-diagram-project" },
+    { name: "Task", path: "/tasks-self", icon: "fa-solid fa-list-check" },
+    { name: "Class", path: "/class", icon: "fa-solid fa-users" },
   ];
 
   useEffect(() => {
@@ -63,7 +72,8 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   }, [dispatch, user?.token]);
 
   useEffect(() => {
-    if (currentSemesterId && user?.token) getClasses(currentSemesterId, user.token, dispatch);
+    if (currentSemesterId && user?.token)
+      getClasses(currentSemesterId, user.token, dispatch);
   }, [currentSemesterId, user?.token, dispatch]);
 
   const handleOverlayClick = () => setIsOpen(false);
@@ -80,27 +90,37 @@ const SideBar = ({ isOpen, setIsOpen }) => {
         </button>
       )}
 
-      {isMobile && isOpen && <div className="sidebar-overlay" onClick={handleOverlayClick}></div>}
+      {isMobile && isOpen && (
+        <div className="sidebar-overlay" onClick={handleOverlayClick}></div>
+      )}
 
       <div
-        className={`navbar-container ${isOpen ? 'open' : 'close'}`}
+        className={`navbar-container ${isOpen ? "open" : "close"}`}
         onClick={isMobile ? (e) => e.stopPropagation() : undefined}
       >
         <div className="wrapper_navbar">
-          <div className={`wrapper_navbar_header ${isOpen ? 'isOpen' : 'isClose'}`}>
+          <div
+            className={`wrapper_navbar_header ${isOpen ? "isOpen" : "isClose"}`}
+          >
             <Link to="/">
-              {mode === 'light' ? (
+              {mode === "light" ? (
                 <img
                   src={isOpen ? logo : logoClose}
                   className="wrapper_navbar_header_logo"
                   alt="Logo web"
                 />
               ) : (
-                <img src={logoDark} className="wrapper_navbar_header_logo" alt="Logo web" />
+                <img
+                  src={logoDark}
+                  className="wrapper_navbar_header_logo"
+                  alt="Logo web"
+                />
               )}
             </Link>
             <button className="wrapper_navbar_toggle" onClick={toggleSidebar}>
-              <i className={isOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'}></i>
+              <i
+                className={isOpen ? "fa-solid fa-times" : "fa-solid fa-bars"}
+              ></i>
             </button>
           </div>
 
@@ -119,8 +139,11 @@ const SideBar = ({ isOpen, setIsOpen }) => {
             <h2 className="navbar-dashboard-heading">DashBoard</h2>
             <ul>
               {dashBoardItems.map((item, index) => (
-                <li key={index} className={item.name === 'Class' ? 'class-item' : ''}>
-                  {item.name === 'Class' ? (
+                <li
+                  key={index}
+                  className={item.name === "Class" ? "class-item" : ""}
+                >
+                  {item.name === "Class" ? (
                     <ClassDropdown
                       currentSemester={currentSemesterId}
                       showClasses={showClasses}
@@ -130,12 +153,16 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                   ) : (
                     <NavLink
                       to={item.path}
-                      className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                      className={({ isActive }) =>
+                        `nav-link ${isActive ? "active" : ""}`
+                      }
                       {...(item.onClick ? { onClick: item.onClick } : {})}
                     >
                       <div className="nav-icon-container">
                         {item.icon && <i className={item.icon}></i>}
-                        <span className="nav-icon-container-text">{item.name}</span>
+                        <span className="nav-icon-container-text">
+                          {item.name}
+                        </span>
                       </div>
                     </NavLink>
                   )}
@@ -144,7 +171,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
             </ul>
           </nav>
 
-          <nav className="navbar-support">
+          {/* <nav className="navbar-support">
             <h2 className="navbar-support-heading">Support</h2>
             <ul>
               <li>
@@ -159,7 +186,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                 </NavLink>
               </li>
             </ul>
-          </nav>
+          </nav> */}
         </div>
       </div>
     </>

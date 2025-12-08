@@ -59,7 +59,7 @@ const SideBarAdmin = ({ isOpen, setIsOpen }) => {
           />
         </div>
         {/* Support */}
-        <nav className="navbar-support">
+        {/* <nav className="navbar-support">
           <h2 className={`navbar-support-heading ${isOpen ? "" : "hidden"}`}>
             Support
           </h2>
@@ -84,7 +84,7 @@ const SideBarAdmin = ({ isOpen, setIsOpen }) => {
               </NavLink>
             </li>
           </ul>
-        </nav>
+        </nav> */}
       </div>
     </div>
   );

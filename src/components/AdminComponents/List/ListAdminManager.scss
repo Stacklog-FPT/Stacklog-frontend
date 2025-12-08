@@ -105,8 +105,8 @@
         letter-spacing: 0.5px;
 
         &:first-child {
-          width: 50px;
-          text-align: center;
+          width: 300px;
+          text-align: start;
         }
         &:last-child {
           width: 120px;
@@ -126,14 +126,10 @@
       td {
         color: #1f2937;
         vertical-align: middle;
-
+        height: 80px;
         &:first-child {
-          text-align: center;
-        }
-
-        &:last-child {
-          text-align: center;
-          height: 100%;
+          // w
+          text-align: start;
         }
 
         &.text-center {

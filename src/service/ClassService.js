@@ -149,6 +149,30 @@ const ClassService = () => {
     }
   };
 
+  const deleteStudentFromClass = async (token, studentId, classId, dispatch) => {
+    try {
+      dispatch && dispatch(apiStart());
+      if (!token) throw new Error('Token is missing');
+      if (!studentId) throw new Error('studentId is missing');
+      if (!classId) throw new Error('classId is missing');
+
+      const url = `${CLASS_URI}/groupstudent/delete-student?studentId=${encodeURIComponent(
+        studentId
+      )}&classId=${encodeURIComponent(classId)}`;
+
+      const response = await axios.delete(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      dispatch && dispatch(apiSuccess());
+      return response.data;
+    } catch (error) {
+      dispatch && dispatch(apiFailure(error.message));
+      const serverMsg = error.response?.data?.message || error.response?.data || null;
+      throw new Error(serverMsg || 'Failed to delete student from class: ' + error.message);
+    }
+  };
+
   const updateMemberToGroup = async (token, payload, dispatch) => {
     try {
       dispatch && dispatch(apiStart());
@@ -174,6 +198,7 @@ const ClassService = () => {
     leaveGroup,
     kickUserFromGroup,
     updateMemberToGroup,
+    deleteStudentFromClass,
   };
 };
 

@@ -41,3 +41,74 @@
   box-shadow: none !important;
   transform: none !important;
 }
+
+/* Action buttons: tidy, consistent, and match site styles */
+.btn-delete-student {
+  background: transparent;
+  color: var(--danger-color, #d33);
+  border: 1px solid var(--danger-color, #d33);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+.btn-delete-student:hover {
+  background: var(--danger-color, #d33);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+.btn-delete-student:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  background: transparent;
+  color: #aaa;
+  border-color: #eee;
+}
+
+.btn-kick-user {
+  background: transparent;
+  color: #333;
+  border: 1px solid #dcdcdc;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.btn-kick-user:hover {
+  background: #f6f7f9;
+  transform: translateY(-1px);
+}
+
+.btn-add-member {
+  background: var(--bg--primary-color);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-leave-group {
+  background: transparent;
+  color: var(--danger-color, #d33);
+  border: 1px solid var(--danger-color, #d33);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Small utility for inline button spacing in the table rows */
+.grades__component__container__table__list td button {
+  vertical-align: middle;
+}

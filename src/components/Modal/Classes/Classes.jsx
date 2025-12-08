@@ -8,6 +8,7 @@ import {
   selectCurrentGroupId,
 } from '../../../redux/slice/semesterSlice';
 import ClassService from '../../../service/ClassService';
+import Swal from 'sweetalert2';
 import userApi from '../../../service/UserService';
 import DetailStudent from '../../ClassListComponent/DetailStudent/DetailStudent';
 import decodeToken from '../../../service/DecodeJwt';
@@ -26,7 +27,8 @@ const {
   generateInviteCode,
   leaveGroup,
   kickUserFromGroup,
-  updateMemberToGroup,
+    updateMemberToGroup,
+    deleteStudentFromClass,
 } = ClassService();
 
 const ClassList = ({ handleActivityAddClass }) => {
@@ -238,7 +240,7 @@ const ClassList = ({ handleActivityAddClass }) => {
     setIsCreating(true);
     try {
       if (!currentSemesterId) {
-        alert('Please select a semester before creating a class.');
+        Swal.fire('Warning', 'Please select a semester before creating a class.', 'warning');
         setIsCreating(false);
         return;
       }
@@ -255,7 +257,7 @@ const ClassList = ({ handleActivityAddClass }) => {
         setClasses(data);
       }
     } catch (err) {
-      alert('Failed to create class!');
+      Swal.fire('Error', 'Failed to create class!', 'error');
     }
     setIsCreating(false);
   };
@@ -288,7 +290,7 @@ const ClassList = ({ handleActivityAddClass }) => {
         setClasses(data);
       }
     } catch (err) {
-      alert('Failed to create group!');
+      Swal.fire('Error', 'Failed to create group!', 'error');
     }
     setIsCreatingGroup(false);
   };
@@ -300,9 +302,9 @@ const ClassList = ({ handleActivityAddClass }) => {
         const data = await getClasses(currentSemesterId, user.token, dispatch);
         setClasses(data);
       }
-      alert('Member added successfully!');
+      Swal.fire('Success', 'Member added successfully!', 'success');
     } catch (err) {
-      alert('Failed to add member!');
+      Swal.fire('Error', 'Failed to add member!', 'error');
     }
   };
 
@@ -319,13 +321,22 @@ const ClassList = ({ handleActivityAddClass }) => {
       setInviteCode(code);
       setShowInvitePopup(true);
     } catch (err) {
-      alert('Unable to get invite code!');
+      Swal.fire('Error', 'Unable to get invite code!', 'error');
     }
   };
 
   const hanldeDeleteUserFromGroup = async () => {
     try {
-      if (!window.confirm('Do you want to leave this group?')) return;
+      const leaveConfirm = await Swal.fire({
+        title: 'Leave group',
+        text: 'Do you want to leave this group?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, leave',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#d33',
+      });
+      if (!leaveConfirm.isConfirmed) return;
 
       if (!user.token) throw new Error('Token is missing');
 
@@ -351,15 +362,24 @@ const ClassList = ({ handleActivityAddClass }) => {
         const data = await getClasses(currentSemesterId, user.token, dispatch);
         setClasses(data);
       }
-      alert('Left group successfully!');
+      Swal.fire('Left', 'Left group successfully!', 'success');
     } catch (error) {
-      alert('Failed to leave group!');
+      Swal.fire('Error', 'Failed to leave group!', 'error');
     }
   };
 
   const handleKickUser = async (studentId) => {
-    try {
-      if (!window.confirm('Do you want to kick this member from the group?')) return;
+      try {
+        const kickConfirm = await Swal.fire({
+          title: 'Kick member',
+          text: 'Do you want to kick this member from the group?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          confirmButtonColor: '#6f42c1',
+        });
+        if (!kickConfirm.isConfirmed) return;
 
       const currentClass = classes.find((cls) => cls.classesId === selectedClass);
       if (!currentClass) throw new Error('Class not found!');
@@ -382,9 +402,44 @@ const ClassList = ({ handleActivityAddClass }) => {
         const data = await getClasses(currentSemesterId, user.token, dispatch);
         setClasses(data);
       }
-      alert('Kicked successfully!');
+      Swal.fire('Kicked', 'Kicked successfully!', 'success');
     } catch (error) {
-      alert('Failed to kick user!');
+      Swal.fire('Error', 'Failed to kick user!', 'error');
+    }
+  };
+
+  const handleDeleteStudent = async (student) => {
+    if (!selectedClass) {
+      return Swal.fire('Select class', 'Please select a class first', 'warning');
+    }
+
+    const result = await Swal.fire({
+      title: 'Remove student from class',
+      text: `Are you sure you want to remove ${student.name || student.email || ''} from this class?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, remove',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await deleteStudentFromClass(user.token, student._id || student.id || student.userId, selectedClass, dispatch);
+      Swal.fire('Removed', 'Student removed from class.', 'success');
+      setStudents((prev) => prev.filter((s) => s._id !== (student._id || student.id || student.userId)));
+      if (currentSemesterId) {
+        try {
+          const updated = await getClasses(currentSemesterId, user.token, dispatch);
+          if (Array.isArray(updated)) setClasses(updated);
+        } catch (e) {
+          console.warn('Failed to refresh classes after delete', e);
+        }
+      }
+    } catch (err) {
+      console.error('Delete student failed', err);
+      Swal.fire('Error', err.message || 'Failed to remove student', 'error');
     }
   };
 
@@ -393,11 +448,11 @@ const ClassList = ({ handleActivityAddClass }) => {
     try {
       const currentClass = classes.find((c) => c.classesId === selectedClass) || classes[0];
       if (!currentClass) {
-        alert('No class selected to export');
+        Swal.fire('Warning', 'No class selected to export', 'warning');
         return;
       }
       if (!user || !user.token) {
-        alert('You must be logged in to export');
+        Swal.fire('Warning', 'You must be logged in to export', 'warning');
         return;
       }
 
@@ -405,7 +460,7 @@ const ClassList = ({ handleActivityAddClass }) => {
       await exportClassAndDownload(currentClass.classesId, user.token);
     } catch (err) {
       console.error('Export full class failed', err);
-      alert(err?.message || 'Export failed. See console for details.');
+      Swal.fire('Error', err?.message || 'Export failed. See console for details.', 'error');
     }
   };
 
@@ -447,7 +502,7 @@ const ClassList = ({ handleActivityAddClass }) => {
                       style={{ marginLeft: '12px' }}
                       onClick={hanldeDeleteUserFromGroup}
                     >
-                      <i className="fa-solid fa-arrow-right-from-bracket"></i>
+                      <i className="fa-solid fa-arrow-right-from-bracket" style={{color: 'red'}}></i>
                       <span> Leave</span>
                     </button>
                   );
@@ -516,11 +571,11 @@ const ClassList = ({ handleActivityAddClass }) => {
                       // rows: parsed JSON rows from xlsx; file: original File object
                       console.log('Imported rows', rows, file);
                       if (!selectedClass) {
-                        alert('Please select a class before importing.');
+                        Swal.fire('Warning', 'Please select a class before importing.', 'warning');
                         return;
                       }
                       if (!file) {
-                        alert('No file available to upload');
+                        Swal.fire('Warning', 'No file available to upload', 'warning');
                         return;
                       }
                       try {
@@ -531,10 +586,10 @@ const ClassList = ({ handleActivityAddClass }) => {
                           const data = await getClasses(currentSemesterId, user.token, dispatch);
                           setClasses(data || []);
                         }
-                        alert(res?.message || 'Import successful');
+                        Swal.fire('Success', res?.message || 'Import successful', 'success');
                       } catch (err) {
                         console.error('Import failed', err);
-                        alert(err?.message || 'Import failed. See console for details.');
+                        Swal.fire('Error', err?.message || 'Import failed. See console for details.', 'error');
                       }
                     }}
                   />
@@ -587,12 +642,31 @@ const ClassList = ({ handleActivityAddClass }) => {
                           const group = currentClass.groups.find(
                             (g) => g.groupsId === selectedGroup,
                           );
-                          if (
-                            !group ||
-                            selectedGroup === 'all' ||
-                            group.groupsName.toLowerCase() === 'unassigned'
-                          )
+                          if (!group || group.groupsName.toLowerCase() === 'unassigned') {
+                            // when on 'All Member' view (no specific group selected), lecturers should
+                            // be able to remove a student from the class entirely
+                            if (selectedGroup === 'all' && user.role === 'LECTURER') {
+                              const isSelf =
+                                (item && (item._id === decodeUser.id || item.id === decodeUser.id)) ||
+                                (user &&
+                                  (user._id === item._id ||
+                                    user.id === item.id ||
+                                    user.work_id === item.id));
+
+                              if (!isSelf) {
+                                return (
+                                  <button
+                                    className="btn-delete-student"
+                                    style={{ marginLeft: '8px' }}
+                                    onClick={() => handleDeleteStudent(item)}
+                                  >
+                                    <span>Remove from class</span>
+                                  </button>
+                                );
+                              }
+                            }
                             return null;
+                          }
 
                           // hide Kick button on the row representing the current user
                           const isSelf =

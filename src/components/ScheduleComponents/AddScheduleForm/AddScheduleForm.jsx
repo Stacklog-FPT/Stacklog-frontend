@@ -152,7 +152,7 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
           .map((x) => ({
             id: x.id,
             full_name: x.user?.full_name || x.user?.name || x.id,
-            avatar: x.user?.avatar,
+            avatar: x.user?.avatar_link,
             // mark lecturer entries so UI can indicate them
             isLecturer: lecturerIds.includes(x.id),
           }));
@@ -390,15 +390,9 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
         </button>
 
         <form className="add-schedule-form" onSubmit={handleSubmit}>
-          <h3>Add new slot</h3>
+          <h3>New Schedule</h3>
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              flexDirection: "column",
-            }}
+          <div className="form-body"
           >
             {isPage && !isStudent && (
               <div className="select-wrapper">
@@ -459,10 +453,9 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
                 </button>
               </div>
             )}
-          </div>
 
-          {/* Title */}
-          <div className="form-group">
+            {/* Title */}
+            <div className="form-group">
             <label htmlFor="slotTitle">📌 Title:</label>
             <input
               type="text"
@@ -618,11 +611,15 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
             </div>
           )}
 
+          </div>
+
           {/* Submit */}
-          <button type="submit">
-            <FaPlus />
-            <span>Add</span>
-          </button>
+          <div className="form-footer">
+            <button type="submit">
+              <FaPlus />
+              <span>Add</span>
+            </button>
+          </div>
         </form>
       </div>
     </div>

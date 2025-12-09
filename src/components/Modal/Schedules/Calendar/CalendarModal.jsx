@@ -205,6 +205,7 @@ export default function Calendar({ groupId, isPage }) {
           }
           onEdit={() => alert(`You want fix: ${selectedEvent.title}`)}
           onUpdate={handleUpdate}
+          onRefresh={() => getScheduleByGroupId(user.token, groupId, dispatch)}
           canDelete={
             myId &&
             selectedEvent &&

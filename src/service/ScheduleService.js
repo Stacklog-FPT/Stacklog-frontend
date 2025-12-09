@@ -248,6 +248,44 @@ export const getPersonalScheduleBySemester = async (
   }
 };
 
+// Confirm (accept/reject) a schedule slot
+export const confirmSchedule = async (token, slotId, action = 'accept', dispatch) => {
+  try {
+    if (!token) throw new Error('Token is missing!');
+    if (!slotId) throw new Error('slotId is missing!');
+    if (!action || (action !== 'accept' && action !== 'reject'))
+      throw new Error('Invalid action, expected "accept" or "reject"');
+
+    dispatch && dispatch(setPending(true));
+
+    const url = `${SCHEDULE_API}/confirm?statusAssign=${encodeURIComponent(action)}&slotId=${encodeURIComponent(
+      slotId,
+    )}`;
+
+    const response = await axios.post(url, null, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    // backend should return updated slot or array of slots
+    dispatch && dispatch(updateSchedules(response.data));
+    dispatch && dispatch(setPending(false));
+    return response.data;
+  } catch (e) {
+    dispatch && dispatch(setPending(false));
+    dispatch && dispatch(setError(e.message || 'Failed to confirm schedule'));
+    throw e;
+  }
+};
+
+export const acceptSchedule = async (token, slotId, dispatch) =>
+  confirmSchedule(token, slotId, 'accept', dispatch);
+
+export const rejectSchedule = async (token, slotId, dispatch) =>
+  confirmSchedule(token, slotId, 'reject', dispatch);
+
 // default export for compatibility with existing imports
 const ScheduleService = () => ({
   getScheduleByGroupId,

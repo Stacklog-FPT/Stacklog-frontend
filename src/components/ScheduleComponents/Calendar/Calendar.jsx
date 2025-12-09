@@ -273,6 +273,10 @@ export default function Calendar({ groupId, isPage }) {
           }
           onEdit={() => alert(`You want fix: ${selectedEvent.title}`)}
           onUpdate={handleUpdate}
+          onRefresh={() => {
+            const semesterIdParam = currentSemesterId ?? undefined;
+            return getPersonalScheduleBySemester(user.token, semesterIdParam, dispatch);
+          }}
           canDelete={
             myId &&
             selectedEvent &&

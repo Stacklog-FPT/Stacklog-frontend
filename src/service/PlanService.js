@@ -22,7 +22,10 @@ export const getPlansApi = async (dispatch, token, classId) => {
     });
 
     // API returns array of PI items. Map to the frontend's topic shape.
-    const data = Array.isArray(response.data) ? response.data : [];
+    // API may return either an array or a single object. Normalize to array.
+    let data = [];
+    if (Array.isArray(response.data)) data = response.data;
+    else if (response.data && typeof response.data === "object") data = [response.data];
     const mapped = data.map((p) => ({
       topicId: p.piId || p.id || "",
       topicTitle: p.piTitle || p.piTitle || "",
@@ -61,6 +64,58 @@ export const getPlansApi = async (dispatch, token, classId) => {
       error: e,
       response: e.response && e.response.data,
     });
+    dispatch(setError(msg));
+    dispatch(setPending(false));
+    const err = new Error(msg);
+    err.original = e;
+    throw err;
+  }
+};
+
+export const getTopicsByGroupId = async (dispatch, token, groupId) => {
+  if (!groupId) {
+    return [];
+  }
+  try {
+    dispatch(setPending(true));
+    const url = `${REACT_API_URL}topic/group/${groupId}`;
+    const response = await axios.get(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+
+    // API may return either an array or a single object. Normalize to array.
+    let data = [];
+    if (Array.isArray(response.data)) data = response.data;
+    else if (response.data && typeof response.data === "object") data = [response.data];
+    const mapped = data.map((p) => ({
+      topicId: p.piId || p.id || "",
+      topicTitle: p.piTitle || p.title || "",
+      topicAbbreviation: p.piAbbreviation || p.piAbbreviation || "",
+      topicDescription: p.piDescription || p.description || "",
+      status: p.piStatus
+        ? String(p.piStatus).charAt(0) + String(p.piStatus).slice(1).toLowerCase()
+        : null,
+      allowEdit: typeof p.isAllowEdit === "boolean" ? p.isAllowEdit : true,
+      rejectReason: p.piRejectReason || null,
+      approvedBy: p.piApprovedBy || null,
+      approvedAt: p.piApprovedAt || null,
+      groupId: p.groupId,
+      attachments: Array.isArray(p.piDocumentIds) ? p.piDocumentIds.map((id) => ({ id })) : [],
+      createdBy: p.createdBy || null,
+      registerAt: p.createdAt || p.piCreatedAt || null,
+      updateBy: p.updateBy || null,
+      updateAt: p.updateAt || null,
+    }));
+
+    dispatch(setPlans(mapped));
+    dispatch(setPending(false));
+    return mapped;
+  } catch (e) {
+    const msg =
+      (e && e.response && e.response.data && (e.response.data.message || JSON.stringify(e.response.data))) ||
+      e.message ||
+      "Unknown error";
+    console.error("[getTopicsByGroupId] failed", { error: e, response: e.response && e.response.data });
     dispatch(setError(msg));
     dispatch(setPending(false));
     const err = new Error(msg);

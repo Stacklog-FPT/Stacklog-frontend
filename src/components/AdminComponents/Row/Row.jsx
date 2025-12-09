@@ -4,12 +4,14 @@ import { MdModeEdit } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 import { upperCaseFirstChart } from "../../../helper/upperCaseFirstChart";
 import FormSemester from "../FormAddLecture/Semester/FormSemester";
-import { deleteSemesterService } from "../../../service/AdminService";
+import { deleteSemesterService, lockUser } from "../../../service/AdminService";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDispatch } from "react-redux";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import ExportXlsxButton from "../../ExportXlsxButton/ExportXlsxButton";
+import { CiLock } from "react-icons/ci";
+import { CiUnlock } from "react-icons/ci";
 
 const Row = ({
   role,
@@ -118,6 +120,25 @@ const Row = ({
     return lecturer?.full_name || "Unknown Lecturer";
   };
 
+  const handleCheckDateToDelete = (semesterStartDate) => {
+    if (!semesterStartDate) {
+      return false;
+    }
+
+    const startDate = new Date(semesterStartDate);
+    if (isNaN(startDate.getTime())) {
+      return false;
+    }
+
+    const currentDate = new Date();
+
+    if (currentDate >= startDate) {
+      return false;
+    }
+
+    return true;
+  };
+
   const handleDeleteSemester = async (semesterId) => {
     const result = await Swal.fire({
       title: "Are you sure to delete this semester?",
@@ -137,18 +158,23 @@ const Row = ({
           user.token,
           dispatch
         );
-        if (resp.data === "Delete success") {
-          Swal.fire(
-            "Deleted!",
-            "Semester was removed successfully.",
-            "success"
-          );
-        }
+        console.log(resp);
+        // if (resp.status === 200) {
+        //   Swal.fire(
+        //     "Deleted!",
+        //     "Semester was removed successfully.",
+        //     "success"
+        //   );
+        // }
       } catch (error) {
         console.error("Delete failed:", error);
         Swal.fire("Error!", "Something went wrong during deletion.", "error");
       }
     }
+  };
+
+  const handleLockAccount = async (userId) => {
+    await lockUser(user.token, userId);
   };
   switch (role) {
     case "Semester":
@@ -158,16 +184,15 @@ const Row = ({
           <td>{formatDate(data.semesterStartDate)}</td>
           <td>{formatDate(data.semesterEndDate)}</td>
           <td className="action-cell">
-            <button className="btn-edit" title="Edit">
-              <MdModeEdit />
-            </button>
-            <button
-              className="btn-delete"
-              title="Delete"
-              onClick={() => handleDeleteSemester(data.semesterId)}
-            >
-              <FaTrash />
-            </button>
+            {handleCheckDateToDelete(data.semesterStartDate) && (
+              <button
+                className="btn-delete"
+                title="Delete"
+                onClick={() => handleDeleteSemester(data.semesterId)}
+              >
+                <FaTrash />
+              </button>
+            )}
           </td>
           {addForm && <FormSemester onClose={closeAdd} />}
         </>
@@ -180,12 +205,9 @@ const Row = ({
           <td>{semesterName || "Unknown Semester"}</td>
           <td>{upperCaseFirstChart(getLecturerName(data.lectureId))}</td>
           <td className="action-cell">
-            <button className="btn-edit" title="Edit">
-              <MdModeEdit />
-            </button>
-            <button className="btn-delete" title="Delete">
+            {/* <button className="btn-delete" title="Delete">
               <FaTrash />
-            </button>
+            </button> */}
             <ExportXlsxButton data={data} />
           </td>
         </>
@@ -214,11 +236,12 @@ const Row = ({
             </span>
           </td>
           <td className="action-cell">
-            <button className="btn-edit" title="Edit">
-              <MdModeEdit />
-            </button>
-            <button className="btn-delete" title="Delete">
-              <FaTrash />
+            <button className="btn-delete">
+              {data.isActive ? (
+                <CiLock onClick={() => handleLockAccount(data._id)} />
+              ) : (
+                <CiUnlock onClick={() => handleLockAccount(data._id)} />
+              )}
             </button>
           </td>
         </>
@@ -242,13 +265,18 @@ const Row = ({
           </td>
           <td>{data.email || "N/A"}</td>
           <td>K{data?.work_id?.slice(2, 4)}</td>
+          <td>
+            <span className={`status ${data.isActive ? "active" : "inactive"}`}>
+              {data.isActive ? "Active" : "Inactive"}
+            </span>
+          </td>
           <td className="action-cell">
-            <button className="btn-edit" title="Edit">
-              <MdModeEdit />
-            </button>
-
             <button className="btn-delete" title="Delete">
-              <FaTrash />
+              {data.isActive ? (
+                <CiLock onClick={() => handleLockAccount(data._id)} />
+              ) : (
+                <CiUnlock onClick={() => handleLockAccount(data._id)} />
+              )}
             </button>
           </td>
         </>

@@ -81,17 +81,19 @@
 
     table {
       width: 100%;
-      height: 450px;
+      height: 100%;
       border-collapse: collapse;
       table-layout: fixed;
     }
 
-    th,
-    td {
+    td,
+    th {
+      height: 80px;
       padding: 14px 16px;
       text-align: left;
       font-size: 14px;
-      // border-bottom: 1px solid #f0f0f0;
+      vertical-align: middle;
+      box-sizing: border-box;
     }
 
     thead {
@@ -117,7 +119,10 @@
 
     tbody {
       tr {
+        height: 80px;
+        min-height: 80px;
         transition: background 0.2s;
+
         &:hover {
           background-color: #f9f9f9;
         }
@@ -142,8 +147,9 @@
     .action-cell {
       display: flex;
       justify-content: center;
+      align-items: center;
       gap: 12px;
-
+      height: 100%;
       button {
         background: none;
         border: none;
@@ -174,7 +180,7 @@
   justify-content: center;
   gap: 12px;
   padding: 24px 16px;
-  background: var(--bg-color);
+  // background: var(--bg-color);
   border-top: 1px solid #e5e7eb;
   user-select: none;
 
@@ -182,7 +188,7 @@
     width: 44px;
     height: 44px;
     border: none;
-    background: var(--bg-color);
+    // background: var(--bg-color);
     color: #64748b;
     border-radius: 14px;
     font-size: 16px;

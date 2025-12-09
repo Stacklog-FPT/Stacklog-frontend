@@ -51,6 +51,7 @@ export const getAllAdminDataOnce = async (token, dispatch) => {
     dispatch(setPending(false));
   }
 };
+
 export const getAllSemester = async (token, dispatch) => {
   try {
     dispatch(setPending(true));
@@ -113,13 +114,15 @@ export const deleteSemesterService = async (semesterId, token, dispatch) => {
 
     dispatch(setPending(true));
     const response = await axios.delete(
-      `https://stacklog.id.vn/api/class/semester/?semesterId=${semesterId}`,
+      `https://stacklog.id.vn/api/class/semester/delete?semesterId=${semesterId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
+
+    console.log(response);
 
     dispatch(setPending(false));
     dispatch(deleteSemester(semesterId));
@@ -228,5 +231,24 @@ export const createNewClass = async (data, token, dispatch) => {
   } catch (e) {
     dispatch(setError(e.message));
     throw new Error(e.message);
+  }
+};
+
+export const lockUser = async (token, userId) => {
+  try {
+    if (!token) {
+      throw new Error("Invalid token!");
+    }
+    setPending(true);
+
+    const response = await axios.put(
+      `https://stacklog.id.vn/api/profile/user/lockunlock/${userId}`
+    );
+
+    console.log(response);
+    setPending(false);
+  } catch (e) {
+    setPending(false);
+    throw new Error();
   }
 };

@@ -262,6 +262,7 @@ const ListAdminManager = ({ role }) => {
           row1: "Student",
           row2: "Email",
           row3: "Intake",
+          row4: "Status",
         }));
         break;
       default:
@@ -473,53 +474,49 @@ const ListAdminManager = ({ role }) => {
                 )}
               </tbody>
             </table>
-
-            {/* PHÂN TRANG */}
-            {totalPages > 1 && !pending && !isClassWithoutSemester && (
-              <div className="modern-pagination">
-                <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="pagination-btn prev"
-                >
-                  <i className="fa-solid fa-chevron-left"></i>
-                </button>
-
-                <div className="page-numbers">
-                  {getPageNumbers().map((page, i) =>
-                    page === "..." ? (
-                      <span key={i} className="dots">
-                        ...
-                      </span>
-                    ) : (
-                      <button
-                        key={i}
-                        onClick={() => setCurrentPage(page)}
-                        className={currentPage === page ? "active" : ""}
-                      >
-                        {page}
-                      </button>
-                    )
-                  )}
-                </div>
-
-                <div className="page-info">
-                  Page <strong>{currentPage}</strong> / {totalPages}
-                </div>
-
-                <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="pagination-btn next"
-                >
-                  <i className="fa-solid fa-chevron-right"></i>
-                </button>
-              </div>
-            )}
           </div>
         </div>
+        {totalPages > 1 && !pending && !isClassWithoutSemester && (
+          <div className="modern-pagination">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="pagination-btn prev"
+            >
+              <i className="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <div className="page-numbers">
+              {getPageNumbers().map((page, i) =>
+                page === "..." ? (
+                  <span key={i} className="dots">
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(page)}
+                    className={currentPage === page ? "active" : ""}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+            </div>
+
+            <div className="page-info">
+              Page <strong>{currentPage}</strong> / {totalPages}
+            </div>
+
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="pagination-btn next"
+            >
+              <i className="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* CÁC FORM */}

@@ -30,6 +30,7 @@ import {
   updateTaskApi,
 } from "../../../../../service/TaskService";
 import TaskDetails from "../../../../Modal/TaskDetail/TaskDetails";
+import { fetchUserById } from "../../../../../service/UserService";
 
 const Task = ({
   isDraggingOverlay,
@@ -59,6 +60,8 @@ const Task = ({
   const [editedDueDate, setEditedDueDate] = useState(
     props.task?.taskDueDate || ""
   );
+  const [userMap, setUserMap] = useState([]);
+  console.log("userMap: ", userMap);
   const [isShowDetail, setIsShowDetail] = useState(false);
   const sensors = useSensors(useSensor(PointerSensor));
   const handleSubtaskDragEnd = (event) => {
@@ -188,6 +191,28 @@ const Task = ({
   );
   const progressColor = getColorByPercent(percent);
 
+  useEffect(() => {
+    const fetchStudent = async () => {
+      const results = await Promise.all(
+        visibleMembers.map(async (id) => {
+          try {
+            const u = await fetchUserById(user.token, id);
+            return {
+              _id: u._id,
+              name: u.full_name || u.username || "Unknown",
+              avatar: u.avatar_link,
+            };
+          } catch {
+            return null;
+          }
+        })
+      );
+      setUserMap(results.filter(Boolean));
+    };
+
+    fetchStudent();
+  }, []);
+
   return (
     <>
       <div
@@ -311,17 +336,29 @@ const Task = ({
               className="task-content-members-student-list"
               data-extra-count={extraCount > 0 ? extraCount : ""}
             >
-              {visibleMembers?.map((item, index) => (
-                <li key={index}>
-                  <img
-                    src={
-                      item.avatar ||
-                      "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-                    }
-                    alt="Student Avatar"
-                  />
-                </li>
-              ))}
+              {userMap.length > 0 ? (
+                userMap.map((user) => (
+                  <li key={user._id}>
+                    <img
+                      src={
+                        user.avatar ||
+                        "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                      }
+                      alt={user.name || "Student Avatar"}
+                    />
+                  </li>
+                ))
+              ) : (
+                <>
+                  <li>
+                    <Skeleton circle width={32} height={32} />
+                  </li>
+                  <li>
+                    <Skeleton circle width={32} height={32} />
+                  </li>
+                </>
+              )}
+
               {extraCount > 0 && (
                 <li className="extra-count">
                   <span>+{extraCount}</span>

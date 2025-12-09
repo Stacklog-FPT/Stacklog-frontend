@@ -188,6 +188,31 @@ const ClassService = () => {
     }
   };
 
+  const pickNewLeader = async (token, groupId, newLeaderId, dispatch) => {
+    try {
+      dispatch && dispatch(apiStart());
+      if (!token) throw new Error("Token is missing");
+      if (!groupId) throw new Error("groupId is missing");
+      if (!newLeaderId) throw new Error("newLeaderId is missing");
+
+      const url = `${CLASS_URI}/group/pick-new-leader?groupId=${encodeURIComponent(
+        groupId
+      )}&newLeaderId=${encodeURIComponent(newLeaderId)}`;
+
+      const response = await axios.post(url, null, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      dispatch && dispatch(apiSuccess());
+      return response.data;
+    } catch (error) {
+      dispatch && dispatch(apiFailure(error.message));
+      const serverMsg =
+        error.response?.data?.message || error.response?.data || null;
+      throw new Error(serverMsg || "Failed to pick new leader: " + error.message);
+    }
+  };
+
   return {
     getClasses,
     createClass,
@@ -199,6 +224,7 @@ const ClassService = () => {
     kickUserFromGroup,
     updateMemberToGroup,
     deleteStudentFromClass,
+    pickNewLeader,
   };
 };
 

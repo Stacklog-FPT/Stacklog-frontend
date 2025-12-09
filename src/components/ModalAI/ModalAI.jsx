@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import "./ModalAI.scss";
-import { postAiTaskAndDispatch } from "../../service/AiService";
+import { postAiTaskAndDispatch, postSaveTaskListAndDispatch } from "../../service/AiService";
+import { getTopicsByGroupId } from "../../service/PlanService";
 import { useDispatch } from "react-redux";
 import { useAuth } from "../../context/AuthProvider";
 import ModalAITaskItem from "./ModalAITaskItem";
+import { useParams } from 'react-router-dom';
 
 export default function ModalAI({ placement = "bottom-right" }) {
   const { user } = useAuth();
@@ -13,6 +15,8 @@ export default function ModalAI({ placement = "bottom-right" }) {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
   const [mode, setMode] = useState("single"); // 'single' | 'list'
+  const { groupId } = useParams();
+  console.log("groupId", groupId);
 
   // form fields for single task
   const [taskTitle, setTaskTitle] = useState("");
@@ -31,12 +35,36 @@ export default function ModalAI({ placement = "bottom-right" }) {
     useState(false);
   const listPriorityRef = useRef(null);
   const dispatch = useDispatch();
+  const [titleLocked, setTitleLocked] = useState(false);
 
   // for list template
   const [listCount, setListCount] = useState(1);
   const [generatedJson, setGeneratedJson] = useState("");
   const [generatedList, setGeneratedList] = useState([]);
+  // helper: format a Date/string into `YYYY-MM-DDTHH:mm:ss` (no timezone 'Z')
+  const formatAsLocalDatetime = (value) => {
+    if (!value) return null;
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return null;
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+      d.getHours()
+    )}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  };
+  // helper: normalize priority values to backend-expected uppercase enums
+  const normalizePriority = (v) => {
+    if (!v && v !== 0) return 'LOW';
+    const s = String(v).trim().toLowerCase();
+    if (s === 'h' || s === 'high' || s === 'urgent') return 'HIGH';
+    if (s === 'm' || s === 'medium' || s === 'med') return 'MEDIUM';
+    if (s === 'l' || s === 'low') return 'LOW';
+    if (s === 'critical' || s === 'crit') return 'CRITICAL';
+    // fallback: uppercase the raw value
+    return String(v).toUpperCase();
+  };
   const [selectedTaskIds, setSelectedTaskIds] = useState([]);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -65,6 +93,79 @@ export default function ModalAI({ placement = "bottom-right" }) {
       document.removeEventListener("keydown", onKey);
     };
   }, [showPriorityDropdown, showListPriorityDropdown]);
+
+  // load topics when modal opens (or when provided groupId changes)
+  useEffect(() => {
+    // helper: try to extract UUID-like id from current path, e.g. /tasks/:id
+    if (!groupId) return;
+    let mounted = true;
+    (async () => {
+      try {
+        const topics = await getTopicsByGroupId(dispatch, user?.token, groupId);
+        console.log("topics" ,topics)
+        if (!mounted) return;
+        if (Array.isArray(topics) && topics.length > 0) {
+          const first = topics[0] || {};
+          const title = first.topicTitle || first.title || "";
+          if (title) {
+            setTaskTitle(title);
+            setTitleLocked(true);
+          }
+        }
+      } catch (e) {
+        // fail silently — UI still works without locked title
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+    // re-run when groupId, open state, or token changes so URL-based id or route updates are respected
+  }, [groupId, user?.token, dispatch, open]);
+
+
+  const handleSaveSelected = async () => {
+    const selected = generatedList.filter((it) => {
+      const id = it.taskId || it.TaskId || it.id || null;
+      return id && selectedTaskIds.includes(id);
+    });
+    if (!selected || selected.length === 0) {
+      setHistory((h) => [...h, { from: "ai", text: "No tasks selected to save" }]);
+      return;
+    }
+
+    const payload = selected.map((it) => ({
+      taskTitle: it.taskTitle || it.Title || it.title || "",
+      taskDescription: it.taskDescription || it.Description || it.description || "",
+      taskPoint: it.taskPoint != null ? it.taskPoint : 0,
+      taskStartTime: it.taskStartTime ? formatAsLocalDatetime(it.taskStartTime) : null,
+      taskDueDate: it.taskDueDate ? formatAsLocalDatetime(it.taskDueDate) : null,
+      priority: normalizePriority(it.priority || it.Priority || "LOW"),
+    }));
+    console.log("Saving tasks: ", payload);
+
+    setSaveLoading(true);
+    try {
+      const res = await postSaveTaskListAndDispatch({ token: user?.token, groupId: groupId, tasks: payload, dispatch });
+      setHistory((h) => [...h, { from: "ai", text: `Saved ${selected.length} tasks` }]);
+      // set transient success message
+      setSaveMessage("Add task successful");
+      setTimeout(() => setSaveMessage(""), 3000);
+      return res;
+    } catch (e) {
+      setHistory((h) => [...h, { from: "ai", text: `Save failed: ${e?.message || e?.response?.data || 'Unknown'}` }]);
+      throw e;
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  const handleConfirmClick = async () => {
+    try {
+      await handleSaveSelected();
+    } catch (e) {
+      // error already recorded in history by handleSaveSelected
+    }
+  };
   const handleSend = async () => {
     if (!query || query.trim() === "") return;
     // Fake local response for now — wiring to an AI backend can be added later
@@ -115,8 +216,7 @@ export default function ModalAI({ placement = "bottom-right" }) {
     if (mode === "single") {
       const body = {
         taskTitle: taskTitle || "",
-        taskDescription: taskDescription || "",
-        priority: priority || "",
+        taskStartTime: taskStartTime || "",
         taskDueDate: taskDueDate || "",
       };
 
@@ -129,6 +229,10 @@ export default function ModalAI({ placement = "bottom-right" }) {
           payload: body,
           token: user?.token,
           dispatch,
+          // include path params expected by backend
+          startDate: taskStartTime,
+          endDate: taskDueDate,
+          count: Number(listCount || 1),
         });
         console.log("Generate response: ", data);
         setGeneratedJson(JSON.stringify(data, null, 2));
@@ -245,7 +349,7 @@ export default function ModalAI({ placement = "bottom-right" }) {
     // clear history, generated JSON and reset form fields (mapping)
     setHistory([]);
     setGeneratedJson("");
-    setTaskTitle("");
+    if (!titleLocked) setTaskTitle("");
     setTaskDescription("");
     setPriority("LOW");
     setTaskStartTime(todayStr);
@@ -293,7 +397,7 @@ export default function ModalAI({ placement = "bottom-right" }) {
                       }`}
                       onClick={() => setMode("single")}
                     >
-                      Single task
+                      AI Gen Task
                     </button>
                     {/* <button
                       className={`modal-ai-tab ${
@@ -316,72 +420,22 @@ export default function ModalAI({ placement = "bottom-right" }) {
                         placeholder="Enter task title"
                         className="modal-ai-input"
                         value={taskTitle}
-                        onChange={(e) => setTaskTitle(e.target.value)}
-                      />
-                      <label>Description</label>
-                      <textarea
-                        placeholder="Enter task description"
-                        className="modal-ai-textarea"
-                        value={taskDescription}
-                        onChange={(e) => setTaskDescription(e.target.value)}
+                        onChange={(e) => {
+                          if (!titleLocked) setTaskTitle(e.target.value);
+                        }}
+                        readOnly={titleLocked}
                       />
                       <div style={{ display: "flex", gap: 8 }}>
                         <div style={{ flex: 1 }}>
-                          <label>Priority</label>
-                          <div
-                            className="modal-ai-priority-select"
-                            ref={priorityRef}
-                          >
-                            <button
-                              type="button"
-                              className="modal-ai-priority-btn"
-                              onClick={() => setShowPriorityDropdown((s) => !s)}
-                            >
-                              <span
-                                className={`modal-ai-priority-dot modal-ai-priority-${priority.toLowerCase()}`}
-                              />
-                              <span style={{ marginLeft: 8 }}>
-                                {priority || "Select"}
-                              </span>
-                              <span style={{ marginLeft: 8, opacity: 0.6 }}>
-                                ▾
-                              </span>
-                            </button>
-                            {showPriorityDropdown && (
-                              <div className="modal-ai-priority-dropdown">
-                                <div
-                                  className="modal-ai-priority-item"
-                                  onClick={() => {
-                                    setPriority("HIGH");
-                                    setShowPriorityDropdown(false);
-                                  }}
-                                >
-                                  <span className="modal-ai-priority-dot modal-ai-priority-high" />{" "}
-                                  HIGH
-                                </div>
-                                <div
-                                  className="modal-ai-priority-item"
-                                  onClick={() => {
-                                    setPriority("MEDIUM");
-                                    setShowPriorityDropdown(false);
-                                  }}
-                                >
-                                  <span className="modal-ai-priority-dot modal-ai-priority-medium" />{" "}
-                                  MEDIUM
-                                </div>
-                                <div
-                                  className="modal-ai-priority-item"
-                                  onClick={() => {
-                                    setPriority("LOW");
-                                    setShowPriorityDropdown(false);
-                                  }}
-                                >
-                                  <span className="modal-ai-priority-dot modal-ai-priority-low" />{" "}
-                                  LOW
-                                </div>
-                              </div>
-                            )}
-                          </div>
+                          <label>Quantity</label>
+                          <input
+                            placeholder="Number of tasks to generate"
+                            type="number"
+                            min={1}
+                            className="modal-ai-input"
+                            value={listCount}
+                            onChange={(e) => setListCount(Number(e.target.value) || 1)}
+                          />
                         </div>
                         <div style={{ flex: 1 }}>
                           <label>Start date</label>
@@ -596,9 +650,10 @@ export default function ModalAI({ placement = "bottom-right" }) {
                       </button>
                       <button
                         className="modal-ai-btn modal-ai-btn-confirm"
-                        onClick={handleConfirm}
+                        onClick={handleConfirmClick}
+                        disabled={saveLoading}
                       >
-                        Confirm
+                        {saveLoading ? 'Saving...' : 'Confirm'}
                       </button>
                     </div>
                   </div>

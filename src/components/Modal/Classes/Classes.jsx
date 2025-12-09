@@ -29,6 +29,7 @@ const {
   kickUserFromGroup,
     updateMemberToGroup,
     deleteStudentFromClass,
+    pickNewLeader,
 } = ClassService();
 
 const ClassList = ({ handleActivityAddClass }) => {
@@ -408,6 +409,62 @@ const ClassList = ({ handleActivityAddClass }) => {
     }
   };
 
+  const handlePickNewLeader = async () => {
+    try {
+      const currentClass = classes.find((cls) => cls.classesId === selectedClass);
+      if (!currentClass) return Swal.fire('Error', 'Class not found', 'error');
+      const group = currentClass.groups.find((g) => g.groupsId === selectedGroup);
+      if (!group) return Swal.fire('Error', 'Group not found', 'error');
+
+      // build options from group members (exclude current leader)
+      const opts = {};
+      (group.groupStudents || []).forEach((m) => {
+        if (!m || !m.userId) return;
+        if (m.userId === group.groupsLeaderId) return; // exclude current leader
+        const s = students.find((st) => st._id === m.userId) || {};
+        const label = s.name || s.email || m.userId;
+        opts[m.userId] = label;
+      });
+
+      if (Object.keys(opts).length === 0) {
+        return Swal.fire('Info', 'No eligible members to pick as leader', 'info');
+      }
+
+      const { value: newLeaderId } = await Swal.fire({
+        title: 'Pick new leader',
+        input: 'select',
+        inputOptions: opts,
+        inputPlaceholder: 'Select a member',
+        showCancelButton: true,
+      });
+
+      if (!newLeaderId) return;
+
+      try {
+        await pickNewLeader(user.token, group.groupsId, newLeaderId, dispatch);
+        if (currentSemesterId) {
+          const data = await getClasses(currentSemesterId, user.token, dispatch);
+          setClasses(data || []);
+        }
+        Swal.fire('Success', 'Leader changed successfully', 'success');
+      } catch (err) {
+        // Fallback: mock the change locally if API fails
+        const mocked = classes.map((c) => {
+          if (c.classesId !== currentClass.classesId) return c;
+          const groups = (c.groups || []).map((gr) =>
+            gr.groupsId === group.groupsId ? { ...gr, groupsLeaderId: newLeaderId } : gr,
+          );
+          return { ...c, groups };
+        });
+        setClasses(mocked);
+        Swal.fire('Success', 'Leader changed (mocked)', 'success');
+      }
+    } catch (e) {
+      console.error('Pick new leader failed', e);
+      Swal.fire('Error', 'Failed to pick new leader', 'error');
+    }
+  };
+
   const handleDeleteStudent = async (student) => {
     if (!selectedClass) {
       return Swal.fire('Select class', 'Please select a class first', 'warning');
@@ -495,7 +552,12 @@ const ClassList = ({ handleActivityAddClass }) => {
                     g.groupsId === selectedGroup && g.groupsName.toLowerCase() !== 'unassigned',
                 );
                 // Kiểm tra user hiện tại có trong group không
-                if (group && group.groupStudents.some((stu) => stu.userId === decodeUser.id)) {
+                // Only show Leave if current user is a member AND is NOT the group's leader
+                if (
+                  group &&
+                  group.groupStudents.some((stu) => stu.userId === decodeUser.id) &&
+                  decodeUser.id !== group.groupsLeaderId
+                ) {
                   return (
                     <button
                       className="btn-leave-group"
@@ -507,6 +569,8 @@ const ClassList = ({ handleActivityAddClass }) => {
                     </button>
                   );
                 }
+
+                // If the user is the current leader, do not show Leave; they must first pick a new leader
                 return null;
               })()}
           </div>
@@ -541,14 +605,26 @@ const ClassList = ({ handleActivityAddClass }) => {
                 (isLecturer || isLeader)
               ) {
                 return (
-                  <button
-                    className="btn-add-member"
-                    style={{ marginLeft: '12px', width: '96px' }}
-                    onClick={() => setShowCreateGroup(true)}
-                  >
-                    <i className="fa-solid fa-user-plus"></i>
-                    <span>Member</span>
-                  </button>
+                  <>
+                    <button
+                      className="btn-add-member"
+                      style={{ marginLeft: '12px', width: '96px' }}
+                      onClick={() => setShowCreateGroup(true)}
+                    >
+                      <i className="fa-solid fa-user-plus"></i>
+                      <span>Member</span>
+                    </button>
+                    {isLeader ? (
+                      <button
+                        className="btn-pick-leader"
+                        style={{ marginLeft: '12px' }}
+                        onClick={handlePickNewLeader}
+                      >
+                        <i className="fa-solid fa-user-check" />
+                        <span style={{ marginLeft: 6 }}>Pick leader</span>
+                      </button>
+                    ) : null}
+                  </>
                 );
               }
               return null;

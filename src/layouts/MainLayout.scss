@@ -1,6 +1,15 @@
 $color-html: #edf2f2;
 $color-primary: #045745;
 
+// Breakpoints
+$breakpoint-mobile: 480px;
+$breakpoint-tablet: 768px;
+$breakpoint-desktop: 1024px;
+$breakpoint-large: 1440px;
+$breakpoint-xl: 1920px;
+$breakpoint-2k: 2560px;
+$breakpoint-4k: 3840px;
+
 .layout {
   display: flex;
   min-height: 100vh;
@@ -17,33 +26,131 @@ $color-primary: #045745;
     max-height: 100vh;
     background-color: var(--bg-color);
     padding: 20px;
-    
+
     &.chat-page {
-      padding: 0;
+      padding: 0 !important;
     }
-    
+
     .main-content-area {
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+
+      // Custom scrollbar
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+      }
+
+      .dark &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    // Responsive padding - dùng media query chuẩn, không tính toán trong điều kiện
+    @media (max-width: $breakpoint-mobile) {
+      padding: 12px;
+    }
+
+    @media (min-width: ($breakpoint-mobile + 1)) and (max-width: $breakpoint-tablet) {
+      padding: 16px;
+    }
+
+    @media (min-width: ($breakpoint-tablet + 1)) and (max-width: $breakpoint-desktop) {
+      padding: 20px;
+    }
+
+    @media (min-width: $breakpoint-large) {
+      padding: 24px;
+    }
+
+    @media (min-width: $breakpoint-xl) {
+      padding: 32px;
+    }
+
+    @media (min-width: $breakpoint-2k) {
+      padding: 40px;
+    }
+
+    @media (min-width: $breakpoint-4k) {
+      padding: 60px;
+    }
+  }
+
+  // Mobile: chuyển layout thành column nếu có sidebar
+  @media (max-width: $breakpoint-tablet) {
+    flex-direction: column;
+
+    .main-content {
+      transition: none;
     }
   }
 }
 
+// Announcement / Notification panel
 .announcement-place {
   z-index: 10000;
-  position: absolute;
-  right: 45px;
+  position: fixed;
+  right: 20px;
   top: 100px;
+  width: 400px;
+  max-width: calc(100vw - 40px);
+  transition: right 0.3s ease, width 0.3s ease;
+
+  @media (max-width: $breakpoint-tablet) {
+    right: 12px;
+    top: 80px;
+    width: 360px;
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+  }
+
+  @media (min-width: $breakpoint-large) {
+    width: 440px;
+    right: 32px;
+  }
+
+  @media (min-width: $breakpoint-xl) {
+    width: 480px;
+    right: 40px;
+  }
+
+  @media (min-width: $breakpoint-2k) {
+    width: 520px;
+    right: 60px;
+  }
+
+  @media (min-width: $breakpoint-4k) {
+    width: 600px;
+    right: 100px;
+    top: 120px;
+    font-size: 1.1rem;
+  }
 }
 
+// Overlay (backdrop)
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 1000;
   opacity: 0;
   visibility: hidden;
@@ -55,27 +162,7 @@ $color-primary: #045745;
   }
 }
 
-.spinner-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #ffffff;
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-
-  &.open {
-    opacity: 1;
-    visibility: visible;
-  }
-}
-
+// Themes
 .light {
   background-color: $color-html;
   color: #000000;
@@ -84,4 +171,22 @@ $color-primary: #045745;
 .dark {
   background-color: #1a1a1a;
   color: #ffffff;
+}
+
+// Utility classes (tùy chọn)
+@media (min-width: $breakpoint-xl) {
+  .text-large-screen {
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: $breakpoint-4k) {
+  .text-large-screen {
+    font-size: 1.4rem;
+  }
+
+  .button-large-screen {
+    padding: 16px 32px;
+    font-size: 1.3rem;
+  }
 }

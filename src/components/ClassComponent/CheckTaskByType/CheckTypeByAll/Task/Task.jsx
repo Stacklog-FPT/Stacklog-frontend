@@ -104,14 +104,44 @@ const Task = ({
     await updateTaskApi(payload, user.token, dispatch);
   };
 
+  const parseDDMMYYYY = (dateString) => {
+    if (!dateString) return null;
+    const [day, month, year] = dateString.split("/").map(Number);
+    if (!day || !month || !year) return null;
+
+    return new Date(year, month - 1, day);
+  };
+
   const calculateRemainingPercent = (start, due) => {
     const now = new Date();
-    const s = new Date(start);
-    const e = new Date(due);
-    if (isNaN(s) || isNaN(e) || e <= s) return 0;
-    const total = e - s;
-    const passed = Math.min(Math.max(now - s, 0), total);
-    return Math.round((passed / total) * 100);
+
+    // Parse ngày từ chuỗi DD/MM/YYYY
+    const startDate = parseDDMMYYYY(start);
+    const dueDate = parseDDMMYYYY(due);
+
+    // Kiểm tra hợp lệ
+    if (!startDate || !dueDate || isNaN(startDate) || isNaN(dueDate)) {
+      return 0;
+    }
+
+    if (startDate > dueDate) {
+      return 0;
+    }
+
+    if (now <= startDate) {
+      return 0;
+    }
+
+    if (now >= dueDate) {
+      return 100;
+    }
+
+    const totalTime = dueDate - startDate;
+    const elapsedTime = now - startDate;
+
+    const percent = Math.round((elapsedTime / totalTime) * 100);
+
+    return Math.min(percent, 100);
   };
 
   const getColorByPercent = (percent) => {

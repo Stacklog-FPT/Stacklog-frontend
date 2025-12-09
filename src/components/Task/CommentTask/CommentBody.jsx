@@ -6,6 +6,7 @@ import { useAuth } from "../../../context/AuthProvider";
 
 const CommentBody = ({
   reviews = [],
+  userMap = {},
   decodedId,
   editingCommentId,
   editedComment,
@@ -15,7 +16,28 @@ const CommentBody = ({
   onDelete,
 }) => {
   const { user } = useAuth();
-  const [userMap, setUserMap] = useState({});
+  const [fetchedUsers, setFetchedUsers] = useState({});
+
+  const combinedUserMap = useMemo(() => {
+    const combined = { ...fetchedUsers };
+
+    if (
+      userMap?.studentInformation &&
+      Array.isArray(userMap.studentInformation)
+    ) {
+      userMap.studentInformation.forEach((student) => {
+        if (student?._id && !combined[student._id]) {
+          combined[student._id] = {
+            _id: student._id,
+            full_name: student.name,
+            avatar_link: student.avatar,
+          };
+        }
+      });
+    }
+
+    return combined;
+  }, [fetchedUsers, userMap]);
   const sortedReviews = useMemo(() => {
     if (!Array.isArray(reviews)) return [];
 
@@ -28,7 +50,7 @@ const CommentBody = ({
 
   useEffect(() => {
     if (!user?.token || reviews.length === 0) {
-      setUserMap({});
+      setFetchedUsers({});
       return;
     }
 
@@ -36,7 +58,7 @@ const CommentBody = ({
       ...new Set(reviews.map((r) => r.createdBy).filter(Boolean)),
     ];
 
-    const missingIds = uniqueUserIds.filter((id) => !userMap[id]);
+    const missingIds = uniqueUserIds.filter((id) => !combinedUserMap[id]);
 
     if (missingIds.length === 0) {
       return;
@@ -57,14 +79,14 @@ const CommentBody = ({
           }
         });
 
-        setUserMap((prev) => ({ ...prev, ...newData }));
+        setFetchedUsers((prev) => ({ ...prev, ...newData }));
       } catch (err) {
         console.error("Fetch user failed:", err);
       }
     };
 
     fetchUsers();
-  }, [user?.token, reviews, userMap]);
+  }, [user?.token, reviews, combinedUserMap]);
   console.log(sortedReviews);
   return (
     <div className="comment__task__body">
@@ -75,14 +97,14 @@ const CommentBody = ({
               <div className="infor__user">
                 <img
                   src={
-                    item.avatar_link ||
+                    combinedUserMap[item.createdBy]?.avatar_link ||
                     "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
                   }
                   alt="avatar"
                 />
                 <div>
                   <p className="infor__user__name">
-                    {userMap[item.createdBy]?.full_name || "User"}
+                    {combinedUserMap[item.createdBy]?.full_name || "User"}
                   </p>
                   <p className="infor__user__create">
                     {formatDateUI?.(item.createdAt)}

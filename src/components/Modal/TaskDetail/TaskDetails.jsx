@@ -19,6 +19,8 @@ import HoldDeleteButton from "./ButtonDelete";
 import { deleteTaskApi, updateTaskApi } from "../../../service/TaskService";
 import userApi, { fetchUserById } from "../../../service/UserService";
 import { toast } from "sonner";
+import avatar_add_button from "../../../assets/icon/avatar_add_button.png";
+import { useParams } from "react-router-dom";
 
 const toLocalInput = (iso) => {
   if (!iso) return "";
@@ -39,18 +41,26 @@ const TaskDetails = ({ task, onClose }) => {
   const currentStatus = statuses.find(
     (s) => String(s.statusTaskId) === String(task.statusTaskId)
   );
+  const { groupId } = useParams();
   // -- Get User by id --
   const [studentInformation, setStudentInformation] = useState([]);
-  const { getUserById } = userApi();
   // --- EDIT MODE STATE ---
   const [editTask, setEditTask] = useState(false);
   const [isChecklistDirty, setChecklistDirty] = useState(false);
+  const [showAssignDropdown, setShowAssignDropdown] = useState(false);
+  const groups = useSelector((state) => state.group.groups);
+  const currentGroup = groups.find((g) => g.groupsId === groupId);
   const [form, setForm] = useState({
     title: task?.taskTitle || "",
     description: task?.taskDescription || "",
     startLocal: toLocalInput(task?.taskStartTime),
     dueLocal: toLocalInput(task?.taskDueDate),
     checkListDraft: Array.isArray(task?.checkLists) ? task.checkLists : [],
+    assignTo: Array.isArray(task?.assignTo)
+      ? task.assignTo.map((item) =>
+          typeof item === "string" ? item : item.userId || item._id
+        )
+      : [],
   });
 
   // comment state
@@ -70,12 +80,41 @@ const TaskDetails = ({ task, onClose }) => {
       startLocal: toLocalInput(task?.taskStartTime),
       dueLocal: toLocalInput(task?.taskDueDate),
       checkListDraft: Array.isArray(task?.checkLists) ? task.checkLists : [],
+      assignTo: Array.isArray(task?.assignTo)
+        ? task.assignTo.map((item) =>
+            typeof item === "string" ? item : item.userId || item._id
+          )
+        : [],
     });
     setChecklistDirty(false);
+    setShowAssignDropdown(false);
   }, [task]);
 
   const handleFormChange = (field) => (e) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
+
+  const handleAssignChange = (e) => {
+    const { checked, value } = e.target;
+    setForm((prev) => {
+      const newAssigns = checked
+        ? [...prev.assignTo, value]
+        : prev.assignTo.filter((id) => id !== value);
+      return { ...prev, assignTo: newAssigns };
+    });
+  };
+
+  const handleRemoveAssign = (userId) => {
+    setForm((prev) => ({
+      ...prev,
+      assignTo: prev.assignTo.filter((id) => id !== userId),
+    }));
+  };
+
+  const selectedMembers = Array.isArray(studentInformation)
+    ? studentInformation.filter(
+        (m) => m && m._id && form.assignTo.includes(m._id)
+      )
+    : [];
 
   const handleToggleEdit = async () => {
     if (!editTask) {
@@ -99,6 +138,7 @@ const TaskDetails = ({ task, onClose }) => {
       taskStartTime: startISO || task.taskStartTime,
       taskDueDate: dueISO || task.taskDueDate,
       checkLists: form.checkListDraft,
+      assignTo: form.assignTo,
     };
 
     const res = await updateTaskApi(payload, user.token, dispatch);
@@ -203,11 +243,17 @@ const TaskDetails = ({ task, onClose }) => {
             description: task?.taskDescription || "",
             startLocal: toLocalInput(task?.taskStartTime),
             dueLocal: toLocalInput(task?.taskDueDate),
-            checkListDraft: Array.isArray(task?.checkList)
-              ? task.checkList
+            checkListDraft: Array.isArray(task?.checkLists)
+              ? task.checkLists
+              : [],
+            assignTo: Array.isArray(task?.assignTo)
+              ? task.assignTo.map((item) =>
+                  typeof item === "string" ? item : item.userId || item._id
+                )
               : [],
           });
           setChecklistDirty(false);
+          setShowAssignDropdown(false);
         } else {
           onClose?.();
         }
@@ -224,37 +270,58 @@ const TaskDetails = ({ task, onClose }) => {
   }, []);
 
   useEffect(() => {
-    if (!task?.assignTo || task.assignTo.length === 0) {
-      setStudentInformation([]);
-      return;
-    }
-
-    const ids = task.assignTo
-      .map((item) =>
-        typeof item === "string" ? item : item.userId || item._id
-      )
-      .filter(Boolean);
-
     const fetchStudent = async () => {
-      const results = await Promise.all(
-        ids.map(async (id) => {
+      let userIds = [];
+
+      if (editTask) {
+        if (
+          !currentGroup?.groupStudents ||
+          currentGroup.groupStudents.length === 0
+        ) {
+          setStudentInformation([]);
+          return;
+        }
+        userIds = currentGroup.groupStudents.map((item) => item.userId);
+      } else {
+        if (!task?.assignTo || task.assignTo.length === 0) {
+          setStudentInformation([]);
+          return;
+        }
+        userIds = task.assignTo
+          .map((item) =>
+            typeof item === "string" ? item : item.userId || item._id
+          )
+          .filter(Boolean);
+      }
+
+      const studentInfos = await Promise.all(
+        userIds.map(async (id) => {
           try {
             const u = await fetchUserById(user.token, id);
+            if (!u?._id) return null;
             return {
               _id: u._id,
-              name: u.full_name || u.username || "Unknown",
+              name: u.full_name || "Unknown",
               avatar: u.avatar_link,
             };
-          } catch {
+          } catch (err) {
+            console.warn("User not found:", id);
             return null;
           }
         })
       );
-      setStudentInformation(results.filter(Boolean));
+
+      setStudentInformation(studentInfos.filter(Boolean));
     };
 
     fetchStudent();
-  }, [task?.assignTo, user.token]);
+  }, [
+    task?.assignTo,
+    task?.taskId,
+    editTask,
+    user.token,
+    currentGroup?.groupStudents,
+  ]);
 
   const handleBackdropClick = (e) => {
     if (panelRef.current && !panelRef.current.contains(e.target)) onClose?.();
@@ -386,25 +453,112 @@ const TaskDetails = ({ task, onClose }) => {
         {/* AssignTo Task */}
         <section className="taskdetail__section">
           <label>Assignees</label>
-          <div className="taskdetail__chips">
-            {(studentInformation || []).filter(Boolean).map((u) => (
-              <span key={u._id} className="chip">
-                {" "}
-                <img
-                  src={
-                    u.avatar ||
-                    "https://static.vecteezy.com/...default-avatar.jpg"
-                  }
-                  alt={u.name}
-                  className="chip-avatar"
-                  onError={(e) =>
-                    (e.target.src = "https://...default-avatar.jpg")
-                  }
-                />
-                {u.name || u.full_name || "Unknown User"}
-              </span>
-            ))}
-          </div>
+          {editTask ? (
+            <div className="taskdetail__assign-edit">
+              <div className="assigned-users-list">
+                {selectedMembers.map((member) => (
+                  <div key={member._id} className="assigned-user-card">
+                    <div className="user-info">
+                      <div className="avatar-container">
+                        <img
+                          src={
+                            member.avatar ||
+                            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                          }
+                          alt={`${member.name}'s Avatar`}
+                          className="user-avatar"
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg";
+                          }}
+                        />
+                        <div className="check-icon">
+                          <i className="fa-solid fa-check"></i>
+                        </div>
+                      </div>
+                      <span className="user-name">{member.name}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="remove-user-btn"
+                      onClick={() => handleRemoveAssign(member._id)}
+                    >
+                      <i className="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="add-member-section">
+                <button
+                  type="button"
+                  className="add-member-btn"
+                  onClick={() => setShowAssignDropdown(!showAssignDropdown)}
+                >
+                  <img
+                    src={avatar_add_button || "/placeholder.svg"}
+                    alt="add_button_icon"
+                  />
+                  <span>Add Member</span>
+                </button>
+              </div>
+              {showAssignDropdown && (
+                <div className="assign-dropdown">
+                  <div className="assign-checkbox-list">
+                    {studentInformation
+                      .filter((member) => member && member._id)
+                      .map((member) => (
+                        <label key={member._id} className="member-option">
+                          <input
+                            type="checkbox"
+                            value={member._id}
+                            checked={
+                              form.assignTo?.includes(member._id) || false
+                            }
+                            onChange={handleAssignChange}
+                          />
+                          <div className="member-info">
+                            <img
+                              src={
+                                member.avatar ||
+                                "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                              }
+                              alt={member.name}
+                              className="member-avatar"
+                              onError={(e) =>
+                                (e.target.src =
+                                  "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                              }
+                            />
+                            <span className="member-name">{member.name}</span>
+                          </div>
+                        </label>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="taskdetail__chips">
+              {(studentInformation || []).filter(Boolean).map((u) => (
+                <span key={u._id} className="chip">
+                  {" "}
+                  <img
+                    src={
+                      u.avatar ||
+                      "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                    }
+                    alt={u.name}
+                    className="chip-avatar"
+                    onError={(e) =>
+                      (e.target.src =
+                        "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
+                    }
+                  />
+                  {u.name || u.full_name || "Unknown User"}
+                </span>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Navbar */}
@@ -441,7 +595,7 @@ const TaskDetails = ({ task, onClose }) => {
               <div className="comments__inner">
                 <CommentBody
                   reviews={task?.reviews}
-                  userMap={{}}
+                  userMap={{ studentInformation }}
                   formatDate={(d) => formatDateUI(d)}
                   decodedId={decoded?.id}
                   editingCommentId={editingCommentId}

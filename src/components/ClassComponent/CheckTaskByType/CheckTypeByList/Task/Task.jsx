@@ -1,22 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import './Task.scss';
-import adjustIcon from '../../../../../assets/icon/checkTaskByList/adjust.png';
-import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
-import Skeleton from 'react-loading-skeleton';
-import { CSS } from '@dnd-kit/utilities';
-import { TbSubtask } from 'react-icons/tb';
-import { FaComment } from 'react-icons/fa';
-import { FaPlusCircle } from 'react-icons/fa';
-import Subtask from './Subtask/Subtask';
-import ReviewService from '../../../../../service/ReviewService';
-import { useAuth } from '../../../../../context/AuthProvider';
-import TaskDetails from '../../../../Modal/TaskDetail/TaskDetails';
-import { formatDateUI } from '../../../../../helper/formatDate';
+import React, { useState, useEffect } from "react";
+import "./Task.scss";
+import adjustIcon from "../../../../../assets/icon/checkTaskByList/adjust.png";
+import {
+  useSortable,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
+import Skeleton from "react-loading-skeleton";
+import { CSS } from "@dnd-kit/utilities";
+import { TbSubtask } from "react-icons/tb";
+import { FaComment } from "react-icons/fa";
+import { FaPlusCircle } from "react-icons/fa";
+import Subtask from "./Subtask/Subtask";
+import ReviewService from "../../../../../service/ReviewService";
+import { useAuth } from "../../../../../context/AuthProvider";
+import TaskDetails from "../../../../Modal/TaskDetail/TaskDetails";
+import { formatDateUI } from "../../../../../helper/formatDate";
+import { fetchUserById } from "../../../../../service/UserService";
 
 const Task = ({ ...props }) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
     id: props.id,
   });
 
@@ -30,7 +48,44 @@ const Task = ({ ...props }) => {
   const [commentLength, setCommentLength] = useState(0);
   const { getAllReview } = ReviewService();
   const [isDetail, setIsDetail] = useState(false);
+  const [memberDetails, setMemberDetails] = useState([]);
   const sensors = useSensors(useSensor(PointerSensor));
+
+  // Fetch member details for avatars
+  useEffect(() => {
+    const fetchMembers = async () => {
+      if (!props.task?.assignTo || props.task.assignTo.length === 0) {
+        setMemberDetails([]);
+        return;
+      }
+
+      const memberIds = props.task.assignTo
+        .map((item) =>
+          typeof item === "string" ? item : item._id || item.userId
+        )
+        .filter(Boolean);
+
+      const members = await Promise.all(
+        memberIds.map(async (id) => {
+          try {
+            const userData = await fetchUserById(user.token, id);
+            return {
+              _id: userData._id,
+              name: userData.full_name || userData.username || "Unknown",
+              avatar: userData.avatar_link,
+            };
+          } catch (err) {
+            console.warn("User not found:", id);
+            return null;
+          }
+        })
+      );
+
+      setMemberDetails(members.filter(Boolean));
+    };
+
+    fetchMembers();
+  }, [props.task?.assignTo, user.token]);
 
   const handleSubtaskDragEnd = () => {
     // const { active, over } = event;
@@ -51,13 +106,13 @@ const Task = ({ ...props }) => {
     setShowSubTask(!showSubTask);
   };
 
-  const visibleMembers = props.task?.assignTo?.slice(0, 3) || [];
-  const extraCount = props.task?.assignTo?.length - visibleMembers?.length;
+  const visibleMembers = memberDetails?.slice(0, 3) || [];
+  const extraCount = memberDetails?.length - visibleMembers?.length;
 
   const getColorByPercent = (percent) => {
-    if (percent >= 70) return '#4caf50';
-    if (percent >= 40) return '#ff9800';
-    return '#f44336';
+    if (percent >= 70) return "#4caf50";
+    if (percent >= 40) return "#ff9800";
+    return "#f44336";
   };
 
   const calculateRemainingPercent = (createdAt, dueDate) => {
@@ -74,7 +129,7 @@ const Task = ({ ...props }) => {
 
   const percent = calculateRemainingPercent(
     formatDateUI(props.createdAt),
-    formatDateUI(props.dueDate),
+    formatDateUI(props.dueDate)
   );
   const progressColor = getColorByPercent(percent);
 
@@ -100,19 +155,20 @@ const Task = ({ ...props }) => {
           <div className="task_list_member">
             <ul
               className="task-content-members-student-list"
-              data-extra-count={extraCount > 0 ? extraCount : ''}
+              data-extra-count={extraCount > 0 ? extraCount : ""}
             >
               {visibleMembers.map((item, index) => (
                 <li key={index}>
                   <img
                     src={
                       item.avatar ||
-                      'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                      "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
                     }
-                    alt={`${item.name || item.userName || 'Student'} Avatar`}
+                    alt={`${item.name || "Student"} Avatar`}
+                    title={item.name}
                     onError={(e) =>
                       (e.target.src =
-                        'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg')
+                        "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg")
                     }
                   />
                 </li>
@@ -138,7 +194,7 @@ const Task = ({ ...props }) => {
         </td>
         <td>
           <div className="task_list_priority">
-            <h2>{props.priority || 'No priority'}</h2>
+            <h2>{props.priority || "No priority"}</h2>
           </div>
         </td>
         <td>
@@ -182,7 +238,7 @@ const Task = ({ ...props }) => {
           <SortableContext
             items={
               props.task?.subTasks?.map(
-                (subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`,
+                (subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`
               ) || []
             }
             strategy={verticalListSortingStrategy}
@@ -204,7 +260,13 @@ const Task = ({ ...props }) => {
             ) : (
               <tr>
                 <td colSpan={5}>
-                  <h2 style={{ fontSize: '15px', color: '#c8cad4', paddingLeft: '25px' }}>
+                  <h2
+                    style={{
+                      fontSize: "15px",
+                      color: "#c8cad4",
+                      paddingLeft: "25px",
+                    }}
+                  >
                     No available subtasks
                   </h2>
                 </td>
@@ -213,7 +275,9 @@ const Task = ({ ...props }) => {
           </SortableContext>
         </DndContext>
       )}
-      {isDetail && <TaskDetails task={props.task} onClose={() => setIsDetail(false)} />}
+      {isDetail && (
+        <TaskDetails task={props.task} onClose={() => setIsDetail(false)} />
+      )}
     </>
   );
 };

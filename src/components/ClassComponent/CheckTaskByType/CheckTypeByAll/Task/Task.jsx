@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import "./Task.scss";
 import Skeleton from "react-loading-skeleton";
 import iconDeadLine from "../../../../../assets/icon/task/iconDeadLine.png";
@@ -61,8 +62,9 @@ const Task = ({
     props.task?.taskDueDate || ""
   );
   const [userMap, setUserMap] = useState([]);
-  console.log("userMap: ", userMap);
   const [isShowDetail, setIsShowDetail] = useState(false);
+  const [showHoverCard, setShowHoverCard] = useState(false);
+  const [hoverPosition, setHoverPosition] = useState({ top: 0, left: 0 });
   const sensors = useSensors(useSensor(PointerSensor));
   const handleSubtaskDragEnd = (event) => {
     const { active, over } = event;
@@ -95,6 +97,39 @@ const Task = ({
 
   const visibleMembers = props.task?.assignTo?.slice(0, 3);
   const extraCount = props.task?.assignTo?.length - visibleMembers?.length;
+
+  const handleMouseEnter = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const cardWidth = 320;
+    const cardHeight = 500;
+    const gap = 10;
+    const padding = 10; // Padding từ cạnh viewport
+
+    let left = rect.left + rect.width + gap;
+    let top = rect.top;
+
+    // Kiểm tra nếu card sẽ ra ngoài viewport bên phải
+    if (left + cardWidth + padding > window.innerWidth) {
+      left = rect.left - cardWidth - gap;
+    }
+
+    // Kiểm tra nếu card sẽ ra ngoài viewport phía dưới
+    if (top + cardHeight + padding > window.innerHeight) {
+      top = Math.max(padding, window.innerHeight - cardHeight - padding);
+    }
+
+    // Kiểm tra nếu card sẽ ra ngoài viewport phía trên
+    if (top < padding) {
+      top = padding;
+    }
+
+    setHoverPosition({ top, left });
+    setShowHoverCard(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowHoverCard(false);
+  };
 
   const handleEditPriority = async (task) => {
     const payload = {
@@ -254,6 +289,8 @@ const Task = ({
           isDraggingOverlay ? " isDraggingOverlay" : ""
         }${isDragging && !isDraggingOverlay ? " dragging" : ""}`}
         onClick={() => setIsShowDetail(!isShowDetail)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <div className="task-content">
           <div className="task-content-head">
@@ -472,8 +509,119 @@ const Task = ({
           onClose={() => setIsShowDetail(!isShowDetail)}
         />
       )}
+
+      {/* Hover Card via Portal */}
+      <HoverCardPortal
+        showHoverCard={showHoverCard}
+        hoverPosition={hoverPosition}
+        task={props.task}
+        userMap={userMap}
+        percent={percent}
+        progressColor={progressColor}
+      />
     </>
   );
+};
+
+// Render hover card using Portal to avoid overflow issues
+const HoverCardPortal = ({
+  showHoverCard,
+  hoverPosition,
+  task,
+  userMap,
+  percent,
+  progressColor,
+}) => {
+  if (!showHoverCard) return null;
+
+  const cardContent = (
+    <div
+      className="task-hover-card"
+      style={{
+        top: `${hoverPosition.top}px`,
+        left: `${hoverPosition.left}px`,
+      }}
+    >
+      <div className="hover-card-header">
+        <h3>{task?.taskTitle || "Untitled"}</h3>
+        <span
+          className="priority-badge"
+          style={{
+            backgroundColor:
+              task?.priority === "HIGH"
+                ? "#ff6b6b"
+                : task?.priority === "MEDIUM"
+                ? "#ffd60a"
+                : "#22c55e",
+          }}
+        >
+          {task?.priority || "LOW"}
+        </span>
+      </div>
+
+      <div className="hover-card-section">
+        <p className="label">Description</p>
+        <p className="value">{task?.taskDescription || "No description"}</p>
+      </div>
+
+      <div className="hover-card-section">
+        <p className="label">Timeline</p>
+        <div className="timeline-info">
+          <span>Start: {formatDateUI(task?.taskStartTime) || "N/A"}</span>
+          <span>Due: {formatDateUI(task?.taskDueDate) || "N/A"}</span>
+        </div>
+      </div>
+
+      <div className="hover-card-section">
+        <p className="label">Progress</p>
+        <div className="progress-info">
+          <div className="progress-bar">
+            <div
+              className="progress-fill"
+              style={{
+                width: `${percent}%`,
+                backgroundColor: progressColor,
+              }}
+            ></div>
+          </div>
+          <span className="progress-text">{percent}%</span>
+        </div>
+      </div>
+
+      <div className="hover-card-section">
+        <p className="label">Assignees</p>
+        <div className="assignees-list">
+          {userMap.length > 0 ? (
+            userMap.map((member) => (
+              <div key={member._id} className="assignee-item">
+                <img
+                  src={
+                    member.avatar ||
+                    "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                  }
+                  alt={member.name}
+                  title={member.name}
+                />
+                <span>{member.name}</span>
+              </div>
+            ))
+          ) : (
+            <p className="no-data">No assignees</p>
+          )}
+        </div>
+      </div>
+
+      <div className="hover-card-section">
+        <p className="label">Activity</p>
+        <div className="activity-info">
+          <span>Comments: {task?.reviews?.length || 0}</span>
+          <span>Subtasks: {task?.subtasks?.length || 0}</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  return ReactDOM.createPortal(cardContent, document.body);
 };
 
 export default React.memo(Task);

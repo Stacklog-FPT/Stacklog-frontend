@@ -130,7 +130,6 @@ const AddTask = ({ status, onCancel, group }) => {
       }
     }
 
-    // Fix: < 1 thay vì < 0 (length không âm)
     if (taskData.assignTo.length < 1) {
       toast.error("The task must have at least one member!");
       return false;

@@ -639,23 +639,23 @@ export default function ModalAI({ placement = "bottom-right" }) {
                         </div>
                       ))
                     )}
+                  </div>
 
-                    <div className="modal-ai-footer">
-                      <div style={{ flex: 1 }} />
-                      <button
-                        className="modal-ai-btn modal-ai-btn-cancel"
-                        onClick={handleCancel}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        className="modal-ai-btn modal-ai-btn-confirm"
-                        onClick={handleConfirmClick}
-                        disabled={saveLoading}
-                      >
-                        {saveLoading ? 'Saving...' : 'Confirm'}
-                      </button>
-                    </div>
+                  <div className="modal-ai-footer">
+                    <div style={{ flex: 1 }} />
+                    <button
+                      className="modal-ai-btn modal-ai-btn-cancel"
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="modal-ai-btn modal-ai-btn-confirm"
+                      onClick={handleConfirmClick}
+                      disabled={saveLoading}
+                    >
+                      {saveLoading ? 'Saving...' : 'Confirm'}
+                    </button>
                   </div>
                 </div>
               </div>

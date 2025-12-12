@@ -12,6 +12,7 @@ import planReducer from "./slice/planSlice";
 import notificationReducer from "./slice/notificationSlice";
 import documentReducer from "./slice/documentSlice";
 import userReducer from "./slice/userSilce";
+import githubReducer from "./slice/githubSlice";
 
 const rootReducer = combineReducers({
   semester: semesterReducer,
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   notification: notificationReducer,
   document: documentReducer,
   users: userReducer,
+  github: githubReducer,
 });
 
 const persistConfig = {
@@ -39,6 +41,7 @@ const persistConfig = {
     "notification",
     "document",
     "users",
+    "github",
   ],
 };
 

@@ -37,8 +37,6 @@ export const uploadDocument = async (data, token, dispatch) => {
 
     const cloudRes = await axios.post(uploadUrl, formData);
     const url = cloudRes.data.secure_url;
-    // ================================== File name for future use
-    // const fileName
     const resourceType = cloudRes.data.resource_type;
     const fileSize = cloudRes.data.bytes;
 
@@ -81,7 +79,6 @@ export const uploadDocumentByGroup = async (data, token, dispatch) => {
     if (backendRes.data.createdBy === user.id) {
       dispatch(addDocumentPerson(backendRes.data));
     }
-
     dispatch(addDocument(backendRes.data));
     dispatch(setPending(false));
     return backendRes;

@@ -14,7 +14,9 @@ import AddTopic from "./AddTopic/AddTopic";
 import { getClasses } from "../../../service/ClassService";
 import { FiFilter, FiSearch, FiRefreshCcw } from "react-icons/fi";
 import userApi from "../../../service/UserService";
-import {fetchUserById} from "../../../service/UserService";
+import { IoSend } from "react-icons/io5";
+import { fetchUserById } from "../../../service/UserService";
+import UploadFile from "../../ClassComponent/CheckTaskByType/Documents/UploadFile/UploadFile";
 
 const StatusBadge = ({ status }) => {
   const s = (status || "").toLowerCase();
@@ -26,7 +28,8 @@ const PlanComponent = () => {
   const user = rawUser && rawUser.user ? rawUser.user : rawUser;
   const role = user?.role;
   const token = user?.token || null;
-
+  const [showUpload, setShowUpload] = useState(false);
+  console.log(showUpload);
   let lecturerId = "";
   let userId = user?.id || user?.username || "";
   if (token) {
@@ -67,14 +70,11 @@ const PlanComponent = () => {
   );
 
   const [currentGroupId, setCurrentGroupId] = useState("");
-
   const [modal, setModal] = useState({ open: false, topic: null });
   const [rejectReason, setRejectReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
   const [localError, setLocalError] = useState("");
-
   const [addOpen, setAddOpen] = useState(false);
-
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [keyword, setKeyword] = useState("");
 
@@ -318,12 +318,13 @@ const PlanComponent = () => {
       }
       const payload = {
         ...oldPlan,
-        status: "Accepted", 
+        status: "Accepted",
 
         allowEdit: false,
         approvedBy: userId,
         approvedAt: new Date().toISOString(),
-        rejectReason: rejectReason && rejectReason.trim() ? rejectReason.trim() : null,
+        rejectReason:
+          rejectReason && rejectReason.trim() ? rejectReason.trim() : null,
       };
       await updatePlanApi(payload, token, dispatch);
       setRejectReason("");
@@ -452,176 +453,194 @@ const PlanComponent = () => {
   const refresh = () => getPlansApi(dispatch, token, effectiveClassId);
 
   return (
-    <div className="">
-      <div className="plan__header">
-        <h2>Topic</h2>
-        <div className="plan__actions">
-          {/* Thay nút làm mới bằng nút đăng ký đề tài mới */}
-          {role === "STUDENT" && currentGroupId && (
-            <button
-              className="sl-btn sl-btn--primary"
-              onClick={() => setAddOpen(true)}
-              disabled={pending}
-              type="button"
-            >
-              <i className="fa-solid fa-plus"></i>Topic
-            </button>
-          )}
-        </div>
-      </div>
+    <>
+      <div className="">
+        <div className="plan__header">
+          <h2>Topic</h2>
 
-      <div className="plan__toolbar">
-        <div className="plan__field">
-          <label>Class</label>
-          <div className="sl-select__readonly">{effectiveClassName || "—"}</div>
-        </div>
-
-        <div className="plan__field">
-          <label></label>
-          <div className="sl-select">
-            <FiFilter className="sl-select__icon" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="ALL">All</option>
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
-            </select>
+          <div className="plan__actions">
+            <div className="plan__actions">
+              <button
+                className="sl-btn sl-btn--primary"
+                onClick={() => setShowUpload(!showUpload)}
+              >
+                <IoSend />
+                Submit
+              </button>
+            </div>
+            {role === "STUDENT" && currentGroupId && (
+              <button
+                className="sl-btn sl-btn--primary"
+                onClick={() => setAddOpen(true)}
+                disabled={pending}
+                type="button"
+              >
+                <i className="fa-solid fa-plus"></i>Topic
+              </button>
+            )}
           </div>
         </div>
 
-        <div className="plan__search">
-          <FiSearch />
-          <input
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-            placeholder="Search by group / title / description…"
+        <div className="plan__toolbar">
+          <div className="plan__field">
+            <label>Class</label>
+            <div className="sl-select__readonly">
+              {effectiveClassName || "—"}
+            </div>
+          </div>
+
+          <div className="plan__field">
+            <label></label>
+            <div className="sl-select">
+              <FiFilter className="sl-select__icon" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="ALL">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="plan__search">
+            <FiSearch />
+            <input
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="Search by group / title / description…"
+            />
+          </div>
+
+          <div className="plan__count">
+            {pending ? "Loading…" : `${filteredTopics.length} results`}
+          </div>
+        </div>
+
+        {/* STUDENT: Thêm mới đề tài */}
+        {role === "STUDENT" && currentGroupId && (
+          <AddTopic
+            classId={effectiveClassId}
+            groupId={currentGroupId}
+            token={token}
+            dispatch={dispatch}
+            disabled={pending}
+            open={addOpen}
+            setOpen={setAddOpen}
           />
-        </div>
+        )}
 
-        <div className="plan__count">
-          {pending ? "Loading…" : `${filteredTopics.length} results`}
-        </div>
-      </div>
-
-      {/* STUDENT: Thêm mới đề tài */}
-      {role === "STUDENT" && currentGroupId && (
-        <AddTopic
-          classId={effectiveClassId}
-          groupId={currentGroupId}
-          token={token}
-          dispatch={dispatch}
-          disabled={pending}
-          open={addOpen}
-          setOpen={setAddOpen}
+        <DetailTopic
+          open={modal.open}
+          topic={modal.topic}
+          group={modal.topic ? groupMap[modal.topic.groupId] : null}
+          role={role}
+          actionLoading={actionLoading}
+          rejectReason={rejectReason}
+          setRejectReason={setRejectReason}
+          localError={localError}
+          setLocalError={setLocalError}
+          onClose={() => setModal({ open: false, topic: null })}
+          onApprove={() => handleApprove(modal.topic?.topicId)}
+          onReject={() => handleReject(modal.topic?.topicId)}
+          onUpdate={handleUpdate}
+          onDelete={handleDelete}
         />
-      )}
 
-      <DetailTopic
-        open={modal.open}
-        topic={modal.topic}
-        group={modal.topic ? groupMap[modal.topic.groupId] : null}
-        role={role}
-        actionLoading={actionLoading}
-        rejectReason={rejectReason}
-        setRejectReason={setRejectReason}
-        localError={localError}
-        setLocalError={setLocalError}
-        onClose={() => setModal({ open: false, topic: null })}
-        onApprove={() => handleApprove(modal.topic?.topicId)}
-        onReject={() => handleReject(modal.topic?.topicId)}
-        onUpdate={handleUpdate}
-        onDelete={handleDelete}
-      />
-
-      <div className="sl-table-wrap">
-        <table className="sl-table">
-          <thead>
-            <tr>
-              <th>Group</th>
-              <th>Leader</th>
-              <th>Members</th>
-              <th>Topic</th>
-              <th>Status</th>
-              <th>Note</th>
-              <th>Details</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pending ? (
+        <div className="sl-table-wrap">
+          <table className="sl-table">
+            <thead>
               <tr>
-                <td colSpan={7}>
-                  <div className="sl-skeleton-row" />
-                  <div className="sl-skeleton-row" />
-                  <div className="sl-skeleton-row" />
-                </td>
+                <th>Group</th>
+                <th>Leader</th>
+                <th>Members</th>
+                <th>Topic</th>
+                <th>Status</th>
+                <th>Note</th>
+                <th>Details</th>
               </tr>
-            ) : filteredTopics.length === 0 ? (
-              <tr>
-                <td colSpan={7}>
-                  <div className="sl-empty">
-                    No data matches the current filters.
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              filteredTopics.map((item) => (
-                <tr key={item.topicId}>
-                  <td className="sl-cell-strong">
-                    {getGroupName(item.groupId)}
-                  </td>
-                  <td>{getLeaderName(item.groupId)}</td>
-                  <td className="sl-cell-muted">
-                    {getMemberNames(item.groupId)}
-                  </td>
-                  <td>
-                    <div className="sl-topic">
-                      <div className="sl-topic__title">{item.topicTitle}</div>
-                      {(item.topicAbbreviation || item.registerAt) && (
-                        <div className="sl-topic__meta">
-                          {item.topicAbbreviation && (
-                            <span className="sl-kbd">
-                              {item.topicAbbreviation}
-                            </span>
-                          )}
-                          {item.registerAt && (
-                            <span className="sl-dot">
-                              {new Date(item.registerAt).toLocaleDateString()}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                  <td>
-                    <StatusBadge status={item.status} />
-                  </td>
-                  <td className="sl-cell-muted">
-                    {(item.status === "Rejected" || item.status === "Accepted") && item.rejectReason 
-                      ? item.rejectReason 
-                      : "—"}
-                  </td>
-                  <td>
-                    <button
-                      className="sl-btn sl-btn--primary sl-btn--sm"
-                      onClick={() => {
-                        setModal({ open: true, topic: item });
-                        setRejectReason("");
-                        setLocalError("");
-                      }}
-                    >
-                      View
-                    </button>
+            </thead>
+            <tbody>
+              {pending ? (
+                <tr>
+                  <td colSpan={7}>
+                    <div className="sl-skeleton-row" />
+                    <div className="sl-skeleton-row" />
+                    <div className="sl-skeleton-row" />
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : filteredTopics.length === 0 ? (
+                <tr>
+                  <td colSpan={7}>
+                    <div className="sl-empty">
+                      No data matches the current filters.
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                filteredTopics.map((item) => (
+                  <tr key={item.topicId}>
+                    <td className="sl-cell-strong">
+                      {getGroupName(item.groupId)}
+                    </td>
+                    <td>{getLeaderName(item.groupId)}</td>
+                    <td className="sl-cell-muted">
+                      {getMemberNames(item.groupId)}
+                    </td>
+                    <td>
+                      <div className="sl-topic">
+                        <div className="sl-topic__title">{item.topicTitle}</div>
+                        {(item.topicAbbreviation || item.registerAt) && (
+                          <div className="sl-topic__meta">
+                            {item.topicAbbreviation && (
+                              <span className="sl-kbd">
+                                {item.topicAbbreviation}
+                              </span>
+                            )}
+                            {item.registerAt && (
+                              <span className="sl-dot">
+                                {new Date(item.registerAt).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <StatusBadge status={item.status} />
+                    </td>
+                    <td className="sl-cell-muted">
+                      {(item.status === "Rejected" ||
+                        item.status === "Accepted") &&
+                      item.rejectReason
+                        ? item.rejectReason
+                        : "—"}
+                    </td>
+                    <td>
+                      <button
+                        className="sl-btn sl-btn--primary sl-btn--sm"
+                        onClick={() => {
+                          setModal({ open: true, topic: item });
+                          setRejectReason("");
+                          setLocalError("");
+                        }}
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+      {showUpload && (
+        <UploadFile onClose={() => setShowUpload(false)} isGroup={true} />
+      )}
+    </>
   );
 };
 

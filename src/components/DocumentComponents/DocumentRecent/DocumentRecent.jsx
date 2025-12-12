@@ -1,40 +1,22 @@
-import React from 'react';
-import './DocumentRecent.scss';
-import { FaTrash } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
-import { formatFileSize } from '../../../helper/calculateByte';
+import React from "react";
+import "./DocumentRecent.scss";
+import { FaTrash } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { formatFileSize } from "../../../helper/calculateByte";
+import Swal from "sweetalert2";
+import { useAuth } from "../../../context/AuthProvider";
+import { useDispatch } from "react-redux";
+import { deleteDocumentApi } from "../../../service/DocumentService";
 
 const DocumentRecent = ({ title, data }) => {
+  const { user } = useAuth();
   const { documents } = useSelector((state) => state.document);
-  const [recentDocuments, setRecentDocuments] = React.useState([
-    {
-      _id: 1,
-      title: 'Tech requirement.pdf',
-      description: "I read but didn't understand anything",
-    },
-    {
-      _id: 2,
-      title: 'Project guideline.docx',
-      description: 'Need to review this with team',
-    },
-    {
-      _id: 3,
-      title: 'UI design.png',
-      description: 'Uploaded design draft for feedback',
-    },
-    {
-      _id: 4,
-      title: 'README.md',
-      description: 'Contains environment setup instructions',
-    },
-  ]);
-
+  const dispatch = useDispatch();
   const itemsPerPage = 5;
   const totalPages = Math.ceil(documents?.length / itemsPerPage);
   const [currentPage, setCurrentPage] = React.useState(1);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = documents?.slice(startIndex, startIndex + itemsPerPage);
-
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
@@ -43,8 +25,26 @@ const DocumentRecent = ({ title, data }) => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
-  const handleDelete = (id) => {
-    setRecentDocuments((prev) => prev.filter((doc) => doc._id !== id));
+  const handleDeleteDocument = async (e, id) => {
+    e.stopPropagation();
+    const result = await Swal.fire({
+      title: "Are you sure to delete this doc?",
+      text: "This action can't completed!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#045745",
+      cancelButtonColor: "#c8cad4",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+    });
+    if (result.isConfirmed) {
+      const res = await deleteDocumentApi(id, user.token, dispatch);
+      if (res) {
+        Swal.fire("Deleted!", "This doc was removed successfully.", "success");
+      } else {
+        Swal.fire("Error!", "Something went wrong during deletion.", "error");
+      }
+    }
   };
 
   return (
@@ -71,7 +71,7 @@ const DocumentRecent = ({ title, data }) => {
                 </div>
                 <div
                   className="document__recent__container__main__content__item__bin"
-                  onClick={() => handleDelete(item._id)}
+                  onClick={(e) => handleDeleteDocument(e, item.documentId)}
                 >
                   <FaTrash />
                 </div>
@@ -82,7 +82,7 @@ const DocumentRecent = ({ title, data }) => {
           )}
         </div>
 
-        {recentDocuments.length > itemsPerPage && (
+        {currentItems.length > itemsPerPage && (
           <div className="pagination">
             <button
               onClick={handlePrevPage}

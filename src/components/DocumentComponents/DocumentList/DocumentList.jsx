@@ -5,7 +5,7 @@ import DocumentCard from "./DocumentCard/DocumentCard";
 import UploadFile from "../../ClassComponent/CheckTaskByType/Documents/UploadFile/UploadFile";
 import { useSelector, useDispatch } from "react-redux";
 import { useAuth } from "../../../context/AuthProvider";
-import { getDocumentByUserId } from "../../../service/DocumentService";
+
 const DocumentList = () => {
   const [isOpenUpload, setIsOpenUpload] = React.useState(false);
   const { documentPerson } = useSelector((state) => state.document);

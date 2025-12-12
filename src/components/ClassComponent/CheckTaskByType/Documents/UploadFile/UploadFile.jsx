@@ -1,36 +1,38 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import './UploadFile.scss';
-import { useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import "./UploadFile.scss";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
 import {
   getDocumentByUserId,
   uploadDocument,
   uploadDocumentByGroup,
-} from '../../../../../service/DocumentService';
-import { useAuth } from '../../../../../context/AuthProvider';
-import { useSelector } from 'react-redux';
-import decodeToken from '../../../../../service/DecodeJwt';
-import { toast } from 'sonner';
+} from "../../../../../service/DocumentService";
+import { useAuth } from "../../../../../context/AuthProvider";
+import { useSelector } from "react-redux";
+import decodeToken from "../../../../../service/DecodeJwt";
+import { toast } from "sonner";
 
 const UploadFile = ({ onClose, isGroup }) => {
   const { groupId } = useParams();
   const { groups } = useSelector((state) => state.group);
   const { user } = useAuth();
   const userDecode = decodeToken(user.token);
-  const { documentPerson } = useSelector((state) => state.document);
+  const { documentPerson, pending } = useSelector((state) => state.document);
   const groupsUser = groups.filter((group) => {
-    return group.groupStudents?.some((student) => student.userId === userDecode.id);
+    return group.groupStudents?.some(
+      (student) => student.userId === userDecode.id
+    );
   });
   const [isNewDocument, setIsNewDocument] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState([]);
   const [groupLocations, setGroupLocations] = useState([]);
   const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState('');
+  const [preview, setPreview] = useState("");
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [documentData, setDocumentData] = useState({
-    documentTitle: '',
-    documentType: 'NORMAL',
+    documentTitle: "",
+    documentType: "NORMAL",
     documentLocations: [],
   });
 
@@ -42,10 +44,10 @@ const UploadFile = ({ onClose, isGroup }) => {
     const selected = e.target.files[0];
     if (selected) {
       setFile(selected);
-      if (selected.type.startsWith('image/')) {
+      if (selected.type.startsWith("image/")) {
         setPreview(URL.createObjectURL(selected));
       } else {
-        setPreview('');
+        setPreview("");
       }
     }
   };
@@ -54,8 +56,8 @@ const UploadFile = ({ onClose, isGroup }) => {
   const handleDrag = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') setDragActive(true);
-    else if (e.type === 'dragleave') setDragActive(false);
+    if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
+    else if (e.type === "dragleave") setDragActive(false);
   }, []);
 
   const handleDrop = useCallback((e) => {
@@ -65,10 +67,10 @@ const UploadFile = ({ onClose, isGroup }) => {
     const droppedFile = e.dataTransfer.files[0];
     if (droppedFile) {
       setFile(droppedFile);
-      if (droppedFile.type.startsWith('image/')) {
+      if (droppedFile.type.startsWith("image/")) {
         setPreview(URL.createObjectURL(droppedFile));
       } else {
-        setPreview('');
+        setPreview("");
       }
     }
   }, []);
@@ -93,7 +95,7 @@ const UploadFile = ({ onClose, isGroup }) => {
     // Handle upload document for personal
     if (isGroup) return;
 
-    if (!file) return toast.error('File is required!');
+    if (!file) return toast.error("File is required!");
     setUploading(true);
 
     const payload = {
@@ -104,11 +106,11 @@ const UploadFile = ({ onClose, isGroup }) => {
     };
 
     const res = await uploadDocument(payload, user.token, dispatch);
-    if (res.status === 200) {
-      toast.success('Upload successfully');
+    if (!pending) {
+      toast.success("Upload successfully");
       onClose?.();
     } else {
-      toast.success('Something went wrong!');
+      toast.success("Something went wrong!");
     }
     setUploading(false);
   };
@@ -116,7 +118,7 @@ const UploadFile = ({ onClose, isGroup }) => {
   const handleUploadFileGroup = async () => {
     if (!isNewDocument) {
       if (!selectedDocument.documentId) {
-        toast.error('Please select a document to attach!');
+        toast.error("Please select a document to attach!");
         return;
       }
       const payload = {
@@ -129,19 +131,18 @@ const UploadFile = ({ onClose, isGroup }) => {
         documentLocations: [{ documentLocationId: null, groupId: groupId }],
       };
       const res = await uploadDocumentByGroup(payload, user.token, dispatch);
-      console.log('Upload file in group: ', res);
-      if (res.status === 200) {
-        toast.success('Upload successfully');
-        onClose?.();
+      if (pending === false) {
+        toast.success("Upload successfully");
+        onClose();
       } else {
-        toast.success('Something went wrong!');
+        toast.success("Something went wrong!");
         onClose?.();
       }
       setUploading(false);
       setUploading(false);
     } else {
       if (!file) {
-        toast.error('File is empty!');
+        toast.error("File is empty!");
         return;
       }
       const payload = {
@@ -152,9 +153,9 @@ const UploadFile = ({ onClose, isGroup }) => {
       };
       const res = await uploadDocument(payload, user.token, dispatch);
       if (res.status === 200) {
-        toast.success('Upload successfully');
+        toast.success("Upload successfully");
       } else {
-        toast.success('Something went wrong!');
+        toast.success("Something went wrong!");
       }
       setUploading(false);
     }
@@ -169,8 +170,8 @@ const UploadFile = ({ onClose, isGroup }) => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose, dragActive]);
 
   useEffect(() => {
@@ -195,7 +196,12 @@ const UploadFile = ({ onClose, isGroup }) => {
             <input
               type="text"
               value={documentData.documentTitle}
-              onChange={(e) => setDocumentData({ ...documentData, documentTitle: e.target.value })}
+              onChange={(e) =>
+                setDocumentData({
+                  ...documentData,
+                  documentTitle: e.target.value,
+                })
+              }
               placeholder="The title..."
             />
           </label>
@@ -204,7 +210,12 @@ const UploadFile = ({ onClose, isGroup }) => {
             Document Type
             <select
               value={documentData.documentType}
-              onChange={(e) => setDocumentData({ ...documentData, documentType: e.target.value })}
+              onChange={(e) =>
+                setDocumentData({
+                  ...documentData,
+                  documentType: e.target.value,
+                })
+              }
             >
               <option value="NORMAL">Normal</option>
               <option value="REPORT">Report</option>
@@ -233,16 +244,23 @@ const UploadFile = ({ onClose, isGroup }) => {
           {/* Checkbox to toggle "New Document" */}
           {!isNewDocument && isGroup && (
             <div className="document-selection">
-              <label className="upload__label">Select Document from Existing</label>
+              <label className="upload__label">
+                Select Document from Existing
+              </label>
               <div className="own__group">
                 {documentPerson &&
                   documentPerson.map((doc) => {
                     return (
-                      <div key={doc.documentId} className="document__card_item d-flex gap-2">
+                      <div
+                        key={doc.documentId}
+                        className="document__card_item d-flex gap-2"
+                      >
                         <input
                           type="radio"
                           name="documentSelection"
-                          checked={selectedDocument?.documentId === doc.documentId}
+                          checked={
+                            selectedDocument?.documentId === doc.documentId
+                          }
                           onChange={() => setSelectedDocument(doc)}
                         />
                         <span>{doc.documentTitle}</span>
@@ -255,9 +273,9 @@ const UploadFile = ({ onClose, isGroup }) => {
                 className="choose__file__btn"
                 onClick={handleUploadFileGroup}
                 disabled={uploading}
-                style={{ marginTop: '15px' }}
+                style={{ marginTop: "15px" }}
               >
-                {uploading ? 'Attaching...' : 'Attach to Group'}
+                {uploading ? "Attaching..." : "Attach to Group"}
               </button>
             </div>
           )}
@@ -282,7 +300,7 @@ const UploadFile = ({ onClose, isGroup }) => {
                     <input
                       type="checkbox"
                       checked={groupLocations.some(
-                        (groupLoc) => groupLoc.groupId === group.groupsId,
+                        (groupLoc) => groupLoc.groupId === group.groupsId
                       )}
                       onChange={() => toggleGroupSelection(group.groupsId)}
                     />
@@ -299,16 +317,21 @@ const UploadFile = ({ onClose, isGroup }) => {
               {groupLocations.length > 0 && (
                 <div className="selected-group-list">
                   {groupLocations.map((groupLoc) => {
-                    const group = groupsUser.find((g) => g.groupsId === groupLoc.groupId);
+                    const group = groupsUser.find(
+                      (g) => g.groupsId === groupLoc.groupId
+                    );
                     return (
-                      <div key={groupLoc.groupId} className="selected-group-item">
+                      <div
+                        key={groupLoc.groupId}
+                        className="selected-group-item"
+                      >
                         <span>{group?.groupsName}</span>
                         <button
                           type="button"
                           onClick={() => toggleGroupSelection(groupLoc.groupId)}
                           className="remove-group-btn"
                         >
-                          &#10005; {/* dấu x */}
+                          &#10005;
                         </button>
                       </div>
                     );
@@ -351,7 +374,7 @@ const UploadFile = ({ onClose, isGroup }) => {
                     onClick={handleUploadFileGroup}
                     disabled={uploading}
                   >
-                    {uploading ? 'Uploading...' : 'Upload Group'}
+                    {pending ? "Uploading..." : "Upload Group"}
                   </button>
                 ) : (
                   <button
@@ -359,7 +382,7 @@ const UploadFile = ({ onClose, isGroup }) => {
                     onClick={handleUploadFileService}
                     disabled={uploading}
                   >
-                    {uploading ? 'Uploading...' : 'Upload'}
+                    {pending ? "Uploading..." : "Upload"}
                   </button>
                 )}
               </div>

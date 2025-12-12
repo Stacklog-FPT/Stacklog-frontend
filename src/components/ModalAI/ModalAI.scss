@@ -39,6 +39,7 @@
   flex-direction: column;
   /* keep modal within viewport and allow internal scrolling */
   max-height: 92vh;
+  position: relative;
 }
 .modal-ai-header {
   display: flex;
@@ -68,7 +69,8 @@
   /* keep the overall body static and let the history area handle scrolling
      to avoid double vertical scrollbars (outer + inner) */
   flex: 1 1 auto;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .modal-ai-tabs {
   display: flex;
@@ -150,33 +152,25 @@
   flex: 1 1 auto;
   min-height: 160px;
   overflow: auto;
+  overflow-x: visible; /* Allow tooltips to show horizontally outside */
   display: flex;
   flex-direction: column;
   gap: 8px;
+  position: relative;
 }
 /* generated tasks list container */
 .modal-ai-generated-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   padding: 8px;
   background: transparent;
-}
-
-/* responsive: two columns for larger screens */
-@media (min-width: 880px) {
-  .modal-ai-generated-list {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-}
-/* Make generated list occupy more of the modal's vertical space */
-.modal-ai-generated-list {
   /* allow the generated list to grow inside the history area */
   flex: 1 1 auto;
   max-height: 56vh;
-  overflow: auto;
+  overflow: visible; /* Changed from auto to visible to allow tooltips to show outside */
   padding-right: 6px;
+  position: relative;
 }
 
 @media (max-width: 640px) {
@@ -189,13 +183,23 @@
   padding: 14px;
   border-radius: 12px;
   background: #ffffff;
-  border: 1px solid rgba(15,23,42,0.04);
-  box-shadow: 0 4px 12px rgba(2,6,23,0.04);
+  border: 1px solid rgba(15,23,42,0.08);
+  box-shadow: 0 2px 8px rgba(2,6,23,0.06);
   align-items: flex-start;
   cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 4px;
 }
-.modal-ai-task-item:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(2,6,23,0.06); }
+
+.modal-ai-task-item:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 24px rgba(2,6,23,0.12);
+  z-index: 1000;
+  border-color: #045745;
+  background: #f0fdf4;
+}
 .modal-ai-task-item.selected { border-color: #10b981; background: #f0ffef; box-shadow: 0 6px 20px rgba(16,185,129,0.06); }
 .modal-ai-task-left { display: flex; align-items: flex-start; }
 .modal-ai-task-select input {
@@ -269,6 +273,233 @@
 
 /* example task list inside the "Task list template" tab */
 .modal-ai-task-list { max-height: 32vh; overflow: auto; padding-right: 6px; }
+
+/* Tooltip styling - portal version */
+.modal-ai-task-tooltip-portal {
+  width: 380px;
+  max-height: 500px;
+  background: #ffffff;
+  border: 2px solid #045745;
+  border-radius: 12px;
+  box-shadow: 
+    0 10px 40px rgba(15, 23, 42, 0.25),
+    0 4px 16px rgba(4, 87, 69, 0.15);
+  padding: 18px;
+  pointer-events: none;
+  animation: tooltipFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-ai-tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.modal-ai-tooltip-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: #0f172a;
+  flex: 1;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+.modal-ai-tooltip-id {
+  font-size: 11px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  margin-left: 12px;
+  flex-shrink: 0;
+}
+
+.modal-ai-tooltip-section {
+  margin-bottom: 16px;
+}
+
+.modal-ai-tooltip-section strong {
+  display: block;
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+}
+
+.modal-ai-tooltip-section p {
+  margin: 0;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.6;
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.modal-ai-tooltip-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.modal-ai-tooltip-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.modal-ai-tooltip-item strong {
+  font-size: 10px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+}
+
+.modal-ai-tooltip-item span {
+  font-size: 14px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.modal-ai-tooltip-priority {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modal-ai-tooltip-priority::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.modal-ai-tooltip-priority.priority-high {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 2px solid #fca5a5;
+}
+
+.modal-ai-tooltip-priority.priority-high::before {
+  background: #dc2626;
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
+}
+
+.modal-ai-tooltip-priority.priority-critical {
+  background: #fef2f2;
+  color: #7f1d1d;
+  border: 2px solid #fca5a5;
+}
+
+.modal-ai-tooltip-priority.priority-critical::before {
+  background: #991b1b;
+  box-shadow: 0 0 8px rgba(153, 27, 27, 0.5);
+}
+
+.modal-ai-tooltip-priority.priority-medium {
+  background: #fef3c7;
+  color: #92400e;
+  border: 2px solid #fcd34d;
+}
+
+.modal-ai-tooltip-priority.priority-medium::before {
+  background: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.modal-ai-tooltip-priority.priority-low {
+  background: #d1fae5;
+  color: #065f46;
+  border: 2px solid #6ee7b7;
+}
+
+.modal-ai-tooltip-priority.priority-low::before {
+  background: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.modal-ai-tooltip-priority.priority- {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 2px solid #d1d5db;
+}
+
+.modal-ai-tooltip-priority.priority-::before {
+  background: #9ca3af;
+}
+
+/* Responsive tooltip adjustments */
+@media (max-width: 640px) {
+  .modal-ai-task-tooltip {
+    /* On mobile, show tooltip below the card instead of to the side */
+    left: 0 !important;
+    right: 0 !important;
+    top: calc(100% + 8px);
+    width: 100%;
+    max-width: none;
+    padding: 16px;
+  }
+  
+  .modal-ai-tooltip-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .modal-ai-tooltip-title {
+    font-size: 14px;
+  }
+  
+  .modal-ai-tooltip-section p {
+    font-size: 13px;
+    max-height: 100px;
+  }
+  
+  @keyframes tooltipSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
 
 .modal-ai-empty {
   color: #6b7280;
@@ -378,7 +609,12 @@
   display: flex;
   gap: 8px;
   align-items: center;
-  padding: 10px 0 6px;
+  padding: 12px 16px;
+  background: #fff;
+  border-top: 1px solid #f3f4f6;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
 }
 .modal-ai-btn {
   padding: 8px 12px;

@@ -108,7 +108,54 @@
   cursor: pointer;
 }
 
+.btn-pick-leader {
+  background: var(--bg--primary-color);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+}
+
+.btn-github-setup {
+  background: #24292e;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #1a1e22;
+    transform: translateY(-1px);
+  }
+
+  i {
+    font-size: 14px;
+  }
+}
+
 /* Small utility for inline button spacing in the table rows */
 .grades__component__container__table__list td button {
   vertical-align: middle;
+}
+
+.grades__component__container__table__list{
+  width: 100%;
+  height: auto;
 }

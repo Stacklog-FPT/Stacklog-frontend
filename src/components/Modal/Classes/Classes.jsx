@@ -19,6 +19,7 @@ import ExportXlsxButton from '../../ExportXlsxButton/ExportXlsxButton';
 import ImportXlsxButton from '../../ImportXlsxButton/ImportXlsxButton';
 import { exportClassAndDownload, importClassByClassId } from '../../../service/ClassService';
 import { fetchUserById } from "../../../service/UserService";
+import GithubSetupModal from '../../GithubSetup/GithubSetupModal';
 
 const {
   getClasses,
@@ -68,6 +69,9 @@ const ClassList = ({ handleActivityAddClass }) => {
   // State cho popup invite code
   const [inviteCode, setInviteCode] = useState('');
   const [showInvitePopup, setShowInvitePopup] = useState(false);
+
+  // State cho GitHub setup modal
+  const [showGithubSetup, setShowGithubSetup] = useState(false);
 
 
   useEffect(() => {
@@ -615,14 +619,24 @@ const ClassList = ({ handleActivityAddClass }) => {
                       <span>Member</span>
                     </button>
                     {isLeader ? (
-                      <button
-                        className="btn-pick-leader"
-                        style={{ marginLeft: '12px' }}
-                        onClick={handlePickNewLeader}
-                      >
-                        <i className="fa-solid fa-user-check" />
-                        <span style={{ marginLeft: 6 }}>Pick leader</span>
-                      </button>
+                      <>
+                        <button
+                          className="btn-pick-leader"
+                          style={{ marginLeft: '12px' }}
+                          onClick={handlePickNewLeader}
+                        >
+                          <i className="fa-solid fa-user-check" />
+                          <span style={{ marginLeft: 6 }}>Pick leader</span>
+                        </button>
+                        <button
+                          className="btn-github-setup"
+                          style={{ marginLeft: '12px', background: '#24292e', color: '#fff' }}
+                          onClick={() => setShowGithubSetup(true)}
+                        >
+                          <i className="fa-brands fa-github" />
+                          <span style={{ marginLeft: 6 }}>Setup GitHub</span>
+                        </button>
+                      </>
                     ) : null}
                   </>
                 );
@@ -843,6 +857,13 @@ const ClassList = ({ handleActivityAddClass }) => {
 
       {showInvitePopup && (
         <PopupInviteCode inviteCode={inviteCode} setShowInvitePopup={setShowInvitePopup} />
+      )}
+
+      {showGithubSetup && (
+        <GithubSetupModal
+          groupId={selectedGroup}
+          onClose={() => setShowGithubSetup(false)}
+        />
       )}
     </div>
   );

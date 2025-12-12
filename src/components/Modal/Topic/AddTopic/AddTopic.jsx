@@ -165,7 +165,7 @@ const AddTopic = ({
       aria-labelledby="add-topic-title"
     >
       <div
-        className="sl-modal__card sl-modal__card--sm"
+        className="sl-modal__card2 sl-modal__card2--sm"
         onClick={(e) => e.stopPropagation()}
       >
         <button

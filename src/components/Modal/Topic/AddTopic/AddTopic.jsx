@@ -213,7 +213,7 @@ const AddTopic = ({
             {/* objective removed */}
 
             <div className="sl-upload">
-              <label className="sl-label">Attachments</label>
+              {/* <label className="sl-label">Attachments</label>
               <div className="sl-upload__row">
                 <label className="sl-btn sl-btn--ghost">
                   <FiPaperclip />
@@ -229,7 +229,7 @@ const AddTopic = ({
                 <div className="sl-upload__hint">
                   Multiple files supported. For large files, use a Drive link.
                 </div>
-              </div>
+              </div> */}
 
               {form.attachments.length > 0 && (
                 <div className="sl-filechips">

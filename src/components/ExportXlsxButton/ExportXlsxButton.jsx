@@ -30,7 +30,7 @@ const ExportXlsxButton = ({
 
   return (
     <button className="btn-export" type="button" onClick={handleExport}>
-      <i style={{ color: "#fff" }} className="fa-solid fa-download"></i>
+      <i className="fa-solid fa-download"></i>
       <span>Export</span>
     </button>
   );

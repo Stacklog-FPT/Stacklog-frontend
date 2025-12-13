@@ -4,7 +4,7 @@ $color-bg-darkmode: #edf2f2;
 $color-border-input: #e8e8e8;
 .group__container {
   width: 100%;
-  height: 100%;
+  height: 715px;
   background-color: var(--bg--nav);
   border-left: 1px solid #c8cad4;
   overflow-y: auto;
@@ -97,7 +97,7 @@ $color-border-input: #e8e8e8;
       .fa-magnifying-glass {
         position: absolute;
         left: 10px;
-          top: 50%;
+        top: 50%;
         transform: translateY(-50%);
         color: #666;
         font-size: 18px;

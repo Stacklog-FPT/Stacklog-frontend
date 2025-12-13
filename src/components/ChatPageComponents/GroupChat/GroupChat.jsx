@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { setBoxes } from '../../../redux/slice/chatSlice';
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setBoxes } from "../../../redux/slice/chatSlice";
 import avatar from "../../../assets/logo-login.png";
 import "./GroupChat.scss";
 import { ChatContext } from "../../../context/ChatContext";
@@ -170,7 +170,7 @@ const GroupChat = ({
         if (mounted) {
           // Update Redux store with fetched boxes
           dispatch(setBoxes(mapped));
-          
+
           // For any box that doesn't have normalized messages, fetch its messages
           // and normalize them so the left-hand list can show the last message text.
           const boxesToFetch = mapped.filter(
@@ -278,10 +278,12 @@ const GroupChat = ({
         const users = await getAllUsers(user.token);
         if (!mounted) return;
         // Some getAllUsers endpoints return { data: [...] } or array directly
-        const list = Array.isArray(users) ? users : users?.data || users?.users || [];
+        const list = Array.isArray(users)
+          ? users
+          : users?.data || users?.users || [];
         setAllUsers(list);
       } catch (e) {
-        console.warn('Failed to load users for suggestions', e);
+        console.warn("Failed to load users for suggestions", e);
       }
     };
     loadUsers();
@@ -339,7 +341,7 @@ const GroupChat = ({
       setMembersEmails([]);
 
       // Trigger refresh to reload boxes from server
-      setRefreshTrigger(prev => prev + 1);
+      setRefreshTrigger((prev) => prev + 1);
 
       // Normalize saved box to the same internal shape
       const savedMembers = Array.isArray(saved.memberIds)
@@ -401,7 +403,8 @@ const GroupChat = ({
 
   const handleSelectGroup = (group) => {
     try {
-      const id = group.id || group.boxChat?.boxChatId || group._id || group.boxChat?.id;
+      const id =
+        group.id || group.boxChat?.boxChatId || group._id || group.boxChat?.id;
       if (id) {
         // navigate to parameterized chat path so URL reflects selected box
         navigate(`/chatbox/${id}`);
@@ -431,6 +434,18 @@ const GroupChat = ({
     });
   };
 
+  function truncateName(name, maxChars = 3) {
+    if (!name) return "";
+    // Loại bỏ khoảng trắng thừa và lấy phần tên
+    const trimmedName = name.trim();
+
+    if (trimmedName.length <= maxChars) {
+      return trimmedName; // Nếu ngắn hơn hoặc bằng thì giữ nguyên
+    }
+
+    // Lấy maxChars ký tự đầu tiên (theo Unicode, an toàn với tiếng Việt)
+    return trimmedName.slice(0, maxChars) + ".....";
+  }
   return (
     <div className="group__chat__container">
       <div className="group__chat__header">
@@ -501,8 +516,9 @@ const GroupChat = ({
                           if (!q) return;
 
                           // Prefer selecting a matching user from suggestions
-                          const match = (allUsers || []).find((u) =>
-                            (u.email || "").toLowerCase() === q.toLowerCase()
+                          const match = (allUsers || []).find(
+                            (u) =>
+                              (u.email || "").toLowerCase() === q.toLowerCase()
                           );
                           if (match && match.email) {
                             const email = match.email;
@@ -536,8 +552,10 @@ const GroupChat = ({
                           const q = memberQuery.toLowerCase();
                           return (
                             (u.email && u.email.toLowerCase().includes(q)) ||
-                            (u.full_name && u.full_name.toLowerCase().includes(q)) ||
-                            (u.work_id && String(u.work_id).toLowerCase().includes(q))
+                            (u.full_name &&
+                              u.full_name.toLowerCase().includes(q)) ||
+                            (u.work_id &&
+                              String(u.work_id).toLowerCase().includes(q))
                           );
                         })
                         .slice(0, 8)
@@ -553,9 +571,14 @@ const GroupChat = ({
                               setMemberQuery("");
                             }}
                           >
-                            <img src={u.avatar_link} alt={u.full_name || u.email} />
+                            <img
+                              src={u.avatar_link}
+                              alt={u.full_name || u.email}
+                            />
                             <div className="member-suggestion-info">
-                              <div className="member-name">{u.full_name || u.email}</div>
+                              <div className="member-name">
+                                {u.full_name || u.email}
+                              </div>
                               <div className="member-email">{u.email}</div>
                             </div>
                           </div>
@@ -567,7 +590,9 @@ const GroupChat = ({
                     <div className="members-list">
                       {membersEmails.map((email, index) => {
                         const userObj = (allUsers || []).find(
-                          (u) => (u.email || "").toLowerCase() === (email || "").toLowerCase()
+                          (u) =>
+                            (u.email || "").toLowerCase() ===
+                            (email || "").toLowerCase()
                         );
                         const ava = userObj
                           ? userObj.avatar_link
@@ -579,9 +604,16 @@ const GroupChat = ({
                           : email;
 
                         return (
-                          <div key={`${email}-${index}`} className="member-chip">
+                          <div
+                            key={`${email}-${index}`}
+                            className="member-chip"
+                          >
                             {ava ? (
-                              <img src={ava} alt={displayName} className="chip-avatar" />
+                              <img
+                                src={ava}
+                                alt={displayName}
+                                className="chip-avatar"
+                              />
                             ) : (
                               <div className="chip-avatar chip-avatar--placeholder" />
                             )}
@@ -593,7 +625,9 @@ const GroupChat = ({
                               type="button"
                               className="chip-remove"
                               onClick={() =>
-                                setMembersEmails((prev) => prev.filter((_, i) => i !== index))
+                                setMembersEmails((prev) =>
+                                  prev.filter((_, i) => i !== index)
+                                )
                               }
                             >
                               ×
@@ -648,8 +682,11 @@ const GroupChat = ({
                   <h2>{boxDetail.boxChat?.nameBox}</h2>
                   <p>
                     {boxDetail.messages && boxDetail.messages.length > 0
-                      ? boxDetail.messages[boxDetail.messages.length - 1]
-                          .chatMessageContent
+                      ? truncateName(
+                          boxDetail.messages[boxDetail.messages.length - 1]
+                            .chatMessageContent,
+                          5
+                        )
                       : "StackLog is ready to chat!"}
                   </p>
                 </div>

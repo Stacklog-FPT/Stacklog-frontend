@@ -6,9 +6,10 @@ $background-is-hover: #dbeafe;
 
 .group__chat__container {
   width: 100%;
-  // max-height: 480px;
-  margin-top: 5px;
+  height: 100%;
+  margin-top: 10px;
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
@@ -66,7 +67,7 @@ $background-is-hover: #dbeafe;
     align-items: flex-start;
     justify-content: flex-start;
     padding-left: 5px;
-    padding-bottom: 5px;
+    padding-top: 20px;
     gap: 15px;
 
     .group__chat__card {
@@ -280,7 +281,7 @@ $background-is-hover: #dbeafe;
     padding: 8px 10px;
     border-radius: 999px;
     border: 1px solid #eef2f6;
-    box-shadow: 0 1px 2px rgba(16,24,40,0.03);
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
     width: 100%; /* make each chip full width of the container */
     max-width: 100%;
     box-sizing: border-box;
@@ -423,8 +424,6 @@ $background-is-hover: #dbeafe;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-
-  
 }
 
 .btn-cancel-group {

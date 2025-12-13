@@ -50,7 +50,6 @@ const Task = ({
     id: props.id,
     disabled: isDraggingOverlay,
   });
-  console.log("Task call: ", props.task.subtasks);
   const { user } = useAuth();
   const [showSubTask, setShowSubTask] = useState(false);
   const dispatch = useDispatch();
@@ -152,8 +151,6 @@ const Task = ({
     const now = new Date();
 
     const dueDate = parseDDMMYYYY(due);
-
-    console.log("DueDate:", dueDate);
 
     // Kiểm tra hợp lệ
     if (!dueDate || isNaN(dueDate)) {

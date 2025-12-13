@@ -4,14 +4,14 @@ $color-hover: red;
 
 .add-task {
   position: absolute;
-  top: 15%;
-  left: 37%;
+  top: 8%;
+  left: 35%;
   z-index: 1000;
   width: 680px;
-  height: 620px;
+  height: 710px;
   background-color: var(--bg--nav);
   border-radius: 30px;
-  overflow: hidden;
+  overflow-y: scroll;
 }
 
 .add-task-container {

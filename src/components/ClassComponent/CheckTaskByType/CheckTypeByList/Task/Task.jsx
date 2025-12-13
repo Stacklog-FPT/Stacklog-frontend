@@ -38,6 +38,8 @@ const Task = ({ ...props }) => {
     id: props.id,
   });
 
+  console.log(props);
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -109,22 +111,50 @@ const Task = ({ ...props }) => {
   const visibleMembers = memberDetails?.slice(0, 3) || [];
   const extraCount = memberDetails?.length - visibleMembers?.length;
 
+  const parseDDMMYYYY = (dateString) => {
+    if (!dateString) return null;
+    const [day, month, year] = dateString.split("/").map(Number);
+    if (!day || !month || !year) return null;
+
+    return new Date(year, month - 1, day);
+  };
+
+  const calculateRemainingPercent = (due) => {
+    const now = new Date();
+
+    const dueDate = parseDDMMYYYY(due);
+
+    // Kiểm tra hợp lệ
+    if (!dueDate || isNaN(dueDate)) {
+      return 0;
+    }
+
+    // Nếu đã quá hạn hoặc đúng ngày due → 0%
+    if (now >= dueDate) {
+      return 0;
+    }
+
+    // Giả định task bắt đầu 30 ngày trước dueDate
+    const assumedStartDate = new Date(dueDate);
+    assumedStartDate.setDate(dueDate.getDate() - 30);
+
+    // Nếu hiện tại chưa đến ngày bắt đầu (hiếm xảy ra) → 100%
+    if (now <= assumedStartDate) {
+      return 100;
+    }
+
+    const totalTime = dueDate - assumedStartDate; // milliseconds
+    const remainingTime = dueDate - now;
+
+    const percent = Math.round((remainingTime / totalTime) * 100);
+
+    return Math.max(percent, 0); // đảm bảo không âm
+  };
+
   const getColorByPercent = (percent) => {
     if (percent >= 70) return "#4caf50";
     if (percent >= 40) return "#ff9800";
     return "#f44336";
-  };
-
-  const calculateRemainingPercent = (createdAt, dueDate) => {
-    if (!createdAt || !dueDate) return 0;
-    const start = new Date(createdAt);
-    const end = new Date(dueDate);
-    const now = new Date();
-    if (isNaN(start) || isNaN(end) || end <= start || now > end) return 0;
-    const totalDuration = end - start;
-    const remainingDuration = end - now;
-    const percent = (remainingDuration / totalDuration) * 100;
-    return Math.max(0, Math.min(100, Math.round(percent)));
   };
 
   const percent = calculateRemainingPercent(
@@ -198,13 +228,14 @@ const Task = ({ ...props }) => {
           </div>
         </td>
         <td>
-          <div className="feature">
+          <div className="feature d-flex align-items-start justify-content-start gap-3 w-100">
             <FaPlusCircle
               size={14}
               onClick={() => {
                 e.stopPropagation();
                 props.onShowAddSubTask(props.task);
               }}
+              style={{ marginTop: "5px" }}
             />
             <div className="comment__lenght">
               <FaComment
@@ -224,7 +255,7 @@ const Task = ({ ...props }) => {
                   handleToggleSubTask();
                 }}
               />
-              <span>{props.task?.subTasks?.length || 0}</span>
+              <span>{props.task?.subtasks?.length || 0}</span>
             </div>
           </div>
         </td>
@@ -237,14 +268,14 @@ const Task = ({ ...props }) => {
         >
           <SortableContext
             items={
-              props.task?.subTasks?.map(
+              props.task?.subtasks?.map(
                 (subtask) => `${props.task.taskId}-subtask-${subtask.taskId}`
               ) || []
             }
             strategy={verticalListSortingStrategy}
           >
-            {props.task?.subTasks?.length > 0 ? (
-              props.task?.subTasks?.map((sub) => (
+            {props.task?.subtasks?.length > 0 ? (
+              props.task?.subtasks?.map((sub) => (
                 <Subtask
                   key={`${props.task.taskId}-subtask-${sub.taskId}`}
                   id={`${props.task.taskId}-subtask-${sub.taskId}`}

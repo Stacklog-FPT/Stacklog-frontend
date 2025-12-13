@@ -105,9 +105,9 @@ const AddTask = ({ status, onCancel, group }) => {
     if (
       !taskData.taskPoint ||
       taskData.taskPoint < 4 ||
-      taskData.taskPoint > 10
+      taskData.taskPoint > 15
     ) {
-      toast.error("Task point must be between 4 and 10!");
+      toast.error("Task point must be between 4 and 15!");
       return false;
     }
 
@@ -185,7 +185,7 @@ const AddTask = ({ status, onCancel, group }) => {
         reviews: [],
         checkLists: [],
       };
-      console.log(payload);
+      console.log("Payload Add Task: ", payload);
       const response = await addTask(payload, user.token, dispatch);
       if (response.status === 200) {
         toast.success("Add task success");

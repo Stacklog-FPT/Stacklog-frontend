@@ -245,8 +245,8 @@ export const lockUser = async (token, userId) => {
       `https://stacklog.id.vn/api/profile/user/lockunlock/${userId}`
     );
 
-    console.log(response);
     setPending(false);
+    return response;
   } catch (e) {
     setPending(false);
     throw new Error();

@@ -174,7 +174,40 @@ const Row = ({
   };
 
   const handleLockAccount = async (userId) => {
-    await lockUser(user.token, userId);
+    const result = await Swal.fire({
+      title: `Are you sure to  ${
+        data.isActive ? "lock" : "unlock"
+      } this account?`,
+      text: "This action can't be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#045745",
+      cancelButtonColor: "#c8cad4",
+      confirmButtonText: "Lock",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const resp = await lockUser(user.token, userId);
+        if (resp.status === 200) {
+          Swal.fire(
+            "Success!",
+            `Account has been ${
+              data.isActive ? "locked" : "unlocked"
+            } successfully.`,
+            "success"
+          );
+        }
+      } catch (e) {
+        console.error("Lock/Unlock failed:", e);
+        Swal.fire(
+          "Error!",
+          "Something went wrong during the process.",
+          "error"
+        );
+      }
+    }
   };
   switch (role) {
     case "Semester":

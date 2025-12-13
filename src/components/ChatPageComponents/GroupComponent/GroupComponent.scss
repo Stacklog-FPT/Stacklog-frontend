@@ -84,6 +84,7 @@ $color-hover-bg: #f0fdfa; // xanh nhạt rất nhẹ (teal)
     .group__input {
       position: relative;
       flex: 1 1 auto;
+      z-index: 100;
 
       input[type="text"] {
         width: 100%;
@@ -115,18 +116,16 @@ $color-hover-bg: #f0fdfa; // xanh nhạt rất nhẹ (teal)
       // Dropdown gợi ý tìm kiếm user
       .member-suggestions {
         position: absolute;
-        top: 100%;
+        top: calc(100% + 4px);
         left: 0;
         right: 0;
         background: $color-background-white;
         border: 1px solid #e0e0e0;
-        border-top: none;
-        border-radius: 0 0 12px 12px;
+        border-radius: 12px;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
         max-height: 300px;
         overflow-y: auto;
-        z-index: 1000;
-        margin-top: 4px;
+        z-index: 9999;
 
         // Thông báo loading / không tìm thấy
         & > div:not(.member-suggestion-item) {

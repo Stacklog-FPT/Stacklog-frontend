@@ -83,7 +83,66 @@ const ChatPage = () => {
     let mounted = true;
     const service = chatApi();
     const ensureSelect = async () => {
-      if (!boxId) return;
+      // Nếu không có boxId, tự động chọn box đầu tiên
+      if (!boxId) {
+        let allBoxes = boxes || [];
+        
+        // Nếu chưa có boxes trong Redux, fetch từ server
+        if (allBoxes.length === 0 && user?.token) {
+          try {
+            const fetched = await service.getBoxes(user.token, dispatch);
+            if (!mounted) return;
+            const list = Array.isArray(fetched) ? fetched : (fetched?.data || fetched || []);
+            allBoxes = list;
+          } catch (e) {
+            // ignore fetch errors
+          }
+        }
+
+        // Chọn box đầu tiên nếu có
+        if (allBoxes.length > 0) {
+          const firstBox = allBoxes[0];
+          const normalized = normalize(firstBox);
+          
+          // Enrich PERSONAL box name
+          try {
+            const boxType = String(normalized.boxType || '').toUpperCase();
+            const nameBox = normalized.boxChat && normalized.boxChat.nameBox;
+            const looksLikeId = (s) => typeof s === 'string' && /^[0-9a-f]{6,}$/i.test(s);
+            if (boxType === 'PERSONAL' && (!nameBox || looksLikeId(nameBox)) && user?.token) {
+              const currentUserId = (() => {
+                if (!user?.token) return '';
+                try {
+                  const dec = jwtDecode(user.token);
+                  return dec.id || dec._id || dec.email || '';
+                } catch (e) {
+                  return '';
+                }
+              })();
+              const other = (Array.isArray(normalized.members) && normalized.members.find((m) => m && m !== currentUserId)) || null;
+              if (other) {
+                try {
+                  const info = await fetchUserById(user.token, other);
+                  if (mounted && info) {
+                    normalized.boxChat.nameBox = info.full_name || info.email || other;
+                    normalized.boxChat.avaBox = info.avatar_link ? `${info.avatar_link}` : normalized.boxChat.avaBox;
+                  }
+                } catch (e) {
+                  // ignore enrich errors
+                }
+              }
+            }
+          } catch (e) {}
+
+          setSelectedBox(normalized);
+          // Navigate to first box
+          const firstBoxId = normalized.id;
+          if (firstBoxId) {
+            navigate(`/chatbox/${firstBoxId}`, { replace: true });
+          }
+        }
+        return;
+      }
 
       // try to find locally first
       let raw = (boxes || []).find((b) => {

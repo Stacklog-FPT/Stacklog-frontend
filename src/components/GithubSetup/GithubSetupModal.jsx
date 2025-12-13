@@ -150,14 +150,14 @@ export default function GithubSetupModal({ groupId, onClose }) {
                   id="collaborator"
                   type="text"
                   className="form-input"
-                  placeholder="longle2507, thanhtc003"
+                  placeholder="lelong2507, thanhtc003"
                   value={collaborator}
                   onChange={(e) => setCollaborator(e.target.value)}
                   disabled={loading}
                 />
               </div>
 
-              <div className="form-group">
+              {/* <div className="form-group">
                 <label htmlFor="callbackUrl">Webhook Callback URL</label>
                 <input
                   id="callbackUrl"
@@ -168,7 +168,7 @@ export default function GithubSetupModal({ groupId, onClose }) {
                   onChange={(e) => setCallbackUrl(e.target.value)}
                   disabled={loading}
                 />
-              </div>
+              </div> */}
 
               <div className="form-group">
                 <label htmlFor="secret">Webhook Secret</label>

@@ -13,7 +13,7 @@ import {
 import AddCategoryByReuse from "./AddCategoryByReuse/AddCategoryByReuse";
 import { canViewGroup } from "../../helper/validateStudentGroup";
 
-const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
+const GradesComponents = ({ handleActiveDetail, handleActivityAddCore, refreshTrigger }) => {
   const dispatch = useDispatch();
   const { user } = useAuth();
   const token = user?.token || null;
@@ -157,6 +157,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
             mapped = mapped.map((u) => {
               let weightedSum = 0;
               let sumWeights = 0;
+              let hasZeroScore = false;
 
               // try to find raw groupStudent entry that corresponds to this mapped user (if any)
               const extractGSId = (s) =>
@@ -255,6 +256,10 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                 if (!Number.isNaN(val)) {
                   weightedSum += val * w;
                   sumWeights += w;
+                  // Check if any score is 0
+                  if (val === 0) {
+                    hasZeroScore = true;
+                  }
                 }
               });
               const avg =
@@ -263,10 +268,11 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                   : typeof u.average === "number"
                   ? u.average
                   : 0;
+              // Student fails if average < 5 OR if any category has 0 score
               return {
                 ...u,
                 average: Number(avg.toFixed(2)),
-                status: avg >= 5,
+                status: avg >= 5 && !hasZeroScore,
               };
             });
           }
@@ -587,6 +593,17 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
   React.useEffect(() => {
     setStudentPage(1);
   }, [classes]);
+  
+  // Reload students when refreshTrigger changes (after score saved in detail)
+  React.useEffect(() => {
+    if (refreshTrigger > 0 && selectedGroupId && selectedClassId) {
+      // Find the current group and reload its students
+      const grp = area.find((g) => g._id === selectedGroupId);
+      if (grp && grp.raw?.groupStudents) {
+        fetchProfilesForGroupStudents(grp.raw.groupStudents);
+      }
+    }
+  }, [refreshTrigger, selectedGroupId, selectedClassId, area]);
 
   const handleClassChange = (e) => {
     const classId = e.target.value;
@@ -1196,8 +1213,8 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                 <th>Student</th>
                 <th>Gmail</th>
                 <th>ID</th>
-                <th>Average</th>
-                <th>Status</th>
+                {/* <th>Average</th>
+                <th>Status</th> */}
                 <th></th>
               </tr>
             </thead>
@@ -1233,7 +1250,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                       <p>{item.id}</p>
                     </td>
                     {/* Average column (numeric, 2 decimals) */}
-                    <td>
+                    {/* <td>
                       {(() => {
                         const raw =
                           typeof item.average === "number"
@@ -1250,10 +1267,10 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                           </p>
                         );
                       })()}
-                    </td>
+                    </td> */}
 
                     {/* Status column (Passed / Not passed) */}
-                    <td>
+                    {/* <td>
                       {(() => {
                         const raw =
                           typeof item.average === "number"
@@ -1267,7 +1284,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                           </span>
                         );
                       })()}
-                    </td>
+                    </td> */}
                     <td>
                       <span
                         className="btn__see__detail"

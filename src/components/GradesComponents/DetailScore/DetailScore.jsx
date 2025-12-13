@@ -3,7 +3,7 @@ import "./DetailScore.scss";
 import { useAuth } from "../../../context/AuthProvider";
 import { saveScore, updateScoreCategory, getScoreCategoriesByClass, deleteScoreCategory } from "../../../service/ScoreService";
 
-const DetailScore = ({ handleActiveDetail, student, categories = [], loading = false, groupId = null }) => {
+const DetailScore = ({ handleActiveDetail, student, categories = [], loading = false, groupId = null, onScoreSaved }) => {
   // student and categories are passed from parent. categories are expected to be an array of objects
 
   React.useEffect(() => {
@@ -88,28 +88,33 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
   const { totalScore, averageScore, isPassed } = React.useMemo(() => {
     let weightedSum = 0;
     let sumWeights = 0;
+    let hasZeroScore = false;
     if (Array.isArray(localCats)) {
       localCats.forEach((c, idx) => {
-        const key = c.scoreCategoryId || c.id || c._id || idx;
         const studentItem = Array.isArray(c.scoreItems)
           ? c.scoreItems.find((si) => matchScoreItem(si))
           : null;
-        const valRaw = (typeof savedScores[key] !== 'undefined') ? savedScores[key] : (studentItem ? studentItem.scoreItemValue : null);
+        const valRaw = studentItem ? studentItem.scoreItemValue : null;
         const val = valRaw !== null && valRaw !== undefined && !Number.isNaN(Number(valRaw)) ? Number(valRaw) : NaN;
         const w = (typeof c.scoreCategoryWeight === 'number' && !Number.isNaN(c.scoreCategoryWeight)) ? c.scoreCategoryWeight : 0;
         if (!Number.isNaN(val) && w > 0) {
           weightedSum += val * w;
           sumWeights += w;
+          // Check if any score is 0
+          if (val === 0) {
+            hasZeroScore = true;
+          }
         }
       });
     }
     const avg = sumWeights > 0 ? (weightedSum / sumWeights) : 0;
+    // Student fails if average < 5 OR if any category has 0 score
     return {
       totalScore: Number((weightedSum).toFixed(2)),
       averageScore: Number((avg).toFixed(2)),
-      isPassed: avg >= 5,
+      isPassed: avg >= 5 && !hasZeroScore,
     };
-  }, [localCats, savedScores, student]);
+  }, [localCats, matchScoreItem]);
 
   const onStartEdit = (idx, category) => {
     const fallbackIdx = idx;
@@ -121,6 +126,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
   };
 
   const onChangeValue = (categoryId, val) => {
+    // Validate score doesn't exceed 10
+    if (val !== '' && !isNaN(Number(val)) && Number(val) > 10) {
+      alert('The score must not exceed 10.');
+      return;
+    }
     setEditValues((ev) => ({ ...ev, [categoryId]: val }));
   };
 
@@ -131,7 +141,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
     const raw = editValues[key];
     const val = parseFloat(raw);
     if (isNaN(val)) {
-      alert('Enter a valid number');
+      alert('Please enter a valid number');
+      return;
+    }
+    if (val > 10) {
+      alert('The score must not exceed 10.');
       return;
     }
     // check if there is an existing scoreItem for this user
@@ -148,10 +162,39 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
     };
     try {
       const res = await saveScore(payload, token);
-      // reflect returned value in local saved map
-      setSavedScores((s) => ({ ...s, [key]: res?.scoreItemValue ?? val }));
+      
+      // Update local category with new scoreItem to ensure immediate UI feedback
+      setLocalCats((prev) => prev.map((cat) => {
+        const catKey = cat.scoreCategoryId || cat.id || cat._id || prev.indexOf(cat);
+        if (String(catKey) === String(key)) {
+          // Find and update or add the scoreItem
+          const newItem = {
+            ...existing,
+            scoreItemValue: res?.scoreItemValue ?? val,
+            scoreItemId: res?.scoreItemId ?? existing?.scoreItemId,
+            userId: primaryStudentId || null,
+          };
+          const items = Array.isArray(cat.scoreItems) ? [...cat.scoreItems] : [];
+          const existingIdx = items.findIndex((si) => matchScoreItem(si));
+          if (existingIdx >= 0) {
+            items[existingIdx] = newItem;
+          } else {
+            items.push(newItem);
+          }
+          return { ...cat, scoreItems: items };
+        }
+        return cat;
+      }));
+      
+      // Clear saved scores since we updated the category directly
+      setSavedScores({});
       setEditValues((ev) => ({ ...ev, [key]: res?.scoreItemValue ?? val }));
       setEditingIndex(-1);
+      
+      // Notify parent to refresh data
+      if (onScoreSaved) {
+        onScoreSaved();
+      }
     } catch (e) {
       console.error('saveScore failed', e);
       alert('Failed to save score');
@@ -290,12 +333,28 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                   const id = editingCategory.scoreCategoryId || editingCategory.id || editingCategory._id;
                   // validation
                   if (!editCatFields.scoreCategoryName || editCatFields.scoreCategoryName.trim() === "") {
-                    alert('Category name is required');
+                    alert('Tên danh mục là bắt buộc');
                     return;
                   }
                   const weightNum = Number(editCatFields.scoreCategoryWeight);
                   if (Number.isNaN(weightNum) || weightNum < 0 || weightNum > 100) {
-                    alert('Enter a valid weight between 0 and 100');
+                    alert('Vui lòng nhập trọng số từ 0 đến 100');
+                    return;
+                  }
+                  
+                  // Check if total weight would exceed 100%
+                  const otherCatsWeight = localCats
+                    .filter((cat) => {
+                      const catId = cat.scoreCategoryId || cat.id || cat._id;
+                      return String(catId) !== String(id);
+                    })
+                    .reduce((sum, cat) => {
+                      const w = typeof cat.scoreCategoryWeight === 'number' ? cat.scoreCategoryWeight * 100 : 0;
+                      return sum + w;
+                    }, 0);
+                  
+                  if (otherCatsWeight + weightNum > 100) {
+                    alert(`Tổng trọng số không được vượt quá 100%. Hiện tại các danh mục khác có tổng ${otherCatsWeight.toFixed(2)}%`);
                     return;
                   }
                   const payload = {
@@ -440,6 +499,31 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                                           const id = c.scoreCategoryId || c.id || c._id;
                                           const name = (inlineEditFields.scoreCategoryName || '').trim();
                                           const weightNum = Number(inlineEditFields.scoreCategoryWeight);
+                                          
+                                          // Validate weight
+                                          if (!Number.isNaN(weightNum) && (weightNum < 0 || weightNum > 100)) {
+                                            alert('Trọng số phải từ 0 đến 100%');
+                                            setInlineSaving(false);
+                                            return;
+                                          }
+                                          
+                                          // Check total weight doesn't exceed 100%
+                                          const otherCatsWeight = localCats
+                                            .filter((cat) => {
+                                              const catId = cat.scoreCategoryId || cat.id || cat._id;
+                                              return String(catId) !== String(id);
+                                            })
+                                            .reduce((sum, cat) => {
+                                              const w = typeof cat.scoreCategoryWeight === 'number' ? cat.scoreCategoryWeight * 100 : 0;
+                                              return sum + w;
+                                            }, 0);
+                                          
+                                          if (!Number.isNaN(weightNum) && (otherCatsWeight + weightNum > 100)) {
+                                            alert(`Tổng trọng số không được vượt quá 100%. Các danh mục khác có tổng ${otherCatsWeight.toFixed(2)}%`);
+                                            setInlineSaving(false);
+                                            return;
+                                          }
+                                          
                                           const payload = {
                                             scoreCategoryName: name,
                                             scoreCategoryWeight: Number.isNaN(weightNum) ? (c.scoreCategoryWeight ?? 0) : weightNum / 100,
@@ -489,6 +573,33 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                                         const id = c.scoreCategoryId || c.id || c._id;
                                         const name = (inlineEditFields.scoreCategoryName || '').trim();
                                         const weightNum = Number(inlineEditFields.scoreCategoryWeight);
+                                        
+                                        // Validate weight
+                                        if (!Number.isNaN(weightNum) && (weightNum < 0 || weightNum > 100)) {
+                                          alert('Trọng số phải từ 0 đến 100%');
+                                          setInlineSaving(false);
+                                          setInlineEditingCatId(null);
+                                          return;
+                                        }
+                                        
+                                        // Check total weight doesn't exceed 100%
+                                        const otherCatsWeight = localCats
+                                          .filter((cat) => {
+                                            const catId = cat.scoreCategoryId || cat.id || cat._id;
+                                            return String(catId) !== String(id);
+                                          })
+                                          .reduce((sum, cat) => {
+                                            const w = typeof cat.scoreCategoryWeight === 'number' ? cat.scoreCategoryWeight * 100 : 0;
+                                            return sum + w;
+                                          }, 0);
+                                        
+                                        if (!Number.isNaN(weightNum) && (otherCatsWeight + weightNum > 100)) {
+                                          alert(`Tổng trọng số không được vượt quá 100%. Các danh mục khác có tổng ${otherCatsWeight.toFixed(2)}%`);
+                                          setInlineSaving(false);
+                                          setInlineEditingCatId(null);
+                                          return;
+                                        }
+                                        
                                         const payload = {
                                           scoreCategoryName: name,
                                           scoreCategoryWeight: Number.isNaN(weightNum) ? (c.scoreCategoryWeight ?? 0) : weightNum / 100,
@@ -579,6 +690,33 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                                       const id = c.scoreCategoryId || c.id || c._id;
                                       const name = (inlineEditFields.scoreCategoryName || '').trim();
                                       const weightNum = Number(inlineEditFields.scoreCategoryWeight);
+                                      
+                                      // Validate weight
+                                      if (!Number.isNaN(weightNum) && (weightNum < 0 || weightNum > 100)) {
+                                        alert('Trọng số phải từ 0 đến 100%');
+                                        setInlineSaving(false);
+                                        setInlineEditingCatId(null);
+                                        return;
+                                      }
+                                      
+                                      // Check total weight doesn't exceed 100%
+                                      const otherCatsWeight = localCats
+                                        .filter((cat) => {
+                                          const catId = cat.scoreCategoryId || cat.id || cat._id;
+                                          return String(catId) !== String(id);
+                                        })
+                                        .reduce((sum, cat) => {
+                                          const w = typeof cat.scoreCategoryWeight === 'number' ? cat.scoreCategoryWeight * 100 : 0;
+                                          return sum + w;
+                                        }, 0);
+                                      
+                                      if (!Number.isNaN(weightNum) && (otherCatsWeight + weightNum > 100)) {
+                                        alert(`Tổng trọng số không được vượt quá 100%. Các danh mục khác có tổng ${otherCatsWeight.toFixed(2)}%`);
+                                        setInlineSaving(false);
+                                        setInlineEditingCatId(null);
+                                        return;
+                                      }
+                                      
                                       const payload = {
                                         scoreCategoryName: name,
                                         scoreCategoryWeight: Number.isNaN(weightNum) ? (c.scoreCategoryWeight ?? 0) : weightNum / 100,

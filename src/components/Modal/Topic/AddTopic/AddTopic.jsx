@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { addPlanApi } from "../../../../service/PlanService";
 import decodeToken from "../../../../service/DecodeJwt";
 import userApi from "../../../../service/UserService";
+import { fetchUserById } from "../../../../service/UserService";
 // reuse the form styles used by the plan add-topic form
 import "./AddTopic.scss";
 import { FiPlus, FiTrash2, FiPaperclip } from "react-icons/fi";
@@ -58,7 +59,7 @@ const AddTopic = ({
       try {
         const leaderId = groupObj?.groupsLeaderId;
         if (!leaderId || !token) return;
-        const name = await getUserById(token, leaderId);
+        const name = await fetchUserById(token, leaderId);
         if (cancelled) return;
         // getUserById returns user object; try common name fields
         const display = name?.full_name || name?.fullName || name?.work_id || leaderId;
@@ -71,7 +72,7 @@ const AddTopic = ({
     return () => {
       cancelled = true;
     };
-  }, [groupObj, token, getUserById]);
+  }, [groupObj, token, fetchUserById]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

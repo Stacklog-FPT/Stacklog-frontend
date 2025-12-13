@@ -1101,8 +1101,8 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                 <th>Student</th>
                 <th>Gmail</th>
                 <th>ID</th>
-                <th>Average</th>
-                <th>Status</th>
+                {/* <th>Average</th>
+                <th>Status</th> */}
                 <th></th>
               </tr>
             </thead>
@@ -1138,7 +1138,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                       <p>{item.id}</p>
                     </td>
                     {/* Average column (numeric, 2 decimals) */}
-                    <td>
+                    {/* <td>
                       {(() => {
                         const raw =
                           typeof item.average === "number"
@@ -1155,10 +1155,10 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                           </p>
                         );
                       })()}
-                    </td>
+                    </td> */}
 
                     {/* Status column (Passed / Not passed) */}
-                    <td>
+                    {/* <td>
                       {(() => {
                         const raw =
                           typeof item.average === "number"
@@ -1172,7 +1172,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                           </span>
                         );
                       })()}
-                    </td>
+                    </td> */}
                     <td>
                       <span
                         className="btn__see__detail"

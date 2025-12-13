@@ -310,7 +310,7 @@ const Task = ({
             </span>
 
             <div className="task-content-head-icon">
-              {isEditing ? (
+              {/* {isEditing ? (
                 <i
                   className="fa-solid fa-check"
                   style={{ cursor: "pointer", color: "#000" }}
@@ -328,7 +328,7 @@ const Task = ({
                     setIsEditing(true);
                   }}
                 />
-              )}
+              )} */}
               <i
                 className="fa-solid fa-bookmark"
                 style={{

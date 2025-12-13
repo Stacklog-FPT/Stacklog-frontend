@@ -14,6 +14,7 @@ const GradesPage = () => {
   const [categoriesLoading, setCategoriesLoading] = React.useState(false);
   const { user } = useAuth();
   const token = user?.token || null;
+  const [refreshTrigger, setRefreshTrigger] = React.useState(0);
 
   const handleActiveDetail = async (payload) => {
     // if payload provided, open the detail view for the given student and load categories
@@ -48,15 +49,29 @@ const GradesPage = () => {
   const handleActivityAddCore = () => {
     setActivityAddCore(!activityAddCore);
   };
+  
+  const handleScoreSaved = () => {
+    // Trigger refresh in GradesComponents
+    setRefreshTrigger((prev) => prev + 1);
+  };
+  
   console.log(activityAddCore);
   return (
     <div className="grades__page">
       <GradesComponents
         handleActiveDetail={handleActiveDetail}
         handleActivityAddCore={handleActivityAddCore}
+        refreshTrigger={refreshTrigger}
       />
       {activeDetail && selectedStudent && (
-        <DetailScore handleActiveDetail={handleActiveDetail} student={selectedStudent} categories={selectedCategories} loading={categoriesLoading} groupId={selectedGroupId} />
+        <DetailScore 
+          handleActiveDetail={handleActiveDetail} 
+          student={selectedStudent} 
+          categories={selectedCategories} 
+          loading={categoriesLoading} 
+          groupId={selectedGroupId}
+          onScoreSaved={handleScoreSaved}
+        />
       )}
       {activityAddCore && (
         <AddCore handleActivityAddCore={handleActivityAddCore} />

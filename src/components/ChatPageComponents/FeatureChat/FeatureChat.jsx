@@ -3,6 +3,7 @@ import "./FeatureChat.scss";
 import { ChatContext } from "../../../context/ChatContext";
 import { useAuth } from "../../../context/AuthProvider";
 import userApi from "../../../service/UserService";
+import Swal from "sweetalert2";
 import defaulfAvatar from "../../../assets/logo-login.png";
 import chatApi from "../../../service/ChatService";
 import { jwtDecode } from "jwt-decode";
@@ -213,7 +214,11 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
       }
     } catch (err) {
       console.error("Failed to create personal box", err);
-      alert("Unable to start personal chat.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Unable to start personal chat.'
+      });
     } finally {
       setIsAdding(false);
     }
@@ -222,7 +227,14 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
   // Add member by email: resolve via getUserByEmail then call updateBoxMembers
   const addMemberByEmail = async () => {
     const email = (emailToAdd || "").trim();
-    if (!email) return alert("Please enter an email address.");
+    if (!email) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Email Required',
+        text: 'Please enter an email address.'
+      });
+      return;
+    }
     if (isAdding) return;
     setIsAdding(true);
     try {
@@ -230,7 +242,12 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
       const foundId = resp?.user?._id;
       if (!foundId) {
         setIsAdding(false);
-        return alert(`No user found for ${email}`);
+        Swal.fire({
+          icon: 'error',
+          title: 'User Not Found',
+          text: `No user found for ${email}`
+        });
+        return;
       }
       // reuse existing flow
       await handleAddMember(foundId);
@@ -238,7 +255,11 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
       setShowAddPopup(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to add user by email.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to add user by email.'
+      });
     } finally {
       setIsAdding(false);
     }
@@ -278,7 +299,11 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
       setShowAddPopup(false);
     } catch (err) {
       console.error("Batch add failed", err);
-      alert("Failed to add users");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to add users'
+      });
     } finally {
       setIsAdding(false);
     }
@@ -329,17 +354,24 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
   const handleKickMember = async (memberId) => {
     if (!memberId || !selectedBox || !selectedBox.id) return;
     if (!isAdmin) {
-      alert("You do not have permission to remove members.");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Permission Denied',
+        text: 'You do not have permission to remove members.'
+      });
       return;
     }
 
     // confirm action
-    if (
-      !window.confirm(
-        "Are you sure you want to remove this member from the group?"
-      )
-    )
-      return;
+    const kickResult = await Swal.fire({
+      icon: 'question',
+      title: 'Confirm Removal',
+      text: 'Are you sure you want to remove this member from the group?',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, remove',
+      cancelButtonText: 'Cancel'
+    });
+    if (!kickResult.isConfirmed) return;
 
     try {
       const service = chatApi();
@@ -379,10 +411,11 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
       }
     } catch (err) {
       console.error("Kick member failed", err);
-      alert(
-        "Could not remove member: " +
-          (err?.response?.data?.message || err.message || "Error")
-      );
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Could not remove member: ' + (err?.response?.data?.message || err.message || 'Error')
+      });
     }
   };
 
@@ -400,7 +433,11 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
     }
 
     if (!currentUserIdLocal) {
-      alert('Unable to determine current user. Please re-login.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Authentication Error',
+        text: 'Unable to determine current user. Please re-login.'
+      });
       return;
     }
 
@@ -414,11 +451,23 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
       : false;
 
     if (amAdmin) {
-      alert('Admins must ask another admin to remove them or delete the group.');
+      Swal.fire({
+        icon: 'info',
+        title: 'Admin Restriction',
+        text: 'Admins must ask another admin to remove them or delete the group.'
+      });
       return;
     }
 
-    if (!window.confirm('Are you sure you want to leave this group?')) return;
+    const result = await Swal.fire({
+      icon: 'question',
+      title: 'Confirm Leave',
+      text: 'Are you sure you want to leave this group?',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, leave',
+      cancelButtonText: 'Cancel'
+    });
+    if (!result.isConfirmed) return;
 
     try {
       const service = chatApi();
@@ -432,7 +481,11 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
       }
     } catch (err) {
       console.error('Leave group failed', err);
-      alert('Failed to leave group: ' + (err?.response?.data?.message || err.message || 'Error'));
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to leave group: ' + (err?.response?.data?.message || err.message || 'Error')
+      });
     }
   };
 
@@ -461,12 +514,25 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
       : false;
 
     if (!isAdmin) {
-      alert("You do not have permission to disband the group.");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Permission Denied',
+        text: 'You do not have permission to disband the group.'
+      });
       return;
     }
 
     // confirm deletion
-    if (!window.confirm("Are you sure you want to disband this group?")) return;
+    const result = await Swal.fire({
+      icon: 'warning',
+      title: 'Confirm Disband',
+      text: 'Are you sure you want to disband this group?',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, disband',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33'
+    });
+    if (!result.isConfirmed) return;
 
     try {
       const service = chatApi();
@@ -478,13 +544,18 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
       } catch (e) {
         /* ignore if not available */
       }
-      alert("The group has been disbanded.");
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'The group has been disbanded.'
+      });
     } catch (err) {
       console.error("Delete box failed", err);
-      alert(
-        "Failed to delete the group: " +
-          (err?.response?.data?.message || err.message)
-      );
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to delete the group: ' + (err?.response?.data?.message || err.message)
+      });
     }
   };
 

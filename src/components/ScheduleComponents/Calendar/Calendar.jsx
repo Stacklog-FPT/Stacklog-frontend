@@ -271,7 +271,11 @@ export default function Calendar({ groupId, isPage }) {
           onDelete={() =>
             handleDelete(selectedEvent.id, selectedEvent.createdBy)
           }
-          onEdit={() => alert(`You want fix: ${selectedEvent.title}`)}
+          onEdit={() => Swal.fire({
+            icon: 'info',
+            title: 'Edit Event',
+            text: `You want to edit: ${selectedEvent.title}`
+          })}
           onUpdate={handleUpdate}
           onRefresh={() => {
             const semesterIdParam = currentSemesterId ?? undefined;

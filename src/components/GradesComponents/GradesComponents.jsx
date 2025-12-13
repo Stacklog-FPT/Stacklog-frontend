@@ -12,6 +12,7 @@ import {
 } from "../../service/ScoreService";
 import AddCategoryByReuse from "./AddCategoryByReuse/AddCategoryByReuse";
 import { canViewGroup } from "../../helper/validateStudentGroup";
+import Swal from "sweetalert2";
 
 const GradesComponents = ({ handleActiveDetail, handleActivityAddCore, refreshTrigger }) => {
   const dispatch = useDispatch();
@@ -768,7 +769,11 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore, refreshTr
 
   const handleExport = async () => {
     if (!selectedClassId) {
-      alert("Please select a class first");
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Class Selected',
+        text: 'Please select a class first'
+      });
       return;
     }
     setExporting(true);
@@ -776,7 +781,11 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore, refreshTr
       await exportScoreAndDownload(selectedClassId, token, dispatch);
     } catch (e) {
       console.error("Export failed", e);
-      alert("Export failed: " + (e?.message || e));
+      Swal.fire({
+        icon: 'error',
+        title: 'Export Failed',
+        text: 'Export failed: ' + (e?.message || e)
+      });
     } finally {
       setExporting(false);
     }
@@ -1084,11 +1093,19 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore, refreshTr
                     // Validation: require name and a positive weight before creating
                     const nameTrim = (newCategory.scoreCategoryName || "").trim();
                     if (!nameTrim) {
-                      alert("Category name is required");
+                      Swal.fire({
+                        icon: 'warning',
+                        title: 'Required Field',
+                        text: 'Category name is required'
+                      });
                       return;
                     }
                     if (typeof newCategory.scoreCategoryWeight !== 'number' || Number.isNaN(newCategory.scoreCategoryWeight) || newCategory.scoreCategoryWeight <= 0) {
-                      alert("Category weight is required and must be greater than 0");
+                      Swal.fire({
+                        icon: 'warning',
+                        title: 'Required Field',
+                        text: 'Category weight is required and must be greater than 0'
+                      });
                       return;
                     }
                     // ensure class selected
@@ -1096,7 +1113,11 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore, refreshTr
                       selectedClassId ||
                       (classes[0] && (classes[0].classesId || classes[0]._id));
                     if (!classId) {
-                      alert("Please select a class first");
+                      Swal.fire({
+                        icon: 'warning',
+                        title: 'No Class Selected',
+                        text: 'Please select a class first'
+                      });
                       return;
                     }
                     const comment = (
@@ -1148,9 +1169,11 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore, refreshTr
                         sumExisting + (payload.scoreCategoryWeight || 0);
                       const EPS = 1e-9;
                       if (proposedTotal - 1.0 > EPS) {
-                        alert(
-                          "Cannot create category — total weight would exceed 100%"
-                        );
+                        Swal.fire({
+                          icon: 'warning',
+                          title: 'Weight Limit Exceeded',
+                          text: 'Cannot create category — total weight would exceed 100%'
+                        });
                         setSavingCategory(false);
                         return;
                       }
@@ -1175,7 +1198,11 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore, refreshTr
                       });
                     } catch (e) {
                       console.error("Failed to save category", e);
-                      alert("Failed to save category: " + (e?.message || e));
+                      Swal.fire({
+                        icon: 'error',
+                        title: 'Save Failed',
+                        text: 'Failed to save category: ' + (e?.message || e)
+                      });
                     } finally {
                       setSavingCategory(false);
                     }

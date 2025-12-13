@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { ChatContext } from "../../../context/ChatContext";
 import { jwtDecode } from "jwt-decode";
 import avatar from "../../../assets/logo-login.png";
+import Swal from "sweetalert2";
 
 const GroupComponent = () => {
   const { mode } = useContext(ColorModeContext);
@@ -89,17 +90,29 @@ const GroupComponent = () => {
       currentUserId =
         decoded.id || decoded._id || decoded.userId || decoded.sub || null;
       if (currentUserId && currentUserId === targetUser._id) {
-        alert("Bạn không thể chat với chính mình!");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Invalid Action',
+          text: 'You cannot chat with yourself!'
+        });
         return;
       }
     } catch (e) {
       console.error("Lỗi decode token:", e);
-      alert("Không thể xác định thông tin người dùng.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Authentication Error',
+        text: 'Unable to determine user information.'
+      });
       return;
     }
 
     if (!currentUserId) {
-      alert("Không thể xác thực người dùng.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Authentication Error',
+        text: 'Unable to authenticate user.'
+      });
       return;
     }
 
@@ -142,7 +155,11 @@ const GroupComponent = () => {
       }
     } catch (err) {
       console.error("Tạo chat cá nhân thất bại:", err);
-      alert("Không thể bắt đầu cuộc trò chuyện. Vui lòng thử lại.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Unable to start conversation. Please try again.'
+      });
     } finally {
       setLoading(false);
     }

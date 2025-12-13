@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
+import Swal from "sweetalert2";
 import useSocketChat from "../../../hooks/ueSocket";
 import { ChatContext } from "../../../context/ChatContext";
 import { useAuth } from "../../../context/AuthProvider";
@@ -279,7 +280,14 @@ const ChatWindow = ({ onBack, onShowInfo, showMobileNav }) => {
   // Uses the public Jitsi Meet server so no backend changes are required.
   const startCall = async (type = "video") => {
     try {
-      if (!selectedBox || !selectedBox.id) return alert("No chat selected for call");
+      if (!selectedBox || !selectedBox.id) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No Chat Selected',
+          text: 'No chat selected for call'
+        });
+        return;
+      }
 
   // Use a unique room name per call so old links cannot be reused to restart
   // the same meeting session. This prevents someone opening an old link
@@ -349,7 +357,11 @@ const ChatWindow = ({ onBack, onShowInfo, showMobileNav }) => {
       window.open(appMeetingUrl, "_blank");
     } catch (e) {
       console.error("Start call failed", e);
-      alert("Khởi tạo cuộc gọi thất bại");
+      Swal.fire({
+        icon: 'error',
+        title: 'Call Failed',
+        text: 'Failed to initiate call'
+      });
     }
   };
 

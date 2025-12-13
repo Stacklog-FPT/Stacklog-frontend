@@ -19,6 +19,7 @@ import ComposeMail from "../components/MailCompose/ComposeMail";
 import { FaEnvelope } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import LoadingComponent from "../components/Loading/LoadingComponent";
+import Swal from "sweetalert2";
 
 const MainLayout = () => {
   const { user } = useAuth();
@@ -133,7 +134,11 @@ const MainLayout = () => {
             console.log("ComposeMail onSend payload", payload);
             await new Promise((r) => setTimeout(r, 600));
             setComposeOpen(false);
-            alert("Message sent (demo)");
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: 'Message sent (demo)'
+            });
           }}
         />
       </div>

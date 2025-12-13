@@ -5,6 +5,7 @@ import DetailScore from "../../components/GradesComponents/DetailScore/DetailSco
 import { getScoreCategoriesByClass } from "../../service/ScoreService";
 import { useAuth } from "../../context/AuthProvider";
 import AddCore from "../../components/GradesComponents/AddCore/AddCore";
+import Swal from "sweetalert2";
 const GradesPage = () => {
   const [activeDetail, setActiveDetail] = React.useState(false);
   const [activityAddCore, setActivityAddCore] = React.useState(false);
@@ -33,7 +34,11 @@ const GradesPage = () => {
         setActiveDetail(true);
       } catch (e) {
         console.error('Failed to load categories', e);
-        alert('Failed to load categories');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to load categories'
+        });
       } finally {
         setCategoriesLoading(false);
       }

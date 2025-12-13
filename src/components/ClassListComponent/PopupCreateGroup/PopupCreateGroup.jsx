@@ -128,11 +128,19 @@ const PopupCreateGroup = ({
               if (isCreatingGroup) return;
               if (selectedGroup === 'all') {
                 if (!groupName.trim()) {
-                  alert('Please enter group name');
+                  Swal.fire({
+                    icon: 'warning',
+                    title: 'Required Field',
+                    text: 'Please enter group name'
+                  });
                   return;
                 }
                 if (!selectedClass) {
-                  alert('No class selected');
+                  Swal.fire({
+                    icon: 'warning',
+                    title: 'No Class Selected',
+                    text: 'No class selected'
+                  });
                   return;
                 }
                 handleCreateGroup && handleCreateGroup();

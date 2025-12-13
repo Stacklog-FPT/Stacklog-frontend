@@ -1,6 +1,8 @@
 import React from "react";
 import { exportToXlsx } from "../../service/exportXlsx";
 import "./ExportXlsxButton.scss";
+import Swal from "sweetalert2";
+
 const ExportXlsxButton = ({
   data,
   filename = "export.xlsx",
@@ -14,7 +16,11 @@ const ExportXlsxButton = ({
         await onExport();
       } catch (err) {
         console.error("Export failed", err);
-        alert("Export failed. See console for details.");
+        Swal.fire({
+          icon: 'error',
+          title: 'Export Failed',
+          text: 'Export failed. See console for details.'
+        });
       }
       return;
     }
@@ -24,7 +30,11 @@ const ExportXlsxButton = ({
       await exportToXlsx(rows, filename);
     } catch (err) {
       console.error("Export failed", err);
-      alert("Export failed. See console for details.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Export Failed',
+        text: 'Export failed. See console for details.'
+      });
     }
   };
 

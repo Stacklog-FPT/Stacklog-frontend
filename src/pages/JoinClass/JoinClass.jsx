@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthProvider';
 import { useDispatch } from 'react-redux';
 import ClassService from '../../service/ClassService';
+import Swal from 'sweetalert2';
 const { joinClassByInviteCode } = ClassService();
 
 const JoinClass = () => {
@@ -25,7 +26,11 @@ const JoinClass = () => {
       try {
         await joinClassByInviteCode(user.token, inviteCode, dispatch);
         navigate('/class');
-        alert(`Bạn đã tham gia lớp học thành công!`);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'You have successfully joined the class!'
+        });
       } catch (err) {
         const msg =
           err?.message ||

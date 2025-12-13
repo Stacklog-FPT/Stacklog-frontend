@@ -142,7 +142,11 @@ const ComposeMail = ({
   const handleSend = async () => {
     // if user selected classes, send using notification API
     if (selectedClasses.length === 0 && (!to || !to.trim())) {
-      alert('Please enter recipient (To) or select a class.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Recipient',
+        text: 'Please enter recipient (To) or select a class.'
+      });
       return;
     }
     setSending(true);
@@ -191,7 +195,11 @@ const ComposeMail = ({
       onClose && onClose();
     } catch (e) {
       console.error('Send failed', e);
-      alert('Send failed. See console for details.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Send Failed',
+        text: 'Send failed. See console for details.'
+      });
     } finally {
       setSending(false);
     }

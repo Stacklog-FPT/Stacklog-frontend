@@ -2,6 +2,7 @@ import React from "react";
 import "./DetailScore.scss";
 import { useAuth } from "../../../context/AuthProvider";
 import { saveScore, updateScoreCategory, getScoreCategoriesByClass, deleteScoreCategory } from "../../../service/ScoreService";
+import Swal from "sweetalert2";
 
 const DetailScore = ({ handleActiveDetail, student, categories = [], loading = false, groupId = null, onScoreSaved }) => {
   // student and categories are passed from parent. categories are expected to be an array of objects
@@ -128,7 +129,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
   const onChangeValue = (categoryId, val) => {
     // Validate score doesn't exceed 10
     if (val !== '' && !isNaN(Number(val)) && Number(val) > 10) {
-      alert('The score must not exceed 10.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Score',
+        text: 'The score must not exceed 10.'
+      });
       return;
     }
     setEditValues((ev) => ({ ...ev, [categoryId]: val }));
@@ -141,11 +146,19 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
     const raw = editValues[key];
     const val = parseFloat(raw);
     if (isNaN(val)) {
-      alert('Please enter a valid number');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Input',
+        text: 'Please enter a valid number'
+      });
       return;
     }
     if (val > 10) {
-      alert('The score must not exceed 10.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Score',
+        text: 'The score must not exceed 10.'
+      });
       return;
     }
     // check if there is an existing scoreItem for this user
@@ -197,7 +210,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
       }
     } catch (e) {
       console.error('saveScore failed', e);
-      alert('Failed to save score');
+      Swal.fire({
+        icon: 'error',
+        title: 'Save Failed',
+        text: 'Failed to save score'
+      });
     }
   };
 
@@ -275,10 +292,18 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
       });
 
       setLocalCats(updated);
-      alert(targetVisible ? 'All scores are now visible to students' : 'All scores are now hidden from students');
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: targetVisible ? 'All scores are now visible to students' : 'All scores are now hidden from students'
+      });
     } catch (e) {
       console.error('bulk toggle visualize failed', e);
-      alert('Failed to update visibility for all categories');
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: 'Failed to update visibility for all categories'
+      });
     }
   };
 
@@ -333,12 +358,20 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                   const id = editingCategory.scoreCategoryId || editingCategory.id || editingCategory._id;
                   // validation
                   if (!editCatFields.scoreCategoryName || editCatFields.scoreCategoryName.trim() === "") {
-                    alert('Tên danh mục là bắt buộc');
+                    Swal.fire({
+                      icon: 'warning',
+                      title: 'Required Field',
+                      text: 'Category name is required'
+                    });
                     return;
                   }
                   const weightNum = Number(editCatFields.scoreCategoryWeight);
                   if (Number.isNaN(weightNum) || weightNum < 0 || weightNum > 100) {
-                    alert('Vui lòng nhập trọng số từ 0 đến 100');
+                    Swal.fire({
+                      icon: 'warning',
+                      title: 'Invalid Weight',
+                      text: 'Please enter a weight from 0 to 100'
+                    });
                     return;
                   }
                   
@@ -354,7 +387,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                     }, 0);
                   
                   if (otherCatsWeight + weightNum > 100) {
-                    alert(`Tổng trọng số không được vượt quá 100%. Hiện tại các danh mục khác có tổng ${otherCatsWeight.toFixed(2)}%`);
+                    Swal.fire({
+                      icon: 'warning',
+                      title: 'Weight Limit Exceeded',
+                      text: `Total weight cannot exceed 100%. Other categories currently total ${otherCatsWeight.toFixed(2)}%`
+                    });
                     return;
                   }
                   const payload = {
@@ -404,7 +441,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                     setEditingCategory(null);
                   } catch (e) {
                     console.error('updateScoreCategory failed', e);
-                    alert('Failed to update category');
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Update Failed',
+                      text: 'Failed to update category'
+                    });
                   } finally {
                     setSavingCategory(false);
                   }
@@ -502,7 +543,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                                           
                                           // Validate weight
                                           if (!Number.isNaN(weightNum) && (weightNum < 0 || weightNum > 100)) {
-                                            alert('Trọng số phải từ 0 đến 100%');
+                                            Swal.fire({
+                                              icon: 'warning',
+                                              title: 'Invalid Weight',
+                                              text: 'Weight must be from 0 to 100%'
+                                            });
                                             setInlineSaving(false);
                                             return;
                                           }
@@ -519,7 +564,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                                             }, 0);
                                           
                                           if (!Number.isNaN(weightNum) && (otherCatsWeight + weightNum > 100)) {
-                                            alert(`Tổng trọng số không được vượt quá 100%. Các danh mục khác có tổng ${otherCatsWeight.toFixed(2)}%`);
+                                            Swal.fire({
+                                              icon: 'warning',
+                                              title: 'Weight Limit Exceeded',
+                                              text: `Total weight cannot exceed 100%. Other categories total ${otherCatsWeight.toFixed(2)}%`
+                                            });
                                             setInlineSaving(false);
                                             return;
                                           }
@@ -576,7 +625,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                                         
                                         // Validate weight
                                         if (!Number.isNaN(weightNum) && (weightNum < 0 || weightNum > 100)) {
-                                          alert('Trọng số phải từ 0 đến 100%');
+                                          Swal.fire({
+                                            icon: 'warning',
+                                            title: 'Invalid Weight',
+                                            text: 'Weight must be from 0 to 100%'
+                                          });
                                           setInlineSaving(false);
                                           setInlineEditingCatId(null);
                                           return;
@@ -594,7 +647,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                                           }, 0);
                                         
                                         if (!Number.isNaN(weightNum) && (otherCatsWeight + weightNum > 100)) {
-                                          alert(`Tổng trọng số không được vượt quá 100%. Các danh mục khác có tổng ${otherCatsWeight.toFixed(2)}%`);
+                                          Swal.fire({
+                                            icon: 'warning',
+                                            title: 'Weight Limit Exceeded',
+                                            text: `Total weight cannot exceed 100%. Other categories total ${otherCatsWeight.toFixed(2)}%`
+                                          });
                                           setInlineSaving(false);
                                           setInlineEditingCatId(null);
                                           return;
@@ -693,7 +750,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                                       
                                       // Validate weight
                                       if (!Number.isNaN(weightNum) && (weightNum < 0 || weightNum > 100)) {
-                                        alert('Trọng số phải từ 0 đến 100%');
+                                        Swal.fire({
+                                          icon: 'warning',
+                                          title: 'Invalid Weight',
+                                          text: 'Weight must be from 0 to 100%'
+                                        });
                                         setInlineSaving(false);
                                         setInlineEditingCatId(null);
                                         return;
@@ -711,7 +772,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                                         }, 0);
                                       
                                       if (!Number.isNaN(weightNum) && (otherCatsWeight + weightNum > 100)) {
-                                        alert(`Tổng trọng số không được vượt quá 100%. Các danh mục khác có tổng ${otherCatsWeight.toFixed(2)}%`);
+                                        Swal.fire({
+                                          icon: 'warning',
+                                          title: 'Weight Limit Exceeded',
+                                          text: `Total weight cannot exceed 100%. Other categories total ${otherCatsWeight.toFixed(2)}%`
+                                        });
                                         setInlineSaving(false);
                                         setInlineEditingCatId(null);
                                         return;
@@ -828,8 +893,15 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                                         disabled={deletingCategoryId === (c.scoreCategoryId || c.id || c._id)}
                                         onClick={async () => {
                                           const id = c.scoreCategoryId || c.id || c._id;
-                                          const confirmDelete = window.confirm('Delete this score category? This will remove it for all students.');
-                                          if (!confirmDelete) return;
+                                          const result = await Swal.fire({
+                                            icon: 'question',
+                                            title: 'Delete Category',
+                                            text: 'Delete this score category? This will remove it for all students.',
+                                            showCancelButton: true,
+                                            confirmButtonText: 'Delete',
+                                            cancelButtonText: 'Cancel'
+                                          });
+                                          if (!result.isConfirmed) return;
                                           try {
                                             setDeletingCategoryId(id);
                                             console.log('deleteScoreCategory request', { id });
@@ -839,7 +911,11 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                                             setLocalCats((prev) => prev.filter((cat) => String(cat.scoreCategoryId || cat.id || cat._id) !== String(id)));
                                           } catch (err) {
                                             console.error('deleteScoreCategory failed', err);
-                                            alert('Failed to delete category');
+                                            Swal.fire({
+                                              icon: 'error',
+                                              title: 'Delete Failed',
+                                              text: 'Failed to delete category'
+                                            });
                                           } finally {
                                             setDeletingCategoryId(null);
                                           }

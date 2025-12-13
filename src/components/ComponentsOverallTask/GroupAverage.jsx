@@ -4,6 +4,7 @@ import { createAvgGroupScore } from '../../service/ScoreService';
 import { useAuth } from '../../context/AuthProvider';
 import { useDispatch } from 'react-redux';
 import avatarDefault from '../../assets/ava-chat.png';
+import Swal from 'sweetalert2';
 
 export default function GroupAverage({ initialScore, groupId, token, onUpdate, classId, memberContribution: propsMemberContribution, usersMap: propsUsersMap }) {
   const [score, setScore] = useState(null);
@@ -24,10 +25,38 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate, c
   }, [initialScore]);
 
   const handleSave = async () => {
-    if (!token) return alert('Please log in to save the score');
-    if (modalScore === null || isNaN(modalScore)) return alert('Please enter a valid score');
-    if (modalScore < 0 || modalScore > 10) return alert('Score must be between 0 and 10');
-    if (!classId) return alert('Missing class information. Please wait and try again.');
+    if (!token) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Not Logged In',
+        text: 'Please log in to save the score'
+      });
+      return;
+    }
+    if (modalScore === null || isNaN(modalScore)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Score',
+        text: 'Please enter a valid score'
+      });
+      return;
+    }
+    if (modalScore < 0 || modalScore > 10) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Range',
+        text: 'Score must be between 0 and 10'
+      });
+      return;
+    }
+    if (!classId) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Information',
+        text: 'Missing class information. Please wait and try again.'
+      });
+      return;
+    }
     setSaving(true);
     try {
       // Immediately persist average score to backend (no intermediate confirmation popup)
@@ -35,13 +64,21 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate, c
       // update parent computed values
       if (typeof onUpdate === 'function') onUpdate(modalScore);
       setShowEditModal(false);
-      alert('Average score saved successfully');
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Average score saved successfully'
+      });
     } catch (err) {
       console.error('Failed to save avg group score (direct save)', err);
       console.error('Request config:', err?.config);
       console.error('Response:', err?.response && { status: err.response.status, data: err.response.data });
       const serverMsg = err?.response?.data?.message || err?.response?.data || err?.message;
-      alert('Failed to save average score: ' + (serverMsg || 'Unknown'));
+      Swal.fire({
+        icon: 'error',
+        title: 'Save Failed',
+        text: 'Failed to save average score: ' + (serverMsg || 'Unknown')
+      });
     } finally {
       setSaving(false);
     }
@@ -81,7 +118,14 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate, c
 
   const handleConfirm = async () => {
     // call backend createAvgGroupScore
-    if (!classId) return alert('Missing classId to save average score');
+    if (!classId) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Information',
+        text: 'Missing classId to save average score'
+      });
+      return;
+    }
     try {
       setSaving(true);
       // pass redux dispatch so service can emit apiStart/apiSuccess/apiFailure if desired
@@ -89,14 +133,22 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate, c
       // notify parent to update computed values
       if (typeof onUpdate === 'function') onUpdate(modalScore);
       setPreviewOpen(false);
-      alert('Average score saved successfully');
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Average score saved successfully'
+      });
     } catch (err) {
       // richer logging to help diagnose 404/other HTTP errors
       console.error('Failed to create avg group score', err);
       console.error('Request config:', err?.config);
       console.error('Response:', err?.response && { status: err.response.status, data: err.response.data });
       const serverMsg = err?.response?.data?.message || err?.response?.data || err?.message;
-      alert('Failed to save average score: ' + (serverMsg || 'Unknown'));
+      Swal.fire({
+        icon: 'error',
+        title: 'Save Failed',
+        text: 'Failed to save average score: ' + (serverMsg || 'Unknown')
+      });
     } finally {
       setSaving(false);
     }
@@ -125,13 +177,25 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate, c
             {user?.role === 'LECTURER' && score !== null && Number(score) === 0 && (
               <button
                 className="group-score-save"
-                onClick={() => {
+                onClick={async () => {
                   if (!classId) {
                     // classId not yet resolved by parent; show helpful message instead of opening modal
-                    return alert('Class information still resolving. Please wait a moment and try again.');
+                    Swal.fire({
+                      icon: 'warning',
+                      title: 'Not Ready',
+                      text: 'Class information still resolving. Please wait a moment and try again.'
+                    });
+                    return;
                   }
-                  const confirmed = typeof window !== 'undefined' ? window.confirm('Do you want to enter the group average score?') : true;
-                  if (confirmed) {
+                  const result = await Swal.fire({
+                    icon: 'question',
+                    title: 'Confirm Entry',
+                    text: 'Do you want to enter the group average score?',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'Cancel'
+                  });
+                  if (result.isConfirmed) {
                     setModalScore(score);
                     setShowEditModal(true);
                   }

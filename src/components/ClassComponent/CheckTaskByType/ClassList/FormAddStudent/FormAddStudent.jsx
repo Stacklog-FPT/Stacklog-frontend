@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./FormAddStudent.scss";
+import Swal from "sweetalert2";
 
 const FormAddStudent = ({ subjectList, selectedSubject, onClose }) => {
   const [form, setForm] = useState({
@@ -35,7 +36,11 @@ const FormAddStudent = ({ subjectList, selectedSubject, onClose }) => {
       updatedClass
     );
 
-    alert("Thêm học viên thành công!");
+    Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: 'Student added successfully!'
+    });
     onClose();
   };
 

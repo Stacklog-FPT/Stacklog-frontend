@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { updateUserProfile } from "../../service/UserService";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
 
 const Profile = () => {
   const { user, logoutAuth } = useAuth();
@@ -71,7 +72,11 @@ const Profile = () => {
 
   const handleSaveProfile = async () => {
     if (!profileData.full_name?.trim()) {
-      alert("Full name is required!");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Required Field',
+        text: 'Full name is required!'
+      });
       return;
     }
 

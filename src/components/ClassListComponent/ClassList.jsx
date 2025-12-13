@@ -10,6 +10,7 @@ import decodeToken from "../../service/DecodeJwt";
 import PopupCreateClass from "./PopupCreateClass/PopupCreateClass";
 import PopupCreateGroup from "./PopupCreateGroup/PopupCreateGroup";
 import PopupInviteCode from "./PopupInviteCode/PopupInviteCode";
+import Swal from "sweetalert2";
 
 const {
   getClasses,
@@ -228,7 +229,11 @@ const ClassList = ({ handleActivityAddClass }) => {
         setClasses(data);
       }
     } catch (err) {
-      alert("Create class failure!");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Create class failure!'
+      });
     }
     setIsCreating(false);
   };
@@ -277,7 +282,11 @@ const ClassList = ({ handleActivityAddClass }) => {
     } catch (err) {
       console.error("Create group error:", err);
       const msg = err.message || "Failed to create group";
-      alert(`Failed to create group: ${msg}`);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `Failed to create group: ${msg}`
+      });
     }
     setIsCreatingGroup(false);
   };
@@ -290,9 +299,17 @@ const ClassList = ({ handleActivityAddClass }) => {
         console.log("getClasses data (after updateMemberToGroup):", data);
         setClasses(data);
       }
-      alert("Add member successfully!");
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Add member successfully!'
+      });
     } catch (err) {
-      alert("Add member failure!");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Add member failure!'
+      });
     }
   };
 
@@ -305,17 +322,29 @@ const ClassList = ({ handleActivityAddClass }) => {
       const match = res.match(/code=([A-Za-z0-9\-]+)/);
       code = match ? match[1] : "";
 
-      if (!code) throw new Error("Không lấy được mã invite code!");
+      if (!code) throw new Error("Unable to get invite code!");
       setInviteCode(code);
       setShowInvitePopup(true);
     } catch (err) {
-      alert("Không thể lấy invite code!");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Unable to get invite code!'
+      });
     }
   };
 
   const hanldeDeleteUserFromGroup = async () => {
     try {
-      if (!window.confirm("Bạn muốn rời khỏi nhóm này?")) return;
+      const leaveResult = await Swal.fire({
+        icon: 'question',
+        title: 'Confirm Leave',
+        text: 'Do you want to leave this group?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, leave',
+        cancelButtonText: 'Cancel'
+      });
+      if (!leaveResult.isConfirmed) return;
 
       if (!user.token) throw new Error("Token is missing");
 
@@ -346,15 +375,31 @@ const ClassList = ({ handleActivityAddClass }) => {
         console.log("getClasses data (after leaveGroup):", data);
         setClasses(data);
       }
-      alert("Rời nhóm thành công!");
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Left group successfully!'
+      });
     } catch (error) {
-      alert("Rời nhóm thất bại!");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to leave group!'
+      });
     }
   };
 
   const handleKickUser = async (studentId) => {
     try {
-      if (!window.confirm("Bạn muốn kick thành viên này khỏi nhóm?")) return;
+      const kickResult = await Swal.fire({
+        icon: 'question',
+        title: 'Confirm Kick',
+        text: 'Do you want to kick this member from the group?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, kick',
+        cancelButtonText: 'Cancel'
+      });
+      if (!kickResult.isConfirmed) return;
 
       const currentClass = classes.find(
         (cls) => cls.classesId === selectedClass
@@ -382,9 +427,17 @@ const ClassList = ({ handleActivityAddClass }) => {
         console.log("getClasses data (after kickUser):", data);
         setClasses(data);
       }
-      alert("Kick thành công!");
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Kicked successfully!'
+      });
     } catch (error) {
-      alert("Kick thất bại!");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Kick failed!'
+      });
     }
   };
 

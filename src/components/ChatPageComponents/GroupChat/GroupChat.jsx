@@ -10,6 +10,7 @@ import { jwtDecode } from "jwt-decode";
 import chatApi from "../../../service/ChatService";
 import userApi from "../../../service/UserService";
 import { fetchUserById } from "../../../service/UserService";
+import Swal from "sweetalert2";
 
 const GroupChat = ({
   showAddGroup: externalShowAddGroup,
@@ -387,17 +388,19 @@ const GroupChat = ({
       setSelectedBox(mappedSaved);
 
       if (failed.length) {
-        alert(
-          "Could not find users for emails: " +
-            failed.join(", ") +
-            ". The group was created with the valid members."
-        );
+        Swal.fire({
+          icon: 'warning',
+          title: 'Partial Success',
+          text: 'Could not find users for emails: ' + failed.join(', ') + '. The group was created with the valid members.'
+        });
       }
     } catch (err) {
       console.error("Create box failed", err);
-      alert(
-        "Create group failed: " + (err?.response?.data?.message || err.message)
-      );
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Create group failed: ' + (err?.response?.data?.message || err.message)
+      });
     }
   };
 

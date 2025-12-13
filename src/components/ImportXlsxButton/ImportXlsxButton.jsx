@@ -1,4 +1,5 @@
 import React from "react";
+import Swal from "sweetalert2";
 
 const ImportXlsxButton = ({ onImport }) => {
   const handleChange = async (e) => {
@@ -19,7 +20,11 @@ const ImportXlsxButton = ({ onImport }) => {
         if (onImport) onImport(json, file);
       } catch (err) {
         console.error("Import failed", err);
-        alert("Import failed. See console for details.");
+        Swal.fire({
+          icon: 'error',
+          title: 'Import Failed',
+          text: 'Import failed. See console for details.'
+        });
       }
     };
     reader.readAsArrayBuffer(file);

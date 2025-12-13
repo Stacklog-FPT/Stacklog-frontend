@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import "./AddCategoryByReuse.scss";
 import {
   getListScoreCategoryReuse,
@@ -41,9 +42,22 @@ const AddCategoryByReuse = ({ classId, token, dispatch, onClose }) => {
   };
 
   const handleAdd = async () => {
-    if (!selected || selected.length === 0)
-      return alert("Please choose at least one category to add.");
-    if (!classId) return alert("Please select a class first.");
+    if (!selected || selected.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Selection',
+        text: 'Please choose at least one category to add.'
+      });
+      return;
+    }
+    if (!classId) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Class Selected',
+        text: 'Please select a class first.'
+      });
+      return;
+    }
     setSaving(true);
     try {
       for (const id of selected) {
@@ -73,11 +87,19 @@ const AddCategoryByReuse = ({ classId, token, dispatch, onClose }) => {
         };
         await saveScoreCategory(payload, token, dispatch);
       }
-      alert("Selected categories added successfully");
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Selected categories added successfully'
+      });
       onClose && onClose();
     } catch (e) {
       console.error("Failed to add reused categories", e);
-      alert("Failed to add categories: " + (e?.message || e));
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: 'Failed to add categories: ' + (e?.message || e)
+      });
     } finally {
       setSaving(false);
     }

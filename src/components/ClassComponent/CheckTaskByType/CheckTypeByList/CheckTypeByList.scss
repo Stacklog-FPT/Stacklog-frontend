@@ -1,8 +1,10 @@
 .check__task__by__list__container {
   width: fit-content;
-  min-width: 100%;
-  height: auto;
-  max-height: 460px;
+  height: 100%;
+  padding-bottom: 40px;
+  overflow-y: auto;
+  overflow-x: auto;
+  display: block;
   padding-bottom: 40px;
   overflow-y: auto;
   overflow-x: auto;
@@ -42,7 +44,7 @@
     display: flex;
     align-items: center;
     cursor: pointer;
-    gap: 10px;
+    gap: 5px;
     border: none;
     cursor: pointer;
     border-radius: 50px;

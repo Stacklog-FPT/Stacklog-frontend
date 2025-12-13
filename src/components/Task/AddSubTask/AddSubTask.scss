@@ -4,11 +4,12 @@ $color-hover: red;
 
 .add__subtask {
   position: absolute;
-  top: 15%;
-  left: 35%;
+  top: 55%;
+  left: 25%;
   z-index: 1000;
-  width: 680px;
-  height: 600px;
+  width: 700px;
+
+  height: 520px;
   background-color: var(--bg--nav);
   border-radius: 30px;
 }
@@ -22,7 +23,8 @@ $color-hover: red;
   justify-content: flex-start;
   gap: 5px;
   scroll-behavior: smooth;
-  overflow-y: scroll;
+  // overflow-y: scroll;
+  overflow-x: hidden;
 
   & > * {
     flex-shrink: 0;

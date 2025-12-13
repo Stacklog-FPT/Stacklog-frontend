@@ -1,10 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./AddSubTask.scss";
-import avatar_add_button from "../../../assets/icon/avatar_add_button.png";
-import assignUser from "../../../assets/task/assign-user.png";
 import iconPriority from "../../../assets/task/icon-priority.png";
-import iconSubTask from "../../../assets/task/icon-subtask.png";
-import trackTime from "../../../assets/task/icon-track-time.png";
 import { useAuth } from "../../../context/AuthProvider";
 import {
   addTask,
@@ -17,20 +13,16 @@ import decodeToken from "../../../service/DecodeJwt";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import userApi, { fetchUserById } from "../../../service/UserService";
+import { fetchUserById } from "../../../service/UserService";
 
 const AddSubTask = ({ isClose, task }) => {
   const { groupId } = useParams();
   const { user } = useAuth();
-  const userData = decodeToken(user?.token);
   const dispatch = useDispatch();
   const notify = () => toast.success("Add task is successfully");
   const notifyFailure = () => toast.error("Add task is failure");
   const { groups } = useSelector((state) => state.group);
   const currentGroup = groups.find((g) => g.groupsId === groupId);
-  const visibleMembers = currentGroup.groupStudents?.slice(0, 3);
-  const extraCount =
-    currentGroup.groupStudents?.length - visibleMembers?.length;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
@@ -169,7 +161,6 @@ const AddSubTask = ({ isClose, task }) => {
         parentTaskId: task.taskId,
       };
 
-      console.log(payload);
       const response = await createSubtaskApi(payload, user.token, dispatch);
       if (response.data) {
         notify();
@@ -243,7 +234,8 @@ const AddSubTask = ({ isClose, task }) => {
             required
           />
         </div>
-        <div className="wrapper-assign-user">
+
+        {/* <div className="wrapper-assign-user">
           <div className="wrapper-assign-user-heading">
             <img src={assignUser} alt="..." />
             <h2>Assign</h2>
@@ -331,7 +323,7 @@ const AddSubTask = ({ isClose, task }) => {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
         <div className="wrapper-priority">
           <div className="wrapper-priority-heading">
             <img src={iconPriority || "/placeholder.svg"} alt="..." />

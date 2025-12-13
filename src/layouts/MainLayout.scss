@@ -23,7 +23,8 @@ $breakpoint-4k: 3840px;
     flex-direction: column;
     transition: margin-left 0.3s ease;
     overflow: hidden;
-    max-height: 100vh;
+    height: 100%;
+    // max-height: 100vh;
     background-color: var(--bg-color);
     padding: 20px;
 

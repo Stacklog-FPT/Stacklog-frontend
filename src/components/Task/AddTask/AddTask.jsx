@@ -102,6 +102,15 @@ const AddTask = ({ status, onCancel, group }) => {
       return false;
     }
 
+    if (
+      !taskData.taskPoint ||
+      taskData.taskPoint < 4 ||
+      taskData.taskPoint > 10
+    ) {
+      toast.error("Task point must be between 4 and 10!");
+      return false;
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -164,7 +173,7 @@ const AddTask = ({ status, onCancel, group }) => {
         taskDescription: taskData.taskDescription,
         statusTaskId: taskData.statusTaskId,
         documentId: "",
-        taskPoint: 0,
+        taskPoint: taskData.taskPoint,
         taskParentId: "",
         taskStartTime: formattedStartTime,
         taskDueDate: formattedDueDate,
@@ -176,6 +185,7 @@ const AddTask = ({ status, onCancel, group }) => {
         reviews: [],
         checkLists: [],
       };
+      console.log(payload);
       const response = await addTask(payload, user.token, dispatch);
       if (response.status === 200) {
         toast.success("Add task success");
@@ -252,6 +262,20 @@ const AddTask = ({ status, onCancel, group }) => {
             placeholder="Enter a description..."
             name="taskDescription"
             value={taskData.taskDescription}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div className="wrapper-title">
+          <h2 className="text-heading">Task point</h2>
+          <i className="fa-solid fa-xmark" onClick={onCancel}></i>
+        </div>
+        <div className="wrapper-title-input">
+          <input
+            type="number"
+            name="taskPoint"
+            placeholder="Enter task point 4 - 15 points..."
+            value={taskData.taskPoint}
             onChange={handleInputChange}
             required
           />

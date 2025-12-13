@@ -50,6 +50,7 @@ const Task = ({
     id: props.id,
     disabled: isDraggingOverlay,
   });
+  console.log("Task call: ", props.task.subtasks);
   const { user } = useAuth();
   const [showSubTask, setShowSubTask] = useState(false);
   const dispatch = useDispatch();
@@ -147,36 +148,38 @@ const Task = ({
     return new Date(year, month - 1, day);
   };
 
-  const calculateRemainingPercent = (start, due) => {
+  const calculateRemainingPercent = (due) => {
     const now = new Date();
 
-    // Parse ngày từ chuỗi DD/MM/YYYY
-    const startDate = parseDDMMYYYY(start);
     const dueDate = parseDDMMYYYY(due);
 
+    console.log("DueDate:", dueDate);
+
     // Kiểm tra hợp lệ
-    if (!startDate || !dueDate || isNaN(startDate) || isNaN(dueDate)) {
+    if (!dueDate || isNaN(dueDate)) {
       return 0;
     }
 
-    if (startDate > dueDate) {
-      return 0;
-    }
-
-    if (now <= startDate) {
-      return 0;
-    }
-
+    // Nếu đã quá hạn hoặc đúng ngày due → 0%
     if (now >= dueDate) {
+      return 0;
+    }
+
+    // Giả định task bắt đầu 30 ngày trước dueDate
+    const assumedStartDate = new Date(dueDate);
+    assumedStartDate.setDate(dueDate.getDate() - 30);
+
+    // Nếu hiện tại chưa đến ngày bắt đầu (hiếm xảy ra) → 100%
+    if (now <= assumedStartDate) {
       return 100;
     }
 
-    const totalTime = dueDate - startDate;
-    const elapsedTime = now - startDate;
+    const totalTime = dueDate - assumedStartDate; // milliseconds
+    const remainingTime = dueDate - now;
 
-    const percent = Math.round((elapsedTime / totalTime) * 100);
+    const percent = Math.round((remainingTime / totalTime) * 100);
 
-    return Math.min(percent, 100);
+    return Math.max(percent, 0); // đảm bảo không âm
   };
 
   const getColorByPercent = (percent) => {

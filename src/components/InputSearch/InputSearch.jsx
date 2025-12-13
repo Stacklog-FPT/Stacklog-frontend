@@ -12,7 +12,6 @@ const ROUTE_SUGGESTIONS = [
   { path: "/schedule", label: "Schedule", icon: "fa-calendar-days" },
   { path: "/documents", label: "Document", icon: "fa-folder-open" },
   { path: "/chatbox", label: "Chat", icon: "fa-comment-dots" },
-  { path: "/meeting", label: "Meeting", icon: "fa-video" },
   { path: "/grades", label: "Grade", icon: "fa-chart-column" },
   { path: "/plan", label: "Topic", icon: "fa-clipboard-list" },
   { path: "/user-detail", label: "Profile", icon: "fa-user" },

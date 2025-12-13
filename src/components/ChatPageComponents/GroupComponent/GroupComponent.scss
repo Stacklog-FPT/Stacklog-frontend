@@ -1,7 +1,12 @@
 $color-border-input: #e8e8e8;
 $color-background-white: #ffffff;
 $color-bg-darkmode: #edf2f2;
-$color-border-input: #e8e8e8;
+$color-primary: var(--bg--primary-color, #0b6b58); // fallback xanh lá đậm
+$color-primary-hover: #045745;
+$color-text-primary: #101828;
+$color-text-secondary: #667085;
+$color-hover-bg: #f0fdfa; // xanh nhạt rất nhẹ (teal)
+
 .group__container {
   width: 100%;
   height: 715px;
@@ -33,12 +38,10 @@ $color-border-input: #e8e8e8;
     border-radius: 8px;
     border: 1px solid transparent;
     background-clip: padding-box;
-  }
 
-  &::-webkit-scrollbar-thumb:hover {
-    background: #333;
-    border: 1px solid transparent;
-    background-clip: padding-box;
+    &:hover {
+      background: #333;
+    }
   }
 
   .group__heading {
@@ -80,7 +83,7 @@ $color-border-input: #e8e8e8;
 
     .group__input {
       position: relative;
-      flex: 1 1 auto; // allow input to grow and fill available space
+      flex: 1 1 auto;
 
       input[type="text"] {
         width: 100%;
@@ -88,10 +91,15 @@ $color-border-input: #e8e8e8;
         padding: 10px 8px 8px 40px;
         border-radius: 10px;
         font-size: 16px;
-        margin-top: 0px;
-        margin-bottom: 0px;
         border: 1px solid $color-border-input;
         background-color: var(--bg--nav);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+        &:focus {
+          border-color: $color-primary;
+          box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+          outline: none;
+        }
       }
 
       .fa-magnifying-glass {
@@ -103,6 +111,92 @@ $color-border-input: #e8e8e8;
         font-size: 18px;
         pointer-events: none;
       }
+
+      // Dropdown gợi ý tìm kiếm user
+      .member-suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: $color-background-white;
+        border: 1px solid #e0e0e0;
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        margin-top: 4px;
+
+        // Thông báo loading / không tìm thấy
+        & > div:not(.member-suggestion-item) {
+          padding: 16px;
+          text-align: center;
+          color: #999;
+          font-size: 14px;
+          font-style: italic;
+        }
+      }
+
+      .member-suggestion-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background-color: transparent;
+
+        &:hover {
+          background-color: $color-hover-bg;
+        }
+
+        &:active {
+          background-color: rgba(
+            6,
+            95,
+            70,
+            0.12
+          ); // thay thế darken(), đẹp và an toàn
+        }
+
+        &:focus-visible {
+          outline: 2px solid $color-primary;
+          outline-offset: -2px;
+        }
+
+        img {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+          background: #f0f0f0;
+          flex-shrink: 0;
+        }
+
+        .member-suggestion-info {
+          flex: 1;
+          min-width: 0;
+
+          .member-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: $color-text-primary;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .member-email {
+            font-size: 13px;
+            color: $color-text-secondary;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
     }
 
     .btn-add-group {
@@ -111,9 +205,8 @@ $color-border-input: #e8e8e8;
       gap: 8px;
       padding: 8px 12px;
       margin-left: 12px;
-      background: transparent; // no filled background
-      /* Use CSS variable when available, otherwise use a clear dark-green fallback */
-      color: var(--bg--primary-color, #0b6b58);
+      background: transparent;
+      color: $color-primary;
       border: 1px solid transparent;
       border-radius: 8px;
       font-weight: 600;
@@ -121,14 +214,13 @@ $color-border-input: #e8e8e8;
       cursor: pointer;
 
       i {
-        /* ensure the icon inherits the button color */
         color: inherit;
         font-size: 18px;
       }
 
       &:hover {
-        /* subtle hover effect to make it clear it's interactive */
-        background: rgba(11, 107, 88, 0.06);
+        background: rgba($color-primary, 0.06);
+        border-color: rgba($color-primary, 0.2);
       }
     }
 
@@ -142,120 +234,39 @@ $color-border-input: #e8e8e8;
     }
   }
 
-  // Responsive breakpoints
-  @media (max-width: 1024px) {
-    padding: 12px 15px;
-
-    .group__heading {
-      .group__input {
-        input[type="text"] {
-          height: 36px;
-          font-size: 14px;
-          padding: 8px 8px 8px 36px;
-        }
-
-        .fa-magnifying-glass {
-          font-size: 16px;
-        }
-      }
-
-      .btn-add-group {
-        padding: 7px 10px;
-        margin-left: 10px;
-        font-size: 13px;
-
-        i {
-          font-size: 16px;
-        }
-      }
-    }
-  }
-
+  // Responsive
   @media (max-width: 768px) {
-    border-left: none;
-    border-top: 1px solid #c8cad4;
-    padding: 12px 15px;
-
     .group__heading {
       .group__input {
-        input[type="text"] {
-          height: 34px;
-          font-size: 13px;
-        }
+        .member-suggestion-item {
+          padding: 10px 12px;
+          gap: 10px;
 
-        .fa-magnifying-glass {
-          font-size: 14px;
-        }
-      }
+          img {
+            width: 36px;
+            height: 36px;
+          }
 
-      .btn-add-group {
-        padding: 6px 9px;
-        margin-left: 8px;
+          .member-name {
+            font-size: 14px;
+          }
 
-        i {
-          font-size: 14px;
-        }
-      }
-    }
-  }
-
-  @media (max-width: 600px) {
-    padding: 10px 12px;
-
-    .group__heading {
-      gap: 8px;
-
-      .group__input {
-        input[type="text"] {
-          height: 32px;
-          font-size: 12px;
-          padding: 6px 6px 6px 32px;
-          border-radius: 8px;
-        }
-
-        .fa-magnifying-glass {
-          font-size: 13px;
-          left: 8px;
-        }
-      }
-
-      .btn-add-group {
-        padding: 5px 8px;
-        margin-left: 6px;
-        border-radius: 6px;
-
-        i {
-          font-size: 13px;
+          .member-email {
+            font-size: 12px;
+          }
         }
       }
     }
   }
 
   @media (max-width: 480px) {
-    padding: 8px 10px;
-
     .group__heading {
-      gap: 6px;
-
       .group__input {
-        input[type="text"] {
-          height: 30px;
-          font-size: 11px;
-          padding: 5px 5px 5px 28px;
-        }
-
-        .fa-magnifying-glass {
-          font-size: 12px;
-          left: 7px;
-        }
-      }
-
-      .btn-add-group {
-        padding: 4px 7px;
-        margin-left: 5px;
-
-        i {
-          font-size: 12px;
+        .member-suggestion-item {
+          img {
+            width: 32px;
+            height: 32px;
+          }
         }
       }
     }

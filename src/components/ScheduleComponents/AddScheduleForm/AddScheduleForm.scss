@@ -32,7 +32,7 @@
   background: rgba(255, 255, 255, 0.1);
   border: none;
   font-size: 1.8rem;
-  color: white;
+  color: black;
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -58,8 +58,7 @@
   padding: 0;
 
   h3 {
-    background: linear-gradient(135deg, #1a5f4f 0%, #0d4839 100%);
-    color: white;
+    color: black;
     padding: 16px 20px;
     margin: 0;
     font-size: 1.35rem;
@@ -75,6 +74,7 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    padding-top: 0px;
 
     // Custom scrollbar
     &::-webkit-scrollbar {
@@ -116,6 +116,7 @@
       font-size: 0.9rem;
       transition: all 0.2s ease;
       font-family: inherit;
+      background-color: #f1f7f7;
 
       &:focus {
         outline: none;

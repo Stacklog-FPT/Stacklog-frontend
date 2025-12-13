@@ -107,7 +107,7 @@
   border-color: var(--color--div-head);
 }
 
-.sl-modal__card--sm {
+.sl-modal__card2--sm {
   max-width: 600px;
   min-width: 400px;
   width: 100%;
@@ -120,4 +120,8 @@
   flex-direction: column;
   box-sizing: border-box;
   overflow-y: auto;
+}
+
+.sl-modal__card2, .sl-modal__card2--sm {
+  max-height: 65vh;
 }

@@ -16,7 +16,7 @@ const GroupChat = ({
   setShowAddGroup: externalSetShowAddGroup,
   defaultBoxType,
 }) => {
-  const { setSelectedBox } = useContext(ChatContext);
+  const { setSelectedBox, boxesVersion } = useContext(ChatContext);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [groupChatDetails, setGroupChatDetails] = useState([]);
@@ -252,7 +252,7 @@ const GroupChat = ({
     return () => {
       mounted = false;
     };
-  }, [user?.token, currentUserId, refreshTrigger]); // Only refresh when user changes or manual trigger
+  }, [user?.token, currentUserId, refreshTrigger, boxesVersion]); // Thêm boxesVersion để auto refresh
 
   // Xử lý chọn ảnh và preview
   const handleAvatarChange = (e) => {

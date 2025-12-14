@@ -138,7 +138,7 @@ const TaskDetails = ({ task, onClose }) => {
       taskStartTime: startISO || task.taskStartTime,
       taskDueDate: dueISO || task.taskDueDate,
       checkLists: form.checkListDraft,
-      assignTo: form.assignTo,
+      listUserAssign: form.assignTo,
     };
 
     const res = await updateTaskApi(payload, user.token, dispatch);

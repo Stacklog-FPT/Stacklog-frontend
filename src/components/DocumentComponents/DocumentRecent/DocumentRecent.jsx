@@ -7,10 +7,13 @@ import Swal from "sweetalert2";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDispatch } from "react-redux";
 import { deleteDocumentApi } from "../../../service/DocumentService";
+import DocumentDetail from "../DocumentDetail/DocumentDetail";
 
 const DocumentRecent = ({ title, data }) => {
   const { user } = useAuth();
   const { documents } = useSelector((state) => state.document);
+  const [documentId, setDocumentId] = React.useState("");
+  console.log(documentId)
   const dispatch = useDispatch();
   const itemsPerPage = 5;
   const totalPages = Math.ceil(documents?.length / itemsPerPage);
@@ -48,7 +51,8 @@ const DocumentRecent = ({ title, data }) => {
   };
 
   return (
-    <div className="document__recent">
+    <>
+     <div className="document__recent">
       <div className="document__recent__container">
         <div className="document__recent__container__heading">
           <h2>{title}</h2>
@@ -60,6 +64,7 @@ const DocumentRecent = ({ title, data }) => {
               <div
                 className="document__recent__container__main__content__item d-flex align-items-center justify-content-between"
                 key={item.documentId}
+                onClick={() => setDocumentId(item.documentId)}
               >
                 <div className="document__recent__container__main__content__item__content">
                   <span className="document__recent__container__main__content__item__content__title">
@@ -105,6 +110,9 @@ const DocumentRecent = ({ title, data }) => {
         )}
       </div>
     </div>
+    {documentId && <DocumentDetail id={documentId} onClose={() => setDocumentId("")} />}
+    </>
+   
   );
 };
 

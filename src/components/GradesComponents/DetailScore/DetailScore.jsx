@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./DetailScore.scss";
 import { useAuth } from "../../../context/AuthProvider";
 import { saveScore, updateScoreCategory, getScoreCategoriesByClass, deleteScoreCategory } from "../../../service/ScoreService";
 import Swal from "sweetalert2";
+import { fetchUserById } from "../../../service/UserService";
 
 const DetailScore = ({ handleActiveDetail, student, categories = [], loading = false, groupId = null, onScoreSaved }) => {
   // student and categories are passed from parent. categories are expected to be an array of objects
-
+  const [dataUser, setDataUser] = React.useState(null);
+  let currentUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  console.log('debug: ',dataUser);
   React.useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape') handleActiveDetail();
@@ -17,13 +20,31 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
 
   // defensive: if student is not provided, don't render (parent should provide student)
   if (!student) return null;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchUserById(currentUser.token, student._id);
+        setDataUser({
+          name: data?.full_name || data?.name || data?.work_id || 'Unknown',
+          email: data?.email || '',
+          avatar_link: data?.avatar_link || 'https://i0.wp.com/sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png?ssl=1',
+        });
+        console.log('Fetched user data:', data);
+      } catch (err) {
+        console.error("failed to fetch student user data", err);
+      }
+    };
+    fetchData();
+  }, [student]);
 
   // safe defaults for properties that may be missing depending on how student was created
   const classCodes = Array.isArray(student.classCode) ? student.classCode : [];
   const subjectCodes = Array.isArray(student.subjectCode) ? student.subjectCode : [];
-  const avatarSrc = student.avatar || student.avatar_link || '/default-avatar.png';
+  const avatarSrc = dataUser?.avatar_link || 'https://i0.wp.com/sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png?ssl=1';
   const displayName = student.name || student.full_name || student.work_id || 'Unknown';
   const displayEmail = student.email || student?.user?.email || '';
+
+  console.log('avatarSrc: ',avatarSrc)
   // Build a set of candidate identifiers for the selected student to match scoreItems robustly
   const studentIdCandidates = React.useMemo(() => {
     if (!student) return new Set();
@@ -461,7 +482,7 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
       <div className="detail__score__container">
         <div className="detail__score__container__left">
           <div className="detail__score__container__left__infor">
-            <img src={avatarSrc} alt={displayName} />
+            <img src={dataUser?.avatar_link} alt={displayName} />
             <h3>{displayName}</h3>
             <p className="email">{displayEmail}</p>
             {classCodes && classCodes.length > 0 && (

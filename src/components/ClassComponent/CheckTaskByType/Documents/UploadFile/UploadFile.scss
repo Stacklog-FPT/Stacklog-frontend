@@ -14,6 +14,7 @@
 
   .upload__file__container {
     width: 480px;
+    max-height: 80vh;
     border: 2px dashed var(--bg--primary-color);
     border-radius: 16px;
     text-align: center;
@@ -21,6 +22,7 @@
     padding: 30px;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
     gap: 12px;
     animation: slideDown 0.35s ease-out;
 
@@ -35,7 +37,7 @@
       flex-direction: column;
       gap: 10px;
       text-align: left;
-
+      overflow-y: scroll;
       .upload__label {
         display: flex;
         flex-direction: column;

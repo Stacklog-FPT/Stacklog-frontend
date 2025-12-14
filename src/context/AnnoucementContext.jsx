@@ -11,7 +11,7 @@ export const AnnouncementProvider = ({ children }) => {
 
   return (
     <AnnouncementContext.Provider
-      value={{ isAnnouncementVisible, toggleAnnouncement }}
+      value={{ isAnnouncementVisible, setIsAnnouncementVisible, toggleAnnouncement }}
     >
       {children}
     </AnnouncementContext.Provider>

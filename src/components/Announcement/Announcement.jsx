@@ -1,15 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import './Announcement.scss';
 import Card from './Card/Card';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { getAllNotification } from '../../service/NotificationService';
 import { useAuth } from '../../context/AuthProvider';
+import { AnnouncementContext } from '../../context/AnnoucementContext';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import decodeToken from '../../service/DecodeJwt';
 
 const Announcement = () => {
   const { user } = useAuth();
+  const { setIsAnnouncementVisible } = useContext(AnnouncementContext) || {};
+  const announcementRef = useRef(null);
   const decodeId = decodeToken(user.token)?.id;
   const { notifications } = useSelector((state) => state.notification);
   // notifications are in backend shape: { _id, content, type, receivers: [{ userId, isRead, _id }], createdAt }
@@ -28,6 +31,12 @@ const Announcement = () => {
   const navigate = useNavigate();
   const handleNotificationClick = (item) => {
     if (!item || !item.path) return;
+    
+    // Close announcement after clicking
+    if (setIsAnnouncementVisible) {
+      setIsAnnouncementVisible(false);
+    }
+    
     // treat internal routes (starting with '/') as SPA routes
     if (item.path.startsWith('/')) {
       navigate(item.path);
@@ -49,8 +58,25 @@ const Announcement = () => {
   useEffect(() => {
     getAllNotification(user.token, dispatch);
   }, []);
+
+  // Close announcement when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (announcementRef.current && !announcementRef.current.contains(event.target)) {
+        if (setIsAnnouncementVisible) {
+          setIsAnnouncementVisible(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [setIsAnnouncementVisible]);
+
   return (
-    <div className="announcement-container">
+    <div className="announcement-container" ref={announcementRef}>
       <div className="main-announcement">
         <div className="main-announcement-header">
           <h1>Announcement</h1>

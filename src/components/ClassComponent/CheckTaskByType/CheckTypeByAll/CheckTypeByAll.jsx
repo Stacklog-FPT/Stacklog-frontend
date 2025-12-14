@@ -1,28 +1,29 @@
-import { useState, useCallback, useEffect } from 'react';
-import './CheckTypeByAll.scss';
-import Column from './Column/Column';
-import Task from './Task/Task';
+import { useState, useCallback, useEffect } from "react";
+import "./CheckTypeByAll.scss";
+import Column from "./Column/Column";
+import Task from "./Task/Task";
 import {
   DndContext,
   closestCorners,
   DragOverlay,
   defaultDropAnimationSideEffects,
-} from '@dnd-kit/core';
-import { useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
-import AddTask from '../../../Task/AddTask/AddTask';
-import CommentTask from '../../../Task/CommentTask/CommentTask';
-import ClassAndMember from '../../ClassAndMember/ClassAndMember';
-import { useAuth } from '../../../../context/AuthProvider';
-import AddColumn from '../../../Column/AddColumn/AddColumn';
-import AddSubTask from '../../../Task/AddSubTask/AddSubTask';
-import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { setTasks } from '../../../../redux/slice/taskSlice';
-import { getAllTask, updateTaskApi } from '../../../../service/TaskService';
-import { getStatus } from '../../../../service/ColumnService';
-import { isLeader } from '../../../../helper/validateStudentGroup';
-import decodeToken from '../../../../service/DecodeJwt';
-import ModalAI from '../../../ModalAI/ModalAI';
+} from "@dnd-kit/core";
+import { useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
+import AddTask from "../../../Task/AddTask/AddTask";
+import CommentTask from "../../../Task/CommentTask/CommentTask";
+import ClassAndMember from "../../ClassAndMember/ClassAndMember";
+import { useAuth } from "../../../../context/AuthProvider";
+import AddColumn from "../../../Column/AddColumn/AddColumn";
+import AddSubTask from "../../../Task/AddSubTask/AddSubTask";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setTasks } from "../../../../redux/slice/taskSlice";
+import { getAllTask, updateTaskApi } from "../../../../service/TaskService";
+import { getStatus } from "../../../../service/ColumnService";
+import { isLeader } from "../../../../helper/validateStudentGroup";
+import decodeToken from "../../../../service/DecodeJwt";
+import ModalAI from "../../../ModalAI/ModalAI";
+import { toast } from "sonner";
 
 const CheckTypeByAll = () => {
   const { user } = useAuth();
@@ -45,7 +46,7 @@ const CheckTypeByAll = () => {
       activationConstraint: {
         distance: 10,
       },
-    }),
+    })
   );
 
   const updateTaskStatus = async (taskId, taskData) => {
@@ -63,8 +64,8 @@ const CheckTypeByAll = () => {
     if (!over) return setActiveColumn(null);
 
     const overId = String(over.id);
-    if (overId.startsWith('droppable-')) {
-      const targetStatusId = overId.replace('droppable-', '');
+    if (overId.startsWith("droppable-")) {
+      const targetStatusId = overId.replace("droppable-", "");
       setActiveColumn(targetStatusId);
     } else {
       const overTask = tasks.find((t) => String(t.taskId) === overId);
@@ -91,12 +92,12 @@ const CheckTypeByAll = () => {
       let updatedTasks = [...tasks];
       const activeIndex = tasks.findIndex((task) => task.taskId === activeId);
       const droppableId = over.id;
-      const isOverDroppable = droppableId.startsWith('droppable-');
+      const isOverDroppable = droppableId.startsWith("droppable-");
       let targetStatusId;
       let targetStatus;
 
       if (isOverDroppable) {
-        targetStatusId = droppableId.replace('droppable-', '');
+        targetStatusId = droppableId.replace("droppable-", "");
       } else {
         // Check if over is a task
         const overTask = tasks.find((task) => task.taskId === droppableId);
@@ -106,7 +107,7 @@ const CheckTypeByAll = () => {
         }
         targetStatusId = overTask.statusTaskId;
         targetStatus = statuses.find(
-          (item) => item.statusTaskId === targetStatusId,
+          (item) => item.statusTaskId === targetStatusId
         )?.statusTaskName;
       }
 
@@ -132,26 +133,35 @@ const CheckTypeByAll = () => {
       } else {
         // Dropped on another task
         const overTask = tasks.find((task) => task.taskId === droppableId);
-        const overIndex = tasks.findIndex((task) => task.taskId === droppableId);
+        const overIndex = tasks.findIndex(
+          (task) => task.taskId === droppableId
+        );
         if (activeTask.statusTaskId === targetStatusId) {
           // Same column: Reorder tasks
           updatedTasks.splice(activeIndex, 1);
           updatedTasks.splice(overIndex, 0, activeTask);
         } else {
-          updateTaskStatus(activeTask.taskId, taskData);
-          updatedTasks = updatedTasks.filter((task) => task.taskId !== activeId);
-          updatedTasks.splice(overIndex, 0, {
-            ...activeTask,
-            statusTaskId: targetStatusId,
-            statusTaskName: targetStatus,
-          });
+          if (targetStatus.toLowerCase() === "completed" && !isLeader()) {
+   
+            toast.warning("Only group leader can move task to Completed status.");
+          } else {
+            updateTaskStatus(activeTask.taskId, taskData);
+            updatedTasks = updatedTasks.filter(
+              (task) => task.taskId !== activeId
+            );
+            updatedTasks.splice(overIndex, 0, {
+              ...activeTask,
+              statusTaskId: targetStatusId,
+              statusTaskName: targetStatus,
+            });
+          }
         }
       }
 
       dispatch(setTasks(updatedTasks));
       setActiveColumn(null);
     },
-    [tasks, statuses, dispatch],
+    [tasks, statuses, dispatch]
   );
 
   const handleFilterByPriority = () => {
@@ -200,82 +210,103 @@ const CheckTypeByAll = () => {
 
   return (
     <>
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="check-task-by-all-container">
-        <div className="check-task-by-all-content">
-          {/* <ClassAndMember onFilterByPriority={handleFilterByPriority} /> */}
-          <div className="task-column-container">
-            {statuses.map((item) => (
-              <Column
-                key={item.statusTaskId}
-                statusId={item.statusTaskId}
-                status={item.statusTaskName}
-                color={item.statusTaskColor}
-                tasks={tasks.filter((task) => task?.statusTaskId === item.statusTaskId)}
-                onShowAddTask={() => handleShowAddTask(item)}
-                onShowComment={handleShowComment}
-                onShowAddSubTask={handleChooseTask}
-                isLeader={matchRole}
-              />
-            ))}
-            {user.role === 'LECTURER' || matchRole ? (
-              <button className="btn_add_status" onClick={() => setShowAddColumn(!showAddColumn)}>
-                <i className="fa-solid fa-plus"></i>
-                <span>Add Status</span>
-              </button>
-            ) : null}
-          </div>
-          {user.role === 'LECTURER' || matchRole
-            ? showAddTask && (
-                <AddTask
-                  status={showAddTask}
-                  onCancel={() => setShowAddTask(null)}
-                  group={groupId}
-                />
-              )
-            : null}
-          {showCommentTask && <CommentTask task={showCommentTask} isClose={handleCloseComment} />}
-          {showAddColumn && (
-            <AddColumn status={showAddTask} onCancel={handleCloseAddStatus} groupId={groupId} />
-          )}
-          {showAddSubTask && <AddSubTask isClose={handleCloseAddSubtask} task={showAddSubTask} />}
-        </div>
-      </div>
-      <DragOverlay
-        dropAnimation={{
-          duration: 250,
-          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
-          sideEffects: defaultDropAnimationSideEffects({
-            styles: {
-              active: {
-                opacity: '1',
-              },
-            },
-          }),
-        }}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
       >
-        {activeTask ? (
-          <Task
-            id={activeTask.taskId}
-            title={activeTask.taskTitle}
-            createdAt={activeTask.taskStartTime}
-            dueDate={activeTask.taskDueDate}
-            onShowComment={handleShowComment}
-            onShowAddSubTask={handleChooseTask}
-            isDraggingOverlay
-            task={activeTask}
-          />
-        ) : null}
-      </DragOverlay>
-    </DndContext>
+        <div className="check-task-by-all-container">
+          <div className="check-task-by-all-content">
+            {/* <ClassAndMember onFilterByPriority={handleFilterByPriority} /> */}
+            <div className="task-column-container">
+              {statuses.map((item) => (
+                <Column
+                  key={item.statusTaskId}
+                  statusId={item.statusTaskId}
+                  status={item.statusTaskName}
+                  color={item.statusTaskColor}
+                  tasks={tasks.filter(
+                    (task) => task?.statusTaskId === item.statusTaskId
+                  )}
+                  onShowAddTask={() => handleShowAddTask(item)}
+                  onShowComment={handleShowComment}
+                  onShowAddSubTask={handleChooseTask}
+                  isLeader={matchRole}
+                />
+              ))}
+              {user.role === "LECTURER" || matchRole ? (
+                <button
+                  className="btn_add_status"
+                  onClick={() => setShowAddColumn(!showAddColumn)}
+                >
+                  <i className="fa-solid fa-plus"></i>
+                  <span>Add Status</span>
+                </button>
+              ) : null}
+            </div>
+            {user.role === "LECTURER" || matchRole
+              ? showAddTask && (
+                  <AddTask
+                    status={showAddTask}
+                    onCancel={() => setShowAddTask(null)}
+                    group={groupId}
+                  />
+                )
+              : null}
+            {showCommentTask && (
+              <CommentTask
+                task={showCommentTask}
+                isClose={handleCloseComment}
+              />
+            )}
+            {showAddColumn && (
+              <AddColumn
+                status={showAddTask}
+                onCancel={handleCloseAddStatus}
+                groupId={groupId}
+              />
+            )}
+            {showAddSubTask && (
+              <AddSubTask
+                isClose={handleCloseAddSubtask}
+                task={showAddSubTask}
+              />
+            )}
+          </div>
+        </div>
+        <DragOverlay
+          dropAnimation={{
+            duration: 250,
+            easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",
+            sideEffects: defaultDropAnimationSideEffects({
+              styles: {
+                active: {
+                  opacity: "1",
+                },
+              },
+            }),
+          }}
+        >
+          {activeTask ? (
+            <Task
+              id={activeTask.taskId}
+              title={activeTask.taskTitle}
+              createdAt={activeTask.taskStartTime}
+              dueDate={activeTask.taskDueDate}
+              onShowComment={handleShowComment}
+              onShowAddSubTask={handleChooseTask}
+              isDraggingOverlay
+              task={activeTask}
+            />
+          ) : null}
+        </DragOverlay>
+      </DndContext>
       {/* AI Assistant floating button + modal (bottom-right) - visible only to group leader or lecturer */}
-      {(user.role === 'LECTURER' || matchRole) && <ModalAI placement="bottom-right" />}
+      {(user.role === "LECTURER" || matchRole) && (
+        <ModalAI placement="bottom-right" />
+      )}
     </>
   );
 };

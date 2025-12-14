@@ -713,7 +713,28 @@ const ClassList = ({ handleActivityAddClass }) => {
                       <td>
                         <div className="name__ava">
                           <img src={item.avatar} alt="avatar" />
-                          <p>{item.name}</p>
+                          <p>
+                            {item.name}
+                            {(() => {
+                              const currentClass = classes.find((cls) => cls.classesId === selectedClass);
+                              if (!currentClass) return null;
+                              const group = currentClass.groups.find((g) => g.groupsId === selectedGroup);
+                              if (!group || group.groupsName.toLowerCase() === 'unassigned') return null;
+                              const isLeader = String(item._id) === String(group.groupsLeaderId);
+                              return isLeader ? (
+                                <i 
+                                  className="fa-solid fa-crown" 
+                                  style={{ 
+                                    color: '#ffd700', 
+                                    marginLeft: '6px', 
+                                    fontSize: '14px',
+                                    verticalAlign: 'middle'
+                                  }}
+                                  title="Group Leader"
+                                />
+                              ) : null;
+                            })()}
+                          </p>
                         </div>
                       </td>
                       <td>

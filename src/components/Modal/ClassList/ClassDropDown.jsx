@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { selectClass } from '../../../redux/slice/semesterSlice';
 import GroupDropDown from '../GroupList/GroupDropDown';
 import './ClassDropDown.scss';
@@ -7,8 +8,37 @@ import './ClassDropDown.scss';
 const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
   const { classes } = useSelector((state) => state.class);
   const [selectedClassId, setSelectedClassId] = useState(null);
-
+  const [activeGroupId, setActiveGroupId] = useState(null);
+  const location = useLocation();
   const dispatch = useDispatch();
+
+  // Auto-expand class if URL contains groupId (supports both numeric and UUID)
+  useEffect(() => {
+    const pathMatch = location.pathname.match(/\/tasks\/([a-zA-Z0-9-]+)/);
+    if (pathMatch && pathMatch[1]) {
+      const groupIdFromUrl = pathMatch[1];
+      // Try to parse as number if it's numeric, otherwise keep as string
+      const parsedGroupId = /^\d+$/.test(groupIdFromUrl) 
+        ? parseInt(groupIdFromUrl, 10) 
+        : groupIdFromUrl;
+      
+      setActiveGroupId(parsedGroupId);
+
+      // Find which class contains this group
+      const classWithGroup = classes.find((classItem) =>
+        classItem.groups?.some((g) => String(g.groupsId) === String(parsedGroupId))
+      );
+
+      if (classWithGroup) {
+        setSelectedClassId(classWithGroup.classesId);
+        setShowClasses(true);
+        dispatch(selectClass(classWithGroup.classesId));
+      }
+    } else {
+      setActiveGroupId(null);
+    }
+  }, [location.pathname, classes, dispatch, setShowClasses]);
+
   const handleClassClick = (classId) => {
     setSelectedClassId(classId === selectedClassId ? null : classId);
     dispatch(selectClass(classId === selectedClassId ? null : classId));
@@ -39,7 +69,9 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
             classes.map((classItem) => (
               <li key={classItem.classesId}>
                 <div
-                  className="class-dropdown-item"
+                  className={`class-dropdown-item ${
+                    selectedClassId === classItem.classesId ? 'active' : ''
+                  }`}
                   onClick={() => handleClassClick(classItem.classesId)}
                   title={classItem.classesName}
                 >
@@ -48,7 +80,11 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
                 </div>
 
                 {selectedClassId === classItem.classesId && (
-                  <GroupDropDown classId={classItem.classesId} groups={classItem.groups} />
+                  <GroupDropDown 
+                    classId={classItem.classesId} 
+                    groups={classItem.groups}
+                    activeGroupId={activeGroupId}
+                  />
                 )}
               </li>
             ))

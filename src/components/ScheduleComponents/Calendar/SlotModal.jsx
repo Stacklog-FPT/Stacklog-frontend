@@ -44,6 +44,7 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate, onRefresh, canDelet
 
   const [start, setStart] = useState(toInputValue(parseAsLocal(event.start)));
   const [isEditing, setIsEditing] = useState(false);
+  const [dateError, setDateError] = useState("");
 
   // Fetch user details for all assigned users
   useEffect(() => {
@@ -84,7 +85,33 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate, onRefresh, canDelet
     fetchAssignedUsers();
   }, [event, user.token]);
 
+  const validateDate = (dateString) => {
+    const selectedDate = new Date(dateString);
+    const now = new Date();
+    
+    if (selectedDate < now) {
+      setDateError("Cannot select a date in the past");
+      return false;
+    }
+    
+    setDateError("");
+    return true;
+  };
+
+  const handleDateChange = (e) => {
+    const newDate = e.target.value;
+    setStart(newDate);
+    if (isEditing) {
+      validateDate(newDate);
+    }
+  };
+
   const handleSave = () => {
+    if (!validateDate(start)) {
+      toast.error("Cannot save: Selected date is in the past");
+      return;
+    }
+
     onUpdate({
       ...event,
       title,
@@ -153,9 +180,14 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate, onRefresh, canDelet
             <input
               type="datetime-local"
               value={start}
-              onChange={(e) => setStart(e.target.value)}
+              onChange={handleDateChange}
               disabled={!isEditing}
             />
+            {dateError && isEditing && (
+              <div className="date-error" style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+                ⚠️ {dateError}
+              </div>
+            )}
           </div>
 
           {/* Assigned Users Section */}
@@ -242,7 +274,7 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate, onRefresh, canDelet
             </>
           ) : (
             <>
-              <button className="save" onClick={handleSave}>
+              <button className="save" onClick={handleSave} disabled={dateError}>
                 💾 Save
               </button>
               <button className="close" onClick={() => setIsEditing(false)}>

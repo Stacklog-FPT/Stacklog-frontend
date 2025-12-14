@@ -77,6 +77,7 @@ const PlanComponent = () => {
   const [addOpen, setAddOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [keyword, setKeyword] = useState("");
+  let isLeader = null;
 
   // fetch topics for the effective class (moved below after effectiveClassId is defined)
 
@@ -349,7 +350,7 @@ const PlanComponent = () => {
 
     if (!isGrantAction) {
       const leaderId = groupMap[oldPlan.groupId]?.groupsLeaderId;
-      const isLeader = String(leaderId) === String(userId);
+      isLeader = String(leaderId) === String(userId);
       let allowed = false;
       if (role === "LECTURER") {
         allowed = true;
@@ -435,7 +436,6 @@ const PlanComponent = () => {
       const payload = {
         ...oldPlan,
         status: "Rejected",
-
         allowEdit: false,
         rejectReason,
         approvedBy: userId,
@@ -456,9 +456,10 @@ const PlanComponent = () => {
     <>
       <div className="">
         <div className="plan__header">
-          <h2>Topic</h2>
+          <h2>Topic - {effectiveClassName}</h2>
 
           <div className="plan__actions">
+            {isLeader && 
             <div className="plan__actions">
               <button
                 className="sl-btn sl-btn--primary"
@@ -467,8 +468,8 @@ const PlanComponent = () => {
                 <IoSend />
                 Submit
               </button>
-            </div>
-            {role === "STUDENT" && currentGroupId && (
+
+               {role === "STUDENT" && currentGroupId && (
               <button
                 className="sl-btn sl-btn--primary"
                 onClick={() => setAddOpen(true)}
@@ -478,18 +479,20 @@ const PlanComponent = () => {
                 <i className="fa-solid fa-plus"></i>Topic
               </button>
             )}
+            </div>
+            }
           </div>
         </div>
 
         <div className="plan__toolbar">
-          <div className="plan__field">
+          {/* <div className="plan__field">
             <label>Class</label>
             <div className="sl-select__readonly">
               {effectiveClassName || "—"}
             </div>
-          </div>
+          </div> */}
 
-          <div className="plan__field">
+          {/* <div className="plan__field">
             <label></label>
             <div className="sl-select">
               <FiFilter className="sl-select__icon" />
@@ -503,9 +506,9 @@ const PlanComponent = () => {
                 <option value="Rejected">Rejected</option>
               </select>
             </div>
-          </div>
+          </div> */}
 
-          <div className="plan__search">
+          {/* <div className="plan__search">
             <FiSearch />
             <input
               value={keyword}
@@ -516,7 +519,7 @@ const PlanComponent = () => {
 
           <div className="plan__count">
             {pending ? "Loading…" : `${filteredTopics.length} results`}
-          </div>
+          </div> */}
         </div>
 
         {/* STUDENT: Thêm mới đề tài */}

@@ -6,7 +6,7 @@ import { canViewGroup } from '../../../helper/validateStudentGroup';
 import decodeToken from '../../../service/DecodeJwt';
 import './GroupDropDown.scss';
 
-const GroupDropDown = ({ groups = [] }) => {
+const GroupDropDown = ({ groups = [], activeGroupId }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
   let userId = null;
@@ -29,12 +29,16 @@ const GroupDropDown = ({ groups = [] }) => {
           const isUnassigned =
             typeof g.groupsName === 'string' && g.groupsName.toLowerCase() === 'unassigned';
           const canView = isUnassigned || canViewGroup(userWithId, g);
+          const isActive = String(activeGroupId) === String(g.groupsId);
+          
           return (
             <li key={g.groupsId}>
               {canView ? (
                 <NavLink
                   to={`/tasks/${g.groupsId}`}
-                  className="group-item"
+                  className={({ isActive: navIsActive }) => 
+                    `group-item ${navIsActive || isActive ? 'active' : ''}`
+                  }
                   title={g.groupsName}
                   onClick={() => dispatch(selectGroup(g.groupsId))}
                 >

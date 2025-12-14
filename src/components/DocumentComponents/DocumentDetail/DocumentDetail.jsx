@@ -11,8 +11,6 @@ import { getDocumentDetail } from '../../../redux/slice/documentSlice';
 const DocumentDetail = ({ id, onClose }) => {
   const { user } = useAuth();
   const documentPerson = useSelector((state) => state.document.documentPerson ?? []);
-  // const documentDetail = useSelector((state) => state.document.documentDetail);
-  // console.log(documentDetail);
   const documentDetail = documentPerson?.find((doc) => doc.documentId === id);
   const [title, setTitle] = useState(documentDetail?.documentTitle || '');
   const [isEditing, setIsEditing] = useState(false);

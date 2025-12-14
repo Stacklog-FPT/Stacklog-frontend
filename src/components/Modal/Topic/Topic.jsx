@@ -27,9 +27,9 @@ const PlanComponent = () => {
   let rawUser = useAuth();
   const user = rawUser && rawUser.user ? rawUser.user : rawUser;
   const role = user?.role;
+  console.log(role)
   const token = user?.token || null;
   const [showUpload, setShowUpload] = useState(false);
-  console.log(showUpload);
   let lecturerId = "";
   let userId = user?.id || user?.username || "";
   if (token) {
@@ -77,8 +77,9 @@ const PlanComponent = () => {
   const [addOpen, setAddOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [keyword, setKeyword] = useState("");
-  let isLeader = null;
 
+  // Calculate isLeader based on currentGroupId
+ 
   // fetch topics for the effective class (moved below after effectiveClassId is defined)
 
   useEffect(() => {
@@ -138,6 +139,16 @@ const PlanComponent = () => {
     });
     return map;
   }, [currentClass]);
+
+   const isLeader = useMemo(() => {
+    if (!currentGroupId || role !== "STUDENT") return false;
+    const currentGroup = groupMap[currentGroupId];
+    if (!currentGroup) return false;
+    return String(currentGroup.groupsLeaderId) === String(userId);
+  }, [currentGroupId, groupMap, userId, role]);
+
+  console.log('debug isLeader: ', isLeader, { currentGroupId, userId, groupLeaderId: groupMap[currentGroupId]?.groupsLeaderId })
+
 
   const effectiveClassId =
     (paramGroupId && groupMap[paramGroupId]?.classId) ||
@@ -350,12 +361,12 @@ const PlanComponent = () => {
 
     if (!isGrantAction) {
       const leaderId = groupMap[oldPlan.groupId]?.groupsLeaderId;
-      isLeader = String(leaderId) === String(userId);
+      const isTopicLeader = String(leaderId) === String(userId);
       let allowed = false;
       if (role === "LECTURER") {
         allowed = true;
       } else if (role === "STUDENT") {
-        if (!isLeader) {
+        if (!isTopicLeader) {
           allowed = false;
         } else {
           if (oldPlan.status === "Rejected") allowed = true;
@@ -391,12 +402,12 @@ const PlanComponent = () => {
     }
 
     const leaderId = groupMap[oldPlan.groupId]?.groupsLeaderId;
-    const isLeader = String(leaderId) === String(userId);
+    const isTopicLeader = String(leaderId) === String(userId);
     let canDelete = false;
     if (role === "LECTURER") {
       canDelete = true;
     } else if (role === "STUDENT") {
-      if (isLeader) {
+      if (isTopicLeader) {
         if (oldPlan.status === "Rejected") canDelete = true;
         else if (oldPlan.status === "Pending" && oldPlan.allowEdit === true)
           canDelete = true;

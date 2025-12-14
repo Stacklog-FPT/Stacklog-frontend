@@ -28,7 +28,7 @@ const MyPlan = (props) => {
     <div className="my__plan__container">
       <div className="my__plan__heading">
         <div className="my__plan__heading__text">
-          <p className="text-center pt-3">My Plan</p>
+          <p className="text-center pt-3">My Project</p>
         </div>
         <div className="my__plan__heading__icon">
           <img src={moreIcon} alt="More icon" />

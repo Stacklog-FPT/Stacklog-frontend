@@ -39,6 +39,9 @@ const CommentTask = ({ task, isClose }) => {
       };
 
       await updateTaskApi(payload, user?.token, dispatch);
+      
+      // Clear input field after successful comment
+      setNewComment("");
     } catch (e) {
       console.error(e.message);
     }

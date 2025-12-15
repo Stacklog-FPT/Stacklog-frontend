@@ -37,7 +37,7 @@ const DetailTopic = ({
   const [editForm, setEditForm] = React.useState({
     topicTitle: topic?.topicTitle || "",
     topicAbbreviation: topic?.topicAbbreviation || "",
-  topicDescription: topic?.topicDescription || "",
+    topicDescription: topic?.topicDescription || "",
     attachments: topic?.attachments ? [...topic.attachments] : [],
   });
 
@@ -189,11 +189,14 @@ const DetailTopic = ({
   const handleApprove = () => {
     if (!onApprove) return;
 
-    setLocalTopic((t) => ({ 
-      ...t, 
-      status: "Accepted", 
+    setLocalTopic((t) => ({
+      ...t,
+      status: "Accepted",
       allowEdit: false,
-      rejectReason: rejectReason && rejectReason.trim() ? rejectReason.trim() : t.rejectReason
+      rejectReason:
+        rejectReason && rejectReason.trim()
+          ? rejectReason.trim()
+          : t.rejectReason,
     }));
     onApprove(topic.topicId);
   };
@@ -353,7 +356,21 @@ const DetailTopic = ({
             </div>
           </div>
 
-          <div className="sl-field-inline">
+          <div>
+            <div className="sl-label">Deadline</div>
+            <div
+              className={`sl-badge sl-badge--${(
+                topic.status || ""
+              ).toLowerCase()}`}
+            >
+              {topic.status}
+            </div>
+            {localTopic?.allowEdit && localTopic?.status === "Pending" && (
+              <div className="sl-hint">Edit access granted to students</div>
+            )}
+          </div>
+
+          <div>
             <div className="sl-label">Status</div>
             <div
               className={`sl-badge sl-badge--${(
@@ -437,12 +454,17 @@ const DetailTopic = ({
             )}
           </div> */}
 
-          {(topic.status === "Rejected" || topic.status === "Accepted") && topic.rejectReason && (
-            <div style={{ gridColumn: "1 / -1" }}>
-              <div className="sl-label">{topic.status === "Rejected" ? "Reject reason" : "Approval note"}</div>
-              <div className="sl-preline">{topic.rejectReason}</div>
-            </div>
-          )}
+          {(topic.status === "Rejected" || topic.status === "Accepted") &&
+            topic.rejectReason && (
+              <div style={{ gridColumn: "1 / -1" }}>
+                <div className="sl-label">
+                  {topic.status === "Rejected"
+                    ? "Reject reason"
+                    : "Approval note"}
+                </div>
+                <div className="sl-preline">{topic.rejectReason}</div>
+              </div>
+            )}
         </div>
 
         {/* === LECTURER: Cấp/thu hồi quyền === */}
@@ -462,7 +484,8 @@ const DetailTopic = ({
         {canAct && (
           <div className="sl-actions">
             <button
-              className="sl-btn sl-btn--success" style={{background: "#045745"}}
+              className="sl-btn sl-btn--success"
+              style={{ background: "#045745" }}
               disabled={actionLoading}
               onClick={handleApprove}
             >
@@ -522,7 +545,8 @@ const DetailTopic = ({
         {canEdit && editMode && (
           <div className="sl-actions">
             <button
-              className="sl-btn sl-btn--success" style={{background: "#045745"}}
+              className="sl-btn sl-btn--success"
+              style={{ background: "#045745" }}
               disabled={actionLoading}
               onClick={handleSaveEdit}
             >

@@ -12,7 +12,7 @@ import decodeToken from "../../../service/DecodeJwt";
 import { getClasses } from "../../../service/ClassService";
 import { FiFilter, FiSearch, FiRefreshCcw } from "react-icons/fi";
 import userApi from "../../../service/UserService";
-import {fetchUserById} from "../../../service/UserService";
+import { fetchUserById } from "../../../service/UserService";
 
 const StatusBadge = ({ status }) => {
   const s = (status || "").toLowerCase();
@@ -192,7 +192,6 @@ const PlanComponent = () => {
     });
   }, [currentSemesterId, classesRaw, classes, selectedClass, normalizedPlans]);
 
-
   const [userCache, setUserCache] = useState({});
 
   const fetchUserName = async (id) => {
@@ -320,9 +319,10 @@ const PlanComponent = () => {
         allowEdit: false,
         approvedBy: userId,
         approvedAt: new Date().toISOString(),
-        rejectReason: rejectReason && rejectReason.trim() ? rejectReason.trim() : null,
+        rejectReason:
+          rejectReason && rejectReason.trim() ? rejectReason.trim() : null,
       };
-  await updatePlanApi(payload, token, dispatch);
+      await updatePlanApi(payload, token, dispatch);
       setRejectReason("");
       setModal({ open: false, topic: null });
     } catch {
@@ -355,7 +355,7 @@ const PlanComponent = () => {
     setLocalError("");
     try {
       const payload = { ...oldPlan, ...updatedFields };
-  await updatePlanApi(payload, token, dispatch);
+      await updatePlanApi(payload, token, dispatch);
       setModal({ open: false, topic: null });
     } catch {
       setLocalError("Failed to update topic");
@@ -410,7 +410,7 @@ const PlanComponent = () => {
         approvedBy: userId,
         approvedAt: new Date().toISOString(),
       };
-  await updatePlanApi(payload, token, dispatch);
+      await updatePlanApi(payload, token, dispatch);
       setModal({ open: false, topic: null });
       setRejectReason("");
     } catch {
@@ -558,8 +558,10 @@ const PlanComponent = () => {
                     <StatusBadge status={item.status} />
                   </td>
                   <td className="sl-cell-muted">
-                    {(item.status === "Rejected" || item.status === "Accepted") && item.rejectReason 
-                      ? item.rejectReason 
+                    {(item.status === "Rejected" ||
+                      item.status === "Accepted") &&
+                    item.rejectReason
+                      ? item.rejectReason
                       : "—"}
                   </td>
                   <td>

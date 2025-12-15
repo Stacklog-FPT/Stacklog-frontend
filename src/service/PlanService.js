@@ -25,7 +25,8 @@ export const getPlansApi = async (dispatch, token, classId) => {
     // API may return either an array or a single object. Normalize to array.
     let data = [];
     if (Array.isArray(response.data)) data = response.data;
-    else if (response.data && typeof response.data === "object") data = [response.data];
+    else if (response.data && typeof response.data === "object")
+      data = [response.data];
     const mapped = data.map((p) => ({
       topicId: p.piId || p.id || "",
       topicTitle: p.piTitle || p.piTitle || "",
@@ -86,21 +87,25 @@ export const getTopicsByGroupId = async (dispatch, token, groupId) => {
     // API may return either an array or a single object. Normalize to array.
     let data = [];
     if (Array.isArray(response.data)) data = response.data;
-    else if (response.data && typeof response.data === "object") data = [response.data];
+    else if (response.data && typeof response.data === "object")
+      data = [response.data];
     const mapped = data.map((p) => ({
       topicId: p.piId || p.id || "",
       topicTitle: p.piTitle || p.title || "",
       topicAbbreviation: p.piAbbreviation || p.piAbbreviation || "",
       topicDescription: p.piDescription || p.description || "",
       status: p.piStatus
-        ? String(p.piStatus).charAt(0) + String(p.piStatus).slice(1).toLowerCase()
+        ? String(p.piStatus).charAt(0) +
+          String(p.piStatus).slice(1).toLowerCase()
         : null,
       allowEdit: typeof p.isAllowEdit === "boolean" ? p.isAllowEdit : true,
       rejectReason: p.piRejectReason || null,
       approvedBy: p.piApprovedBy || null,
       approvedAt: p.piApprovedAt || null,
       groupId: p.groupId,
-      attachments: Array.isArray(p.piDocumentIds) ? p.piDocumentIds.map((id) => ({ id })) : [],
+      attachments: Array.isArray(p.piDocumentIds)
+        ? p.piDocumentIds.map((id) => ({ id }))
+        : [],
       createdBy: p.createdBy || null,
       registerAt: p.createdAt || p.piCreatedAt || null,
       updateBy: p.updateBy || null,
@@ -112,10 +117,16 @@ export const getTopicsByGroupId = async (dispatch, token, groupId) => {
     return mapped;
   } catch (e) {
     const msg =
-      (e && e.response && e.response.data && (e.response.data.message || JSON.stringify(e.response.data))) ||
+      (e &&
+        e.response &&
+        e.response.data &&
+        (e.response.data.message || JSON.stringify(e.response.data))) ||
       e.message ||
       "Unknown error";
-    console.error("[getTopicsByGroupId] failed", { error: e, response: e.response && e.response.data });
+    console.error("[getTopicsByGroupId] failed", {
+      error: e,
+      response: e.response && e.response.data,
+    });
     dispatch(setError(msg));
     dispatch(setPending(false));
     const err = new Error(msg);
@@ -260,8 +271,10 @@ export const addPlanApi = async (planData, token, dispatch) => {
     const response = await axios.post(url, payload, {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
+
     // Map API response back to frontend topic shape
     const p = response.data || {};
+    console.log("Service Plane call: ", p);
     const mapped = {
       topicId: p.piId || p.id || "",
       topicTitle: p.piTitle || payload.piTitle,
@@ -284,7 +297,7 @@ export const addPlanApi = async (planData, token, dispatch) => {
         ? p.piDocumentIds.map((id) => ({ id }))
         : [],
       createdBy: p.createdBy || null,
-      registerAt: p.createdAt || p.piCreatedAt || null,
+      createdAt: p.createdAt || p.piCreatedAt || null,
       updateBy: p.updateBy || null,
       updateAt: p.updateAt || null,
     };

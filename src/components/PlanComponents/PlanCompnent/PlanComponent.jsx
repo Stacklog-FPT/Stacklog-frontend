@@ -445,35 +445,38 @@ const PlanComponent = () => {
             ))}
           </select>
         </div>
+        {role === "LECTURER" && (
+          <>
+            <div className="plan__field">
+              <label></label>
+              <div className="sl-select">
+                <FiFilter className="sl-select__icon" />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="ALL">All</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Accepted">Accepted</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+            </div>
 
-        <div className="plan__field">
-          <label></label>
-          <div className="sl-select">
-            <FiFilter className="sl-select__icon" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="ALL">All</option>
-              <option value="Pending">Pending</option>
-              <option value="Accepted">Accepted</option>
-              <option value="Rejected">Rejected</option>
-            </select>
-          </div>
-        </div>
+            <div className="plan__search">
+              <FiSearch />
+              <input
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="Search by group / title / description…"
+              />
+            </div>
 
-        <div className="plan__search">
-          <FiSearch />
-          <input
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-            placeholder="Search by group / title / description…"
-          />
-        </div>
-
-        <div className="plan__count">
-          {pending ? "Loading…" : `${filteredTopics.length} results`}
-        </div>
+            <div className="plan__count">
+              {pending ? "Loading…" : `${filteredTopics.length} results`}
+            </div>
+          </>
+        )}
       </div>
 
       {/* AddTopicForm intentionally removed from this page */}

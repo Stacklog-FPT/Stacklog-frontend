@@ -223,9 +223,16 @@ const DetailTopic = ({
   const handleSaveEdit = () => {
     if (!onUpdate) return;
 
-    setLocalTopic((t) => ({ ...t, ...editForm }));
+    // When student edits topic, reset status to Pending
+    const updatedData = { 
+      ...editForm, 
+      status: "Pending",
+      allowEdit: false 
+    };
+    
+    setLocalTopic((t) => ({ ...t, ...updatedData }));
     setEditMode(false);
-    onUpdate(topic.topicId, editForm);
+    onUpdate(topic.topicId, updatedData);
   };
 
   return (
@@ -357,7 +364,7 @@ const DetailTopic = ({
           </div>
 
           <div>
-            <div className="sl-label">Deadline</div>
+            <div className="sl-label sl-field-inline">Deadline</div>
             <div
               className={`sl-badge sl-badge--${(
                 topic.status || ""
@@ -371,7 +378,7 @@ const DetailTopic = ({
           </div>
 
           <div>
-            <div className="sl-label">Status</div>
+            <div className="sl-label sl-field-inline">Status</div>
             <div
               className={`sl-badge sl-badge--${(
                 topic.status || ""

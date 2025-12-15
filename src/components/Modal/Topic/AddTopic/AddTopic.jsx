@@ -130,10 +130,10 @@ const AddTopic = ({
     const msg = validate();
     if (msg) return setError(msg);
 
-    if (plans.length === 1) {
-      toast.warning(
-        "You have reached the maximum number of topics for this class."
-      );
+    // Check if this group already has a topic
+    const groupTopics = plans.filter((p) => String(p.groupId) === String(groupId));
+    if (groupTopics.length > 0) {
+      toast.warning("Your group has already registered a topic. Each group can only register one topic.");
       return;
     }
 

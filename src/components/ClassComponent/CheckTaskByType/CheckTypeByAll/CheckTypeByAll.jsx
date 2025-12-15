@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import "./CheckTypeByAll.scss";
 import Column from "./Column/Column";
 import Task from "./Task/Task";
@@ -48,6 +48,16 @@ const CheckTypeByAll = () => {
       },
     })
   );
+
+  const uniqueStatuses = useMemo(() => {
+    const map = new Map();
+    statuses.forEach((st) => {
+      if (!map.has(st.statusTaskId)) {
+        map.set(st.statusTaskId, st);
+      }
+    });
+    return Array.from(map.values());
+  }, [statuses]);
 
   const updateTaskStatus = async (taskId, taskData) => {
     await updateTaskApi(taskData, user.token, dispatch);
@@ -142,8 +152,9 @@ const CheckTypeByAll = () => {
           updatedTasks.splice(overIndex, 0, activeTask);
         } else {
           if (targetStatus.toLowerCase() === "completed" && !isLeader()) {
-   
-            toast.warning("Only group leader can move task to Completed status.");
+            toast.warning(
+              "Only group leader can move task to Completed status."
+            );
           } else {
             updateTaskStatus(activeTask.taskId, taskData);
             updatedTasks = updatedTasks.filter(
@@ -221,7 +232,7 @@ const CheckTypeByAll = () => {
           <div className="check-task-by-all-content">
             {/* <ClassAndMember onFilterByPriority={handleFilterByPriority} /> */}
             <div className="task-column-container">
-              {statuses.map((item) => (
+              {uniqueStatuses.map((item) => (
                 <Column
                   key={item.statusTaskId}
                   statusId={item.statusTaskId}

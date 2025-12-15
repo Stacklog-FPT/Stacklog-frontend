@@ -98,8 +98,6 @@ const Task = ({
     width: isDraggingOverlay ? "260px" : undefined,
   };
 
-  console.log("Assign to in tasks: ", task.assignTo);
-
   const visibleMembers = useMemo(() => {
     return task?.assignTo?.slice(0, 3) || [];
   }, [task?.assignTo]);

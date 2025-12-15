@@ -132,22 +132,22 @@
       &__total__status {
         width: 100%;
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
         justify-content: flex-start;
-        gap: 20px;
+        gap: 30px;
+        padding: 0 10px;
 
         &__total {
-          width: 100%;
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           justify-content: flex-start;
-          gap: 20px;
-          padding-left: 10px;
+          gap: 12px;
           h4 {
             font-weight: 500;
             font-size: 14px;
             color: var(--text-color);
+            white-space: nowrap;
           }
           span {
             font-weight: 500;
@@ -156,22 +156,26 @@
           }
         }
         &__status {
-          width: 100%;
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           justify-content: flex-start;
-          gap: 20px;
-          padding-left: 10px;
+          gap: 12px;
           h4 {
             font-weight: 500;
             font-size: 14px;
             color: var(--text-color);
+            white-space: nowrap;
           }
           span {
             font-weight: 500;
             font-size: 14px;
             color: var(--text-color);
           }
+        }
+        &__toggle {
+          display: flex;
+          align-items: center;
+          margin-left: auto;
         }
       }
       &__table__list {
@@ -243,7 +247,7 @@
           width: 110px;
           padding: 8px 10px;
           border-radius: 8px;
-          border: 1px solid rgba(0,0,0,0.12);
+          border: 1px solid rgba(0, 0, 0, 0.12);
           background: #fff;
           font-size: 14px;
           color: var(--text-color);
@@ -256,7 +260,7 @@
           width: 100%;
           padding: 8px 10px;
           border-radius: 8px;
-          border: 1px solid rgba(0,0,0,0.12);
+          border: 1px solid rgba(0, 0, 0, 0.12);
           background: #fff;
           font-size: 14px;
           color: var(--text-color);
@@ -273,7 +277,7 @@
           width: 80px;
           padding: 8px 10px;
           border-radius: 8px;
-          border: 1px solid rgba(0,0,0,0.12);
+          border: 1px solid rgba(0, 0, 0, 0.12);
           background: #fff;
           font-size: 14px;
           color: var(--text-color);
@@ -286,12 +290,12 @@
 
         .inline-cat-name:focus,
         .inline-cat-weight:focus {
-          box-shadow: 0 0 0 3px rgba(20,112,67,0.06);
-          border-color: rgba(20,112,67,0.4);
+          box-shadow: 0 0 0 3px rgba(20, 112, 67, 0.06);
+          border-color: rgba(20, 112, 67, 0.4);
         }
         .score__input:focus {
-          box-shadow: 0 0 0 3px rgba(20,112,67,0.06);
-          border-color: rgba(20,112,67,0.4);
+          box-shadow: 0 0 0 3px rgba(20, 112, 67, 0.06);
+          border-color: rgba(20, 112, 67, 0.4);
         }
 
         .score__actions {
@@ -313,26 +317,26 @@
 
         .btn--edit {
           color: var(--bg--primary-color);
-          background: rgba(20,112,67,0.06);
-          border-color: rgba(20,112,67,0.12);
+          background: rgba(20, 112, 67, 0.06);
+          border-color: rgba(20, 112, 67, 0.12);
         }
 
         .btn--save {
           color: #fff;
           background: var(--bg--primary-color);
-          border-color: rgba(20,112,67,0.12);
+          border-color: rgba(20, 112, 67, 0.12);
         }
 
         .btn--cancel {
           color: #333;
           background: #fff;
-          border: 1px solid rgba(0,0,0,0.08);
+          border: 1px solid rgba(0, 0, 0, 0.08);
         }
         .btn--eye {
           padding: 6px 10px;
           border-radius: 8px;
-          background: rgba(20,112,67,0.04); /* subtle green tint */
-          border: 1px solid rgba(20,112,67,0.12);
+          background: rgba(20, 112, 67, 0.04); /* subtle green tint */
+          border: 1px solid rgba(20, 112, 67, 0.12);
           font-size: 14px;
           color: var(--bg--primary-color);
           display: inline-flex;
@@ -345,13 +349,32 @@
           font-size: 14px;
         }
         .btn--eye:hover {
-          background: rgba(20,112,67,0.08);
-          border-color: rgba(20,112,67,0.18);
+          background: rgba(20, 112, 67, 0.08);
+          border-color: rgba(20, 112, 67, 0.18);
         }
         .btn--eye.active {
-          background: rgba(20,112,67,0.12);
-          border-color: rgba(20,112,67,0.22);
+          background: rgba(20, 112, 67, 0.12);
+          border-color: rgba(20, 112, 67, 0.22);
           color: #0f5132;
+        }
+        .btn--toggle-all {
+          padding: 8px 16px;
+          border-radius: 8px;
+          background: var(--bg--primary-color);
+          border: 1px solid rgba(20, 112, 67, 0.12);
+          font-size: 14px;
+          font-weight: 600;
+          color: #fff;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          white-space: nowrap;
+        }
+        .btn--toggle-all i {
+          font-size: 14px;
         }
 
         /* Danger / Delete button styling and visual alignment so it sits next to Edit/Eye
@@ -360,7 +383,7 @@
         .btn--danger {
           color: #fff;
           background: #842029;
-          border-color: rgba(0,0,0,0.08);
+          border-color: rgba(0, 0, 0, 0.08);
           padding: 6px 10px;
           border-radius: 8px;
           display: inline-flex;
@@ -460,7 +483,7 @@
     color: black;
   }
   .modal-close-top-right:focus {
-    outline: 2px solid rgba(20,112,67,0.18);
+    outline: 2px solid rgba(20, 112, 67, 0.18);
     outline-offset: 2px;
   }
 
@@ -505,7 +528,21 @@
     .detail__score .detail__score__container__right {
       padding: 12px;
     }
-    .detail__score .isPassed, .detail__score .notPassed {
+    .detail__score .detail__score__container__right__total__status {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .detail__score .detail__score__container__right__total__status__toggle {
+      width: 100%;
+      margin-left: 0;
+    }
+    .detail__score .btn--toggle-all {
+      width: 100%;
+      justify-content: center;
+    }
+    .detail__score .isPassed,
+    .detail__score .notPassed {
       min-width: 48px;
       padding: 4px 10px;
       font-size: 12px;
@@ -535,5 +572,15 @@
       padding: 6px 8px;
       font-size: 13px;
     }
+  }
+}
+
+.btn--toggle-all {
+  background: var(--bg--primary-color);
+  color: white;
+
+  &:hover {
+    background: var(--bg--primary-color);
+    color: white;
   }
 }

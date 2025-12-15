@@ -239,27 +239,101 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
     }
   };
 
-  // lecturer-only: toggle whether this student's scoreItems are visible to students
-  // Clicking any eye will toggle visibility for ALL categories for this student (bulk update)
+  // lecturer-only: toggle whether this student's scoreItem is visible for ONE category
   const toggleVisualize = async (category) => {
     if (!isLecturer) return;
 
-    // Determine desired target based on the clicked category's current state
-    const clickedExisting = Array.isArray(category.scoreItems)
-  ? category.scoreItems.find((si) => matchScoreItem(si))
+    const existing = Array.isArray(category.scoreItems)
+      ? category.scoreItems.find((si) => matchScoreItem(si))
       : null;
-    const targetVisible = !(clickedExisting && clickedExisting.isVisualize);
+    const targetVisible = !(existing && existing.isVisualize);
 
     try {
-      // Build operations for all categories. For targetVisible === true we will create missing scoreItems;
-      // for targetVisible === false we only update existing ones.
+      if (!existing && !targetVisible) {
+        // nothing to do (hiding non-existing item)
+        return;
+      }
+
+      const payload = {
+        scoreItemId: existing?.scoreItemId ?? null,
+        scoreItemName: existing?.scoreItemName ?? null,
+        scoreItemValue: existing?.scoreItemValue ?? 0,
+        isVisualize: targetVisible,
+        userId: primaryStudentId || null,
+        groupId: (existing?.groupId ?? groupId ?? student.groupId ?? student.group_id) || null,
+        scoreCategory: category,
+      };
+      const res = await saveScore(payload, token);
+
+      // Update only this category in localCats
+      const updated = localCats.map((cat) => {
+        const catId = cat.scoreCategoryId || cat.id || cat._id;
+        const targetId = category.scoreCategoryId || category.id || category._id;
+        if (catId === targetId) {
+          if (res) {
+            const items = Array.isArray(cat.scoreItems) ? (() => {
+              const found = cat.scoreItems.find((si) => si.scoreItemId === res.scoreItemId || si.userId === res.userId);
+              if (found) {
+                return cat.scoreItems.map((si) => (si.scoreItemId === res.scoreItemId || si.userId === res.userId) ? { ...si, ...res } : si);
+              }
+              return [...cat.scoreItems, res];
+            })() : [res];
+            return { ...cat, scoreItems: items };
+          }
+          // fallback: update existing item's isVisualize
+          if (Array.isArray(cat.scoreItems)) {
+            const items = cat.scoreItems.map((si) => {
+              if (matchScoreItem(si)) {
+                return { ...si, isVisualize: targetVisible };
+              }
+              return si;
+            });
+            return { ...cat, scoreItems: items };
+          }
+        }
+        return cat;
+      });
+
+      setLocalCats(updated);
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: targetVisible ? 'Score is now visible to students' : 'Score is now hidden from students'
+      });
+    } catch (e) {
+      console.error('toggle visualize failed', e);
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: 'Failed to update visibility'
+      });
+    }
+  };
+
+  // lecturer-only: toggle visibility for ALL categories at once
+  const toggleAllVisualize = async () => {
+    if (!isLecturer) return;
+
+    // Determine target: if ANY score is hidden, show all; otherwise hide all
+    let anyHidden = false;
+    for (const cat of localCats) {
+      const existing = Array.isArray(cat.scoreItems)
+        ? cat.scoreItems.find((si) => matchScoreItem(si))
+        : null;
+      if (!existing || !existing.isVisualize) {
+        anyHidden = true;
+        break;
+      }
+    }
+    const targetVisible = anyHidden;
+
+    try {
       const ops = localCats.map(async (cat) => {
         const existing = Array.isArray(cat.scoreItems)
           ? cat.scoreItems.find((si) => matchScoreItem(si))
           : null;
 
         if (!existing && !targetVisible) {
-          // nothing to do (hiding non-existing items)
           return { catId: cat.scoreCategoryId || cat.id || cat._id, res: null };
         }
 
@@ -278,15 +352,12 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
 
       const settled = await Promise.allSettled(ops);
 
-      // Map results back to categories by index (ops order follows localCats order)
       const updated = localCats.map((cat, i) => {
-        const key = cat.scoreCategoryId || cat.id || cat._id;
         const outcome = settled[i];
         if (!outcome || outcome.status !== 'fulfilled' || !outcome.value) {
-          // if operation failed or returned no creation for this cat, still update existing items' isVisualize if present
           if (Array.isArray(cat.scoreItems)) {
             const items = cat.scoreItems.map((si) => {
-                if (matchScoreItem(si)) {
+              if (matchScoreItem(si)) {
                 return { ...si, isVisualize: targetVisible };
               }
               return si;
@@ -298,7 +369,6 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
 
         const { res } = outcome.value;
         if (res) {
-          // If server returned a score item, ensure it's present and reflects isVisualize
           const items = Array.isArray(cat.scoreItems) ? (() => {
             const found = cat.scoreItems.find((si) => si.scoreItemId === res.scoreItemId || si.userId === res.userId);
             if (found) {
@@ -319,7 +389,7 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
         text: targetVisible ? 'All scores are now visible to students' : 'All scores are now hidden from students'
       });
     } catch (e) {
-      console.error('bulk toggle visualize failed', e);
+      console.error('toggle all visualize failed', e);
       Swal.fire({
         icon: 'error',
         title: 'Update Failed',
@@ -523,6 +593,17 @@ const DetailScore = ({ handleActiveDetail, student, categories = [], loading = f
                 {isPassed ? "Passed" : "Not passed"}
               </span>
             </div>
+            {isLecturer && (
+              <div className="detail__score__container__right__total__status__toggle">
+                <button 
+                  className="btn btn--toggle-all"
+                  onClick={toggleAllVisualize}
+                  title="Toggle visibility for all scores"
+                >
+                  <i className="fa-solid fa-eye"></i> Turn on/off show all scores
+                </button>
+              </div>
+            )}
           </div>
           <div className="detail__score__container__right__table__list">
             <table>

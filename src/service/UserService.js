@@ -119,7 +119,7 @@ const userApi = () => {
           },
         }
       );
-
+      localStorage.clear();
       return response.data;
     } catch (e) {
       console.error("Logout API failed:", e?.response || e.message);

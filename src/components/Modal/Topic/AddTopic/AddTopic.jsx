@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 import { addPlanApi } from "../../../../service/PlanService";
 import decodeToken from "../../../../service/DecodeJwt";
 import userApi from "../../../../service/UserService";
@@ -7,6 +7,7 @@ import { fetchUserById } from "../../../../service/UserService";
 // reuse the form styles used by the plan add-topic form
 import "./AddTopic.scss";
 import { FiPlus, FiTrash2, FiPaperclip } from "react-icons/fi";
+import { toast } from "sonner";
 
 const AddTopic = ({
   classId,
@@ -20,7 +21,8 @@ const AddTopic = ({
   const [openState, setOpenState] = useState(false);
   const open = typeof openProp === "boolean" ? openProp : openState;
   const setOpen = setOpenProp || setOpenState;
-
+  const plans = useSelector((state) => state.plan.plans);
+  console.log(plans.length);
   const [form, setForm] = useState({
     topicTitle: "",
     topicAbbreviation: "",
@@ -42,13 +44,17 @@ const AddTopic = ({
   const groupObj = useMemo(() => {
     if (!groupId) return null;
     for (const cls of classesRaw || []) {
-      const g = (cls.groups || []).find((gr) => String(gr.groupsId) === String(groupId));
-      if (g) return { ...g, classId: cls.classesId, className: cls.classesName };
+      const g = (cls.groups || []).find(
+        (gr) => String(gr.groupsId) === String(groupId)
+      );
+      if (g)
+        return { ...g, classId: cls.classesId, className: cls.classesName };
     }
     return null;
   }, [classesRaw, groupId]);
 
-  const isLeader = !!groupObj && String(groupObj.groupsLeaderId) === String(userId);
+  const isLeader =
+    !!groupObj && String(groupObj.groupsLeaderId) === String(userId);
 
   const { getUserById } = userApi();
   const [leaderName, setLeaderName] = useState(null);
@@ -62,7 +68,8 @@ const AddTopic = ({
         const name = await fetchUserById(token, leaderId);
         if (cancelled) return;
         // getUserById returns user object; try common name fields
-        const display = name?.full_name || name?.fullName || name?.work_id || leaderId;
+        const display =
+          name?.full_name || name?.fullName || name?.work_id || leaderId;
         setLeaderName(display);
       } catch (e) {
         if (cancelled) return;
@@ -109,9 +116,9 @@ const AddTopic = ({
   };
 
   const validate = () => {
-  if (!classId || !groupId) return "Missing classId or groupId.";
-  if (!isLeader) return "Only the group leader can register a topic.";
-  if (!form.topicTitle.trim()) return "Please enter topic title.";
+    if (!classId || !groupId) return "Missing classId or groupId.";
+    if (!isLeader) return "Only the group leader can register a topic.";
+    if (!form.topicTitle.trim()) return "Please enter topic title.";
     return "";
   };
 
@@ -122,6 +129,13 @@ const AddTopic = ({
 
     const msg = validate();
     if (msg) return setError(msg);
+
+    if (plans.length === 1) {
+      toast.warning(
+        "You have reached the maximum number of topics for this class."
+      );
+      return;
+    }
 
     setLoading(true);
     try {
@@ -135,8 +149,9 @@ const AddTopic = ({
         groupId,
         attachments: form.attachments || [],
       };
-      await addPlanApi(payload, token, dispatch);
+      const resp = await addPlanApi(payload, token, dispatch);
 
+      console.log(resp);
       setForm({
         topicTitle: "",
         topicAbbreviation: "",
@@ -146,10 +161,11 @@ const AddTopic = ({
       });
       setOpen(false);
     } catch {
-  // show server-provided message when available
-  const msg = (arguments[0] && arguments[0].message) || 'Failed to add topic';
-  console.error('[AddTopic] add failed', arguments[0] || null);
-  setError(msg);
+      // show server-provided message when available
+      const msg =
+        (arguments[0] && arguments[0].message) || "Failed to add topic";
+      console.error("[AddTopic] add failed", arguments[0] || null);
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -271,7 +287,8 @@ const AddTopic = ({
 
           {!isLeader && (
             <div className="sl-alert sl-alert--warning" role="alert">
-              Only the group leader ({leaderName || groupObj?.groupsLeaderId || '—'}) can add a topic.
+              Only the group leader (
+              {leaderName || groupObj?.groupsLeaderId || "—"}) can add a topic.
             </div>
           )}
 

@@ -27,7 +27,6 @@ const PlanComponent = () => {
   let rawUser = useAuth();
   const user = rawUser && rawUser.user ? rawUser.user : rawUser;
   const role = user?.role;
-  console.log(role)
   const token = user?.token || null;
   const [showUpload, setShowUpload] = useState(false);
   let lecturerId = "";
@@ -79,7 +78,7 @@ const PlanComponent = () => {
   const [keyword, setKeyword] = useState("");
 
   // Calculate isLeader based on currentGroupId
- 
+
   // fetch topics for the effective class (moved below after effectiveClassId is defined)
 
   useEffect(() => {
@@ -140,15 +139,12 @@ const PlanComponent = () => {
     return map;
   }, [currentClass]);
 
-   const isLeader = useMemo(() => {
+  const isLeader = useMemo(() => {
     if (!currentGroupId || role !== "STUDENT") return false;
     const currentGroup = groupMap[currentGroupId];
     if (!currentGroup) return false;
     return String(currentGroup.groupsLeaderId) === String(userId);
   }, [currentGroupId, groupMap, userId, role]);
-
-  console.log('debug isLeader: ', isLeader, { currentGroupId, userId, groupLeaderId: groupMap[currentGroupId]?.groupsLeaderId })
-
 
   const effectiveClassId =
     (paramGroupId && groupMap[paramGroupId]?.classId) ||
@@ -470,28 +466,28 @@ const PlanComponent = () => {
           <h2>Topic - {effectiveClassName}</h2>
 
           <div className="plan__actions">
-            {isLeader && 
-            <div className="plan__actions">
-              <button
-                className="sl-btn sl-btn--primary"
-                onClick={() => setShowUpload(!showUpload)}
-              >
-                <IoSend />
-                Submit
-              </button>
+            {isLeader && (
+              <div className="plan__actions">
+                <button
+                  className="sl-btn sl-btn--primary"
+                  onClick={() => setShowUpload(!showUpload)}
+                >
+                  <IoSend />
+                  Submit
+                </button>
 
-               {role === "STUDENT" && currentGroupId && (
-              <button
-                className="sl-btn sl-btn--primary"
-                onClick={() => setAddOpen(true)}
-                disabled={pending}
-                type="button"
-              >
-                <i className="fa-solid fa-plus"></i>Topic
-              </button>
+                {role === "STUDENT" && currentGroupId && (
+                  <button
+                    className="sl-btn sl-btn--primary"
+                    onClick={() => setAddOpen(true)}
+                    disabled={pending}
+                    type="button"
+                  >
+                    <i className="fa-solid fa-plus"></i>Topic
+                  </button>
+                )}
+              </div>
             )}
-            </div>
-            }
           </div>
         </div>
 

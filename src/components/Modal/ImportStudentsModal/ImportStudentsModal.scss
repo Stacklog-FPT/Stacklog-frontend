@@ -1,0 +1,232 @@
+.import-students-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.import-students-modal {
+  background: var(--bg--nav);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-color);
+      margin: 0;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-color);
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background 0.2s;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+    }
+  }
+
+  &__content {
+    padding: 24px;
+
+    .class-info {
+      text-align: center;
+      margin-bottom: 24px;
+
+      h3 {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text-color);
+        margin: 0;
+      }
+    }
+
+    .info-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+
+      p {
+        margin: 0;
+        font-size: 14px;
+        color: #856404;
+
+        .link {
+          color: var(--bg--primary-color);
+          cursor: pointer;
+          text-decoration: underline;
+          font-weight: 600;
+
+          &:hover {
+            color: #0056b3;
+          }
+        }
+      }
+    }
+
+    .upload-section {
+      text-align: center;
+      margin-bottom: 24px;
+
+      p {
+        font-size: 14px;
+        color: var(--text-color);
+        margin-bottom: 16px;
+      }
+
+      .upload-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--bg--primary-color);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+
+        &:hover {
+          background: var(--bg--primary-color);
+        }
+
+        i {
+          font-size: 14px;
+        }
+      }
+
+      .selected-file {
+        margin-top: 12px;
+        display: column;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: var(--bg--primary-color);
+        border-radius: 6px;
+        color: white;
+        font-size: 14px;
+
+        i {
+          font-size: 18px;
+        }
+      }
+    }
+
+    .instructions {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+
+      h4 {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-color);
+        margin: 0 0 16px 0;
+      }
+
+      .instruction-step {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 12px;
+        line-height: 1.6;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        strong {
+          color: var(--text-color);
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+    .btn {
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      &--cancel {
+        background: #f8f9fa;
+        color: #495057;
+
+        &:hover:not(:disabled) {
+          background: #e2e6ea;
+        }
+      }
+
+      &--primary {
+        background: var(--bg--primary-color);
+        color: white;
+
+      }
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .import-students-modal {
+    .info-box {
+      background: rgba(255, 193, 7, 0.1);
+      border-color: rgba(255, 193, 7, 0.3);
+
+      p {
+        color: #ffc107;
+      }
+    }
+
+    &__content .instructions {
+      background: rgba(0, 0, 0, 0.2);
+
+      .instruction-step {
+        color: rgba(255, 255, 255, 0.7);
+      }
+    }
+  }
+}

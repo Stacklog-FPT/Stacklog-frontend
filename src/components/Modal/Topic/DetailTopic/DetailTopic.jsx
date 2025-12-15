@@ -2,10 +2,13 @@ import React, { useRef, useEffect, useState } from "react";
 import "./DetailTopic.scss";
 import { FiX, FiCheckCircle, FiXCircle, FiPaperclip } from "react-icons/fi";
 import { useAuth } from "../../../../context/AuthProvider";
-import userApi from "../../../../service/UserService";
 import decodeToken from "../../../../service/DecodeJwt";
 import { fetchUserById } from "../../../../service/UserService";
-
+import { useSelector } from "react-redux";
+import { getDeadline, saveDeadline } from "../../../../service/PlanService";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
+import { validateDate } from "../../../../helper/validateDate";
 const DetailTopic = ({
   open,
   topic,
@@ -23,7 +26,6 @@ const DetailTopic = ({
   onDelete,
 }) => {
   const cardRef = useRef(null);
-
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => {
@@ -40,7 +42,7 @@ const DetailTopic = ({
     topicDescription: topic?.topicDescription || "",
     attachments: topic?.attachments ? [...topic.attachments] : [],
   });
-
+  const { deadlinePlan } = useSelector((state) => state.plan);
   const [localTopic, setLocalTopic] = React.useState(topic);
   const { user } = useAuth();
   const token = user?.token;
@@ -48,7 +50,9 @@ const DetailTopic = ({
   const [memberNames, setMemberNames] = useState([]);
   const [leaderAvatar, setLeaderAvatar] = useState(null);
   const [memberAvatars, setMemberAvatars] = useState([]);
-
+  const [deadLine, setDeadLine] = useState("");
+  const [editDeadline, setEditDeadline] = useState(false);
+  const dispatch = useDispatch();
   React.useEffect(() => {
     setLocalTopic(topic);
   }, [topic]);
@@ -80,9 +84,7 @@ const DetailTopic = ({
         try {
           const u = await fetchUserById(token, leaderId);
           if (!cancelled) {
-            setLeaderName(
-              u?.full_name || u?.work_id || leaderId
-            );
+            setLeaderName(u?.full_name || u?.work_id || leaderId);
             setLeaderAvatar(u?.avatar_link || null);
           }
         } catch {
@@ -103,7 +105,7 @@ const DetailTopic = ({
               const u = await fetchUserById(token, id);
               return {
                 name: u?.full_name || u?.work_id || id,
-                avatar: u?.avatar_link || null
+                avatar: u?.avatar_link || null,
               };
             } catch {
               return { name: id, avatar: null };
@@ -111,8 +113,8 @@ const DetailTopic = ({
           })
         );
         if (!cancelled) {
-          setMemberNames(results.map(r => r.name));
-          setMemberAvatars(results.map(r => r.avatar));
+          setMemberNames(results.map((r) => r.name));
+          setMemberAvatars(results.map((r) => r.avatar));
         }
       } else {
         setMemberNames([]);
@@ -126,6 +128,9 @@ const DetailTopic = ({
   }, [group, token]);
 
   React.useEffect(() => {
+    const handleGetDeadline = async () => {
+      await getDeadline(topic.topicId, dispatch);
+    };
     if (open && topic) {
       setEditMode(false);
       setEditForm({
@@ -136,6 +141,7 @@ const DetailTopic = ({
         attachments: topic.attachments ? [...topic.attachments] : [],
       });
     }
+    handleGetDeadline();
   }, [open, topic]);
 
   const handleFileChange = (e) => {
@@ -224,15 +230,36 @@ const DetailTopic = ({
     if (!onUpdate) return;
 
     // When student edits topic, reset status to Pending
-    const updatedData = { 
-      ...editForm, 
+    const updatedData = {
+      ...editForm,
       status: "Pending",
-      allowEdit: false 
+      allowEdit: false,
     };
-    
+
     setLocalTopic((t) => ({ ...t, ...updatedData }));
     setEditMode(false);
     onUpdate(topic.topicId, updatedData);
+  };
+
+  const handleSaveDeadLine = async () => {
+    if (!validateDate(deadLine)) {
+      toast.warning("Deadline must be greater than or equal today!");
+      return;
+    }
+
+    const resp = await saveDeadline(
+      topic.groupId,
+      topic.topicId,
+      deadLine,
+      dispatch
+    );
+
+    console.log(resp);
+    if (resp.status === 201 || resp.status === 200) {
+      toast.success("Save deadline successfully!");
+    } else {
+      toast.warning("Oops, Something went wrong!");
+    }
   };
 
   return (
@@ -362,18 +389,66 @@ const DetailTopic = ({
                 : "-"}
             </div>
           </div>
-
           <div>
             <div className="sl-label sl-field-inline">Deadline</div>
-            <div
-              className={`sl-badge sl-badge--${(
-                topic.status || ""
-              ).toLowerCase()}`}
-            >
-              {topic.status}
-            </div>
-            {localTopic?.allowEdit && localTopic?.status === "Pending" && (
-              <div className="sl-hint">Edit access granted to students</div>
+
+            {editDeadline ? (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  flexWrap: "wrap",
+                }}
+              >
+                <input
+                  type="date"
+                  className="sl-input"
+                  value={deadLine}
+                  onChange={(e) => setDeadLine(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSaveDeadLine();
+                      setEditDeadline(false);
+                    }
+                    if (e.key === "Escape") {
+                      setDeadLine(deadlinePlan?.date || "");
+                      setEditDeadline(false);
+                    }
+                  }}
+                  autoFocus
+                />
+
+                <button
+                  className="sl-btn sl-btn--success sl-btn--sm"
+                  onClick={() => {
+                    handleSaveDeadLine();
+                    setEditDeadline(false);
+                  }}
+                  disabled={actionLoading}
+                >
+                  Save
+                </button>
+
+                <button
+                  className="sl-btn sl-btn--ghost sl-btn--sm"
+                  onClick={() => {
+                    setDeadLine(deadlinePlan?.date || "");
+                    setEditDeadline(false);
+                  }}
+                  disabled={actionLoading}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <p
+                className="sl-kbd"
+                onClick={() => setEditDeadline(true)}
+                style={{ cursor: "pointer" }}
+              >
+                {deadlinePlan?.deadline || "-"}
+              </p>
             )}
           </div>
 
@@ -384,11 +459,8 @@ const DetailTopic = ({
                 topic.status || ""
               ).toLowerCase()}`}
             >
-              {topic.status}
+              {topic.status || "Unknown"}
             </div>
-            {localTopic?.allowEdit && localTopic?.status === "Pending" && (
-              <div className="sl-hint">Edit access granted to students</div>
-            )}
           </div>
 
           {/* <div style={{ gridColumn: "1 / -1" }}>

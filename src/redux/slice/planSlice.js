@@ -1,13 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   pending: false,
   error: null,
   plans: [],
+  deadlinePlan: {},
 };
 
 const planSlice = createSlice({
-  name: 'plan',
+  name: "plan",
   initialState,
   reducers: {
     setPlans: (state, action) => {
@@ -15,6 +16,15 @@ const planSlice = createSlice({
     },
     addPlan: (state, action) => {
       state.plans.push(action.payload);
+    },
+    addDeadlinePlan: (state, action) => {
+      state.deadlinePlan = action.payload;
+    },
+    setDeadline: (state, action) => {
+      state.deadlinePlan = action.payload;
+    },
+    updateDeadline: (state, action) => {
+      state.deadlinePlan = { ...state.deadlinePlan, ...action.payload };
     },
     updatePlan: (state, action) => {
       const { topicId } = action.payload;
@@ -38,7 +48,17 @@ const planSlice = createSlice({
   },
 });
 
-export const { setPlans, addPlan, updatePlan, deletePlan, setPending, setError, resetPlans } =
-  planSlice.actions;
+export const {
+  setPlans,
+  addPlan,
+  updatePlan,
+  deletePlan,
+  setPending,
+  setError,
+  resetPlans,
+  addDeadlinePlan,
+  setDeadline,
+  updateDeadline,
+} = planSlice.actions;
 
 export default planSlice.reducer;

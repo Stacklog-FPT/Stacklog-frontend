@@ -7,6 +7,9 @@ import {
   updatePlan,
   addPlan,
   deletePlan,
+  addDeadlinePlan,
+  updateDeadline,
+  setDeadline,
 } from "../redux/slice/planSlice";
 import { REACT_API_URL } from "../api/apiConfig";
 
@@ -241,6 +244,64 @@ export const updatePlanApi = async (payload, token, dispatch) => {
     const err = new Error(msg);
     err.original = e;
     throw err;
+  }
+};
+
+export const getDeadlineById = async (topicId) => {
+  try {
+    const resp = await axios.get(
+      `http://localhost:3000/deadline?topicId=${topicId}`
+    );
+    return resp;
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+
+export const getDeadline = async (topicId, dispatch) => {
+  try {
+    const resp = await axios.get(
+      `http://localhost:3000/deadline?topicId=${topicId}`
+    );
+    dispatch(setDeadline(resp.data[0] || null));
+    return resp;
+  } catch (e) {
+    throw new Error(e.message);
+  }
+};
+export const saveDeadline = async (groupId, topicId, deadline, dispatch) => {
+  try {
+    dispatch(setPending(true));
+
+    const getTopic = await getDeadlineById(topicId);
+    let response;
+    if (getTopic.data.length > 0) {
+      const deadlineId = getTopic.data[0].id;
+
+      response = await axios.put(
+        `http://localhost:3000/deadline/${deadlineId}`,
+        {
+          ...getTopic.data[0],
+          deadline,
+        }
+      );
+
+      dispatch(updateDeadline(response.data));
+    } else {
+      response = await axios.post("http://localhost:3000/deadline", {
+        groupId,
+        topicId,
+        deadline,
+      });
+
+      dispatch(addDeadlinePlan(response.data));
+    }
+
+    dispatch(setPending(false));
+    return response;
+  } catch (e) {
+    dispatch(setPending(false));
+    throw e;
   }
 };
 

@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   pending: false,
@@ -7,9 +7,13 @@ const initialState = {
 };
 
 const classesSlice = createSlice({
-  name: 'class',
+  name: "class",
   initialState: initialState,
   reducers: {
+    setPending: (state, action) => {
+      state.pending = action.payload;
+    },
+
     getClassesStart(state) {
       state.pending = true;
       state.error = null;
@@ -23,12 +27,22 @@ const classesSlice = createSlice({
 
     getClassesFailure(state, action) {
       state.pending = false;
-      state.error = action.payload || 'Load semesters failed';
+      state.error = action.payload || "Load semesters failed";
     },
     // Generic API state reducers (used by service functions)
     apiStart(state) {
       state.pending = true;
       state.error = null;
+    },
+
+    updateClass: (state, aciton) => {
+      const currentClass = state.classes.find(
+        (c) => c.classesId === aciton.payload.classesId
+      );
+
+      if (currentClass) {
+        Object.assign(currentClass, aciton.payload);
+      }
     },
     apiSuccess(state) {
       state.pending = false;
@@ -36,7 +50,7 @@ const classesSlice = createSlice({
     },
     apiFailure(state, action) {
       state.pending = false;
-      state.error = action.payload || 'API request failed';
+      state.error = action.payload || "API request failed";
     },
   },
 });
@@ -48,6 +62,8 @@ export const {
   apiStart,
   apiSuccess,
   apiFailure,
+  setPending,
+  updateClass,
 } = classesSlice.actions;
 
 export default classesSlice.reducer;

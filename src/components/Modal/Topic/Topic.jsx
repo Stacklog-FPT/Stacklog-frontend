@@ -17,6 +17,8 @@ import userApi from "../../../service/UserService";
 import { IoSend } from "react-icons/io5";
 import { fetchUserById } from "../../../service/UserService";
 import UploadFile from "../../ClassComponent/CheckTaskByType/Documents/UploadFile/UploadFile";
+import { validateDate } from "../../../helper/validateDate";
+import AddDealine from "./AddDealine/AddDealine";
 
 const StatusBadge = ({ status }) => {
   const s = (status || "").toLowerCase();
@@ -29,6 +31,7 @@ const PlanComponent = () => {
   const role = user?.role;
   const token = user?.token || null;
   const [showUpload, setShowUpload] = useState(false);
+  const [showSetDeadline, setShowSetDeadline] = useState(false);
   let lecturerId = "";
   let userId = user?.id || user?.username || "";
   if (token) {
@@ -152,6 +155,7 @@ const PlanComponent = () => {
     (classes[0] && classes[0].classesId);
   const effectiveClassObj =
     (currentClass || []).find((c) => c.classesId === effectiveClassId) || null;
+
   const effectiveClassName = effectiveClassObj?.classesName || "";
 
   useEffect(() => {
@@ -471,7 +475,18 @@ const PlanComponent = () => {
           <h2>Topic - {effectiveClassName}</h2>
 
           <div className="plan__actions">
-            {isLeader && (
+            {role === "LECTURER" && (
+              <div className="plan__actions">
+                <button
+                  className="sl-btn sl-btn--primary"
+                  onClick={() => setShowSetDeadline(!showSetDeadline)}
+                >
+                  Set submittion deadline
+                </button>
+              </div>
+            )}
+
+            {isLeader && validateDate(effectiveClassObj.deadlineSubmit) && (
               <div className="plan__actions">
                 <button
                   className="sl-btn sl-btn--primary"
@@ -480,19 +495,21 @@ const PlanComponent = () => {
                   <IoSend />
                   Submit
                 </button>
-
-                {role === "STUDENT" && currentGroupId && (
-                  <button
-                    className="sl-btn sl-btn--primary"
-                    onClick={() => setAddOpen(true)}
-                    disabled={pending}
-                    type="button"
-                  >
-                    <i className="fa-solid fa-plus"></i>Topic
-                  </button>
-                )}
               </div>
             )}
+
+            {isLeader &&
+              validateDate(effectiveClassObj.deadlineAdd) &&
+              role === "STUDENT" && (
+                <button
+                  className="sl-btn sl-btn--primary"
+                  onClick={() => setAddOpen(true)}
+                  disabled={pending}
+                  type="button"
+                >
+                  <i className="fa-solid fa-plus"></i>Topic
+                </button>
+              )}
           </div>
         </div>
 
@@ -556,6 +573,8 @@ const PlanComponent = () => {
           rejectReason={rejectReason}
           setRejectReason={setRejectReason}
           localError={localError}
+          deadlineAdd={effectiveClassObj.deadlineAdd}
+          deadlineSubmit={effectiveClassObj.deadlineSubmit}
           setLocalError={setLocalError}
           onClose={() => setModal({ open: false, topic: null })}
           onApprove={() => handleApprove(modal.topic?.topicId)}
@@ -654,6 +673,12 @@ const PlanComponent = () => {
       </div>
       {showUpload && (
         <UploadFile onClose={() => setShowUpload(false)} isGroup={true} />
+      )}
+      {showSetDeadline && (
+        <AddDealine
+          currentClass={effectiveClassObj}
+          onClose={() => setShowSetDeadline(!showSetDeadline)}
+        />
       )}
     </>
   );

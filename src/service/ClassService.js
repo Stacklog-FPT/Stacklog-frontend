@@ -6,6 +6,8 @@ import {
   apiStart,
   apiSuccess,
   apiFailure,
+  setPending,
+  updateClass,
 } from "../redux/slice/classSlice";
 import { getGroups } from "../redux/slice/groupSlice";
 import { REACT_API_URL } from "../api/apiConfig";
@@ -149,12 +151,17 @@ const ClassService = () => {
     }
   };
 
-  const deleteStudentFromClass = async (token, studentId, classId, dispatch) => {
+  const deleteStudentFromClass = async (
+    token,
+    studentId,
+    classId,
+    dispatch
+  ) => {
     try {
       dispatch && dispatch(apiStart());
-      if (!token) throw new Error('Token is missing');
-      if (!studentId) throw new Error('studentId is missing');
-      if (!classId) throw new Error('classId is missing');
+      if (!token) throw new Error("Token is missing");
+      if (!studentId) throw new Error("studentId is missing");
+      if (!classId) throw new Error("classId is missing");
 
       const url = `${CLASS_URI}/groupstudent/delete-student?studentId=${encodeURIComponent(
         studentId
@@ -168,8 +175,11 @@ const ClassService = () => {
       return response.data;
     } catch (error) {
       dispatch && dispatch(apiFailure(error.message));
-      const serverMsg = error.response?.data?.message || error.response?.data || null;
-      throw new Error(serverMsg || 'Failed to delete student from class: ' + error.message);
+      const serverMsg =
+        error.response?.data?.message || error.response?.data || null;
+      throw new Error(
+        serverMsg || "Failed to delete student from class: " + error.message
+      );
     }
   };
 
@@ -209,7 +219,32 @@ const ClassService = () => {
       dispatch && dispatch(apiFailure(error.message));
       const serverMsg =
         error.response?.data?.message || error.response?.data || null;
-      throw new Error(serverMsg || "Failed to pick new leader: " + error.message);
+      throw new Error(
+        serverMsg || "Failed to pick new leader: " + error.message
+      );
+    }
+  };
+
+  const addDeadlineForLecuture = async (token, data, dispatch) => {
+    if (!token) throw new Error("Token is missing");
+    console.log(data);
+    try {
+      dispatch(setPending(true));
+      const response = await axios.post(
+        `${CLASS_URI}/class/update-deadline`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      dispatch(setPending(false));
+      dispatch(updateClass(response.data));
+      return response.data;
+    } catch (e) {
+      throw new Error(e.message);
     }
   };
 
@@ -225,6 +260,7 @@ const ClassService = () => {
     updateMemberToGroup,
     deleteStudentFromClass,
     pickNewLeader,
+    addDeadlineForLecuture,
   };
 };
 

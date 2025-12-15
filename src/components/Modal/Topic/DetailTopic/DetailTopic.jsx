@@ -9,11 +9,14 @@ import { getDeadline, saveDeadline } from "../../../../service/PlanService";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { validateDate } from "../../../../helper/validateDate";
+import { formatDateUI } from "../../../../helper/formatDate";
 const DetailTopic = ({
   open,
   topic,
   group,
   role,
+  deadlineAdd,
+  deadlineSubmit,
   actionLoading,
   rejectReason,
   setRejectReason,
@@ -380,6 +383,18 @@ const DetailTopic = ({
           </div>
 
           {/* objective removed */}
+          <div>
+            <div className="sl-label sl-field-inline">
+              Deadline Submit Topic
+            </div>
+            <p
+              // className="sl-kbd"
+              onClick={() => setEditDeadline(true)}
+              style={{ cursor: "pointer" }}
+            >
+              {formatDateUI(deadlineAdd) || "-"}
+            </p>
+          </div>
 
           <div className="sl-field-inline">
             <div className="sl-label">Registered at</div>
@@ -389,67 +404,18 @@ const DetailTopic = ({
                 : "-"}
             </div>
           </div>
+
           <div>
-            <div className="sl-label sl-field-inline">Deadline</div>
-
-            {editDeadline ? (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  flexWrap: "wrap",
-                }}
-              >
-                <input
-                  type="date"
-                  className="sl-input"
-                  value={deadLine}
-                  onChange={(e) => setDeadLine(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSaveDeadLine();
-                      setEditDeadline(false);
-                    }
-                    if (e.key === "Escape") {
-                      setDeadLine(deadlinePlan?.date || "");
-                      setEditDeadline(false);
-                    }
-                  }}
-                  autoFocus
-                />
-
-                <button
-                  className="sl-btn sl-btn--success sl-btn--sm"
-                  onClick={() => {
-                    handleSaveDeadLine();
-                    setEditDeadline(false);
-                  }}
-                  disabled={actionLoading}
-                >
-                  Save
-                </button>
-
-                <button
-                  className="sl-btn sl-btn--ghost sl-btn--sm"
-                  onClick={() => {
-                    setDeadLine(deadlinePlan?.date || "");
-                    setEditDeadline(false);
-                  }}
-                  disabled={actionLoading}
-                >
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <p
-                className="sl-kbd"
-                onClick={() => setEditDeadline(true)}
-                style={{ cursor: "pointer" }}
-              >
-                {deadlinePlan?.deadline || "-"}
-              </p>
-            )}
+            <div className="sl-label sl-field-inline">
+              Deadline Submit Document
+            </div>
+            <p
+              // className="sl-kbd"
+              onClick={() => setEditDeadline(true)}
+              style={{ cursor: "pointer" }}
+            >
+              {formatDateUI(deadlineSubmit) || "-"}
+            </p>
           </div>
 
           <div>

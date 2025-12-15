@@ -1,12 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import "./ModalAI.scss";
-import { postAiTaskAndDispatch, postSaveTaskListAndDispatch } from "../../service/AiService";
+import {
+  postAiTaskAndDispatch,
+  postSaveTaskListAndDispatch,
+} from "../../service/AiService";
 import { getTopicsByGroupId } from "../../service/PlanService";
+import { getAllTask } from "../../service/TaskService";
 import { useDispatch } from "react-redux";
 import { useAuth } from "../../context/AuthProvider";
 import ModalAITaskItem from "./ModalAITaskItem";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function ModalAI({ placement = "bottom-right" }) {
   const { user } = useAuth();
@@ -16,7 +21,6 @@ export default function ModalAI({ placement = "bottom-right" }) {
   const [history, setHistory] = useState([]);
   const [mode, setMode] = useState("single"); // 'single' | 'list'
   const { groupId } = useParams();
-  console.log("groupId", groupId);
 
   // form fields for single task
   const [taskTitle, setTaskTitle] = useState("");
@@ -47,18 +51,18 @@ export default function ModalAI({ placement = "bottom-right" }) {
     const d = new Date(value);
     if (Number.isNaN(d.getTime())) return null;
     const pad = (n) => String(n).padStart(2, "0");
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
-      d.getHours()
-    )}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
+      d.getDate()
+    )}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   };
   // helper: normalize priority values to backend-expected uppercase enums
   const normalizePriority = (v) => {
-    if (!v && v !== 0) return 'LOW';
+    if (!v && v !== 0) return "LOW";
     const s = String(v).trim().toLowerCase();
-    if (s === 'h' || s === 'high' || s === 'urgent') return 'HIGH';
-    if (s === 'm' || s === 'medium' || s === 'med') return 'MEDIUM';
-    if (s === 'l' || s === 'low') return 'LOW';
-    if (s === 'critical' || s === 'crit') return 'CRITICAL';
+    if (s === "h" || s === "high" || s === "urgent") return "HIGH";
+    if (s === "m" || s === "medium" || s === "med") return "MEDIUM";
+    if (s === "l" || s === "low") return "LOW";
+    if (s === "critical" || s === "crit") return "CRITICAL";
     // fallback: uppercase the raw value
     return String(v).toUpperCase();
   };
@@ -102,7 +106,6 @@ export default function ModalAI({ placement = "bottom-right" }) {
     (async () => {
       try {
         const topics = await getTopicsByGroupId(dispatch, user?.token, groupId);
-        console.log("topics" ,topics)
         if (!mounted) return;
         if (Array.isArray(topics) && topics.length > 0) {
           const first = topics[0] || {};
@@ -122,37 +125,78 @@ export default function ModalAI({ placement = "bottom-right" }) {
     // re-run when groupId, open state, or token changes so URL-based id or route updates are respected
   }, [groupId, user?.token, dispatch, open]);
 
-
   const handleSaveSelected = async () => {
     const selected = generatedList.filter((it) => {
       const id = it.taskId || it.TaskId || it.id || null;
       return id && selectedTaskIds.includes(id);
     });
     if (!selected || selected.length === 0) {
-      setHistory((h) => [...h, { from: "ai", text: "No tasks selected to save" }]);
+      setHistory((h) => [
+        ...h,
+        { from: "ai", text: "No tasks selected to save" },
+      ]);
       return;
     }
 
     const payload = selected.map((it) => ({
       taskTitle: it.taskTitle || it.Title || it.title || "",
-      taskDescription: it.taskDescription || it.Description || it.description || "",
+      taskDescription:
+        it.taskDescription || it.Description || it.description || "",
       taskPoint: it.taskPoint != null ? it.taskPoint : 0,
-      taskStartTime: it.taskStartTime ? formatAsLocalDatetime(it.taskStartTime) : null,
-      taskDueDate: it.taskDueDate ? formatAsLocalDatetime(it.taskDueDate) : null,
+      taskStartTime: it.taskStartTime
+        ? formatAsLocalDatetime(it.taskStartTime)
+        : null,
+      taskDueDate: it.taskDueDate
+        ? formatAsLocalDatetime(it.taskDueDate)
+        : null,
       priority: normalizePriority(it.priority || it.Priority || "LOW"),
     }));
-    console.log("Saving tasks: ", payload);
 
     setSaveLoading(true);
     try {
-      const res = await postSaveTaskListAndDispatch({ token: user?.token, groupId: groupId, tasks: payload, dispatch });
-      setHistory((h) => [...h, { from: "ai", text: `Saved ${selected.length} tasks` }]);
-      // set transient success message
-      setSaveMessage("Add task successful");
-      setTimeout(() => setSaveMessage(""), 3000);
+      const res = await postSaveTaskListAndDispatch({
+        token: user?.token,
+        groupId: groupId,
+        tasks: payload,
+        dispatch,
+      });
+
+      // Re-fetch all tasks from server to ensure fresh data
+      await getAllTask(user?.token, groupId, dispatch);
+
+      setHistory((h) => [
+        ...h,
+        { from: "ai", text: `Saved ${selected.length} tasks` },
+      ]);
+      
+      // Show success notification
+      await Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: `Added ${selected.length} tasks successfully`,
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+      });
+      
+      // Close modal after success
+      setOpen(false);
+      
+      // Reset form
+      setGeneratedList([]);
+      setGeneratedJson("");
+      setSelectedTaskIds([]);
+
       return res;
     } catch (e) {
-      setHistory((h) => [...h, { from: "ai", text: `Save failed: ${e?.message || e?.response?.data || 'Unknown'}` }]);
+      console.error("❌ [ModalAI] Save failed:", e);
+      setHistory((h) => [
+        ...h,
+        {
+          from: "ai",
+          text: `Save failed: ${e?.message || e?.response?.data || "Unknown"}`,
+        },
+      ]);
       throw e;
     } finally {
       setSaveLoading(false);
@@ -234,7 +278,7 @@ export default function ModalAI({ placement = "bottom-right" }) {
           endDate: taskDueDate,
           count: Number(listCount || 1),
         });
-        console.log("Generate response: ", data);
+
         setGeneratedJson(JSON.stringify(data, null, 2));
         // normalize response into generatedList so UI renders cards instead of raw JSON
         try {
@@ -250,8 +294,10 @@ export default function ModalAI({ placement = "bottom-right" }) {
             taskPoint: it.taskPoint || it.point || null,
           });
           let normalized = [];
-          if (Array.isArray(data)) normalized = data.map((it, i) => normalize(it, i));
-          else if (data && typeof data === "object") normalized = [normalize(data, 0)];
+          if (Array.isArray(data))
+            normalized = data.map((it, i) => normalize(it, i));
+          else if (data && typeof data === "object")
+            normalized = [normalize(data, 0)];
           setGeneratedList(normalized);
           setSelectedTaskIds([]);
         } catch (e) {
@@ -434,7 +480,9 @@ export default function ModalAI({ placement = "bottom-right" }) {
                             min={1}
                             className="modal-ai-input"
                             value={listCount}
-                            onChange={(e) => setListCount(Number(e.target.value) || 1)}
+                            onChange={(e) =>
+                              setListCount(Number(e.target.value) || 1)
+                            }
                           />
                         </div>
                         <div style={{ flex: 1 }}>
@@ -611,7 +659,9 @@ export default function ModalAI({ placement = "bottom-right" }) {
                           <ModalAITaskItem
                             key={t.taskId || t.TaskId || t.id || Math.random()}
                             task={t}
-                            selected={selectedTaskIds.includes(t.taskId || t.TaskId || t.id)}
+                            selected={selectedTaskIds.includes(
+                              t.taskId || t.TaskId || t.id
+                            )}
                             onSelect={onSelectTask}
                           />
                         ))}
@@ -654,7 +704,7 @@ export default function ModalAI({ placement = "bottom-right" }) {
                       onClick={handleConfirmClick}
                       disabled={saveLoading}
                     >
-                      {saveLoading ? 'Saving...' : 'Confirm'}
+                      {saveLoading ? "Saving..." : "Confirm"}
                     </button>
                   </div>
                 </div>

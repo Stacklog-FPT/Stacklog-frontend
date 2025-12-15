@@ -46,6 +46,8 @@ const DetailTopic = ({
   const token = user?.token;
   const [leaderName, setLeaderName] = useState(null);
   const [memberNames, setMemberNames] = useState([]);
+  const [leaderAvatar, setLeaderAvatar] = useState(null);
+  const [memberAvatars, setMemberAvatars] = useState([]);
 
   React.useEffect(() => {
     setLocalTopic(topic);
@@ -63,6 +65,8 @@ const DetailTopic = ({
       if (!group) {
         setLeaderName(null);
         setMemberNames([]);
+        setLeaderAvatar(null);
+        setMemberAvatars([]);
         return;
       }
 
@@ -75,15 +79,21 @@ const DetailTopic = ({
       if (leaderId) {
         try {
           const u = await fetchUserById(token, leaderId);
-          if (!cancelled)
+          if (!cancelled) {
             setLeaderName(
-              u?.full_name || u?.fullName || u?.work_id || leaderId
+              u?.full_name || u?.work_id || leaderId
             );
+            setLeaderAvatar(u?.avatar_link || null);
+          }
         } catch {
-          if (!cancelled) setLeaderName(leaderId);
+          if (!cancelled) {
+            setLeaderName(leaderId);
+            setLeaderAvatar(null);
+          }
         }
       } else {
         setLeaderName(null);
+        setLeaderAvatar(null);
       }
 
       if (memberIds.length > 0) {
@@ -91,15 +101,22 @@ const DetailTopic = ({
           memberIds.map(async (id) => {
             try {
               const u = await fetchUserById(token, id);
-              return u?.full_name || u?.fullName || u?.work_id || id;
+              return {
+                name: u?.full_name || u?.work_id || id,
+                avatar: u?.avatar_link || null
+              };
             } catch {
-              return id;
+              return { name: id, avatar: null };
             }
           })
         );
-        if (!cancelled) setMemberNames(results);
+        if (!cancelled) {
+          setMemberNames(results.map(r => r.name));
+          setMemberAvatars(results.map(r => r.avatar));
+        }
       } else {
         setMemberNames([]);
+        setMemberAvatars([]);
       }
     };
     fetchNames();
@@ -238,23 +255,42 @@ const DetailTopic = ({
         </h3>
 
         <div className="sl-grid">
-          <div>
+          <div style={{ gridColumn: "1 / -1" }}>
             <div className="sl-label">Leader</div>
-            <div>{leaderName || group?.groupsLeaderId || "-"}</div>
-          </div>
-          <div>
-            <div className="sl-label">Members</div>
-            <div className="sl-muted">
-              {(memberNames &&
-                memberNames.length > 0 &&
-                memberNames.join(", ")) ||
-                (group?.groupStudent?.join
-                  ? group.groupStudent.join(", ")
-                  : "-")}
+            <div className="sl-user-info">
+              <div className="sl-avatar">
+                {leaderAvatar ? (
+                  <img src={leaderAvatar} alt="Leader" />
+                ) : (
+                  leaderName?.charAt(0).toUpperCase() || "?"
+                )}
+              </div>
+              <span>{leaderName || group?.groupsLeaderId || "-"}</span>
             </div>
           </div>
+          <div style={{ gridColumn: "1 / -1" }}>
+            <div className="sl-label">Members</div>
+            {memberNames && memberNames.length > 0 ? (
+              <div className="sl-members-list">
+                {memberNames.map((name, idx) => (
+                  <div key={idx} className="sl-member-item">
+                    <div className="sl-avatar sl-avatar--sm">
+                      {memberAvatars[idx] ? (
+                        <img src={memberAvatars[idx]} alt={name} />
+                      ) : (
+                        name?.charAt(0).toUpperCase() || "?"
+                      )}
+                    </div>
+                    <span>{name}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="sl-muted">-</div>
+            )}
+          </div>
 
-          <div>
+          <div className="sl-field-inline">
             <div className="sl-label">Topic title</div>
             {editMode ? (
               <input
@@ -271,7 +307,7 @@ const DetailTopic = ({
             )}
           </div>
 
-          <div>
+          <div className="sl-field-inline">
             <div className="sl-label">Abbreviation</div>
             {editMode ? (
               <input
@@ -311,7 +347,7 @@ const DetailTopic = ({
 
           {/* objective removed */}
 
-          <div>
+          <div className="sl-field-inline">
             <div className="sl-label">Registered at</div>
             <div>
               {topic.registerAt
@@ -348,7 +384,7 @@ const DetailTopic = ({
             )}
           </div>
 
-          <div style={{ gridColumn: "1 / -1" }}>
+          {/* <div style={{ gridColumn: "1 / -1" }}>
             <div className="sl-label">Attachments</div>
             {editMode ? (
               <>
@@ -416,7 +452,7 @@ const DetailTopic = ({
             ) : (
               <div className="sl-muted">None</div>
             )}
-          </div>
+          </div> */}
 
           {(topic.status === "Rejected" || topic.status === "Accepted") &&
             topic.rejectReason && (

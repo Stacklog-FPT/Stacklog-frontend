@@ -79,8 +79,33 @@
 }
 .sl-label {
   font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 6px;
+  color: white;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  background: var(--bg--primary-color);
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  width: fit-content;
+  border-left: 3px solid #06605b;
+}
+
+.sl-field-inline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+
+  .sl-label {
+    margin-bottom: 0;
+  }
+
+  .sl-strong,
+  .sl-kbd {
+    width: 100%;
+  }
 }
 .sl-strong {
   font-weight: 700;
@@ -98,6 +123,8 @@
   background: #f8fafc;
   padding: 10px 12px;
   border-radius: 8px;
+
+
   font-size: 14px;
   box-sizing: border-box;
   min-width: 0;
@@ -256,5 +283,88 @@
   .sl-preline {
     font-size: 12px;
     padding: 6px 2px;
+  }
+}
+
+
+.sl-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #06605b 0%, #0891b2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(6, 96, 91, 0.25);
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &--sm {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+}
+
+.sl-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8fafc;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-top: 8px;
+  transition: all 0.2s;
+  border: 1px solid #e2e8f0;
+
+  &:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+
+  span {
+    font-weight: 500;
+    color: #1e293b;
+  }
+}
+
+.sl-members-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.sl-member-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  padding: 6px 12px 6px 6px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  border: 1px solid #e2e8f0;
+
+  &:hover {
+    background: #e0f2f1;
+    border-color: #06605b;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(6, 96, 91, 0.15);
+  }
+
+  span {
+    color: #1e293b;
   }
 }

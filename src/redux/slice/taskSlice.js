@@ -78,6 +78,25 @@ const tasksSlice = createSlice({
     resetTasks: (state, action) => {
       state.tasks = state.tasks;
     },
+    updateTaskAiGen: (state, action) => {
+      console.log("🟣 [taskSlice] updateTaskAiGen called");
+      console.log("🟣 [taskSlice] Current tasks count:", state.tasks.length);
+      console.log("🟣 [taskSlice] Current tasks:", state.tasks);
+      console.log("🟣 [taskSlice] Received payload:", action.payload);
+      console.log("🟣 [taskSlice] Is payload an array?", Array.isArray(action.payload));
+      
+      if (Array.isArray(action.payload)) {
+        console.log("🟣 [taskSlice] Spreading array payload, length:", action.payload.length);
+        state.tasks = [...state.tasks, ...action.payload];
+      } else {
+        console.log("🟣 [taskSlice] Adding single task");
+        state.tasks = [...state.tasks, action.payload];
+      }
+      
+      console.log("🟣 [taskSlice] New tasks count:", state.tasks.length);
+      console.log("🟣 [taskSlice] New tasks:", state.tasks);
+      console.log("✅ [taskSlice] updateTaskAiGen completed");
+    },
   },
 });
 
@@ -92,6 +111,7 @@ export const {
   resetTasks,
   getPersonalTask,
   updateReview,
+  updateTaskAiGen,
 } = tasksSlice.actions;
 
 export default tasksSlice.reducer;

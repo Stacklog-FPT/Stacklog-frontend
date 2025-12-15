@@ -76,13 +76,6 @@ const PopupCreateGroup = ({
           value={groupDesc}
           onChange={(e) => setGroupDesc(e.target.value)}
         />
-        <input
-          type="number"
-          placeholder="Max members"
-          value={groupMax}
-          min={1}
-          onChange={(e) => setGroupMax(e.target.value)}
-        />
         {/* Leader is assigned by backend (current user) — no need to select here */}
         <label>Select group members:</label>
         <div className="group-members-list">

@@ -1,7 +1,20 @@
 import api from "../axios";
 import { REACT_API_URL } from "../api/apiConfig";
+import {
+  setPending,
+  setError,
+  addTasks,
+  updateTaskAiGen,
+} from "../redux/slice/taskSlice";
 
-export async function postAiTask(title, payload, token, startDate, endDate, count) {
+export async function postAiTask(
+  title,
+  payload,
+  token,
+  startDate,
+  endDate,
+  count
+) {
   if (!title) throw new Error("title is required");
 
   // normalize base URL and ensure it contains the /api segment
@@ -27,7 +40,9 @@ export async function postAiTask(title, payload, token, startDate, endDate, coun
 
   const s = encodeURIComponent(toYYYYMMDD(startDate));
   const e = encodeURIComponent(toYYYYMMDD(endDate));
-  const c = encodeURIComponent(Number.isFinite(Number(count)) ? String(Number(count)) : '1');
+  const c = encodeURIComponent(
+    Number.isFinite(Number(count)) ? String(Number(count)) : "1"
+  );
 
   const url = `${base}/chat/ai/${encodedTitle}/${s}/${e}/${c}`;
 
@@ -37,53 +52,94 @@ export async function postAiTask(title, payload, token, startDate, endDate, coun
   return api.post(url, payload, { headers });
 }
 
-
-export async function postAiTaskAndDispatch({ title, payload, token, dispatch, startDate, endDate, count }) {
-  if (!dispatch || typeof dispatch !== 'function') {
-    throw new Error('dispatch function is required');
+export async function postAiTaskAndDispatch({
+  title,
+  payload,
+  token,
+  dispatch,
+  startDate,
+  endDate,
+  count,
+}) {
+  if (!dispatch || typeof dispatch !== "function") {
+    throw new Error("dispatch function is required");
   }
 
-  dispatch({ type: 'ai/postTask/pending' });
+  dispatch({ type: "ai/postTask/pending" });
 
   try {
-    const res = await postAiTask(title, payload, token, startDate, endDate, count);
-    dispatch({ type: 'ai/postTask/fulfilled', payload: res.data });
+    const res = await postAiTask(
+      title,
+      payload,
+      token,
+      startDate,
+      endDate,
+      count
+    );
+    dispatch({ type: "ai/postTask/fulfilled", payload: res.data });
     return res.data;
   } catch (err) {
-    const payload = err.response?.data || err.message || 'Unknown error';
-    dispatch({ type: 'ai/postTask/rejected', payload });
+    const payload = err.response?.data || err.message || "Unknown error";
+    dispatch({ type: "ai/postTask/rejected", payload });
     throw err;
   }
 }
 
 export async function postSaveTaskList(token, groupId, tasks) {
-  if (!groupId) throw new Error('groupId is required');
-  if (!Array.isArray(tasks)) throw new Error('tasks must be an array');
+  if (!groupId) throw new Error("groupId is required");
+  if (!Array.isArray(tasks)) throw new Error("tasks must be an array");
 
   // Build URL exactly as requested by backend: /appi/task/task/saveAll?groupId={groupId}
-  const url = `${REACT_API_URL}task/task/saveAll?groupId=${encodeURIComponent(groupId)}`;
+  const url = `${REACT_API_URL}task/task/saveAll?groupId=${encodeURIComponent(
+    groupId
+  )}`;
 
-  const headers = { 'Content-Type': 'application/json' };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const headers = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
 
   return api.post(url, tasks, { headers });
 }
 
-export async function postSaveTaskListAndDispatch({ token, groupId, tasks, dispatch }) {
-  if (!dispatch || typeof dispatch !== 'function') {
-    throw new Error('dispatch function is required');
+export async function postSaveTaskListAndDispatch({
+  token,
+  groupId,
+  tasks,
+  dispatch,
+}) {
+  if (!dispatch || typeof dispatch !== "function") {
+    throw new Error("dispatch function is required");
   }
-  dispatch({ type: 'ai/saveTasks/pending' });
+  
+  console.log("🔵 [AiService] Starting save tasks...");
+  console.log("🔵 [AiService] Input tasks to save:", tasks);
+  
+  dispatch(setPending(true));
   try {
     const res = await postSaveTaskList(token, groupId, tasks);
-    console.log("tasks", tasks)
-    dispatch({ type: 'ai/saveTasks/fulfilled', payload: res.data });
+    
+    console.log("🟢 [AiService] API Response:", res);
+    console.log("🟢 [AiService] Response data:", res.data);
+    console.log("🟢 [AiService] Is response data an array?", Array.isArray(res.data));
+    console.log("🟢 [AiService] Response data length:", Array.isArray(res.data) ? res.data.length : 'N/A');
+
+    console.log("🟡 [AiService] Dispatching updateTaskAiGen with:", res.data);
+    dispatch(updateTaskAiGen(res.data));
+    dispatch(setPending(false));
+    
+    console.log("✅ [AiService] Save completed successfully");
     return res.data;
   } catch (err) {
-    const payload = err.response?.data || err.message || 'Unknown error';
-    dispatch({ type: 'ai/saveTasks/rejected', payload });
+    console.error("❌ [AiService] Save failed:", err);
+    const errorMsg = err.response?.data || err.message || "Unknown error";
+    dispatch(setError(errorMsg));
+    dispatch(setPending(false));
     throw err;
   }
 }
 
-export default { postAiTask, postAiTaskAndDispatch, postSaveTaskList, postSaveTaskListAndDispatch };
+export default {
+  postAiTask,
+  postAiTaskAndDispatch,
+  postSaveTaskList,
+  postSaveTaskListAndDispatch,
+};

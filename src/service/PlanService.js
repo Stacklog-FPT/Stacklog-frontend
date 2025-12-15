@@ -24,6 +24,8 @@ export const getPlansApi = async (dispatch, token, classId) => {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
 
+    console.log("Get Plan Api: ", response);
+
     // API returns array of PI items. Map to the frontend's topic shape.
     // API may return either an array or a single object. Normalize to array.
     let data = [];
@@ -269,6 +271,7 @@ export const getDeadline = async (topicId, dispatch) => {
     throw new Error(e.message);
   }
 };
+
 export const saveDeadline = async (groupId, topicId, deadline, dispatch) => {
   try {
     dispatch(setPending(true));

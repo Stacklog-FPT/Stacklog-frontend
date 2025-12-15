@@ -106,7 +106,7 @@ export const deleteTaskApi = async (token, taskId, dispatch) => {
 
 export const updateTaskApi = async (taskData, token, dispatch) => {
   try {
-    console.log("Call me: ", taskData);
+    console.log("Payload: ", taskData);
     if (!token) {
       dispatch(setError("The token is missing!"));
       return;

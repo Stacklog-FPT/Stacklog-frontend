@@ -36,11 +36,16 @@ const toLocalInput = (iso) => {
 const toISO = (localValue) =>
   localValue ? new Date(localValue).toISOString() : null;
 
-const TaskDetails = ({ task, onClose }) => {
+const TaskDetails = ({ taskId, onClose }) => {
   const statuses = useSelector((state) => state.status.statuses);
+  const task = useSelector((state) =>
+    state.task.tasks.find((t) => t.taskId === taskId)
+  );
   const currentStatus = statuses.find(
     (s) => String(s.statusTaskId) === String(task.statusTaskId)
   );
+
+  const [isAssignDirty, setIsAssignDirty] = useState(false);
   const { groupId } = useParams();
   // -- Get User by id --
   const [studentInformation, setStudentInformation] = useState([]);
@@ -95,12 +100,16 @@ const TaskDetails = ({ task, onClose }) => {
 
   const handleAssignChange = (e) => {
     const { checked, value } = e.target;
+
     setForm((prev) => {
       const newAssigns = checked
         ? [...prev.assignTo, value]
         : prev.assignTo.filter((id) => id !== value);
+
       return { ...prev, assignTo: newAssigns };
     });
+
+    setIsAssignDirty(true);
   };
 
   const handleRemoveAssign = (userId) => {
@@ -108,6 +117,8 @@ const TaskDetails = ({ task, onClose }) => {
       ...prev,
       assignTo: prev.assignTo.filter((id) => id !== userId),
     }));
+
+    setIsAssignDirty(true);
   };
 
   const selectedMembers = Array.isArray(studentInformation)
@@ -138,7 +149,7 @@ const TaskDetails = ({ task, onClose }) => {
       taskStartTime: startISO || task.taskStartTime,
       taskDueDate: dueISO || task.taskDueDate,
       checkLists: form.checkListDraft,
-      listUserAssign: form.assignTo,
+      listUserAssign: isAssignDirty ? form.assignTo : task.assignTo,
     };
 
     const res = await updateTaskApi(payload, user.token, dispatch);

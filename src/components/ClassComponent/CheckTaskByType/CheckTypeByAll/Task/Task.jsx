@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import ReactDOM from "react-dom";
 import "./Task.scss";
 import Skeleton from "react-loading-skeleton";
@@ -25,7 +25,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { FaTrashAlt, FaPlus } from "react-icons/fa";
 import { useAuth } from "../../../../../context/AuthProvider";
 import SubTask from "./SubTask/SubTask";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   deleteTaskApi,
   updateTaskApi,
@@ -53,6 +53,9 @@ const Task = ({
   const { user } = useAuth();
   const [showSubTask, setShowSubTask] = useState(false);
   const dispatch = useDispatch();
+  const task = useSelector((state) =>
+    state.task.tasks.find((t) => t.taskId === props.id)
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(props.task?.taskTitle || "");
   const [editedStartTime, setEditedStartTime] = useState(
@@ -95,8 +98,13 @@ const Task = ({
     width: isDraggingOverlay ? "260px" : undefined,
   };
 
-  const visibleMembers = props.task?.assignTo?.slice(0, 3);
-  const extraCount = props.task?.assignTo?.length - visibleMembers?.length;
+  console.log("Assign to in tasks: ", task.assignTo);
+
+  const visibleMembers = useMemo(() => {
+    return task?.assignTo?.slice(0, 3) || [];
+  }, [task?.assignTo]);
+
+  const extraCount = task?.assignTo?.length - visibleMembers?.length;
 
   const handleMouseEnter = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -257,6 +265,11 @@ const Task = ({
   const progressColor = getColorByPercent(percent);
 
   useEffect(() => {
+    if (visibleMembers.length === 0) {
+      setUserMap([]);
+      return;
+    }
+
     const fetchStudent = async () => {
       const results = await Promise.all(
         visibleMembers.map(async (id) => {
@@ -276,7 +289,7 @@ const Task = ({
     };
 
     fetchStudent();
-  }, []);
+  }, [visibleMembers, user.token]);
 
   return (
     <>
@@ -505,7 +518,7 @@ const Task = ({
       </div>
       {isShowDetail && (
         <TaskDetails
-          task={props.task}
+          taskId={props.task.taskId}
           onClose={() => setIsShowDetail(!isShowDetail)}
         />
       )}

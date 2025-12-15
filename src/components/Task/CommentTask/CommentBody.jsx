@@ -58,11 +58,9 @@ const CommentBody = ({
       ...new Set(reviews.map((r) => r.createdBy).filter(Boolean)),
     ];
 
-    const missingIds = uniqueUserIds.filter((id) => !combinedUserMap[id]);
+    const missingIds = uniqueUserIds.filter((id) => !fetchedUsers[id]);
 
-    if (missingIds.length === 0) {
-      return;
-    }
+    if (missingIds.length === 0) return;
 
     const fetchUsers = async () => {
       try {
@@ -86,7 +84,8 @@ const CommentBody = ({
     };
 
     fetchUsers();
-  }, [user?.token, reviews, combinedUserMap]);
+  }, [user?.token, reviews]);
+
   console.log(sortedReviews);
   return (
     <div className="comment__task__body">

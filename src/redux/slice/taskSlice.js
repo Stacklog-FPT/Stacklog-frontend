@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   pending: false,
@@ -8,7 +8,7 @@ const initialState = {
 };
 
 const tasksSlice = createSlice({
-  name: 'task',
+  name: "task",
   initialState: initialState,
   reducers: {
     getTasks: (state, action) => {
@@ -40,7 +40,9 @@ const tasksSlice = createSlice({
       if (!task) return;
 
       if (Array.isArray(changes?.reviews)) {
-        const updatedReview = changes.reviews.find((rv) => rv.reviewId === commentId);
+        const updatedReview = changes.reviews.find(
+          (rv) => rv.reviewId === commentId
+        );
         if (!updatedReview) return;
 
         if (!Array.isArray(task.reviews)) task.reviews = [];

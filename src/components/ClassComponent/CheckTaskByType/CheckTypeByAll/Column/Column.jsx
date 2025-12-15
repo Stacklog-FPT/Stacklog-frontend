@@ -1,17 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './Column.scss';
-import iconMore from '../../../../../assets/icon/task/iconMoreTask.png';
-import iconVector from '../../../../../assets/icon/task/iconVector.png';
-import Task from '../Task/Task';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { useDroppable } from '@dnd-kit/core';
-import { useAuth } from '../../../../../context/AuthProvider';
-import ModalColumn from '../../../../ModalChange/ModalColumn/ModalColumn';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateStatusApi } from '../../../../../service/ColumnService';
-import { toast } from 'sonner';
+import React, { useState, useEffect, useRef } from "react";
+import "./Column.scss";
+import iconMore from "../../../../../assets/icon/task/iconMoreTask.png";
+import iconVector from "../../../../../assets/icon/task/iconVector.png";
+import Task from "../Task/Task";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
+import { useAuth } from "../../../../../context/AuthProvider";
+import ModalColumn from "../../../../ModalChange/ModalColumn/ModalColumn";
+import { useDispatch, useSelector } from "react-redux";
+import { updateStatusApi } from "../../../../../service/ColumnService";
+import { toast } from "sonner";
 
 const Column = ({
   color,
@@ -31,20 +34,22 @@ const Column = ({
   const pending = useSelector((s) => s.status.pending);
   const statuses = useSelector((s) => s.status.statuses || []);
 
-  const selectedStatus = statuses.find((it) => String(it.statusTaskId) === String(statusId)); // Mì ăn liền
+  const selectedStatus = statuses.find(
+    (it) => String(it.statusTaskId) === String(statusId)
+  ); // Mì ăn liền
   const statusItemId = selectedStatus?.statusTaskId; // Mì ăn liền
 
   const [openModalColumnId, setOpenModalColumnId] = useState(null);
   const [modalAnchor, setModalAnchor] = useState({ top: 0, left: 0 });
 
   const [isEditing, setIsEditing] = useState(false);
-  const [draftName, setDraftName] = useState(status || '');
+  const [draftName, setDraftName] = useState(status || "");
 
   const columnRef = useRef(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (isEditing) setDraftName(status || '');
+    if (isEditing) setDraftName(status || "");
   }, [isEditing, status]);
 
   const handleIconMoreClick = (e) => {
@@ -63,12 +68,11 @@ const Column = ({
   };
 
   const endEditing = async (commit) => {
-    console.log('Call me!');
     if (!isEditing) return;
     setIsEditing(false);
 
     const newName = draftName.trim();
-    const oldName = (status || '').trim();
+    const oldName = (status || "").trim();
 
     if (!commit) return;
     if (!newName || newName === oldName) return;
@@ -82,26 +86,26 @@ const Column = ({
 
     const response = await updateStatusApi(user.token, payload, dispatch);
     if (response.status === 200) {
-      toast.success('Column updated successfully!');
+      toast.success("Column updated successfully!");
     } else {
-      toast.error('Something wrong!');
+      toast.error("Something wrong!");
     }
   };
 
   useEffect(() => {
     if (!isEditing) return;
     const onEsc = (e) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         e.preventDefault();
         endEditing(false);
       }
-      if (e.key === 'Enter') {
+      if (e.key === "Enter") {
         e.preventDefault();
         endEditing(true);
       }
     };
-    window.addEventListener('keydown', onEsc);
-    return () => window.removeEventListener('keydown', onEsc);
+    window.addEventListener("keydown", onEsc);
+    return () => window.removeEventListener("keydown", onEsc);
   }, [isEditing, draftName, statusItemId, selectedStatus, user?.token]);
 
   useEffect(() => {
@@ -111,12 +115,15 @@ const Column = ({
         endEditing(true);
       }
     };
-    document.addEventListener('mousedown', onDown);
-    return () => document.removeEventListener('mousedown', onDown);
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
   }, [isEditing, draftName, statusItemId, selectedStatus, user?.token]);
 
   return (
-    <div className={`column-container ${isOver ? 'over' : ''}`} ref={setNodeRef}>
+    <div
+      className={`column-container ${isOver ? "over" : ""}`}
+      ref={setNodeRef}
+    >
       <div className="column" ref={columnRef}>
         <div className="prop-status" style={{ backgroundColor: color }}>
           <div className="prop-status-left">
@@ -130,11 +137,11 @@ const Column = ({
                   onBlur={() => endEditing(true)}
                   className="edit-input"
                   style={{
-                    backgroundColor: 'transparent',
-                    border: 'none',
+                    backgroundColor: "transparent",
+                    border: "none",
                     borderRadius: 5,
                     fontWeight: 500,
-                    outline: 'none',
+                    outline: "none",
                   }}
                   autoFocus
                 />
@@ -144,7 +151,13 @@ const Column = ({
 
               <span className="prop-status-text-total-task">
                 {!isEditing &&
-                  (pending ? <Skeleton width={20} height={16} /> : tasks ? tasks.length : 0)}
+                  (pending ? (
+                    <Skeleton width={20} height={16} />
+                  ) : tasks ? (
+                    tasks.length
+                  ) : (
+                    0
+                  ))}
               </span>
             </div>
           </div>
@@ -155,7 +168,7 @@ const Column = ({
                 src={iconMore}
                 alt="more icon"
                 onClick={handleIconMoreClick}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               />
 
               {openModalColumnId === statusId && (
@@ -178,7 +191,11 @@ const Column = ({
           <div className="column-task" data-status={statusId}>
             {pending ? (
               Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="task-skeleton" style={{ marginBottom: 10 }}>
+                <div
+                  key={i}
+                  className="task-skeleton"
+                  style={{ marginBottom: 10 }}
+                >
                   <Skeleton height={80} borderRadius={8} />
                 </div>
               ))
@@ -202,9 +219,9 @@ const Column = ({
           </div>
         </SortableContext>
 
-        {(user.role === 'LECTURER' || isLeader) && (
+        {(user.role === "LECTURER" || isLeader) && (
           <div className="btn-add-task" onClick={onShowAddTask}>
-            <i className="fa-solid fa-plus" style={{ color: '#000' }} />
+            <i className="fa-solid fa-plus" style={{ color: "#000" }} />
             <span>Add Task</span>
           </div>
         )}

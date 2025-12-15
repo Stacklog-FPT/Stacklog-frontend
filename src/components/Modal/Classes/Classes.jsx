@@ -17,6 +17,7 @@ import PopupCreateGroup from '../../ClassListComponent/PopupCreateGroup/PopupCre
 import PopupInviteCode from '../../ClassListComponent/PopupInviteCode/PopupInviteCode';
 import ExportXlsxButton from '../../ExportXlsxButton/ExportXlsxButton';
 import ImportXlsxButton from '../../ImportXlsxButton/ImportXlsxButton';
+import ImportStudentsModal from '../ImportStudentsModal/ImportStudentsModal';
 import { exportClassAndDownload, importClassByClassId } from '../../../service/ClassService';
 import { fetchUserById } from "../../../service/UserService";
 import GithubSetupModal from '../../GithubSetup/GithubSetupModal';
@@ -72,6 +73,9 @@ const ClassList = ({ handleActivityAddClass }) => {
 
   // State cho GitHub setup modal
   const [showGithubSetup, setShowGithubSetup] = useState(false);
+
+  // State cho Import Students modal
+  const [showImportModal, setShowImportModal] = useState(false);
 
 
   useEffect(() => {
@@ -656,33 +660,23 @@ const ClassList = ({ handleActivityAddClass }) => {
                 {/* Export/Import Excel buttons (temporarily visible for testing) */}
                 <div style={{ display: 'inline-flex', alignItems: 'center', marginLeft: 8 }}>
                   <ExportXlsxButton onExport={handleExportFullClass} />
-                  <ImportXlsxButton
-                    onImport={async (rows, file) => {
-                      // rows: parsed JSON rows from xlsx; file: original File object
-                      console.log('Imported rows', rows, file);
-                      if (!selectedClass) {
-                        Swal.fire('Warning', 'Please select a class before importing.', 'warning');
-                        return;
-                      }
-                      if (!file) {
-                        Swal.fire('Warning', 'No file available to upload', 'warning');
-                        return;
-                      }
-                      try {
-                        // call service to upload the original xlsx file to backend
-                        const res = await importClassByClassId(selectedClass, file, user.token, dispatch);
-                        // refresh classes for current semester if available
-                        if (currentSemesterId) {
-                          const data = await getClasses(currentSemesterId, user.token, dispatch);
-                          setClasses(data || []);
-                        }
-                        Swal.fire('Success', res?.message || 'Import successful', 'success');
-                      } catch (err) {
-                        console.error('Import failed', err);
-                        Swal.fire('Error', err?.message || 'Import failed. See console for details.', 'error');
-                      }
+                  <button
+                    className="btn-secondary btn-export"
+                    style={{
+                      marginLeft: 8,
+                      width: 93,
+                      height: 44,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                      cursor: 'pointer',
+                      border: 'none'
                     }}
-                  />
+                    onClick={() => setShowImportModal(true)}
+                  >
+                    <i className="fa-solid fa-upload"></i> Import
+                  </button>
                 </div>
               </>
             )}
@@ -884,6 +878,90 @@ const ClassList = ({ handleActivityAddClass }) => {
         <GithubSetupModal
           groupId={selectedGroup}
           onClose={() => setShowGithubSetup(false)}
+        />
+      )}
+
+      {showImportModal && (
+        <ImportStudentsModal
+          className={classes.find((c) => c.classesId === selectedClass)?.classesName || ''}
+          onClose={() => setShowImportModal(false)}
+          onImport={async (file) => {
+            if (!selectedClass) {
+              Swal.fire({
+                icon: 'warning',
+                title: 'No Class Selected',
+                text: 'Please select a class before importing'
+              });
+              return;
+            }
+            try {
+              console.log('Importing file:', file.name);
+              const result = await importClassByClassId(
+                selectedClass,
+                file,
+                user.token,
+                null
+              );
+              console.log('Import result:', result);
+              
+              // Refresh data
+              if (currentSemesterId) {
+                const data = await getClasses(currentSemesterId, user.token, dispatch);
+                setClasses(data || []);
+                
+                // Refresh students list ngay lập tức
+                if (selectedClass) {
+                  const foundClass = data.find((c) => c.classesId === selectedClass);
+                  if (foundClass) {
+                    setGroups(foundClass.groups || []);
+                    
+                    // Fetch lại students để hiển thị ngay
+                    let userIds = [];
+                    if (selectedGroup === 'all') {
+                      foundClass.groups.forEach((g) => {
+                        g.groupStudents.forEach((stu) => userIds.push(stu.userId));
+                      });
+                    } else {
+                      const selectedGrp = foundClass.groups.find((g) => g.groupsId === selectedGroup);
+                      if (selectedGrp) {
+                        selectedGrp.groupStudents.forEach((stu) => userIds.push(stu.userId));
+                      }
+                    }
+                    userIds = [...new Set(userIds)];
+                    
+                    // Fetch student info với đúng thứ tự tham số (token, id)
+                    const studentInfos = await Promise.all(
+                      userIds.map(async (id) => {
+                        try {
+                          const res = await fetchUserById(user.token, id);
+                          return res || null;
+                        } catch (err) {
+                          console.error(`Failed to fetch user ${id}`, err);
+                          return null;
+                        }
+                      })
+                    );
+                    setStudents(studentInfos.filter(Boolean));
+                    setCurrentPage(1); // Reset về trang 1
+                  }
+                }
+              }
+              
+              Swal.fire({
+                icon: 'success',
+                title: 'Import Successful',
+                text: result?.message || 'Students imported successfully'
+              });
+            } catch (error) {
+              console.error('Import failed:', error);
+              Swal.fire({
+                icon: 'error',
+                title: 'Upload Failed',
+                text: error.message || 'Failed to import students'
+              });
+              throw error; // Re-throw để modal biết có lỗi
+            }
+          }}
         />
       )}
     </div>

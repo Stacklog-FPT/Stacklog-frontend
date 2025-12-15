@@ -200,11 +200,16 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate, onRefresh, canDelet
                 <div className="assigned-users-list">
                   {assignedUsers.map((assign) => {
                     const isCurrentUser = myUserId && String(assign.userId) === String(myUserId);
-                    // Show actions if current user and status is PENDING or null/undefined
+                    const isCreator = event.createdBy && String(assign.userId) === String(event.createdBy);
+                    
+                    // Creator automatically has ACCEPTED status
+                    const displayStatus = isCreator ? 'ACCEPTED' : (assign.statusSlotAssign || 'Pending');
+                    
+                    // Show actions only if: current user, NOT creator, and status is PENDING
                     const isPending = !assign.statusSlotAssign || 
                                      assign.statusSlotAssign === null || 
                                      assign.statusSlotAssign.toLowerCase() === 'pending';
-                    const showActions = isCurrentUser && !isEditing && isPending;
+                    const showActions = isCurrentUser && !isCreator && !isEditing && isPending;
                     
                     return (
                       <div key={assign.slotAssignId} className="assigned-user-item">
@@ -219,14 +224,10 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate, onRefresh, canDelet
                               {assign.userData?.full_name || assign.userId}
                               {isCurrentUser && <span className="you-badge">(You)</span>}
                             </span>
-                            {/* Always show status for everyone */}
-                            {assign.statusSlotAssign ? (
-                              <span className={`status-badge status-${assign.statusSlotAssign?.toLowerCase()}`}>
-                                {assign.statusSlotAssign}
-                              </span>
-                            ) : (
-                              <span className="status-badge status-pending">Pending</span>
-                            )}
+                            {/* Always show status - ACCEPTED for creator, actual status for others */}
+                            <span className={`status-badge status-${displayStatus.toLowerCase()}`}>
+                              {displayStatus}
+                            </span>
                           </div>
                         </div>
                         {showActions && (

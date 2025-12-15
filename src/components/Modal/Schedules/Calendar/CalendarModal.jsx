@@ -156,7 +156,7 @@ export default function Calendar({ groupId, isPage }) {
     }
 
     const result = await Swal.fire({
-      title: "Are you sure to delete this task?",
+      title: "Are you sure to delete this slot?",
       text: "This action can't completed!",
       icon: "warning",
       showCancelButton: true,

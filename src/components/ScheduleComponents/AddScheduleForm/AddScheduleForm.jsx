@@ -5,10 +5,11 @@ import "./AddScheduleForm.scss";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { useAuth } from "../../../context/AuthProvider";
 import { useSelector } from "react-redux";
-import { addSlotByGroup } from "../../../service/ScheduleService";
+import { addSlotByGroup, acceptSchedule } from "../../../service/ScheduleService";
 import { useDispatch } from "react-redux";
 import { Toaster, toast } from "sonner";
 import { isGroup } from "../../../helper/validateStudentGroup";
+import decodeToken from "../../../service/DecodeJwt";
 const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
@@ -373,6 +374,22 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
     try {
       const res = await addSlotByGroup(user.token, payload, dispatch);
       console.log("AddSchedule response:", res);
+      
+      // Auto-accept schedule for the creator
+      try {
+        const creatorUserId = decodeToken(user.token)?.id;
+        const newSlotId = res?.slotId || res?.id;
+        
+        if (creatorUserId && newSlotId && userIdAssigns.includes(String(creatorUserId))) {
+          console.log("Auto-accepting schedule for creator:", creatorUserId);
+          await acceptSchedule(user.token, newSlotId, dispatch);
+          console.log("Auto-accept successful for creator");
+        }
+      } catch (acceptErr) {
+        console.error("Failed to auto-accept for creator:", acceptErr);
+        // Don't show error to user, just log it
+      }
+      
       toast.success("Added slot successfully!");
       onSuccess?.();
       onClose();

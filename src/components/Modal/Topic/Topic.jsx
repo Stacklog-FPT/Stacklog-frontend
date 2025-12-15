@@ -204,18 +204,23 @@ const PlanComponent = () => {
     const safePlans = Array.isArray(normalizedPlans) ? normalizedPlans : [];
     if (!effectiveClassId) return [];
 
-    let list =
-      role === "LECTURER"
-        ? safePlans.filter(
-            (t) => groupMap[t.groupId]?.classId === effectiveClassId
-          )
-        : currentGroupId
-        ? safePlans.filter(
-            (t) =>
-              t.groupId === currentGroupId &&
-              groupMap[t.groupId]?.classId === effectiveClassId
-          )
-        : [];
+    let list;
+    if (currentGroupId) {
+      // If a specific group is selected, show only that group's topics (for both LECTURER and STUDENT)
+      list = safePlans.filter(
+        (t) =>
+          t.groupId === currentGroupId &&
+          groupMap[t.groupId]?.classId === effectiveClassId
+      );
+    } else if (role === "LECTURER") {
+      // If no group is selected and user is LECTURER, show all groups' topics in the class
+      list = safePlans.filter(
+        (t) => groupMap[t.groupId]?.classId === effectiveClassId
+      );
+    } else {
+      // If no group is selected and user is STUDENT, show nothing
+      list = [];
+    }
 
     if (statusFilter !== "ALL") {
       list = list.filter((t) => (t.status || "") === statusFilter);

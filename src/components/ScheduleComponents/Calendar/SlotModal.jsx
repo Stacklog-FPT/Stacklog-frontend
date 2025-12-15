@@ -21,6 +21,9 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate, onRefresh, canDelet
     myUserId = null;
   }
 
+  // Check if current user is the creator
+  const isCreator = event.createdBy && myUserId && String(event.createdBy) === String(myUserId);
+
   const parseAsLocal = (iso) => {
     if (!iso) return null;
     if (iso instanceof Date) return iso;
@@ -261,9 +264,11 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate, onRefresh, canDelet
         <div className="modal-actions">
           {!isEditing ? (
             <>
-              <button className="edit" onClick={() => setIsEditing(true)}>
-                Edit
-              </button>
+              {isCreator && (
+                <button className="edit" onClick={() => setIsEditing(true)}>
+                  Edit
+                </button>
+              )}
               {canDelete ? (
                 <button className="delete" onClick={onDelete}>
                   Delete

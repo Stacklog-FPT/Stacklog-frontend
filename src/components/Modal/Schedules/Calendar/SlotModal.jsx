@@ -45,6 +45,9 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate, onRefresh, canDelet
     myUserId = null;
   }
 
+  // Check if current user is the creator
+  const isCreator = event.createdBy && myUserId && String(event.createdBy) === String(myUserId);
+
   // Fetch user details for all assigned users
   useEffect(() => {
     const fetchAssignedUsers = async () => {
@@ -260,9 +263,11 @@ const Modal = ({ event, onClose, onDelete, onEdit, onUpdate, onRefresh, canDelet
         <div className="modal-actions">
           {!isEditing ? (
             <>
-              <button className="edit" onClick={() => setIsEditing(true)}>
-                Edit
-              </button>
+              {isCreator && (
+                <button className="edit" onClick={() => setIsEditing(true)}>
+                  Edit
+                </button>
+              )}
               {canDelete ? (
                 <button className="delete" onClick={onDelete}>
                   Delete

@@ -119,6 +119,7 @@ const userApi = () => {
           },
         }
       );
+      sessionStorage.clear();
       localStorage.clear();
       return response.data;
     } catch (e) {

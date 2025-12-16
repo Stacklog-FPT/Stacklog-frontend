@@ -1,5 +1,5 @@
 .document__card {
-  width: 460 px;
+  width: 460px;
   height: 272px;
   border-radius: 20px;
   background-color: var(--bg--nav);
@@ -45,6 +45,11 @@
         background-color: var(--bg--color--table);
         border-radius: 10px;
 
+        &:hover {
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          transition: all 0.3s ease;
+        }
         i {
           width: 25px;
           height: 25px;
@@ -90,4 +95,10 @@
   &:hover {
     color: var(--color--hover);
   }
+}
+
+.text-heading {
+  color: var(--text--color--gray);
+  font-size: 20px;
+  font-weight: 600;
 }

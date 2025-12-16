@@ -6,13 +6,13 @@ function parseFlexibleDate(input, opts = { naiveAsLocal: true }) {
   if (input instanceof Date) return isNaN(input.getTime()) ? null : input;
 
   // timestamp number
-  if (typeof input === 'number') {
+  if (typeof input === "number") {
     const d = new Date(input);
     return isNaN(d.getTime()) ? null : d;
   }
 
   // string
-  if (typeof input !== 'string') return null;
+  if (typeof input !== "string") return null;
   const str = input.trim();
   if (!str) return null;
 
@@ -24,10 +24,10 @@ function parseFlexibleDate(input, opts = { naiveAsLocal: true }) {
 
   // ISO "naive" (không timezone): YYYY-MM-DD[ T]HH:mm[:ss][.sss] hoặc chỉ YYYY-MM-DD
   const m = str.match(
-    /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?(?:\.(\d{1,3}))?)?$/,
+    /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?(?:\.(\d{1,3}))?)?$/
   );
   if (m) {
-    const [, Y, M, D, H = '0', Min = '0', Sec = '0', Ms = '0'] = m;
+    const [, Y, M, D, H = "0", Min = "0", Sec = "0", Ms = "0"] = m;
     const y = +Y,
       mo = +M - 1,
       d = +D,
@@ -52,15 +52,15 @@ function parseFlexibleDate(input, opts = { naiveAsLocal: true }) {
 export const formatDateUI = (value, opts = {}) => {
   const { withTime = false, naiveAsLocal = true } = opts;
   const d = parseFlexibleDate(value, { naiveAsLocal });
-  if (!d) return '';
+  if (!d) return "";
 
-  const dd = String(d.getDate()).padStart(2, '0');
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
   const yyyy = d.getFullYear();
 
   if (!withTime) return `${dd}/${mm}/${yyyy}`;
 
-  const hh = String(d.getHours()).padStart(2, '0');
-  const mi = String(d.getMinutes()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
   return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
 };

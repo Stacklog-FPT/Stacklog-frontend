@@ -10,10 +10,8 @@ import {
   getDocumentById,
 } from "../../../../service/DocumentService";
 import { useDispatch } from "react-redux";
-import { FaTrash } from "react-icons/fa";
 import DocumentDetail from "../../../DocumentComponents/DocumentDetail/DocumentDetail";
 import Swal from "sweetalert2";
-import { formatFileSize } from "../../../../helper/calculateByte";
 import DocumentCard from "../../../DocumentComponents/DocumentList/DocumentCard/DocumentCard";
 
 const Document = () => {
@@ -61,14 +59,6 @@ const Document = () => {
   React.useEffect(() => {
     setCurrentPage(1);
   }, [documents]);
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
 
   const handleCloseModal = () => {
     setIsShowUpload(false);
@@ -134,9 +124,9 @@ const Document = () => {
         </div>
       </div>
 
-      <div className="d-flex align-items-center justify-content-center gap-5 w-100">
-        <DocumentCard title={"NORMAL"} data={allDocumentNormal} />
-        <DocumentCard title={"REPORT"} data={allDocumentReport} />
+      <div className="d-flex align-items-start justify-content-start gap-5 w-100">
+        <DocumentCard title={"Normal"} data={allDocumentNormal} />
+        <DocumentCard title={"Report"} data={allDocumentReport} />
       </div>
 
       {isShowUpload && <UploadFile onClose={handleCloseModal} isGroup={true} />}

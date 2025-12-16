@@ -8,7 +8,11 @@ import { useSelector } from "react-redux";
 import { getDeadline, saveDeadline } from "../../../../service/PlanService";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
-import { validateDate } from "../../../../helper/validateDate";
+import {
+  canEditOrDelete,
+  formatDateTime,
+  validateDate,
+} from "../../../../helper/validateDate";
 import { formatDateUI } from "../../../../helper/formatDate";
 const DetailTopic = ({
   open,
@@ -28,6 +32,7 @@ const DetailTopic = ({
   onUpdate,
   onDelete,
 }) => {
+  console.log(deadlineAdd, deadlineSubmit);
   const cardRef = useRef(null);
   useEffect(() => {
     if (!open) return;
@@ -45,7 +50,6 @@ const DetailTopic = ({
     topicDescription: topic?.topicDescription || "",
     attachments: topic?.attachments ? [...topic.attachments] : [],
   });
-  const { deadlinePlan } = useSelector((state) => state.plan);
   const [localTopic, setLocalTopic] = React.useState(topic);
   const { user } = useAuth();
   const token = user?.token;
@@ -392,7 +396,7 @@ const DetailTopic = ({
               onClick={() => setEditDeadline(true)}
               style={{ cursor: "pointer" }}
             >
-              {formatDateUI(deadlineAdd) || "-"}
+              {formatDateTime(deadlineAdd) || "-"}
             </p>
           </div>
 
@@ -414,7 +418,7 @@ const DetailTopic = ({
               onClick={() => setEditDeadline(true)}
               style={{ cursor: "pointer" }}
             >
-              {formatDateUI(deadlineSubmit) || "-"}
+              {formatDateTime(deadlineSubmit) || "-"}
             </p>
           </div>
 
@@ -567,24 +571,26 @@ const DetailTopic = ({
         )}
 
         {/* === STUDENT: Nút cập nhật/xoá === */}
-        {canEdit && !editMode && (
-          <div className="sl-actions">
-            <button
-              className="sl-btn sl-btn--primary"
-              disabled={actionLoading}
-              onClick={() => setEditMode(true)}
-            >
-              Edit
-            </button>
-            <button
-              className="sl-btn sl-btn--danger"
-              disabled={actionLoading}
-              onClick={() => onDelete && onDelete(topic.topicId)}
-            >
-              Delete
-            </button>
-          </div>
-        )}
+        {canEdit &&
+          !editMode &&
+          canEditOrDelete(deadlineAdd, deadlineSubmit) && (
+            <div className="sl-actions">
+              <button
+                className="sl-btn sl-btn--primary"
+                disabled={actionLoading}
+                onClick={() => setEditMode(true)}
+              >
+                Edit
+              </button>
+              <button
+                className="sl-btn sl-btn--danger"
+                disabled={actionLoading}
+                onClick={() => onDelete?.(topic.topicId)}
+              >
+                Delete
+              </button>
+            </div>
+          )}
 
         {/* === STUDENT: Đang chỉnh sửa === */}
         {canEdit && editMode && (

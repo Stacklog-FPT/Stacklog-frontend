@@ -89,7 +89,7 @@ const DocumentCard = ({ title, data }) => {
                 </div>
               ))
             ) : (
-              <h2>No data here!</h2>
+              <h2 className="text-heading">Documents are not available!</h2>
             )}
           </div>
         </div>

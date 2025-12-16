@@ -3,7 +3,10 @@ import "./AddDeadline.scss";
 import ClassService from "../../../../service/ClassService";
 import { useAuth } from "../../../../context/AuthProvider";
 import { useDispatch } from "react-redux";
-import { validateDate } from "../../../../helper/validateDate";
+import {
+  validateDate,
+  validateDeadline,
+} from "../../../../helper/validateDate";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 const AddDeadline = ({ currentClass, onClose }) => {
@@ -39,12 +42,22 @@ const AddDeadline = ({ currentClass, onClose }) => {
     e.preventDefault();
 
     if (
-      !validateDate(classData.deadlineAddDate) ||
-      !validateDate(classData.deadlineSubmitDate)
+      !validateDeadline(classData.deadlineAddDate, classData.deadlineAddTime)
     ) {
-      toast.warning("Deadline must be greater than or equal today!");
+      toast.warning("Add deadline must be greater than or equal to now!");
       return;
     }
+
+    if (
+      !validateDeadline(
+        classData.deadlineSubmitDate,
+        classData.deadlineSubmitTime
+      )
+    ) {
+      toast.warning("Submit deadline must be greater than or equal to now!");
+      return;
+    }
+
     const payload = {
       classesId: classData.classesId,
       deadlineAdd: buildDateTime(

@@ -30,7 +30,7 @@ const FormAddLecture = ({ role, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const roleForSend = role === "Lecture" ? "LECTURER" : role;
+      const roleForSend = role === "Lecture" ? "LECTURER" : "STUDENT";
       const payload = {
         full_name: formData.full_name,
         email: formData.email,
@@ -39,8 +39,9 @@ const FormAddLecture = ({ role, onClose }) => {
         work_id: formData.work_id,
         role: roleForSend,
       };
+      console.log(payload)
       const response = await createUser(user.token, payload);
-
+      
       if (response) {
         console.log(response);
         onClose();

@@ -9,7 +9,8 @@ import { useAuth } from "../../../context/AuthProvider";
 import { useDispatch } from "react-redux";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import ExportXlsxButton from "../../ExportXlsxButton/ExportXlsxButton";
+import { exportClassAndDownload } from "../../../service/ClassService";
+import ExportXlsxButton from '../../ExportXlsxButton/ExportXlsxButton'
 import { CiLock } from "react-icons/ci";
 import { CiUnlock } from "react-icons/ci";
 
@@ -24,7 +25,6 @@ const Row = ({
 }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
-
   if (isLoading || !data) {
     return (
       <tr>
@@ -238,10 +238,12 @@ const Row = ({
           <td>{semesterName || "Unknown Semester"}</td>
           <td>{upperCaseFirstChart(getLecturerName(data.lectureId))}</td>
           <td className="action-cell">
-            {/* <button className="btn-delete" title="Delete">
-              <FaTrash />
-            </button> */}
-            <ExportXlsxButton data={data} />
+            <button className="btn-success" onClick={async() => {
+              await exportClassAndDownload(data?.classesId, user.token);
+            }} >
+              Export
+            </button>
+            {/* <ExportXlsxButton data={data} /> */}
           </td>
         </>
       );

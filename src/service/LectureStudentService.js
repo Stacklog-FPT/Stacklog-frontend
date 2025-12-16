@@ -10,6 +10,7 @@ const LectureService = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log('Resp service: ', response)
       return response.data;
     } catch (error) {
       throw new Error(error.message);

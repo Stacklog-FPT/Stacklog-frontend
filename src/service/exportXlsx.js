@@ -7,21 +7,17 @@ export async function exportToXlsx(rows, filename = "export.xlsx") {
   const xlsxModule = await import("xlsx");
   const XLSX =
     xlsxModule && xlsxModule.default ? xlsxModule.default : xlsxModule;
-  const fileSaverModule = await import("file-saver");
-  const FileSaver =
-    fileSaverModule && fileSaverModule.default
-      ? fileSaverModule.default
-      : fileSaverModule;
+  const { saveAs } = await import("file-saver");
 
   if (!rows || !rows.length) {
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet([[]]);
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
     const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    FileSaver.saveAs(
-      new Blob([wbout], { type: "application/octet-stream" }),
-      filename
-    );
+    const blob = new Blob([wbout], { 
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
+    });
+    saveAs(blob, filename);
     return;
   }
 
@@ -29,8 +25,8 @@ export async function exportToXlsx(rows, filename = "export.xlsx") {
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
   const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-  FileSaver.saveAs(
-    new Blob([wbout], { type: "application/octet-stream" }),
-    filename
-  );
+  const blob = new Blob([wbout], { 
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
+  });
+  saveAs(blob, filename);
 }

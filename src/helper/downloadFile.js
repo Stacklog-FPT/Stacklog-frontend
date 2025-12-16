@@ -19,16 +19,24 @@ const downloadFile = (
     const disposition =
       headers["content-disposition"] || headers["Content-Disposition"];
     if (disposition) {
-      const match = disposition.match(
-        /filename\*?=([^;]+)|filename="([^"]+)"/i
-      );
+      // Tìm filename*=UTF-8''... trước
+      let match = disposition.match(/filename\*=UTF-8''([^;]+)/i);
       if (match) {
-        const found = match[1] || match[2];
-        if (found) {
-          try {
-            filename = decodeURIComponent(found.replace(/UTF-8''/i, "").trim());
-          } catch (e) {
-            filename = found.trim().replace(/^"|"$/g, "");
+        try {
+          filename = decodeURIComponent(match[1].trim());
+        } catch (e) {
+          filename = match[1].trim();
+        }
+      } else {
+        // Nếu không có filename*, tìm filename="..."
+        match = disposition.match(/filename="([^"]+)"/i);
+        if (match) {
+          filename = match[1].trim();
+        } else {
+          // Cuối cùng thử filename=... (không có quotes)
+          match = disposition.match(/filename=([^;]+)/i);
+          if (match) {
+            filename = match[1].trim().replace(/^"|"$/g, "");
           }
         }
       }

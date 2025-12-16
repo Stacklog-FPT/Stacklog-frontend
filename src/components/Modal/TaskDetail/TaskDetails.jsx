@@ -43,7 +43,7 @@ const TaskDetails = ({ taskId, onClose }) => {
   );
   const { classes } = useSelector((state) => state.class);
   const currentStatus = statuses.find(
-    (s) => String(s.statusTaskId) === String(task.statusTaskId)
+    (s) => String(s?.statusTaskId) === String(task?.statusTaskId)
   );
 
   const [isAssignDirty, setIsAssignDirty] = useState(false);
@@ -55,12 +55,14 @@ const TaskDetails = ({ taskId, onClose }) => {
   const [isChecklistDirty, setChecklistDirty] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const groups = useSelector((state) => state.group.groups);
-  const currentGroup = groups.find((g) => g.groupsId === groupId);
-  const currentGroupUi = groups.find((g) => g.groupsId === task.groupId);
+  const currentGroup = groupId
+    ? groups.find((g) => g.groupsId === groupId)
+    : "";
+  const currentGroupUi = groups.find((g) => g.groupsId === task?.groupId);
+
   const filteredClasses = classes.find((cls) =>
-    cls.groups.some((group) => group.groupsId === currentGroupUi.groupsId)
+    cls.groups.some((group) => group?.groupsId === currentGroupUi?.groupsId)
   );
-  console.log(filteredClasses);
   const [form, setForm] = useState({
     title: task?.taskTitle || "",
     description: task?.taskDescription || "",

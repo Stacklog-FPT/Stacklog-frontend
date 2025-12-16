@@ -1,11 +1,17 @@
-import React from 'react';
-import './DocumentCard.scss';
-import DocumentDetail from '../../DocumentDetail/DocumentDetail';
-import { formatFileSize } from '../../../../helper/calculateByte';
+import React from "react";
+import "./DocumentCard.scss";
+import DocumentDetail from "../../DocumentDetail/DocumentDetail";
+import { formatFileSize } from "../../../../helper/calculateByte";
+import { deleteDocumentApi } from "../../../../service/DocumentService";
+import { useAuth } from "../../../../context/AuthProvider";
+import Swal from "sweetalert2";
+import { FaTrashAlt } from "react-icons/fa";
+import { useDispatch } from "react-redux";
 const DocumentCard = ({ title, data }) => {
   const [isOpenDetail, showOpenDetail] = React.useState(false);
-  const [documentId, setDocumentId] = React.useState('');
-
+  const [documentId, setDocumentId] = React.useState("");
+  const { user } = useAuth();
+  const dispatch = useDispatch();
   const handleShowDetail = (id) => {
     setDocumentId(id);
     showOpenDetail(true);
@@ -14,15 +20,38 @@ const DocumentCard = ({ title, data }) => {
   const handleCloseDetail = () => {
     showOpenDetail(false);
   };
+
+  const handleDeleteDocument = async (e, id) => {
+    e.stopPropagation();
+    const result = await Swal.fire({
+      title: "Are you sure to delete this doc?",
+      text: "This action can't completed!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#045745",
+      cancelButtonColor: "#c8cad4",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+    });
+    if (result.isConfirmed) {
+      const res = await deleteDocumentApi(id, user.token, dispatch);
+      if (res) {
+        Swal.fire("Deleted!", "This doc was removed successfully.", "success");
+      } else {
+        Swal.fire("Error!", "Something went wrong during deletion.", "error");
+      }
+    }
+  };
+
   React.useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         showOpenDetail(false);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
 
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   });
   return (
     <>
@@ -50,6 +79,9 @@ const DocumentCard = ({ title, data }) => {
                       {formatFileSize(item.documentSize)}
                     </span>
                   </div>
+                  <button className="btn-delete" onClick={(e) => handleDeleteDocument(e, item.documentId)}>
+                    <FaTrashAlt />
+                  </button>
                 </div>
               ))
             ) : (
@@ -58,7 +90,9 @@ const DocumentCard = ({ title, data }) => {
           </div>
         </div>
       </div>
-      {isOpenDetail && <DocumentDetail id={documentId} onClose={handleCloseDetail} />}
+      {isOpenDetail && (
+        <DocumentDetail id={documentId} onClose={handleCloseDetail} />
+      )}
     </>
   );
 };

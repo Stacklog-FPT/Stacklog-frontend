@@ -3,14 +3,33 @@
   z-index: 999;
   &__container {
     width: 100%;
-    background-color: var(--bg--nav);
+    // background-color: var(--bg--nav);
     padding: 10px 20px;
   }
 
-  .document__header {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  &__header {
+    &__title {
+      h2 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text--color--2);
+      }
+      color: var( --text-color--2);
+      width: 120px;
+      padding: 15px 10px 5px 10px;
+      background-color: var(--color--div-head);
+      border-bottom-right-radius: 20px;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      text-align: start;
+      white-space: nowrap;
+    }
   }
+
+  // .document__header {
+  //   width: 100%;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: space-between;
+  // }
 }

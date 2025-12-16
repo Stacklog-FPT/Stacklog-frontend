@@ -1,11 +1,12 @@
 .document__card {
-  width: 450px;
+  width: 460 px;
   height: 272px;
   border-radius: 20px;
   background-color: var(--bg--nav);
   padding: 20px 20px;
   margin-top: 20px;
   overflow-y: auto;
+  overflow-x: hidden;
   &__container {
     display: flex;
     flex-direction: column;
@@ -75,5 +76,18 @@
         }
       }
     }
+  }
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 10px;
+
+  &:hover {
+    color: var(--color--hover);
   }
 }

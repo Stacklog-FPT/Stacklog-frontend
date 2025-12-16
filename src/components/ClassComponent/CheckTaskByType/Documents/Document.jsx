@@ -14,6 +14,7 @@ import { FaTrash } from "react-icons/fa";
 import DocumentDetail from "../../../DocumentComponents/DocumentDetail/DocumentDetail";
 import Swal from "sweetalert2";
 import { formatFileSize } from "../../../../helper/calculateByte";
+import DocumentCard from "../../../DocumentComponents/DocumentList/DocumentCard/DocumentCard";
 
 const Document = () => {
   // Get id from param
@@ -49,6 +50,12 @@ const Document = () => {
     currentPage * itemsPerPage
   );
 
+  const allDocumentNormal = currentItems.filter(
+    (doc) => doc.documentType === "NORMAL"
+  );
+  const allDocumentReport = currentItems.filter(
+    (doc) => doc.documentType === "REPORT"
+  );
   const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
 
   React.useEffect(() => {
@@ -96,6 +103,8 @@ const Document = () => {
     }
   };
 
+  console.log("Current Iitem document: ", currentItems);
+
   // Handle see detail
   const handleSeeDetail = (documentId) => {
     setIsShowDetail({ documentId: documentId, status: true });
@@ -113,77 +122,23 @@ const Document = () => {
 
   return (
     <>
-      <div className="document">
-        <div className="document__container">
-          <div className="document__header">
-            <div className="main__component__container__heading__title">
-              <h2>Documents</h2>
-            </div>
-            <div className="main__component__container__heading__btn__add">
-              <button onClick={() => setIsShowUpload(!isShowUpload)}>
-                <FaPlus size={14} />
-                <span>Add</span>
-              </button>
-            </div>
-          </div>
-          {/* Document List */}
-          <div className="document__recent__container__main__content">
-            {currentItems?.length > 0 ? (
-              currentItems.map((item) => {
-                return (
-                  <div
-                    className="document__recent__container__main__content__item d-flex align-items-center justify-content-between"
-                    key={item.documentId}
-                    onClick={() => handleSeeDetail(item.documentId)}
-                  >
-                    <div className="document__recent__container__main__content__item__content">
-                      <span className="document__recent__container__main__content__item__content__title">
-                        {item.documentTitle}
-                      </span>
-                      <span className="document__recent__container__main__content__item__content__description">
-                        {formatFileSize(item.documentSize)}
-                      </span>
-                    </div>
-                    <div className="document__recent__container__main__content__item__bin">
-                      <FaTrash
-                        onClick={(e) =>
-                          handleDeleteDocument(e, item.documentId)
-                        }
-                      />
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <h2>No document recent</h2>
-            )}
-          </div>
-
-          <div className="pagination">
-            {documents.length > itemsPerPage && (
-              <div className="pagination">
-                <button
-                  onClick={handlePrevPage}
-                  disabled={currentPage === 1}
-                  className="pagination__button"
-                >
-                  <i className="fa-solid fa-arrow-left"></i>
-                </button>
-                <span className="pagination__info">
-                  {currentPage} of {totalPages}
-                </span>
-                <button
-                  onClick={handleNextPage}
-                  disabled={currentPage === totalPages}
-                  className="pagination__button"
-                >
-                  <i className="fa-solid fa-arrow-right"></i>
-                </button>
-              </div>
-            )}
-          </div>
+      <div className="document__header d-flex align-items-center justify-content-between p-3">
+        <div className="document__header__title">
+          <h2>Documents</h2>
+        </div>
+        <div className="main__component__container__heading__btn__add">
+          <button onClick={() => setIsShowUpload(!isShowUpload)}>
+            <FaPlus size={14} />
+            <span>Add</span>
+          </button>
         </div>
       </div>
+
+      <div className="d-flex align-items-center justify-content-center gap-5 w-100">
+        <DocumentCard title={"NORMAL"} data={allDocumentNormal} />
+        <DocumentCard title={"REPORT"} data={allDocumentReport} />
+      </div>
+
       {isShowUpload && <UploadFile onClose={handleCloseModal} isGroup={true} />}
       {isShowDetail && (
         <DocumentDetail

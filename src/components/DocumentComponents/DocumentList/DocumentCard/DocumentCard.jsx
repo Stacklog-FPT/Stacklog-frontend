@@ -7,6 +7,7 @@ import { useAuth } from "../../../../context/AuthProvider";
 import Swal from "sweetalert2";
 import { FaTrashAlt } from "react-icons/fa";
 import { useDispatch } from "react-redux";
+import { upperCaseFirstChart } from "../../../../helper/upperCaseFirstChart";
 const DocumentCard = ({ title, data }) => {
   const [isOpenDetail, showOpenDetail] = React.useState(false);
   const [documentId, setDocumentId] = React.useState("");
@@ -58,7 +59,7 @@ const DocumentCard = ({ title, data }) => {
       <div className="document__card">
         <div className="document__card__container">
           <div className="document__card__container__heading">
-            <h2>{title}</h2>
+            <h2>{upperCaseFirstChart(title)}</h2>
             <i className="fa-solid fa-arrow-up-right-from-square"></i>
           </div>
 
@@ -73,13 +74,16 @@ const DocumentCard = ({ title, data }) => {
                   <i className="fa-solid fa-file"></i>
                   <div className="document__card__container__list__data__item__content">
                     <span className="document__card__container__list__data__item__content__title">
-                      {item.documentTitle}
+                      {upperCaseFirstChart(item.documentTitle)}
                     </span>
                     <span className="document__card__container__list__data__item__content__size">
                       {formatFileSize(item.documentSize)}
                     </span>
                   </div>
-                  <button className="btn-delete" onClick={(e) => handleDeleteDocument(e, item.documentId)}>
+                  <button
+                    className="btn-delete"
+                    onClick={(e) => handleDeleteDocument(e, item.documentId)}
+                  >
                     <FaTrashAlt />
                   </button>
                 </div>

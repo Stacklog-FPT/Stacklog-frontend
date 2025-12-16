@@ -64,18 +64,18 @@ const Home = () => {
       <Head />
       <Meeting />
       <div className=" home__pair d-flex align-items-center justify-content-around mt-4 gap-4">
-        <MyPlan
+        {/* <MyPlan
           getCurrentHour={getCurrentHour}
           getCurrentSession={getCurrentSession}
           dayOfWeeks={dayOfWeeks}
           month={month}
           date={date}
           year={year}
-        />
+        /> */}
         <Document />
+        <ListTask />
       </div>
       <div className="d-flex flex-column align-items-center justify-content-centar gap-1">
-        <ListTask />
         {isLecture && <MemberList />}
       </div>
     </div>

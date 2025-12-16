@@ -13,7 +13,7 @@ const Document = () => {
   const { user } = useAuth();
   const dispatch = useDispatch();
   const { documentPerson } = useSelector((state) => state.document);
-  console.log(documentPerson);
+
   useEffect(() => {
     if (user?.token) {
       getDocumentByUserId(user.token, dispatch);
@@ -65,7 +65,6 @@ const Document = () => {
       <div className="document__body">
         <div className="document_name_column">
           <div className="wrapper__input__title__document">
-            <input type="checkbox" />
             <p className="title">Title</p>
           </div>
           <p className="owner">Owner</p>
@@ -80,6 +79,7 @@ const Document = () => {
               title={item.documentTitle}
               lastUpdated={item.updateAt}
               size={item.documentSize}
+              createBy={item.createdBy}
             />
           ))
         ) : (

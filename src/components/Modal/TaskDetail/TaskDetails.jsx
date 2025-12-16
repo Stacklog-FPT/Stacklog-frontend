@@ -41,6 +41,7 @@ const TaskDetails = ({ taskId, onClose }) => {
   const task = useSelector((state) =>
     state.task.tasks.find((t) => t.taskId === taskId)
   );
+  const { classes } = useSelector((state) => state.class);
   const currentStatus = statuses.find(
     (s) => String(s.statusTaskId) === String(task.statusTaskId)
   );
@@ -55,6 +56,11 @@ const TaskDetails = ({ taskId, onClose }) => {
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const groups = useSelector((state) => state.group.groups);
   const currentGroup = groups.find((g) => g.groupsId === groupId);
+  const currentGroupUi = groups.find((g) => g.groupsId === task.groupId);
+  const filteredClasses = classes.find((cls) =>
+    cls.groups.some((group) => group.groupsId === currentGroupUi.groupsId)
+  );
+  console.log(filteredClasses);
   const [form, setForm] = useState({
     title: task?.taskTitle || "",
     description: task?.taskDescription || "",
@@ -459,6 +465,15 @@ const TaskDetails = ({ taskId, onClose }) => {
               )}
             </div>
           )}
+        </section>
+
+        <section className="taskdetail__desc taskdetail__class-group">
+          <label>Class - Group</label>
+          <div className="class-group__box">
+            <span className="class-badge">{filteredClasses?.classesName}</span>
+            <span className="divider">/</span>
+            <span className="group-badge">{currentGroupUi?.groupsName}</span>
+          </div>
         </section>
 
         {/* AssignTo Task */}

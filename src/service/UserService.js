@@ -17,6 +17,7 @@ export const fetchUserById = async (token, id) => {
     const response = await axios.get(`${API_AUTH}profile/user/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+
     return response.data.user;
   } catch (error) {
     throw new Error(error.message);

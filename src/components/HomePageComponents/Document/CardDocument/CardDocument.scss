@@ -1,75 +1,100 @@
 .card__document__container {
-  width: 522px;
-  padding: 5px 5px;
+  width: 100%;
+  padding: 10px 16px;
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 40px;
+  align-items: center;
+  gap: 16px;
   border-bottom: 1px solid #edf2f2;
+
   .card__document__heading {
-    // width: 100%;
+    flex: 1;
+    min-width: 0;
+
     .wrapper__input__title__document {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 15px;
+      gap: 12px;
+
       input {
         width: 14px;
         height: 14px;
       }
+
       i {
-        padding: 10px 10px;
+        padding: 10px;
         color: #03624c;
         background-color: #edf2f2;
         border-radius: 20px;
+        flex-shrink: 0;
       }
 
       .name_title_document {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
+        gap: 2px;
+        min-width: 0;
 
-        span:nth-child(1) {
-          width: 100px;
-          height: 15px;
+        .title_name {
           font-weight: 700;
           font-size: 14px;
-          line-height: 21px;
           color: #545454;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 100%;
         }
 
-        span:nth-child(2) {
+        span:last-child {
           font-weight: 400;
           font-size: 13px;
-          line-height: 21px;
           color: #667085;
         }
       }
     }
   }
+
   .owner__avatar {
-    padding-left: 10px;
+    width: 120px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
     img {
       width: 32px;
       height: 32px;
-      border-radius: 20px;
+      border-radius: 50%;
+    }
+
+    span {
+      font-size: 13px;
+      font-weight: 500;
+      color: #344054;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 70px;
     }
   }
 
   .time_updated {
+    width: 160px;
+    text-align: center;
+
     span {
-      font-weight: 400;
       font-size: 13px;
-      line-height: 20px;
       color: #667085;
     }
   }
 
   .download_icon {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+
     img {
       width: 20px;
       height: 20px;
+      cursor: pointer;
     }
   }
 }

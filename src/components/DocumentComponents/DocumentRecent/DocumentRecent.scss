@@ -1,6 +1,7 @@
 .document__recent {
-  width: 1112px;
-  height: auto;
+  width: 100%;
+  max-width: 1500px;
+  height: 420px;
   background-color: var(--bg--nav);
   border-radius: 20px;
   padding: 5px 12px 25px 12px;
@@ -11,15 +12,20 @@
     width: 100%;
 
     &__heading {
-      h2 {
+      width: 155px;
+      height: 46px;
+      text-align: center;
+      padding-top: 10px;
+      background-color: var(--color--div-head);
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+
+      p {
         font-weight: 700;
-        padding: 10px 25px;
-        font-size: 20px;
+        font-size: 17px;
         line-height: 30px;
-        background-color: var(--color--div-head);
         color: var(--text--name);
-        border-radius: 16px;
-        width: fit-content;
       }
     }
 
@@ -134,6 +140,109 @@
         font-size: 14px;
         font-weight: 500;
         color: #333;
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .document__recent {
+    height: auto;
+    padding: 10px;
+
+    &__container {
+      &__main__content {
+        height: auto;
+        gap: 14px;
+
+        &__item {
+          height: 70px;
+          padding: 10px 14px;
+
+          .file-icon {
+            font-size: 16px;
+          }
+
+          &__content {
+            padding: 0 10px;
+
+            &__title {
+              font-size: 14px;
+            }
+
+            &__description {
+              font-size: 12px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .document__recent {
+    height: auto;
+    padding: 10px;
+    border-radius: 14px;
+    overflow-y: visible;
+
+    &__container {
+      &__heading {
+        h2 {
+          font-size: 16px;
+          padding: 8px 14px;
+          border-radius: 12px;
+        }
+      }
+
+      &__main__content {
+        gap: 12px;
+
+        &__item {
+          height: auto;
+          padding: 10px 12px;
+          align-items: flex-start;
+
+          .file-icon {
+            font-size: 16px;
+            margin-top: 4px;
+          }
+
+          &__content {
+            gap: 4px;
+
+            &__title {
+              font-size: 14px;
+              line-height: 1.3;
+            }
+
+            &__description {
+              font-size: 12px;
+              line-height: 1.3;
+            }
+          }
+
+          &__bin {
+            font-size: 16px;
+            margin-left: 8px;
+          }
+        }
+      }
+
+      .pagination {
+        flex-wrap: wrap;
+        gap: 8px;
+
+        &__button {
+          width: 32px;
+          height: 32px;
+          font-size: 13px;
+        }
+
+        &__info {
+          font-size: 13px;
+        }
       }
     }
   }

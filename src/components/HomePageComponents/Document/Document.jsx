@@ -55,12 +55,6 @@ const Document = () => {
         <div className="document__heading_title">
           <p className="text-center pt-3">Document</p>
         </div>
-
-        <div className="document__heading__icon">
-          <img src={filterList} alt="filter list icon" />
-          <img src={filterUpload} alt="file upload icon" />
-          <img src={deleteOutline} alt="delete outline icon" />
-        </div>
       </div>
       <div className="document__body">
         <div className="document_name_column">

@@ -39,11 +39,6 @@ const ListTask = () => {
         <div className="list__task__heading__text">
           <p className="text-center pt-3">List Task</p>
         </div>
-        {/* <div className="list__task__heading__feature">
-          <img src={filterList} alt="this is icon..." />
-          <img src={addIcon} alt="this is icon..." />
-          <img src={recycleBin} alt="this is icon..." />
-        </div> */}
       </div>
       <div className="list__task__table">
         <table>

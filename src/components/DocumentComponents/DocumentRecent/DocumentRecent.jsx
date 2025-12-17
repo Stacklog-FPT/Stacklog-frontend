@@ -54,7 +54,7 @@ const DocumentRecent = ({ title, data }) => {
       <div className="document__recent">
         <div className="document__recent__container">
           <div className="document__recent__container__heading">
-            <h2>{title}</h2>
+            <p>{title}</p>
           </div>
 
           <div className="document__recent__container__main__content">

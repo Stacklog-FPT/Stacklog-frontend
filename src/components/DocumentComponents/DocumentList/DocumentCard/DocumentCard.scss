@@ -1,5 +1,4 @@
 .document__card {
-  width: 460px;
   height: 272px;
   border-radius: 20px;
   background-color: var(--bg--nav);
@@ -35,7 +34,7 @@
       gap: 20px;
 
       &__item {
-        width: 420px;
+        width: 560px;
         height: 52px;
         display: flex;
         align-items: flex-start;

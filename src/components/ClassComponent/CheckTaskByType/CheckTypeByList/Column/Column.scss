@@ -3,7 +3,7 @@ $-color-text-add: #545454;
 
 .column-list-container {
   width: 100%;
-  height: auto;
+  min-height: 1px;
   display: flex;
   justify-content: flex-start;
   gap: 20px;
@@ -11,6 +11,8 @@ $-color-text-add: #545454;
   .column-list {
     width: 100%;
     .prop-status {
+      min-width: 200px;
+      flex-shrink: 0;
       padding: 10px 20px;
       width: 200px;
       display: flex;
@@ -46,8 +48,12 @@ $-color-text-add: #545454;
   .column-task {
     width: 100%;
     padding: 10px 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     table {
       width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
       th {
         color: #333333;
         font-weight: 500;
@@ -55,14 +61,57 @@ $-color-text-add: #545454;
         line-height: 21px;
         border-bottom: 1px solid #595858;
         padding-bottom: 10px;
+        white-space: nowrap;
       }
 
-      .task-empty{
+      .task-empty {
         font-size: 14px;
         font-weight: 500;
         color: var(--text--color--gray);
         padding-top: 20px;
       }
     }
+  }
+}
+
+@media (max-width: 1024px) {
+  .column-task {
+    padding: 10px;
+  }
+
+  .column-task table {
+    min-width: 680px;
+  }
+}
+
+@media (max-width: 768px) {
+  .column-list-container {
+    gap: 10px;
+  }
+
+  .prop-status {
+    width: 100%;
+  }
+
+  .column-task {
+    padding: 8px;
+  }
+
+  .column-task table {
+    min-width: 600px;
+  }
+
+  th {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .column-task table {
+    min-width: 520px;
+  }
+
+  th {
+    font-size: 12px;
   }
 }

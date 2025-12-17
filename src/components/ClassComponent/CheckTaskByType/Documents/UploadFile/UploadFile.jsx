@@ -141,9 +141,7 @@ const UploadFile = ({ onClose, isGroup }) => {
         documentPath: selectedDocument.documentPath,
         documentLocations: [{ documentLocationId: null, groupId: groupId }],
       };
-      console.log(payload);
       const res = await uploadDocumentByGroup(payload, user.token, dispatch);
-      console.log("Res in component: ", res);
       if (pending === false) {
         toast.success("Upload successfully");
         onClose();

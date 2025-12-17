@@ -129,7 +129,9 @@ const Document = () => {
         <DocumentCard title={"Report"} data={allDocumentReport} />
       </div>
 
-      {isShowUpload && <UploadFile onClose={handleCloseModal} isGroup={true} />}
+      {isShowUpload && (
+        <UploadFile onClose={() => setIsShowUpload(false)} isGroup={true} />
+      )}
       {isShowDetail && (
         <DocumentDetail
           id={isShowDetail.documentId}

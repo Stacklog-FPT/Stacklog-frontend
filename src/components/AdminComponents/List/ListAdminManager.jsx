@@ -131,7 +131,6 @@ const ListAdminManager = ({ role }) => {
 
   const getFilteredData = () => {
     let data = [...(dataByRole[role] || [])];
-    console.log(data);
     if (selectedFilters.length === 0) return data;
 
     switch (role) {

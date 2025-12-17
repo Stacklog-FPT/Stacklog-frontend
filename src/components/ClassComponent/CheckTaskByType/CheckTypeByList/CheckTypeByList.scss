@@ -1,20 +1,18 @@
 .check__task__by__list__container {
-  width: fit-content;
-  height: 100%;
+  width: 100%;
+  min-height: 100%; // ✅ thay cho 0%
   padding-bottom: 40px;
-  overflow-y: auto;
-  overflow-x: auto;
-  display: block;
-  padding-bottom: 40px;
-  overflow-y: auto;
-  overflow-x: auto;
-  display: block;
+
+  display: block; // ✅ giữ dạng list / table
+
+  overflow-y: auto; // ✅ scroll dọc
+  overflow-x: hidden; // ❌ bỏ scroll ngang (nguyên nhân phụ gây sập)
+
   scrollbar-width: thin;
-  scrollbar-color: #888 #f0f0f0;
+  scrollbar-color: #203b1e #f0f0f0;
 
   &::-webkit-scrollbar {
     width: 8px;
-    height: 8px;
   }
 
   &::-webkit-scrollbar-track {
@@ -32,7 +30,6 @@
   }
 
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
 
   .check__task__by__list__column {
     width: 100%;
@@ -43,12 +40,11 @@
     height: 40px;
     display: flex;
     align-items: center;
-    cursor: pointer;
     gap: 5px;
     border: none;
-    cursor: pointer;
     border-radius: 50px;
     background-color: transparent !important;
+    cursor: pointer;
 
     span {
       font-weight: 600;
@@ -58,6 +54,36 @@
 
     i {
       font-size: 10px;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .check__task__by__list__column {
+    gap: 12px;
+  }
+
+  .btn_add_status {
+    width: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+  .check__task__by__list__container {
+    padding-bottom: 24px;
+  }
+
+  .check__task__by__list__column {
+    gap: 10px;
+    padding-bottom: 12px;
+  }
+
+  .btn_add_status {
+    width: 180px;
+    height: 36px;
+
+    span {
+      font-size: 13px;
     }
   }
 }

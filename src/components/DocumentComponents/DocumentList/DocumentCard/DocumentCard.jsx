@@ -8,9 +8,12 @@ import Swal from "sweetalert2";
 import { FaTrashAlt } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { upperCaseFirstChart } from "../../../../helper/upperCaseFirstChart";
+import { useParams } from "react-router-dom";
 const DocumentCard = ({ title, data }) => {
   const [isOpenDetail, showOpenDetail] = React.useState(false);
   const [documentId, setDocumentId] = React.useState("");
+  const { groupId } = useParams();
+  console.log(groupId);
   const { user } = useAuth();
   const dispatch = useDispatch();
   const handleShowDetail = (id) => {
@@ -56,7 +59,10 @@ const DocumentCard = ({ title, data }) => {
   });
   return (
     <>
-      <div className="document__card">
+      <div
+        className="document__card"
+        style={{ width: groupId ? "50%" : "456" }}
+      >
         <div className="document__card__container">
           <div className="document__card__container__heading">
             <h2>{upperCaseFirstChart(title)}</h2>

@@ -6,10 +6,8 @@ import { formatDateUI } from "../../../../helper/formatDate";
 
 const DetailMeeting = () => {
   const schedules = useSelector((state) => state.schedule.schedules);
-
-  // Sắp xếp từ mới nhất → cũ nhất theo slotStartTime
   const sortedSchedules = [...schedules].sort((a, b) => {
-    return new Date(b.slotStartTime) - new Date(a.slotStartTime);
+    return new Date(a.slotStartTime) - new Date(b.slotStartTime);
   });
 
   const cardRefs = useRef([]);

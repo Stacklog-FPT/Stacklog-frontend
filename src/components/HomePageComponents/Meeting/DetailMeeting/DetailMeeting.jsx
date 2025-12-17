@@ -3,6 +3,7 @@ import "./DetailMeeting.scss";
 import meetingIcon from "../../../../assets/home/meeting-icon.png";
 import { useSelector } from "react-redux";
 import { formatDateUI } from "../../../../helper/formatDate";
+import { truncateName } from "../../../../helper/upperCaseFirstChart";
 
 const DetailMeeting = () => {
   const schedules = useSelector((state) => state.schedule.schedules);
@@ -46,7 +47,7 @@ const DetailMeeting = () => {
             ref={(el) => (cardRefs.current[index] = el)}
           >
             <div className="detail__meeting__card__heading">
-              <h2>{item.slotTitle}</h2>
+              <h2>{truncateName(item.slotTitle, 11)}</h2>
               <i className="fa-regular fa-pen-to-square"></i>
             </div>
             <div className="detail__meeting__card__day__time">

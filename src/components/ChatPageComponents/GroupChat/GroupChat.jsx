@@ -389,17 +389,22 @@ const GroupChat = ({
 
       if (failed.length) {
         Swal.fire({
-          icon: 'warning',
-          title: 'Partial Success',
-          text: 'Could not find users for emails: ' + failed.join(', ') + '. The group was created with the valid members.'
+          icon: "warning",
+          title: "Partial Success",
+          text:
+            "Could not find users for emails: " +
+            failed.join(", ") +
+            ". The group was created with the valid members.",
         });
       }
     } catch (err) {
       console.error("Create box failed", err);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Create group failed: ' + (err?.response?.data?.message || err.message)
+        icon: "error",
+        title: "Error",
+        text:
+          "Create group failed: " +
+          (err?.response?.data?.message || err.message),
       });
     }
   };

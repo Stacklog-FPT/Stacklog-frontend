@@ -738,7 +738,12 @@ const ClassList = ({ handleActivityAddClass }) => {
                         <p>{item.id}</p>
                       </td>
                       <td>
-                        <span onClick={() => handleShowDetail(item)}>Detail</span>
+                        <button 
+                          className="btn-kick-user" 
+                          onClick={() => handleShowDetail(item)}
+                        >
+                          <span>Detail</span>
+                        </button>
                         {(() => {
                           const currentClass = classes.find(
                             (cls) => cls.classesId === selectedClass,

@@ -59,6 +59,7 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
   const [studentsList, setStudentsList] = useState([]);
   const [selectedAssigns, setSelectedAssigns] = useState([]);
   const [showStudentsPanel, setShowStudentsPanel] = useState(false);
+  const [dateError, setDateError] = useState("");
   const studentsPanelRef = useRef(null);
 
   const getGroup = () => {
@@ -235,6 +236,22 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
     }));
   };
 
+  const handleDateChange = (e) => {
+    const selectedDate = e.target.value;
+    setDate(selectedDate);
+    
+    // Validate if date is in the past
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selected = new Date(selectedDate);
+    
+    if (selected < today) {
+      setDateError("⚠ Cannot select a date in the past");
+    } else {
+      setDateError("");
+    }
+  };
+
   const validateForm = () => {
     // group selection is optional for lecturers; students are handled elsewhere
 
@@ -279,7 +296,7 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
 
     if (fullDateTime < minAllowed) {
       toast.error(
-        `Start time must be at least ${bufferMinutes} minutes in the future!`
+        `The meeting should start later than the current time.`
       );
       return false;
     }
@@ -504,9 +521,11 @@ const AddScheduleForms = ({ groupId, onClose, onSuccess, isPage }) => {
               type="date"
               id="date"
               value={date}
-              onChange={(e) => setDate(e.target.value)}
+              onChange={handleDateChange}
               required
+              className={dateError ? "input-error" : ""}
             />
+            {dateError && <div className="error-message">{dateError}</div>}
           </div>
 
           {/* Time */}

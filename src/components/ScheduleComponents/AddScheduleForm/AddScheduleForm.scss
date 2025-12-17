@@ -130,6 +130,17 @@
         color: #666;
         cursor: not-allowed;
       }
+
+      &.input-error {
+        border-color: #d32f2f;
+      }
+    }
+
+    .error-message {
+      color: #d32f2f;
+      font-size: 0.85rem;
+      margin-top: 4px;
+      font-weight: 500;
     }
 
     textarea {

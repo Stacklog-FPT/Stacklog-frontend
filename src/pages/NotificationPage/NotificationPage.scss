@@ -6,4 +6,97 @@
   justify-content: flex-start;
   gap: 20px;
   padding: 20px;
+
+  .notification__header {
+    width: 100%;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .search-container {
+      position: relative;
+      flex: 1;
+      min-width: 280px;
+      max-width: 500px;
+
+      .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        font-size: 14px;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 12px 16px 12px 44px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        background: var(--bg--nav);
+        color: var(--text-color);
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s ease;
+
+        &::placeholder {
+          color: #9ca3af;
+        }
+
+        &:focus {
+          border-color: var(--bg--primary-color);
+          box-shadow: 0 0 0 3px rgba(11, 112, 201, 0.1);
+        }
+      }
+    }
+
+    .filter-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-width: 180px;
+
+      .filter-icon {
+        position: absolute;
+        left: 16px;
+        color: #6b7280;
+        font-size: 14px;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .filter-select {
+        width: 100%;
+        padding: 12px 16px 12px 44px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        background: var(--bg--nav);
+        color: var(--text-color);
+        font-size: 14px;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        padding-right: 40px;
+
+        &:focus {
+          border-color: var(--bg--primary-color);
+          box-shadow: 0 0 0 3px rgba(11, 112, 201, 0.1);
+        }
+
+        option {
+          background: var(--bg--nav);
+          color: var(--text-color);
+          padding: 8px;
+        }
+      }
+    }
+  }
 }

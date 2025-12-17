@@ -82,7 +82,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
   };
 
   // helper to fetch user profiles for a list of groupStudents
-  const fetchProfilesForGroupStudents = async (groupStudents) => {
+  const fetchProfilesForGroupStudents = React.useCallback(async (groupStudents) => {
     if (!groupStudents || groupStudents.length === 0) {
       setStudents([]);
       return;
@@ -381,36 +381,9 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
     } finally {
       setStudentsLoading(false);
     }
-  };
+  }, [token]); // Add token as dependency for useCallback
 
   useEffect(() => {
-    // If sidebar selected a class/group, sync it into local state and load its groups/students
-    if (currentClassIdFromSidebar && classes && classes.length > 0) {
-      const classId = currentClassIdFromSidebar;
-      setSelectedClassId(classId);
-      // find the class and set area/groups
-      const cls = classes.find(
-        (c) => String(c.classesId) === String(classId) || String(c._id) === String(classId)
-      );
-      const groups = (cls?.groups || []).map((g) => ({
-        _id: g.groupsId || g.groupId || g.id,
-        name: g.groupsName || g.groupName || g.name || "Group",
-        raw: g,
-      }));
-      setArea(groups);
-      // if sidebar specified a group, respect it; otherwise auto-select first group
-      const gid = currentGroupIdFromSidebar || (groups[0] && String(groups[0]._id)) || "";
-      setSelectedGroupId(gid);
-      // fetch students for the chosen group
-      if (gid) {
-        const grp = groups.find((g) => String(g._id) === String(gid));
-        const groupStudents = grp?.raw?.groupStudents || [];
-        if (groupStudents.length > 0) fetchProfilesForGroupStudents(groupStudents);
-        else setStudents([]);
-      } else {
-        setStudents([]);
-      }
-    }
     if (!currentSemesterId || !token) return;
     let mounted = true;
     const fetchClasses = async () => {
@@ -428,172 +401,9 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
         console.debug("[GradesComponents] getClasses result:", data);
         const normalized = Array.isArray(data) ? data : [];
         setClasses(normalized);
-        // extract groups (areas) from all classes using API field names groupsId/groupsName
-        const groups = normalized.flatMap((c) =>
-          (c.groups || []).map((g) => ({
-            _id: g.groupsId || g.groupId || g.id,
-            name: g.groupsName || g.groupName || g.name || "Group",
-            raw: g,
-            classId: c.classesId || c._id,
-          }))
-        );
-        // remove duplicates by _id
-        const uniq = [];
-        const map = new Map();
-        for (const g of groups) {
-          if (!g._id) continue;
-          if (!map.has(g._id)) {
-            map.set(g._id, true);
-            uniq.push(g);
-          }
-        }
-        setArea(uniq);
-        // If there is at least one class, auto-select the first class and its first group
-        if (normalized.length > 0) {
-          const firstClass = normalized[0];
-          const firstClassId = firstClass.classesId || firstClass._id;
-          // set selected class
-          setSelectedClassId(firstClassId);
-          // determine its groups
-          const firstGroups = (firstClass.groups || []).map((g) => ({
-            _id: g.groupsId || g.groupId || g.id,
-            name: g.groupsName || g.groupName || g.name || "Group",
-            raw: g,
-          }));
-          if (firstGroups.length > 0) {
-            console.debug(
-              "[GradesComponents] firstGroups for firstClass:",
-              firstGroups.map((f) => ({
-                id: f._id,
-                students: (f.raw?.groupStudents || []).length,
-              }))
-            );
-            // if the current user is a student, find the group that contains them and only expose that group
-            if (isStudent) {
-              // robust membership test: try several possible id fields and compare as strings;
-              // fall back to matching by email, username, or work_id when available
-              if (!uid) {
-                console.debug("[GradesComponents] user object (no uid):", user);
-                console.debug(
-                  "[GradesComponents] decoded token payload (no uid):",
-                  tokenPayload,
-                  tokenId
-                );
-              }
-              const extractGSId = (s) =>
-                String(
-                  s?.userId ??
-                    s?.user_id ??
-                    s?.groupStudentId ??
-                    s?.studentId ??
-                    s?.id ??
-                    s?.user?._id ??
-                    ""
-                );
-              const extractGSEmail = (s) =>
-                String(
-                  s?.email ?? s?.user?.email ?? s?.user_email ?? ""
-                ).toLowerCase();
-              const extractGSUsername = (s) =>
-                String(
-                  s?.username ?? s?.user?.username ?? s?.user_name ?? ""
-                ).toLowerCase();
-              const extractGSWorkId = (s) =>
-                String(
-                  s?.work_id ??
-                    s?.user?.work_id ??
-                    s?.workId ??
-                    s?.user?.workId ??
-                    ""
-                ).toLowerCase();
-              const userAltIds = new Set(
-                [
-                  uid,
-                  tokenId,
-                  String(user?.user_id || ""),
-                  String(user?.work_id || ""),
-                  String(user?._id || ""),
-                  String(user?.id || ""),
-                ].filter(Boolean)
-              );
-              const userEmail = user?.email
-                ? String(user.email).toLowerCase()
-                : "";
-              const userName = user?.username
-                ? String(user.username).toLowerCase()
-                : "";
-              const userWorkId = user?.work_id
-                ? String(user.work_id).toLowerCase()
-                : "";
-              const myGroup = firstGroups.find(
-                (g) =>
-                  Array.isArray(g.raw?.groupStudents) &&
-                  g.raw.groupStudents.some((s) => {
-                    const sid = extractGSId(s);
-                    const semail = extractGSEmail(s);
-                    const susername = extractGSUsername(s);
-                    const swork = extractGSWorkId(s);
-                    const matchedById = sid && userAltIds.has(sid);
-                    const matchedByEmail =
-                      userEmail && semail && userEmail === semail;
-                    const matchedByUsername =
-                      userName && susername && userName === susername;
-                    const matchedByWorkId =
-                      userWorkId && swork && userWorkId === swork;
-                    const matched =
-                      matchedById ||
-                      matchedByEmail ||
-                      matchedByUsername ||
-                      matchedByWorkId;
-                    if (!matched)
-                      console.debug(
-                        "[GradesComponents] group student id mismatch",
-                        {
-                          sid,
-                          semail,
-                          susername,
-                          swork,
-                          uid,
-                          alt: Array.from(userAltIds),
-                          userEmail,
-                          userName,
-                          userWorkId,
-                        }
-                      );
-                    return matched;
-                  })
-              );
-              if (myGroup) {
-                setArea([myGroup]);
-                setSelectedGroupId(String(myGroup._id));
-                const groupStudents = myGroup.raw?.groupStudents || [];
-                console.debug(
-                  "[GradesComponents] matched groupStudents ids:",
-                  groupStudents.map((gs) => extractGSId(gs))
-                );
-                if (groupStudents.length > 0)
-                  fetchProfilesForGroupStudents(groupStudents);
-                else setStudents([]);
-              } else {
-                // student isn't in any group for this class
-                setArea([]);
-                setSelectedGroupId("");
-                setStudents([]);
-              }
-            } else {
-              const firstGroup = firstGroups[0];
-              setArea(firstGroups);
-              setSelectedGroupId(String(firstGroup._id));
-              // fetch students for this group
-              const groupStudents = firstGroup.raw?.groupStudents || [];
-              if (groupStudents.length > 0) {
-                fetchProfilesForGroupStudents(groupStudents);
-              } else {
-                setStudents([]);
-              }
-            }
-          }
-        }
+        
+        // Don't auto-select, wait for sidebar selection
+        // This allows the second useEffect to properly sync from sidebar
       } catch (e) {
         console.error("Failed to load classes/groups", e);
         if (!mounted) return;
@@ -610,32 +420,79 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
 
   // Sync sidebar selection into local state when classes or sidebar selection changes
   useEffect(() => {
-    if (!currentClassIdFromSidebar || !classes || classes.length === 0) return;
+    console.log("[Grade.jsx] Sync useEffect triggered");
+    console.log("[Grade.jsx] currentClassIdFromSidebar:", currentClassIdFromSidebar, "type:", typeof currentClassIdFromSidebar);
+    console.log("[Grade.jsx] currentGroupIdFromSidebar:", currentGroupIdFromSidebar, "type:", typeof currentGroupIdFromSidebar, "truthy:", !!currentGroupIdFromSidebar);
+    console.log("[Grade.jsx] classes:", classes);
+    
+    if (!classes || classes.length === 0) {
+      console.log("[Grade.jsx] No classes, returning");
+      return;
+    }
+    if (!currentClassIdFromSidebar) {
+      console.log("[Grade.jsx] No currentClassIdFromSidebar, returning");
+      return;
+    }
+    
     const classId = currentClassIdFromSidebar;
-    setSelectedClassId(classId);
-    // find the class and set area/groups
     const cls = classes.find(
       (c) => String(c.classesId) === String(classId) || String(c._id) === String(classId)
     );
-    const groups = (cls?.groups || []).map((g) => ({
+    
+    console.log("[Grade.jsx] Found class:", cls);
+    
+    if (!cls) {
+      console.log("[Grade.jsx] Class not found, returning");
+      return;
+    }
+    
+    setSelectedClassId(classId);
+    
+    // Map groups
+    const groups = (cls.groups || []).map((g) => ({
       _id: g.groupsId || g.groupId || g.id,
       name: g.groupsName || g.groupName || g.name || "Group",
       raw: g,
     }));
     setArea(groups);
-    // if sidebar specified a group, respect it; otherwise auto-select first group
-    const gid = currentGroupIdFromSidebar || (groups[0] && String(groups[0]._id)) || "";
-    setSelectedGroupId(gid);
-    // fetch students for the chosen group
-    if (gid) {
-      const grp = groups.find((g) => String(g._id) === String(gid));
-      const groupStudents = grp?.raw?.groupStudents || [];
-      if (groupStudents.length > 0) fetchProfilesForGroupStudents(groupStudents);
-      else setStudents([]);
+    
+    console.log("[Grade.jsx] Mapped groups:", groups.map(g => ({ id: g._id, name: g.name })));
+    
+    // Set selected group - ONLY respect sidebar selection, don't auto-select first group
+    let gid = "";
+    if (currentGroupIdFromSidebar) {
+      gid = currentGroupIdFromSidebar;
+      console.log("[Grade.jsx] Using sidebar group ID:", gid);
+      setSelectedGroupId(gid);
     } else {
-      setStudents([]);
+      console.log("[Grade.jsx] No sidebar group ID, keeping current selection or waiting for user selection");
+      // Don't auto-select first group - wait for user to select from sidebar
+      // Only update if we don't have a current selection
+      if (!selectedGroupId || !groups.find(g => String(g._id) === String(selectedGroupId))) {
+        // Current selection is invalid, clear it
+        setSelectedGroupId("");
+        setStudents([]);
+        return;
+      }
+      // Keep current valid selection
+      gid = selectedGroupId;
     }
-  }, [currentClassIdFromSidebar, currentGroupIdFromSidebar, classes]);
+    
+    console.log("[Grade.jsx] Final selected group ID:", gid);
+    
+    // Fetch students for the chosen group (only if we have a valid gid)
+    if (gid && currentGroupIdFromSidebar) {
+      const grp = groups.find((g) => String(g._id) === String(gid));
+      console.log("[Grade.jsx] Found group for students:", grp);
+      const groupStudents = grp?.raw?.groupStudents || [];
+      console.log("[Grade.jsx] Group students count:", groupStudents.length);
+      if (groupStudents.length > 0) {
+        fetchProfilesForGroupStudents(groupStudents);
+      } else {
+        setStudents([]);
+      }
+    }
+  }, [currentClassIdFromSidebar, currentGroupIdFromSidebar, classes, fetchProfilesForGroupStudents, selectedGroupId]);
 
   const handleClassChange = (e) => {
     const classId = e.target.value;
@@ -936,7 +793,10 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                           : ""
                       }
                       onChange={(e) => {
-                        const val = parseFloat(e.target.value || 0);
+                        let val = parseFloat(e.target.value || 0);
+                        // Ensure value is between 0 and 100
+                        if (val < 0) val = 0;
+                        if (val > 100) val = 100;
                         setNewCategory({
                           ...newCategory,
                           scoreCategoryWeight: isNaN(val) ? 0 : val / 100,

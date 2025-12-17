@@ -3,9 +3,9 @@
   height: auto;
   background-color: var(--bg--nav);
   border-radius: 20px;
-  padding: 5px 12px 20px 12px;
+  padding: 5px 12px 25px 12px;
   transition: 0.3s ease;
-  overflow: hidden;
+  overflow-y: scroll;
 
   &__container {
     width: 100%;

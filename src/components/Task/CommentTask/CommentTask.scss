@@ -9,7 +9,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 9000;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: "Inter", "Segoe UI", sans-serif;
   background: #ffffff;
   border-radius: 20px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
@@ -255,8 +255,8 @@
 
     .wrapper_icon_comment {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      justify-content: end;
+      align-items: end;
 
       .wrapper_icon_features {
         display: flex;

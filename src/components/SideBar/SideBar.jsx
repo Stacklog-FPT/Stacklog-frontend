@@ -16,14 +16,13 @@ import ClassDropdown from "../../components/Modal/ClassList/ClassDropDown";
 import {
   selectSemester,
   selectSemesters,
-  selectPending,
   selectCurrentSemesterId,
-  selectError,
 } from "../../redux/slice/semesterSlice";
 
 const SideBar = ({ isOpen, setIsOpen }) => {
   const { mode } = useContext(ColorModeContext);
   const { toggleGroupChat } = useContext(GroupChatContext);
+  console.log(isOpen);
   const { user } = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -48,23 +47,50 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   };
 
   const dashBoardItems = [
-    { name: "Home", path: "/", icon: "fa-solid fa-house" },
-    { name: "Schedule", path: "/schedule", icon: "fa-solid fa-calendar-days" },
-    { name: "Documents", path: "/documents", icon: "fa-solid fa-folder-plus" },
+    { name: "Home", path: "/", icon: "fa-solid fa-house", showIcon: true },
+    {
+      name: "Schedule",
+      path: "/schedule",
+      icon: "fa-solid fa-calendar-days",
+      showIcon: true,
+    },
+    {
+      name: "Documents",
+      path: "/documents",
+      icon: "fa-solid fa-folder-plus",
+      showIcon: true,
+    },
     {
       name: "Chat",
       path: "/chatbox",
       icon: "fa-solid fa-comment",
+      showIcon: true,
       onClick: handleChatClick,
     },
     {
       name: "Grades",
       path: "/grades",
       icon: "fa-solid fa-square-poll-vertical",
+      showIcon: true,
     },
-    { name: "Topic", path: "/plan", icon: "fa-solid fa-diagram-project" },
-    { name: "Task", path: "/tasks-self", icon: "fa-solid fa-list-check" },
-    { name: "Class", path: "/class", icon: "fa-solid fa-users" },
+    {
+      name: "Topic",
+      path: "/plan",
+      icon: "fa-solid fa-diagram-project",
+      showIcon: true,
+    },
+    {
+      name: "Task",
+      path: "/tasks-self",
+      icon: "fa-solid fa-list-check",
+      showIcon: true,
+    },
+    {
+      name: "Class",
+      path: "/class",
+      icon: "fa-solid fa-users",
+      showIcon: isOpen,
+    },
   ];
 
   useEffect(() => {
@@ -125,7 +151,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
           </div>
 
           <div className="semester__picker">
-            <label className="semester__label">Semester</label>
+            {isOpen && <label className="semester__label">Semester</label>}
             <SemesterDropdown
               semesters={semesters || []}
               value={currentSemesterId ?? null}
@@ -159,7 +185,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                       {...(item.onClick ? { onClick: item.onClick } : {})}
                     >
                       <div className="nav-icon-container">
-                        {item.icon && <i className={item.icon}></i>}
+                        {item.showIcon ? <i className={item.icon}></i> : null}
                         <span className="nav-icon-container-text">
                           {item.name}
                         </span>

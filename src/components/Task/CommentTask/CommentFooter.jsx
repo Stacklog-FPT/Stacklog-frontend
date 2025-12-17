@@ -14,11 +14,11 @@ const CommentFooter = ({ avatar, newComment, onChangeNew, onSend }) => {
           onChange={(e) => onChangeNew(e.target.value)}
         ></textarea>
         <div className="wrapper_icon_comment">
-          <div className="wrapper_icon_features">
+          {/* <div className="wrapper_icon_features">
             <img src={smileIcon} alt="Smile icon" />
             <img src={tagIcon} alt="Tag icon" />
             <img src={imageIcon} alt="Image icon" />
-          </div>
+          </div> */}
           <button
             className="send__comment"
             onClick={onSend}

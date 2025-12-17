@@ -13,7 +13,6 @@ const DocumentRecent = ({ title, data }) => {
   const { user } = useAuth();
   const { documents } = useSelector((state) => state.document);
   const [documentId, setDocumentId] = React.useState("");
-  console.log(documentId)
   const dispatch = useDispatch();
   const itemsPerPage = 5;
   const totalPages = Math.ceil(documents?.length / itemsPerPage);
@@ -52,67 +51,68 @@ const DocumentRecent = ({ title, data }) => {
 
   return (
     <>
-     <div className="document__recent">
-      <div className="document__recent__container">
-        <div className="document__recent__container__heading">
-          <h2>{title}</h2>
-        </div>
+      <div className="document__recent">
+        <div className="document__recent__container">
+          <div className="document__recent__container__heading">
+            <h2>{title}</h2>
+          </div>
 
-        <div className="document__recent__container__main__content">
-          {currentItems.length > 0 ? (
-            currentItems.map((item) => (
-              <div
-                className="document__recent__container__main__content__item d-flex align-items-center justify-content-between"
-                key={item.documentId}
-                onClick={() => setDocumentId(item.documentId)}
-              >
-                <div className="document__recent__container__main__content__item__content">
-                  <span className="document__recent__container__main__content__item__content__title">
-                    {item.documentTitle}
-                  </span>
-                  <span className="document__recent__container__main__content__item__content__description">
-                    {formatFileSize(item.documentSize)}
-                  </span>
-                </div>
+          <div className="document__recent__container__main__content">
+            {currentItems.length > 0 ? (
+              currentItems.map((item) => (
                 <div
-                  className="document__recent__container__main__content__item__bin"
-                  onClick={(e) => handleDeleteDocument(e, item.documentId)}
+                  className="document__recent__container__main__content__item d-flex align-items-center justify-content-between"
+                  key={item.documentId}
+                  onClick={() => setDocumentId(item.documentId)}
                 >
-                  <FaTrash />
+                  <div className="document__recent__container__main__content__item__content">
+                    <span className="document__recent__container__main__content__item__content__title">
+                      {item.documentTitle}
+                    </span>
+                    <span className="document__recent__container__main__content__item__content__description">
+                      {formatFileSize(item.documentSize)}
+                    </span>
+                  </div>
+                  <div
+                    className="document__recent__container__main__content__item__bin"
+                    onClick={(e) => handleDeleteDocument(e, item.documentId)}
+                  >
+                    <FaTrash />
+                  </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <h2>No document recent</h2>
+              ))
+            ) : (
+              <h2>No document recent</h2>
+            )}
+          </div>
+
+          {currentItems.length > itemsPerPage && (
+            <div className="pagination">
+              <button
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className="pagination__button"
+              >
+                <i className="fa-solid fa-arrow-left"></i>
+              </button>
+              <span className="pagination__info">
+                {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className="pagination__button"
+              >
+                <i className="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
           )}
         </div>
-
-        {currentItems.length > itemsPerPage && (
-          <div className="pagination">
-            <button
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
-              className="pagination__button"
-            >
-              <i className="fa-solid fa-arrow-left"></i>
-            </button>
-            <span className="pagination__info">
-              {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-              className="pagination__button"
-            >
-              <i className="fa-solid fa-arrow-right"></i>
-            </button>
-          </div>
-        )}
       </div>
-    </div>
-    {documentId && <DocumentDetail id={documentId} onClose={() => setDocumentId("")} />}
+      {documentId && (
+        <DocumentDetail id={documentId} onClose={() => setDocumentId("")} />
+      )}
     </>
-   
   );
 };
 

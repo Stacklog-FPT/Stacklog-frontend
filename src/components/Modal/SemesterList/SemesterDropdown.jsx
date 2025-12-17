@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import './SemesterDropdown.scss';
+import { useEffect, useMemo, useRef, useState } from "react";
+import "./SemesterDropdown.scss";
 const normalizeSemesters = (arr) =>
   (Array.isArray(arr) ? arr : [])
     .map((s) => ({
       id: s.semester_id ?? s.semesterId,
-      name: s.semester_name ?? s.semesterName ?? s.name ?? 'Unnamed semester',
+      name: s.semester_name ?? s.semesterName ?? s.name ?? "Unnamed semester",
     }))
     .filter((x) => Boolean(x.id));
 
@@ -12,7 +12,7 @@ const SemesterDropdown = ({
   semesters = [],
   value,
   onChange,
-  placeholder = 'Select semester',
+  placeholder = "Select semester",
   isSidebarOpen,
 }) => {
   const items = useMemo(() => normalizeSemesters(semesters), [semesters]);
@@ -34,8 +34,8 @@ const SemesterDropdown = ({
       if (!ref.current) return;
       if (!ref.current.contains(e.target)) close();
     };
-    document.addEventListener('mousedown', onClickOutside);
-    return () => document.removeEventListener('mousedown', onClickOutside);
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
   useEffect(() => {
@@ -43,10 +43,25 @@ const SemesterDropdown = ({
   }, [isSidebarOpen]);
 
   return (
-    <div className="semester-dropdown" ref={ref}>
-      <button className={`sd-trigger ${open ? 'open' : ''}`} onClick={toggle} type="button">
-        <span className="sd-label">{selected ? selected.name : placeholder}</span>
-        <i className={`fa-solid fa-chevron-down sd-caret ${open ? 'rotated' : ''}`} />
+    <div
+      className={`semester-dropdown ${
+        isSidebarOpen ? "open-sidebar" : "close-sidebar"
+      }`}
+      ref={ref}
+    >
+      <button
+        className={`sd-trigger ${open ? "open" : ""}`}
+        onClick={toggle}
+        type="button"
+      >
+        <span className="sd-label">
+          {selected ? selected.name : placeholder}
+        </span>
+        <i
+          className={`fa-solid fa-chevron-down sd-caret ${
+            open ? "rotated" : ""
+          }`}
+        />
       </button>
 
       {open && isSidebarOpen && (
@@ -58,12 +73,14 @@ const SemesterDropdown = ({
               <button
                 key={it.id}
                 type="button"
-                className={`sd-item ${value === it.id ? 'active' : ''}`}
+                className={`sd-item ${value === it.id ? "active" : ""}`}
                 onClick={() => handleSelect(it.id)}
                 title={it.name}
               >
                 <span className="sd-item-text">{it.name}</span>
-                {value === it.id && <i className="fa-solid fa-check sd-check" />}
+                {value === it.id && (
+                  <i className="fa-solid fa-check sd-check" />
+                )}
               </button>
             ))
           )}

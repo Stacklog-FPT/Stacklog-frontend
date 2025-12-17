@@ -35,6 +35,7 @@ const UploadFile = ({ onClose, isGroup }) => {
     documentType: "NORMAL",
     documentLocations: [],
   });
+  const [documentDatas, setDocumentDatas] = useState([]);
 
   const dispatch = useDispatch();
   const modalRef = useRef(null);
@@ -67,6 +68,7 @@ const UploadFile = ({ onClose, isGroup }) => {
     const droppedFile = e.dataTransfer.files[0];
     if (droppedFile) {
       setFile(droppedFile);
+      setDocumentDatas((prev) => [...prev, droppedFile]);
       if (droppedFile.type.startsWith("image/")) {
         setPreview(URL.createObjectURL(droppedFile));
       } else {
@@ -82,6 +84,14 @@ const UploadFile = ({ onClose, isGroup }) => {
       } else {
         return [...prevGroupLocations, { groupId, documentLocationId: null }];
       }
+    });
+  };
+  const toggleExistingGroup = (doc) => {
+    setSelectedDocument((prev) => {
+      if (prev?.documentId === doc.documentId) {
+        return null;
+      }
+      return doc;
     });
   };
 
@@ -106,6 +116,7 @@ const UploadFile = ({ onClose, isGroup }) => {
     };
 
     const res = await uploadDocument(payload, user.token, dispatch);
+    console.log("Res in component: ", res);
     if (!pending) {
       toast.success("Upload successfully");
       onClose?.();
@@ -130,7 +141,9 @@ const UploadFile = ({ onClose, isGroup }) => {
         documentPath: selectedDocument.documentPath,
         documentLocations: [{ documentLocationId: null, groupId: groupId }],
       };
+      console.log(payload);
       const res = await uploadDocumentByGroup(payload, user.token, dispatch);
+      console.log("Res in component: ", res);
       if (pending === false) {
         toast.success("Upload successfully");
         onClose();
@@ -261,8 +274,10 @@ const UploadFile = ({ onClose, isGroup }) => {
                           checked={
                             selectedDocument?.documentId === doc.documentId
                           }
-                          onChange={() => setSelectedDocument(doc)}
+                          onChange={() => {}}
+                          onClick={() => toggleExistingGroup(doc)}
                         />
+
                         <span>{doc.documentTitle}</span>
                       </div>
                     );

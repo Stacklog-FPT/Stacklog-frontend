@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useLocation } from 'react-router-dom';
-import { selectClass } from '../../../redux/slice/semesterSlice';
-import GroupDropDown from '../GroupList/GroupDropDown';
-import './ClassDropDown.scss';
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { selectClass } from "../../../redux/slice/semesterSlice";
+import GroupDropDown from "../GroupList/GroupDropDown";
+import "./ClassDropDown.scss";
 
 const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
   const { classes } = useSelector((state) => state.class);
@@ -18,15 +18,17 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
     if (pathMatch && pathMatch[1]) {
       const groupIdFromUrl = pathMatch[1];
       // Try to parse as number if it's numeric, otherwise keep as string
-      const parsedGroupId = /^\d+$/.test(groupIdFromUrl) 
-        ? parseInt(groupIdFromUrl, 10) 
+      const parsedGroupId = /^\d+$/.test(groupIdFromUrl)
+        ? parseInt(groupIdFromUrl, 10)
         : groupIdFromUrl;
-      
+
       setActiveGroupId(parsedGroupId);
 
       // Find which class contains this group
       const classWithGroup = classes.find((classItem) =>
-        classItem.groups?.some((g) => String(g.groupsId) === String(parsedGroupId))
+        classItem.groups?.some(
+          (g) => String(g.groupsId) === String(parsedGroupId)
+        )
       );
 
       if (classWithGroup) {
@@ -50,16 +52,21 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
   // };
 
   return (
-    <div className={`class-dropdown ${isSidebarOpen ? '' : 'sidebar-closed'}`}>
-      <div className="class-dropdown-toggle" onClick={() => setShowClasses(!showClasses)}>
+    <div className={`class-dropdown ${isSidebarOpen ? "" : "sidebar-closed"}`}>
+      <div
+        className="class-dropdown-toggle"
+        onClick={() => setShowClasses(!showClasses)}
+      >
         <div className="nav-icon-container">
           <div className="nav-icon-container-inner">
             <i className="fa-solid fa-users"></i>
             <span className="nav-icon-container-text">Class</span>
           </div>
-          <div className={`arrow-transition ${showClasses ? 'rotated' : ''}`}>
-            <i className="fa-solid fa-chevron-down"></i>
-          </div>
+          {isSidebarOpen && (
+            <div className={`arrow-transition ${showClasses ? "rotated" : ""}`}>
+              <i className="fa-solid fa-chevron-down"></i>
+            </div>
+          )}
         </div>
       </div>
 
@@ -70,7 +77,7 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
               <li key={classItem.classesId}>
                 <div
                   className={`class-dropdown-item ${
-                    selectedClassId === classItem.classesId ? 'active' : ''
+                    selectedClassId === classItem.classesId ? "active" : ""
                   }`}
                   onClick={() => handleClassClick(classItem.classesId)}
                   title={classItem.classesName}
@@ -80,8 +87,8 @@ const ClassDropdown = ({ showClasses, setShowClasses, isSidebarOpen }) => {
                 </div>
 
                 {selectedClassId === classItem.classesId && (
-                  <GroupDropDown 
-                    classId={classItem.classesId} 
+                  <GroupDropDown
+                    classId={classItem.classesId}
                     groups={classItem.groups}
                     activeGroupId={activeGroupId}
                   />

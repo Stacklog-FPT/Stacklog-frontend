@@ -15,7 +15,7 @@ $color-hover: #045745;
     width: 100%;
     // min-width: 120px;
     height: 44px;
-    padding: 0 16px;
+    padding: 0 20px;
     border: 1.5px solid #b0b7c3;
     background: var(--bg--nav);
     color: var(--text--color);
@@ -109,6 +109,23 @@ $color-hover: #045745;
     .sd-check {
       font-size: 15px;
       color: #045745;
+    }
+  }
+}
+
+.semester-dropdown.close-sidebar {
+  .sd-trigger {
+    justify-content: center;
+    padding: 0;
+    gap: 0;
+
+    .sd-label {
+      display: none;
+    }
+
+    .sd-caret {
+      margin: 0;
+      font-size: 18px;
     }
   }
 }

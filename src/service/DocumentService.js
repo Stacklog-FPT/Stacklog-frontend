@@ -49,9 +49,13 @@ export const uploadDocument = async (data, token, dispatch) => {
       documentPath: url,
       documentLocations: data.documentLocations,
     };
+
+    console.log("Response form: ", responseForm);
     const backendRes = await axios.post(`${DOCUMENT_API}/save`, responseForm, {
       headers: { Authorization: `Bearer ${token}` },
     });
+
+    console.log(backendRes);
 
     if (backendRes.data.createdBy === user.id) {
       dispatch(addDocumentPerson(backendRes.data));

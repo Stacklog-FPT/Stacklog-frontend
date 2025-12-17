@@ -13,6 +13,8 @@
   background-size: cover, 20% 50%;
   background-position: bottom, right;
   background-repeat: no-repeat, no-repeat;
+  border-right: 1.5px solid rgba(4, 87, 69, 0.3);
+  border-bottom: 1.5px solid rgba(4, 87, 69, 0.25);
   z-index: 1;
   transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
 }

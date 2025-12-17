@@ -153,42 +153,34 @@ const Task = ({
     return new Date(year, month - 1, day);
   };
 
-  const calculateRemainingPercent = (due) => {
+  const calculateRemainingPercentByDueDate = (dueISO, maxRangeDays = 30) => {
+    if (!dueISO) return 0;
+
     const now = new Date();
+    const due = new Date(dueISO);
 
-    const dueDate = parseDDMMYYYY(due);
+    now.setHours(0, 0, 0, 0);
+    due.setHours(0, 0, 0, 0);
 
-    // Kiểm tra hợp lệ
-    if (!dueDate || isNaN(dueDate)) {
-      return 0;
-    }
+    const diffMs = due - now;
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
 
-    // Nếu đã quá hạn hoặc đúng ngày due → 0%
-    if (now >= dueDate) {
-      return 0;
-    }
+    if (diffDays <= 0) return 0;
 
-    // Giả định task bắt đầu 30 ngày trước dueDate
-    const assumedStartDate = new Date(dueDate);
-    assumedStartDate.setDate(dueDate.getDate() - 30);
+    const maxDays = maxRangeDays;
 
-    // Nếu hiện tại chưa đến ngày bắt đầu (hiếm xảy ra) → 100%
-    if (now <= assumedStartDate) {
-      return 100;
-    }
+    if (diffDays >= maxDays) return 100;
 
-    const totalTime = dueDate - assumedStartDate; // milliseconds
-    const remainingTime = dueDate - now;
+    const percent = (diffDays / maxDays) * 100;
 
-    const percent = Math.round((remainingTime / totalTime) * 100);
-
-    return Math.max(percent, 0); // đảm bảo không âm
+    return Math.round(percent);
   };
 
-  const getColorByPercent = (percent) => {
-    if (percent >= 70) return "#4caf50";
-    if (percent >= 40) return "#ff9800";
-    return "#f44336";
+  const getColorByRemainingPercent = (percent) => {
+    if (percent === 0) return "#ef4444";
+    if (percent <= 30) return "#f97316";
+    if (percent <= 60) return "#facc15";
+    return "#22c55e";
   };
 
   const handleUpdateTask = async (task) => {
@@ -256,11 +248,14 @@ const Task = ({
     }
   };
 
-  const percent = calculateRemainingPercent(
-    formatDateUI(props.createdAt),
-    formatDateUI(props.dueDate)
+  const percent = useMemo(() => {
+    return calculateRemainingPercentByDueDate(props.task?.taskDueDate, 30);
+  }, [props.task?.taskDueDate]);
+
+  const progressColor = useMemo(
+    () => getColorByRemainingPercent(percent),
+    [percent]
   );
-  const progressColor = getColorByPercent(percent);
 
   useEffect(() => {
     if (visibleMembers.length === 0) {

@@ -113,21 +113,18 @@ const AddTask = ({ status, onCancel, group }) => {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
+    const todayStr = new Date().toISOString().split("T")[0];
     if (taskData.taskStartTime) {
       const startDate = new Date(taskData.taskStartTime);
-      if (startDate < today) {
+      if (startDate < todayStr) {
         toast.error("Start date must be today or later!");
         return false;
       }
     }
 
-    if (taskData.taskDueDate) {
-      const dueDate = new Date(taskData.taskDueDate);
-      if (dueDate < today) {
-        toast.error("Due date must be today or later!");
-        return false;
-      }
+    if (taskData.taskDueDate < todayStr) {
+      toast.error("Due date must be today or later!");
+      return false;
     }
 
     if (taskData.taskStartTime && taskData.taskDueDate) {
@@ -185,7 +182,7 @@ const AddTask = ({ status, onCancel, group }) => {
         reviews: [],
         checkLists: [],
       };
-      console.log("Payload Add Task: ", payload);
+
       const response = await addTask(payload, user.token, dispatch);
       if (response.status === 200) {
         toast.success("Add task success");

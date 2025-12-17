@@ -193,6 +193,14 @@ export default function Calendar({ groupId, isPage }) {
           onEventDrop={moveEvent}
           resizable
           onEventResize={moveEvent}
+          messages={{
+            today: 'Now',
+          }}
+          formats={{
+            eventTimeRangeFormat: ({ start }) => moment(start).format('h:mm A'),
+            timeGutterFormat: 'h:mm A',
+            agendaTimeRangeFormat: ({ start }) => moment(start).format('h:mm A'),
+          }}
         />
       </DndProvider>
 

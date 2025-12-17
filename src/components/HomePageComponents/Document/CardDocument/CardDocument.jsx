@@ -63,10 +63,6 @@ const CardDocument = (props) => {
       <div className="time_updated">
         <span style={{ color: "#000" }}>{formatDateUI(props.lastUpdated)}</span>
       </div>
-
-      <div className="download_icon">
-        <img src={fileDownload} alt="download" />
-      </div>
     </div>
   );
 };

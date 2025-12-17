@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./ListTask.scss";
-import addIcon from "../../../assets/home/list/add.png";
-import recycleBin from "../../../assets/home/planDocument/delete_outline.png";
-import filterList from "../../../assets/home/planDocument/filter_list.png";
+
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 const ListTask = () => {
@@ -10,7 +8,6 @@ const ListTask = () => {
   const tasks = personalTask
     ? [...(personalTask.DOING || []), ...(personalTask.TODO || [])]
     : [];
-  console.log(tasks);
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(tasks.length / itemsPerPage);
@@ -43,11 +40,13 @@ const ListTask = () => {
       <div className="list__task__table">
         <table>
           <thead>
-            <tr>
-              <th>Task</th>
-              <th>Team</th>
-              <th>Priority</th>
-            </tr>
+            {currentItems.lenght > 0 && (
+              <tr>
+                <th>Task</th>
+                <th>Team</th>
+                <th>Priority</th>
+              </tr>
+            )}
           </thead>
           <tbody>
             {currentItems.length > 0 ? (

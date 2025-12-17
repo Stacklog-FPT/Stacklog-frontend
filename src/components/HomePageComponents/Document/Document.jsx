@@ -56,15 +56,18 @@ const Document = () => {
           <p className="text-center pt-3">Document</p>
         </div>
       </div>
-      <div className="document__body">
-        <div className="document_name_column">
-          <div className="wrapper__input__title__document">
-            <p className="title">Title</p>
+      {currentDocuments && (
+        <div className="document__body">
+          <div className="document_name_column">
+            <div className="wrapper__input__title__document">
+              <p className="title">Title</p>
+            </div>
+            <p className="owner">Owner</p>
+            <p className="last-update">Last updated</p>
           </div>
-          <p className="owner">Owner</p>
-          <p className="last-update">Last updated</p>
         </div>
-      </div>
+      )}
+
       <div className="document__list">
         {currentDocuments.length > 0 ? (
           currentDocuments.map((item) => (

@@ -1047,7 +1047,10 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore, refreshTr
                           : ""
                       }
                       onChange={(e) => {
-                        const val = parseFloat(e.target.value || 0);
+                        let val = parseFloat(e.target.value || 0);
+                        // Ensure value is between 0 and 100
+                        if (val < 0) val = 0;
+                        if (val > 100) val = 100;
                         setNewCategory({
                           ...newCategory,
                           scoreCategoryWeight: isNaN(val) ? 0 : val / 100,

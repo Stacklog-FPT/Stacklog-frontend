@@ -263,7 +263,7 @@ export default function Calendar({ groupId, isPage }) {
           onEventResize={moveEvent}
           views={['month', 'week', 'day']}
           messages={{
-            today: 'Now',
+            today: 'Present',
           }}
           formats={{
             eventTimeRangeFormat: ({ start }) => moment(start).format('h:mm A'),

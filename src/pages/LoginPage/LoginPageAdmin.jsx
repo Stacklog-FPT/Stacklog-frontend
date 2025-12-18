@@ -19,27 +19,27 @@ const LoginPageAdmin = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const redirect = searchParams.get("redirect") || "/";
+  const redirect = searchParams.get("redirect") || "/home";
   const dispatch = useDispatch();
-  const handleLoginGoogle = async (response) => {
-    const { credential } = response;
-    if (credential) {
-      const response = await loginGoogle(credential);
+  // const handleLoginGoogle = async (response) => {
+  //   const { credential } = response;
+  //   if (credential) {
+  //     const response = await loginGoogle(credential);
 
-      if (response) {
-        console.log(response);
-        const userData = {
-          email: response.data.email,
-          username: response.data.username,
-          token: response.data.token,
-          role: response.data.role,
-        };
-        await getUserById(response.data.token, response.data._id, dispatch);
-        loginSave(userData);
-        navigate(redirect);
-      }
-    }
-  };
+  //     if (response) {
+  //       console.log(response);
+  //       const userData = {
+  //         email: response.data.email,
+  //         username: response.data.username,
+  //         token: response.data.token,
+  //         role: response.data.role,
+  //       };
+  //       await getUserById(response.data.token, response.data._id, dispatch);
+  //       loginSave(userData);
+  //       navigate(redirect);
+  //     }
+  //   }
+  // };
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -56,8 +56,9 @@ const LoginPageAdmin = () => {
         if (userData.role === "ADMIN") {
           navigate("/admin");
           return;
+        } else {
+          navigate(redirect);
         }
-        navigate(redirect);
       }
     } catch (e) {
       console.error("Login Failed", e || e.message);

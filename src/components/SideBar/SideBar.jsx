@@ -127,7 +127,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
           <div
             className={`wrapper_navbar_header ${isOpen ? "isOpen" : "isClose"}`}
           >
-            <Link to="/">
+            <Link to="/home">
               {mode === "light" ? (
                 <img
                   src={isOpen ? logo : logoClose}

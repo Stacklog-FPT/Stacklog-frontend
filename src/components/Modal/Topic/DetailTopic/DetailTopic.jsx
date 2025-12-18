@@ -136,7 +136,9 @@ const DetailTopic = ({
 
   React.useEffect(() => {
     const handleGetDeadline = async () => {
-      await getDeadline(topic.topicId, dispatch);
+      if (topic && topic.topicId) {
+        await getDeadline(topic.topicId, dispatch);
+      }
     };
     if (open && topic) {
       setEditMode(false);
@@ -147,8 +149,8 @@ const DetailTopic = ({
         topicObjective: topic.topicObjective || "",
         attachments: topic.attachments ? [...topic.attachments] : [],
       });
+      handleGetDeadline();
     }
-    handleGetDeadline();
   }, [open, topic]);
 
   const handleFileChange = (e) => {
@@ -173,7 +175,7 @@ const DetailTopic = ({
 
   if (!open || !topic) return null;
 
-  const status = (localTopic && localTopic.status) || topic?.status;
+  const status = localTopic?.status || topic?.status;
 
   const canAct =
     role === "LECTURER" && (status === "Pending" || status === "Rejected");
@@ -184,13 +186,29 @@ const DetailTopic = ({
     !!group &&
     (String(group.groupsLeaderId) === String(currentUserId) ||
       String(group.groupsLeader) === String(currentUserId));
+  
   const canEdit =
     role === "STUDENT" &&
     !!isLeader &&
     localTopic &&
     (localTopic?.status === "Rejected" ||
-      (localTopic?.status === "Pending" && localTopic?.allowEdit === true) ||
+      localTopic?.status === "Pending" ||
       (localTopic?.status === "Accepted" && localTopic?.allowEdit === true));
+
+  const hasDeadlinePassed = !canEditOrDelete(deadlineAdd, deadlineSubmit);
+  const showEditButtons = canEdit && !hasDeadlinePassed;
+
+  // Debug logging
+  console.log('DetailTopic Debug:', {
+    role,
+    isLeader,
+    status,
+    localTopicStatus: localTopic?.status,
+    canEdit,
+    hasDeadlinePassed,
+    showEditButtons,
+    allowEdit: localTopic?.allowEdit
+  });
 
   const handleGrant = () => {
     if (!onUpdate) return;
@@ -236,11 +254,13 @@ const DetailTopic = ({
   const handleSaveEdit = () => {
     if (!onUpdate) return;
 
+    // Clear any existing errors
+    setLocalError && setLocalError(null);
+
     // When student edits topic, reset status to Pending
     const updatedData = {
       ...editForm,
       status: "Pending",
-      allowEdit: false,
     };
 
     setLocalTopic((t) => ({ ...t, ...updatedData }));
@@ -426,10 +446,10 @@ const DetailTopic = ({
             <div className="sl-label sl-field-inline">Status</div>
             <div
               className={`sl-badge sl-badge--${(
-                topic.status || ""
+                status || ""
               ).toLowerCase()}`}
             >
-              {topic.status || "Unknown"}
+              {status || "Unknown"}
             </div>
           </div>
 
@@ -563,37 +583,43 @@ const DetailTopic = ({
         )}
 
         {/* === STUDENT: Cảnh báo khi không có quyền === */}
-        {role === "STUDENT" && !canEdit && (
+        {role === "STUDENT" && !showEditButtons && (
           <div className="sl-alert sl-alert--warning" style={{ marginTop: 12 }}>
-            You currently <b>do not have permission</b> to update/delete this
-            topic. Please contact the instructor to request access.
+            {hasDeadlinePassed
+              ? "The deadline for editing this topic has passed."
+              : !isLeader
+              ? "Only the group leader can edit/delete this topic."
+              : status === "Accepted" && !localTopic?.allowEdit
+              ? "This topic has been accepted. Please contact the instructor to request edit permissions."
+              : "You currently do not have permission to update/delete this topic. Please contact the instructor to request access."}
           </div>
         )}
 
         {/* === STUDENT: Nút cập nhật/xoá === */}
-        {canEdit &&
-          !editMode &&
-          canEditOrDelete(deadlineAdd, deadlineSubmit) && (
-            <div className="sl-actions">
-              <button
-                className="sl-btn sl-btn--primary"
-                disabled={actionLoading}
-                onClick={() => setEditMode(true)}
-              >
-                Edit
-              </button>
-              <button
-                className="sl-btn sl-btn--danger"
-                disabled={actionLoading}
-                onClick={() => onDelete?.(topic.topicId)}
-              >
-                Delete
-              </button>
-            </div>
-          )}
+        {showEditButtons && !editMode && (
+          <div className="sl-actions">
+            <button
+              className="sl-btn sl-btn--primary"
+              disabled={actionLoading}
+              onClick={() => {
+                setLocalError && setLocalError(null);
+                setEditMode(true);
+              }}
+            >
+              Edit
+            </button>
+            <button
+              className="sl-btn sl-btn--danger"
+              disabled={actionLoading}
+              onClick={() => onDelete?.(topic.topicId)}
+            >
+              Delete
+            </button>
+          </div>
+        )}
 
         {/* === STUDENT: Đang chỉnh sửa === */}
-        {canEdit && editMode && (
+        {showEditButtons && editMode && (
           <div className="sl-actions">
             <button
               className="sl-btn sl-btn--success"

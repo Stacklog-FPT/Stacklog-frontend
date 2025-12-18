@@ -375,7 +375,8 @@ const PlanComponent = () => {
           allowed = false;
         } else {
           if (oldPlan.status === "Rejected") allowed = true;
-          else if (oldPlan.status === "Pending" && oldPlan.allowEdit === true)
+          else if (oldPlan.status === "Pending") allowed = true;
+          else if (oldPlan.status === "Accepted" && oldPlan.allowEdit === true)
             allowed = true;
           else allowed = false;
         }
@@ -414,7 +415,8 @@ const PlanComponent = () => {
     } else if (role === "STUDENT") {
       if (isTopicLeader) {
         if (oldPlan.status === "Rejected") canDelete = true;
-        else if (oldPlan.status === "Pending" && oldPlan.allowEdit === true)
+        else if (oldPlan.status === "Pending") canDelete = true;
+        else if (oldPlan.status === "Accepted" && oldPlan.allowEdit === true)
           canDelete = true;
       }
     }

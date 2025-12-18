@@ -22,7 +22,6 @@ import {
 const SideBar = ({ isOpen, setIsOpen }) => {
   const { mode } = useContext(ColorModeContext);
   const { toggleGroupChat } = useContext(GroupChatContext);
-  console.log(isOpen);
   const { user } = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -47,7 +46,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
   };
 
   const dashBoardItems = [
-    { name: "Home", path: "/", icon: "fa-solid fa-house", showIcon: true },
+    { name: "Home", path: "/home", icon: "fa-solid fa-house", showIcon: true },
     {
       name: "Schedule",
       path: "/schedule",

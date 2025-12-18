@@ -1,0 +1,78 @@
+.header-landing {
+  width: 100%;
+  background-color: #021f19;
+  padding: 15px 25px;
+  opacity: 0;
+  animation: fadeIn 1s ease-out forwards; // Hiệu ứng fade-in khi tải trang
+
+  .wrapper-btn {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+
+    button {
+      width: 120px;
+      border-radius: 10px;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: scale(1.05); // Hiệu ứng phóng to khi hover
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    .sign-up {
+      border: 1px solid #ffff;
+      background: transparent;
+      color: #fff;
+
+      &:hover {
+        background-color: #ffff;
+        color: #021f19;
+      }
+    }
+
+    .sign-in {
+      background-color: #045745;
+
+      &:hover {
+        background-color: #034637;
+      }
+    }
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px 20px;
+
+    .wrapper-btn {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px 15px;
+
+    .wrapper-btn {
+      button {
+        font-size: 14px;
+      }
+    }
+  }
+}

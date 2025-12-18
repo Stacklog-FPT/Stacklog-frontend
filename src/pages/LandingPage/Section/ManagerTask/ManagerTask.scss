@@ -1,0 +1,130 @@
+.manager-task {
+  background-color: #f9fafb;
+  padding: 60px 0;
+  opacity: 0;
+  animation: fadeIn 1s ease-out forwards;
+  width: 100%;
+  .section-label {
+    color: #0f766e;
+    width: 100%;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+
+  .section-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #333;
+    text-align: center;
+  }
+
+  .section-desc {
+    color: #555;
+    margin-bottom: 32px;
+    font-size: 16px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .feature-card {
+    position: relative;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    width: 100%; // Đảm bảo chiếm 100% chiều rộng của container
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    .card-info {
+      padding: 20px;
+      background-color: #ffffff;
+
+      .event-date {
+        font-size: 14px;
+        color: #888;
+      }
+
+      .event-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-top: 8px;
+        color: #333;
+      }
+    }
+
+    &:hover {
+      transform: translateY(-6px); // Hiệu ứng khi hover
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover; // Đảm bảo ảnh không bị méo hoặc kéo giãn
+      border-bottom: 4px solid #f1f1f1;
+    }
+  }
+
+  .btn-primary {
+    background-color: #0f766e;
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    font-weight: 600;
+    border-radius: 25px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #045745;
+    }
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .manager-task {
+      .feature-card {
+        margin-bottom: 20px;
+      }
+    }
+
+    .section-title {
+      font-size: 28px;
+    }
+
+    .section-desc {
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      font-size: 14px;
+      padding: 10px 20px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .section-title {
+      font-size: 24px;
+    }
+
+    .section-desc {
+      font-size: 12px;
+    }
+
+    .btn-primary {
+      font-size: 14px;
+      padding: 10px 20px;
+    }
+  }
+}

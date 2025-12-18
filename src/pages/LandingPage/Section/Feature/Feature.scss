@@ -1,0 +1,162 @@
+.feature-section {
+  width: 100%;
+  padding: 80px 0;
+  background: #ffffff;
+  opacity: 0;
+  animation: fadeIn 1s ease-out forwards;
+
+  .section-label {
+    color: #0f766e;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+
+  .section-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .section-desc {
+    color: #555;
+    font-size: 16px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .features {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+    width: 100%; // Đảm bảo chiếm 100% chiều rộng của container
+
+    .feature-card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 260px;
+      width: 100%; // Đảm bảo các card chiếm toàn bộ chiều rộng khi màn hình nhỏ
+      transition: all 0.3s ease;
+      text-align: center;
+
+      h5 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      p {
+        font-size: 14px;
+        color: #666;
+      }
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      &.active {
+        background: #2f6f63;
+        color: white;
+
+        p {
+          color: rgba(255, 255, 255, 0.8);
+        }
+      }
+    }
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    .btn {
+      transition: all 0.3s ease;
+    }
+
+    .btn-outline-success {
+      border: 2px solid #0f766e;
+      color: #0f766e;
+      background: transparent;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #0f766e;
+        color: #fff;
+      }
+    }
+
+    .btn-link {
+      text-decoration: none;
+      color: #0f766e;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 10px 20px;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #0f766e;
+        color: #fff;
+      }
+    }
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 28px;
+    }
+
+    .section-desc {
+      font-size: 14px;
+      max-width: 100%;
+    }
+
+    .features {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .actions {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .section-title {
+      font-size: 24px;
+    }
+
+    .section-desc {
+      font-size: 12px;
+    }
+
+    .actions .btn {
+      width: 100%;
+    }
+  }
+  img {
+    text-align: end;
+  }
+}

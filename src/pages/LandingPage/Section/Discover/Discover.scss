@@ -1,0 +1,193 @@
+.benefits-section {
+  padding: 80px 0;
+  background: #ffffff;
+  opacity: 0;
+  animation: fadeIn 1s ease-out forwards; // Hiệu ứng fade-in
+
+  .section-label {
+    color: #0f766e;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+
+  .section-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .section-desc {
+    color: #555;
+    max-width: 520px;
+    margin-bottom: 32px;
+    font-size: 16px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .features {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+
+    .feature-card {
+      display: flex;
+      gap: 16px;
+      padding: 20px;
+      border-radius: 14px;
+      background: #f8f9fa;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      max-width: 260px;
+      width: 100%; // Đảm bảo các card chiếm toàn bộ chiều rộng của container khi màn hình nhỏ
+
+      h5 {
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 14px;
+      }
+
+      svg {
+        color: #0f766e;
+      }
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      &.active {
+        background: #2f6f63;
+        color: #ffffff;
+
+        p {
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        svg {
+          color: #ffffff;
+        }
+      }
+    }
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .btn {
+      transition: all 0.3s ease;
+    }
+
+    .start-btn {
+      text-decoration: none;
+      color: #000;
+      font-weight: 500;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+
+      svg {
+        margin-left: 6px;
+      }
+
+      &:hover {
+        color: #0f766e;
+      }
+    }
+
+    .btn-outline-success {
+      border: 2px solid #0f766e;
+      color: #0f766e;
+      background: transparent;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #0f766e;
+        color: #fff;
+      }
+    }
+
+    .btn-link {
+      text-decoration: none;
+      color: #0f766e;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #0f766e;
+        color: #fff;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .benefits-section {
+    .section-title {
+      font-size: 28px;
+    }
+
+    .section-desc {
+      font-size: 14px;
+      max-width: 100%; // Đảm bảo mô tả không bị giới hạn
+    }
+
+    .features {
+      flex-direction: column; // Các thẻ tính năng sẽ xếp theo chiều dọc
+      align-items: center;
+      gap: 20px;
+    }
+
+    .actions {
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 24px;
+  }
+
+  .section-desc {
+    font-size: 12px;
+  }
+
+  .btn-primary {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+
+  .actions .btn {
+    width: 100%;
+  }
+}

@@ -18,17 +18,14 @@ const LoginPage = () => {
   const [showPassWord, setShowPassWord] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const redirect = searchParams.get("redirect") || "/";
+  const redirect = "/home";
   const dispatch = useDispatch();
   const handleLoginGoogle = async (response) => {
     const { credential } = response;
-    console.log(credential);
     if (credential) {
       const response = await loginGoogle(credential);
 
       if (response) {
-        console.log("Gg login call: ", response);
         const userData = {
           email: response.data.email,
           username: response.data.username,
@@ -37,7 +34,7 @@ const LoginPage = () => {
         };
         await getUserById(response.data.token, response.data._id, dispatch);
         loginSave(userData);
-        navigate(redirect);
+        navigate("/home");
       }
     }
   };
@@ -57,8 +54,9 @@ const LoginPage = () => {
         if (userData.role === "ADMIN") {
           navigate("/admin");
           return;
+        } else {
+          navigate("/home");
         }
-        navigate(redirect);
       }
     } catch (e) {
       console.error("Login Failed", e || e.message);

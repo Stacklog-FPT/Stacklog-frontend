@@ -1,7 +1,9 @@
 import React from "react";
 import "./Banner.scss";
 import BannerImg from "../../../../assets/banner.png";
+import { useNavigate } from "react-router-dom";
 const Banner = () => {
+  const navigate = useNavigate();
   return (
     <div className="banner d-flex flex-column align-items-center gap-3 p-5">
       <div className="banner_container d-flex flex-column align-items-center gap-2">
@@ -19,7 +21,7 @@ const Banner = () => {
             help you optimize your workflow and achieve your project goals.
           </p>
           <div className="content_btn d-flex align-items-center gap-4">
-            <button className="start">Start</button>
+            <button className="start" onClick={() => navigate("/login")}>Start</button>
             <button className="learn_more">Learn more</button>
           </div>
         </div>

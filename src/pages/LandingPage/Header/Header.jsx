@@ -10,9 +10,9 @@ const Header = () => {
         <img src={MainLogo} alt="this is logo" />
 
         <div className="wrapper-btn d-flex align-items-center gap-3">
-          <button className="sign-up" onClick={() => navigate("/login")}>
+          {/* <button className="sign-up" onClick={() => navigate("/login")}>
             Sign up
-          </button>
+          </button> */}
           <button className="sign-in" onClick={() => navigate("/login")}>
             Sign in
           </button>

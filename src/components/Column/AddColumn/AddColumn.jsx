@@ -4,11 +4,14 @@ import statusApi from '../../../service/ColumnService';
 import { useAuth } from '../../../context/AuthProvider';
 import { toast } from 'sonner';
 import { useDispatch } from 'react-redux';
+import { checkColumnExists } from '../../../helper/validateColumn';
+import { useSelector } from 'react-redux';
 
 const AddColumn = ({ onCancel, groupId }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
   const [color, setColor] = useState('#3498db');
+  const statuses = useSelector(state => state.status?.statuses);
   const [columnData, setColumnData] = useState({
     statusTaskId: '',
     statusTaskName: '',
@@ -27,6 +30,11 @@ const AddColumn = ({ onCancel, groupId }) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      if(checkColumnExists(columnData.statusTaskName, statuses )) {
+        console.log('var')
+        toast.error('Status name already exists!');
+        return;
+      }
       const payload = {
         statusTaskName: columnData.statusTaskName,
         statusTaskColor: columnData.statusTaskColor || color,
@@ -40,7 +48,7 @@ const AddColumn = ({ onCancel, groupId }) => {
 
       onCancel();
     } catch (e) {
-      toast.error('Something is rong!');
+      toast.error('Something is wrong!');
       console.error('Failed to add column:', e.message);
     } finally {
       setIsSubmitting(false);

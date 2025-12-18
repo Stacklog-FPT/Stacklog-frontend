@@ -15,6 +15,7 @@ import ModalColumn from "../../../../ModalChange/ModalColumn/ModalColumn";
 import { useDispatch, useSelector } from "react-redux";
 import { updateStatusApi } from "../../../../../service/ColumnService";
 import { toast } from "sonner";
+import { checkColumnExists, validateShowEdit } from "../../../../../helper/validateColumn";
 
 const Column = ({
   color,
@@ -41,10 +42,9 @@ const Column = ({
 
   const [openModalColumnId, setOpenModalColumnId] = useState(null);
   const [modalAnchor, setModalAnchor] = useState({ top: 0, left: 0 });
-
   const [isEditing, setIsEditing] = useState(false);
   const [draftName, setDraftName] = useState(status || "");
-
+  const isShow = validateShowEdit(draftName);
   const columnRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -161,8 +161,7 @@ const Column = ({
               </span>
             </div>
           </div>
-
-          {!isEditing && (
+          {!isEditing && isShow &&  (
             <div className="prop-status-right">
               <img
                 src={iconMore}

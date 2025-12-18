@@ -116,12 +116,26 @@ const CheckTypeByAll = () => {
           return;
         }
         targetStatusId = overTask.statusTaskId;
-        targetStatus = statuses.find(
-          (item) => item.statusTaskId === targetStatusId
-        )?.statusTaskName;
       }
 
       if (!targetStatusId) {
+        setActiveColumn(null);
+        return;
+      }
+
+      // Lấy targetStatus sau khi đã có targetStatusId
+      targetStatus = statuses.find(
+        (item) => item.statusTaskId === targetStatusId
+      )?.statusTaskName;
+
+      // Check permission: chỉ leader hoặc lecturer mới được move task vào Completed
+      if (
+        targetStatus &&
+        targetStatus.toLowerCase() === "completed" &&
+        !matchRole &&
+        user.role !== "LECTURER"
+      ) {
+        toast.warning("Only group leader can move task to Completed status.");
         setActiveColumn(null);
         return;
       }
@@ -151,21 +165,16 @@ const CheckTypeByAll = () => {
           updatedTasks.splice(activeIndex, 1);
           updatedTasks.splice(overIndex, 0, activeTask);
         } else {
-          if (targetStatus.toLowerCase() === "completed" && !isLeader()) {
-            toast.warning(
-              "Only group leader can move task to Completed status."
-            );
-          } else {
-            updateTaskStatus(activeTask.taskId, taskData);
-            updatedTasks = updatedTasks.filter(
-              (task) => task.taskId !== activeId
-            );
-            updatedTasks.splice(overIndex, 0, {
-              ...activeTask,
-              statusTaskId: targetStatusId,
-              statusTaskName: targetStatus,
-            });
-          }
+          // Different column: Move task
+          updateTaskStatus(activeTask.taskId, taskData);
+          updatedTasks = updatedTasks.filter(
+            (task) => task.taskId !== activeId
+          );
+          updatedTasks.splice(overIndex, 0, {
+            ...activeTask,
+            statusTaskId: targetStatusId,
+            statusTaskName: targetStatus,
+          });
         }
       }
 

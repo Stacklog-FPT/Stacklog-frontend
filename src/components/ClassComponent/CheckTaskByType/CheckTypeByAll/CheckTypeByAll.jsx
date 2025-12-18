@@ -24,6 +24,7 @@ import { isLeader } from "../../../../helper/validateStudentGroup";
 import decodeToken from "../../../../service/DecodeJwt";
 import ModalAI from "../../../ModalAI/ModalAI";
 import { toast } from "sonner";
+import { sortStatusByOrder } from "../../../../helper/validateColumn";
 
 const CheckTypeByAll = () => {
   const { user } = useAuth();
@@ -56,7 +57,8 @@ const CheckTypeByAll = () => {
         map.set(st.statusTaskId, st);
       }
     });
-    return Array.from(map.values());
+    const uniqueList = Array.from(map.values());
+    return sortStatusByOrder(uniqueList);
   }, [statuses]);
 
   const updateTaskStatus = async (taskId, taskData) => {

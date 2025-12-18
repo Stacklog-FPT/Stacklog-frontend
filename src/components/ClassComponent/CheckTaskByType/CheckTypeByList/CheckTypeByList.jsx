@@ -29,6 +29,7 @@ import { isLeader } from "../../../../helper/validateStudentGroup";
 import decodeToken from "../../../../service/DecodeJwt";
 import ModalAI from "../../../ModalAI/ModalAI";
 import { toast } from "sonner";
+import { sortStatusByOrder } from "../../../../helper/validateColumn";
 
 const CheckTypeByList = () => {
   const { user } = useAuth();
@@ -203,7 +204,7 @@ const CheckTypeByList = () => {
           {/* <ClassAndMember onFilterByPriority={handleFilterByPriority} /> */}
 
           <div className="check__task__by__list__column">
-            {statuses.map((item) => {
+            {sortStatusByOrder(statuses).map((item) => {
               const colTasks = tasks.filter(
                 (t) => String(t?.statusTaskId) === String(item.statusTaskId)
               );

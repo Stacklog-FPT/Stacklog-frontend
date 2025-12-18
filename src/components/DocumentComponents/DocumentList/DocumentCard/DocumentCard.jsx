@@ -13,9 +13,10 @@ const DocumentCard = ({ title, data }) => {
   const [isOpenDetail, showOpenDetail] = React.useState(false);
   const [documentId, setDocumentId] = React.useState("");
   const { groupId } = useParams();
-  console.log(groupId);
   const { user } = useAuth();
   const dispatch = useDispatch();
+
+  console.log(data);
   const handleShowDetail = (id) => {
     setDocumentId(id);
     showOpenDetail(true);
@@ -86,12 +87,14 @@ const DocumentCard = ({ title, data }) => {
                       {formatFileSize(item.documentSize)}
                     </span>
                   </div>
-                  <button
-                    className="btn-delete"
-                    onClick={(e) => handleDeleteDocument(e, item.documentId)}
-                  >
-                    <FaTrashAlt />
-                  </button>
+                  {item.createdBy === user._id && (
+                    <button
+                      className="btn-delete"
+                      onClick={(e) => handleDeleteDocument(e, item.documentId)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  )}
                 </div>
               ))
             ) : (

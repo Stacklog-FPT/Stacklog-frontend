@@ -73,12 +73,14 @@ const DocumentRecent = ({ title, data }) => {
                       {formatFileSize(item.documentSize)}
                     </span>
                   </div>
-                  <div
-                    className="document__recent__container__main__content__item__bin"
-                    onClick={(e) => handleDeleteDocument(e, item.documentId)}
-                  >
-                    <FaTrash />
-                  </div>
+                  {item.createdBy === user?.id && (
+                    <div
+                      className="document__recent__container__main__content__item__bin"
+                      onClick={(e) => handleDeleteDocument(e, item.documentId)}
+                    >
+                      <FaTrash />
+                    </div>
+                  )}
                 </div>
               ))
             ) : (

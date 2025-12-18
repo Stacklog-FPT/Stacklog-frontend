@@ -35,14 +35,14 @@ const DetailMeeting = () => {
         if (card) observer.unobserve(card);
       });
     };
-  }, [sortedSchedules]); // Dùng sortedSchedules để re-run khi data thay đổi
+  }, [sortedSchedules]);
 
   return (
     <div className="detail__meeting__container">
       {sortedSchedules.length > 0 ? (
         sortedSchedules.map((item, index) => (
           <div
-            key={item.slotId || item._id} // Dùng slotId nếu có, fallback _id
+            key={item.slotId || item._id}
             className="detail__meeting__card"
             ref={(el) => (cardRefs.current[index] = el)}
           >

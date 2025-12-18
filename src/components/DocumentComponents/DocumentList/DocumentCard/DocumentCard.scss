@@ -44,6 +44,10 @@
         background-color: var(--bg--color--table);
         border-radius: 10px;
 
+        button {
+          padding-left: 40px;
+          color: red;
+        }
         &:hover {
           cursor: pointer;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

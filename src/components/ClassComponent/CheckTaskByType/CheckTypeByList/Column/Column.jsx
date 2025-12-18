@@ -45,9 +45,9 @@ const Column = ({
                   <th>Percent</th>
                   <th>Priority</th>
                   <th>Action</th>
-                  <th>
+                  {/* <th>
                     <img src={add} alt="add task" onClick={() => onShowAddTask(status)} />
-                  </th>
+                  </th> */}
                 </tr>
               </thead>
               <tbody>

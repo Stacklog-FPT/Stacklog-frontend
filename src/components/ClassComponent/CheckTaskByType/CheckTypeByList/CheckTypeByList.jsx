@@ -28,6 +28,7 @@ import { getStatus } from "../../../../service/ColumnService";
 import { isLeader } from "../../../../helper/validateStudentGroup";
 import decodeToken from "../../../../service/DecodeJwt";
 import ModalAI from "../../../ModalAI/ModalAI";
+import { toast } from "sonner";
 
 const CheckTypeByList = () => {
   const { user } = useAuth();
@@ -100,6 +101,23 @@ const CheckTypeByList = () => {
           return;
         }
         targetStatusId = overTask.statusTaskId;
+      }
+
+      // Lấy targetStatus để check permission
+      const targetStatus = statuses.find(
+        (item) => item.statusTaskId === targetStatusId
+      )?.statusTaskName;
+
+      // Check permission: chỉ leader hoặc lecturer mới được move task vào Completed
+      if (
+        targetStatus &&
+        targetStatus.toLowerCase() === "completed" &&
+        !matchRole &&
+        user.role !== "LECTURER"
+      ) {
+        toast.warning("Only group leader can move task to Completed status.");
+        setActiveColumn(null);
+        return;
       }
 
       const sameColumn =

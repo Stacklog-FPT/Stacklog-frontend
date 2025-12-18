@@ -510,11 +510,11 @@ const GroupChat = ({
                     className="add-group-input"
                   />
 
-                  <label className="label">Add members by email</label>
+                  <label className="label">Add members</label>
                   <div className="add-members-row">
                     <input
                       type="text"
-                      placeholder="Search users by email or name"
+                      placeholder="Search users"
                       value={memberQuery}
                       onChange={(e) => setMemberQuery(e.target.value)}
                       onKeyDown={async (e) => {

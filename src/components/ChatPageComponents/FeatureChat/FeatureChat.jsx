@@ -600,7 +600,7 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
 
         {isFeatureOpen && (
           <div className="feature__menu">
-            <div
+            {/* <div
               className="feature__menu__item"
               onClick={() => handleFeatureClick("Search message")}
             >
@@ -634,7 +634,7 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
             >
               <i className="fa-solid fa-link"></i>
               <span>Link</span>
-            </div>
+            </div> */}
             {!isAdmin && (
               <div
                 className="feature__menu__item"

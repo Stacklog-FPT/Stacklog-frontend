@@ -644,7 +644,7 @@ const ChatWindow = ({ onBack, onShowInfo, showMobileNav }) => {
             </div>
           </div>
           <div className="chat__heading__right">
-            <i className="fa-solid fa-phone" onClick={() => startCall('audio')} style={{ cursor: 'pointer' }}></i>
+            {/* <i className="fa-solid fa-phone" onClick={() => startCall('audio')} style={{ cursor: 'pointer' }}></i> */}
             <i className="fa-solid fa-video" onClick={() => startCall('video')} style={{ cursor: 'pointer' }}></i>
             <i
               className="fa-solid fa-circle-info"
@@ -829,13 +829,13 @@ const ChatWindow = ({ onBack, onShowInfo, showMobileNav }) => {
           </div>
           <div className="chat__footer__feature">
             <div className="wrapper__feature">
-              <i className="fas fa-at"></i>
+              {/* <i className="fas fa-at"></i>
               <img src={fileIcon || "/placeholder.svg"} alt="file" />
               <img
                 src={attachmentIcon || "/placeholder.svg"}
                 alt="attachment"
               />
-              <img src={smileIcon || "/placeholder.svg"} alt="smile" />
+              <img src={smileIcon || "/placeholder.svg"} alt="smile" /> */}
             </div>
             <div className="send__message" onClick={onSend}>
               <i className="fa-regular fa-paper-plane"></i>

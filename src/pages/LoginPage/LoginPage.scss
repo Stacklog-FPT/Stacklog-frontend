@@ -274,6 +274,72 @@ $bp-2xl: 1536px; // wide screens
   }
 }
 
+/* Cập nhật responsive cho form và biểu tượng con mắt */
+
+.form-wrapper-input {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+}
+
+.form_wrapper_input_field {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  width: 100%;
+  position: relative;
+}
+
+.form_wrapper_visibility {
+  position: absolute;
+  right: 60px; /* Điều chỉnh khoảng cách bên phải */
+  top: 43%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 1; /* Đảm bảo con mắt không bị ẩn phía sau */
+}
+
+/* Chỉnh sửa kích thước biểu tượng con mắt */
+.form_wrapper_visibility_icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive cho biểu tượng con mắt */
+@media (max-width: $bp-md) {
+  .form_wrapper_visibility {
+    top: 35%;
+  }
+}
+
+@media (max-width: $bp-sm) {
+  .form_wrapper_visibility {
+    top: 30%; /* Tùy chỉnh vị trí con mắt trên màn hình nhỏ */
+    right: 8px;
+  }
+}
+
+@media (max-width: $bp-xs) {
+  .form_wrapper_visibility {
+    top: 28%; /* Vị trí chính xác cho màn hình nhỏ nhất */
+    right: 5px;
+  }
+}
+
+/* Responsive cho input và các phần tử trong form */
+@media (max-width: $bp-md) {
+  .form-wrapper-input_field input {
+    padding: 12px 14px; /* Tăng kích thước vùng bấm cho input */
+  }
+}
+
+@media (max-width: $bp-sm) {
+  .form-wrapper-input_field input {
+    padding: 10px 12px; /* Điều chỉnh padding cho các màn hình nhỏ */
+  }
+}
+
 /* ========== RESPONSIVE (không đổi bố cục, chỉ co giãn/điều chỉnh) ========== */
 
 /* <= desktops vừa */

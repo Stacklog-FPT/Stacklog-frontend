@@ -5,6 +5,7 @@ const initialState = {
   error: null,
   plans: [],
   deadlinePlan: {},
+  plansGroup: [],
 };
 
 const planSlice = createSlice({
@@ -13,6 +14,9 @@ const planSlice = createSlice({
   reducers: {
     setPlans: (state, action) => {
       state.plans = action.payload;
+    },
+    setPlansGroup: (state, action) => {
+      state.plansGroup = action.payload;
     },
     addPlan: (state, action) => {
       state.plans.push(action.payload);
@@ -59,6 +63,7 @@ export const {
   addDeadlinePlan,
   setDeadline,
   updateDeadline,
+  setPlansGroup,
 } = planSlice.actions;
 
 export default planSlice.reducer;

@@ -15,7 +15,10 @@ import ModalColumn from "../../../../ModalChange/ModalColumn/ModalColumn";
 import { useDispatch, useSelector } from "react-redux";
 import { updateStatusApi } from "../../../../../service/ColumnService";
 import { toast } from "sonner";
-import { checkColumnExists, validateShowEdit } from "../../../../../helper/validateColumn";
+import {
+  checkColumnExists,
+  validateShowEdit,
+} from "../../../../../helper/validateColumn";
 
 const Column = ({
   color,
@@ -26,20 +29,19 @@ const Column = ({
   onShowComment,
   onShowAddSubTask,
   onTaskUpdated,
+  isAccpectTopic,
   isLeader,
 }) => {
   const { setNodeRef, isOver } = useDroppable({ id: `droppable-${statusId}` });
   const { user } = useAuth();
   const dispatch = useDispatch();
-
   const pending = useSelector((s) => s.status.pending);
   const statuses = useSelector((s) => s.status.statuses || []);
-
+  const plans = useSelector((s) => s.plan.plans);
   const selectedStatus = statuses.find(
     (it) => String(it.statusTaskId) === String(statusId)
-  ); // Mì ăn liền
-  const statusItemId = selectedStatus?.statusTaskId; // Mì ăn liền
-
+  );
+  const statusItemId = selectedStatus?.statusTaskId;
   const [openModalColumnId, setOpenModalColumnId] = useState(null);
   const [modalAnchor, setModalAnchor] = useState({ top: 0, left: 0 });
   const [isEditing, setIsEditing] = useState(false);
@@ -47,6 +49,7 @@ const Column = ({
   const isShow = validateShowEdit(draftName);
   const columnRef = useRef(null);
   const inputRef = useRef(null);
+  // const isAccept = plans
 
   useEffect(() => {
     if (isEditing) setDraftName(status || "");
@@ -161,7 +164,7 @@ const Column = ({
               </span>
             </div>
           </div>
-          {!isEditing && isShow &&  (
+          {!isEditing && isShow && (
             <div className="prop-status-right">
               <img
                 src={iconMore}
@@ -218,7 +221,7 @@ const Column = ({
           </div>
         </SortableContext>
 
-        {(user.role === "LECTURER" || isLeader) && (
+        {(user.role === "LECTURER" || isLeader) && isAccpectTopic && (
           <div className="btn-add-task" onClick={onShowAddTask}>
             <i className="fa-solid fa-plus" style={{ color: "#000" }} />
             <span>Add Task</span>

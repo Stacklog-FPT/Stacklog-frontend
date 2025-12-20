@@ -10,6 +10,7 @@ import {
   addDeadlinePlan,
   updateDeadline,
   setDeadline,
+  setPlansGroup,
 } from "../redux/slice/planSlice";
 import { REACT_API_URL } from "../api/apiConfig";
 
@@ -89,7 +90,6 @@ export const getTopicsByGroupId = async (dispatch, token, groupId) => {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
 
-    // API may return either an array or a single object. Normalize to array.
     let data = [];
     if (Array.isArray(response.data)) data = response.data;
     else if (response.data && typeof response.data === "object")
@@ -117,6 +117,16 @@ export const getTopicsByGroupId = async (dispatch, token, groupId) => {
       updateAt: p.updateAt || null,
     }));
 
+    const mapWithPlanGroup = data.map((p) => ({
+      topicId: p.piId || p.id || "",
+      topicTitle: p.piTitle || p.title || "",
+      status: p.piStatus
+        ? String(p.piStatus).charAt(0) +
+          String(p.piStatus).slice(1).toLowerCase()
+        : null,
+    }));
+
+    dispatch(setPlansGroup(mapWithPlanGroup));
     dispatch(setPlans(mapped));
     dispatch(setPending(false));
     return mapped;

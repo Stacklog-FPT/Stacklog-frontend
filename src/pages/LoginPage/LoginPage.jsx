@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import "./LoginPage.scss";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import userApi from "../../service/UserService";
 import logo from "../../assets/logo-login.png";
 import { useAuth } from "../../context/AuthProvider";
-import { MdOutlineVisibility } from "react-icons/md";
-import { MdOutlineVisibilityOff } from "react-icons/md";
 import { useDispatch } from "react-redux";
 
 const LoginPage = () => {

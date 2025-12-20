@@ -22,7 +22,6 @@ const ClassPage = () => {
   const token = user?.token || null;
   const { groupId } = useParams();
   const dispatch = useDispatch();
-  // DetailScore modal state
   const [detailOpen, setDetailOpen] = React.useState(false);
   const [detailStudent, setDetailStudent] = React.useState(null);
   const [detailCategories, setDetailCategories] = React.useState([]);
@@ -77,6 +76,7 @@ const ClassPage = () => {
 
     getTopics();
   }, [groupId]);
+
   return (
     <div className="class-page">
       <div className="class-page-overview">

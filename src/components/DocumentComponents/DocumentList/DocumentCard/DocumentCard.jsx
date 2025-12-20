@@ -15,6 +15,8 @@ const DocumentCard = ({ title, data }) => {
   const { groupId } = useParams();
   const { user } = useAuth();
   const dispatch = useDispatch();
+  const isOwner = data?.createdBy === user._id;
+  console.log(isOwner);
 
   console.log(data);
   const handleShowDetail = (id) => {
@@ -87,7 +89,7 @@ const DocumentCard = ({ title, data }) => {
                       {formatFileSize(item.documentSize)}
                     </span>
                   </div>
-                  {item.createdBy === user._id && (
+                  {isOwner && (
                     <button
                       className="btn-delete"
                       onClick={(e) => handleDeleteDocument(e, item.documentId)}

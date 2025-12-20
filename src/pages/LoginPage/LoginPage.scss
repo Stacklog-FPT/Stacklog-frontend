@@ -24,8 +24,8 @@ $bp-2xl: 1536px; // wide screens
   justify-content: flex-end; /* giữ fix-end như bố cục gốc */
   width: 100%;
   min-height: 100vh;
-  background-image: url('../../assets/login/back-ground-bean.png'),
-    url('../../assets/login/back-ground-left.png');
+  background-image: url("../../assets/login/back-ground-bean.png"),
+    url("../../assets/login/back-ground-left.png");
   background-size: cover, 55% 100%;
   background-position: center, left;
   background-repeat: no-repeat, no-repeat;
@@ -88,7 +88,7 @@ $bp-2xl: 1536px; // wide screens
 
 .form_wrapper_visibility {
   position: absolute;
-  right: 65px;
+  right: 60px;
   top: 41%;
   transform: translateY(-50%);
   cursor: pointer;
@@ -122,7 +122,8 @@ $bp-2xl: 1536px; // wide screens
       border: 1px solid $color-input;
       color: $color-label;
       box-sizing: border-box;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease,
+        background-color 0.3s ease;
 
       &:focus {
         outline: none;
@@ -145,7 +146,7 @@ $bp-2xl: 1536px; // wide screens
     gap: 8px;
     position: relative;
 
-    input[type='checkbox'] {
+    input[type="checkbox"] {
       position: absolute;
       opacity: 0;
       width: 16px;
@@ -156,7 +157,7 @@ $bp-2xl: 1536px; // wide screens
       transform: translateY(-50%);
 
       & + label::before {
-        content: '';
+        content: "";
         display: inline-block;
         width: 16px;
         height: 16px;
@@ -172,7 +173,7 @@ $bp-2xl: 1536px; // wide screens
       }
 
       &:checked + label::after {
-        content: '';
+        content: "";
         position: absolute;
         transform: translateY(-50%) rotate(45deg);
         width: 5px;
@@ -245,7 +246,7 @@ $bp-2xl: 1536px; // wide screens
     align-items: center;
     justify-content: center;
 
-    div[role='button'] {
+    div[role="button"] {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -260,7 +261,7 @@ $bp-2xl: 1536px; // wide screens
       }
 
       span {
-        font-family: 'Roboto', sans-serif !important;
+        font-family: "Roboto", sans-serif !important;
         font-size: 16px !important;
         font-weight: 500 !important;
         color: $color-label !important;
@@ -433,7 +434,7 @@ $bp-2xl: 1536px; // wide screens
   }
 
   /* Nếu Google set inline width ở bất kỳ level nào */
-  [style*='width'] {
+  [style*="width"] {
     width: 100% !important;
     max-width: 100% !important;
   }

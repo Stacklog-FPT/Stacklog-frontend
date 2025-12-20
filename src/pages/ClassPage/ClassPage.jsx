@@ -1,23 +1,27 @@
-import React from 'react';
-import './ClassPage.scss';
-import TaskByType from '../../components/ClassComponent/CheckTaskByType/TaskByType';
-import CheckTypeByAll from '../../components/ClassComponent/CheckTaskByType/CheckTypeByAll/CheckTypeByAll';
-import CheckTypeByList from '../../components/ClassComponent/CheckTaskByType/CheckTypeByList/CheckTypeByList';
-import Schedules from '../../components/Modal/Schedules/Schedules';
-import ClassList from '../../components/ClassComponent/CheckTaskByType/ClassList/ClassList';
-import Topic from '../../components/Modal/Topic/Topic';
-import Classes from '../../components/Modal/Classes/Classes';
-import Document from '../../components/ClassComponent/CheckTaskByType/Documents/Document';
-import Grade from '../../components/Modal/Grade/Grade';
-import DetailScore from '../../components/GradesComponents/DetailScore/DetailScore';
-import Overall from '../../pages/OverallGroup/OverallGroup';
-import { getScoreCategoriesByClass } from '../../service/ScoreService';
-import { useAuth } from '../../context/AuthProvider';
+import React from "react";
+import "./ClassPage.scss";
+import TaskByType from "../../components/ClassComponent/CheckTaskByType/TaskByType";
+import CheckTypeByAll from "../../components/ClassComponent/CheckTaskByType/CheckTypeByAll/CheckTypeByAll";
+import CheckTypeByList from "../../components/ClassComponent/CheckTaskByType/CheckTypeByList/CheckTypeByList";
+import Schedules from "../../components/Modal/Schedules/Schedules";
+import ClassList from "../../components/ClassComponent/CheckTaskByType/ClassList/ClassList";
+import Topic from "../../components/Modal/Topic/Topic";
+import Classes from "../../components/Modal/Classes/Classes";
+import Document from "../../components/ClassComponent/CheckTaskByType/Documents/Document";
+import Grade from "../../components/Modal/Grade/Grade";
+import DetailScore from "../../components/GradesComponents/DetailScore/DetailScore";
+import Overall from "../../pages/OverallGroup/OverallGroup";
+import { getScoreCategoriesByClass } from "../../service/ScoreService";
+import { useAuth } from "../../context/AuthProvider";
+import { useParams } from "react-router-dom";
+import { getTopicsByGroupId } from "../../service/PlanService";
+import { useDispatch } from "react-redux";
 const ClassPage = () => {
-  const [activeType, setActiveType] = React.useState('TaskBoard');
+  const [activeType, setActiveType] = React.useState("TaskBoard");
   const { user } = useAuth();
   const token = user?.token || null;
-
+  const { groupId } = useParams();
+  const dispatch = useDispatch();
   // DetailScore modal state
   const [detailOpen, setDetailOpen] = React.useState(false);
   const [detailStudent, setDetailStudent] = React.useState(null);
@@ -41,7 +45,8 @@ const ClassPage = () => {
     setDetailStudent(student || null);
     setDetailGroupId(groupId || null);
     // fetch categories for class if available
-    const clsId = classId || (student && (student.classId || student.class || null));
+    const clsId =
+      classId || (student && (student.classId || student.class || null));
     if (!clsId) {
       setDetailCategories([]);
       setDetailLoading(false);
@@ -56,12 +61,22 @@ const ClassPage = () => {
       if (Array.isArray(cats)) setDetailCategories(cats);
       else setDetailCategories([]);
     } catch (err) {
-      console.warn('Failed to load score categories for detail view', err);
+      console.warn("Failed to load score categories for detail view", err);
       setDetailCategories([]);
     } finally {
       setDetailLoading(false);
     }
   };
+
+  React.useEffect(() => {
+    const getTopics = async () => {
+      if (!groupId) return;
+
+      await getTopicsByGroupId(dispatch, user.token, groupId);
+    };
+
+    getTopics();
+  }, [groupId]);
   return (
     <div className="class-page">
       <div className="class-page-overview">
@@ -69,13 +84,13 @@ const ClassPage = () => {
       </div>
       <TaskByType activeType={activeType} setActiveType={setActiveType} />
       <div className="class-page-container">
-        {activeType === 'TaskBoard' && <CheckTypeByAll />}
-        {activeType === 'TaskList' && <CheckTypeByList />}
-        {activeType === 'Schedules' && <Schedules />}
-        {activeType === 'Classes' && <Classes />}
-        {activeType === 'Documents' && <Document />}
-        {activeType === 'Topic' && <Topic />}
-        {activeType === 'Grade' && user?.role === 'LECTURER' && (
+        {activeType === "TaskBoard" && <CheckTypeByAll />}
+        {activeType === "TaskList" && <CheckTypeByList />}
+        {activeType === "Schedules" && <Schedules />}
+        {activeType === "Classes" && <Classes />}
+        {activeType === "Documents" && <Document />}
+        {activeType === "Topic" && <Topic />}
+        {activeType === "Grade" && user?.role === "LECTURER" && (
           <Grade handleActiveDetail={handleActiveDetail} />
         )}
         {detailOpen && (
@@ -88,7 +103,7 @@ const ClassPage = () => {
           />
         )}
         {/* {activeType === 'Chat' && <ClassList />} */}
-        {activeType === 'Overall' && <Overall />}
+        {activeType === "Overall" && <Overall />}
       </div>
     </div>
   );

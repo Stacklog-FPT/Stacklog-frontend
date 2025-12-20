@@ -57,9 +57,32 @@ export default function GroupAverage({ initialScore, groupId, token, onUpdate, c
       });
       return;
     }
+
+    // Hỏi xác nhận lại trước khi lưu
+    const result = await Swal.fire({
+      icon: 'question',
+      title: 'Confirm Score',
+      text: `Are you sure you want to save the average score as ${Number(modalScore).toFixed(2)}?`,
+      showCancelButton: true,
+      confirmButtonText: 'Yes, save it',
+      cancelButtonText: 'Cancel',
+      customClass: {
+        container: 'swal-high-zindex'
+      },
+      didOpen: () => {
+        const swalContainer = document.querySelector('.swal2-container');
+        if (swalContainer) {
+          swalContainer.style.zIndex = '99999';
+        }
+      }
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
     setSaving(true);
     try {
-      // Immediately persist average score to backend (no intermediate confirmation popup)
       await createAvgGroupScore(classId, groupId, Number(modalScore), token, dispatch);
       // update parent computed values
       if (typeof onUpdate === 'function') onUpdate(modalScore);

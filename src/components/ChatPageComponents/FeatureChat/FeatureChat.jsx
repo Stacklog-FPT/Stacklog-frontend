@@ -215,9 +215,9 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
     } catch (err) {
       console.error("Failed to create personal box", err);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Unable to start personal chat.'
+        icon: "error",
+        title: "Error",
+        text: "Unable to start personal chat.",
       });
     } finally {
       setIsAdding(false);
@@ -229,9 +229,9 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
     const email = (emailToAdd || "").trim();
     if (!email) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Email Required',
-        text: 'Please enter an email address.'
+        icon: "warning",
+        title: "Email Required",
+        text: "Please enter an email address.",
       });
       return;
     }
@@ -243,9 +243,9 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
       if (!foundId) {
         setIsAdding(false);
         Swal.fire({
-          icon: 'error',
-          title: 'User Not Found',
-          text: `No user found for ${email}`
+          icon: "error",
+          title: "User Not Found",
+          text: `No user found for ${email}`,
         });
         return;
       }
@@ -256,9 +256,9 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
     } catch (err) {
       console.error(err);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to add user by email.'
+        icon: "error",
+        title: "Error",
+        text: "Failed to add user by email.",
       });
     } finally {
       setIsAdding(false);
@@ -300,9 +300,9 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
     } catch (err) {
       console.error("Batch add failed", err);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to add users'
+        icon: "error",
+        title: "Error",
+        text: "Failed to add users",
       });
     } finally {
       setIsAdding(false);
@@ -355,21 +355,21 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
     if (!memberId || !selectedBox || !selectedBox.id) return;
     if (!isAdmin) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Permission Denied',
-        text: 'You do not have permission to remove members.'
+        icon: "warning",
+        title: "Permission Denied",
+        text: "You do not have permission to remove members.",
       });
       return;
     }
 
     // confirm action
     const kickResult = await Swal.fire({
-      icon: 'question',
-      title: 'Confirm Removal',
-      text: 'Are you sure you want to remove this member from the group?',
+      icon: "question",
+      title: "Confirm Removal",
+      text: "Are you sure you want to remove this member from the group?",
       showCancelButton: true,
-      confirmButtonText: 'Yes, remove',
-      cancelButtonText: 'Cancel'
+      confirmButtonText: "Yes, remove",
+      cancelButtonText: "Cancel",
     });
     if (!kickResult.isConfirmed) return;
 
@@ -412,9 +412,11 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
     } catch (err) {
       console.error("Kick member failed", err);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Could not remove member: ' + (err?.response?.data?.message || err.message || 'Error')
+        icon: "error",
+        title: "Error",
+        text:
+          "Could not remove member: " +
+          (err?.response?.data?.message || err.message || "Error"),
       });
     }
   };
@@ -427,16 +429,17 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
     let currentUserIdLocal = null;
     try {
       const decoded = jwtDecode(user.token);
-      currentUserIdLocal = decoded.id || decoded._id || decoded.userId || decoded.sub || null;
+      currentUserIdLocal =
+        decoded.id || decoded._id || decoded.userId || decoded.sub || null;
     } catch (e) {
       currentUserIdLocal = null;
     }
 
     if (!currentUserIdLocal) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Authentication Error',
-        text: 'Unable to determine current user. Please re-login.'
+        icon: "warning",
+        title: "Authentication Error",
+        text: "Unable to determine current user. Please re-login.",
       });
       return;
     }
@@ -445,33 +448,38 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
     const amAdmin = Array.isArray(selectedBox?.memberObjects)
       ? selectedBox.memberObjects.some((m) => {
           const uid = m.userId || m.user_id || m._id || m.id;
-          const adminFlag = m.isAdmin === true || m.is_admin === true || m.is_admin === 'true';
+          const adminFlag =
+            m.isAdmin === true || m.is_admin === true || m.is_admin === "true";
           return uid && uid === currentUserIdLocal && adminFlag;
         })
       : false;
 
     if (amAdmin) {
       Swal.fire({
-        icon: 'info',
-        title: 'Admin Restriction',
-        text: 'Admins must ask another admin to remove them or delete the group.'
+        icon: "info",
+        title: "Admin Restriction",
+        text: "Admins must ask another admin to remove them or delete the group.",
       });
       return;
     }
 
     const result = await Swal.fire({
-      icon: 'question',
-      title: 'Confirm Leave',
-      text: 'Are you sure you want to leave this group?',
+      icon: "question",
+      title: "Confirm Leave",
+      text: "Are you sure you want to leave this group?",
       showCancelButton: true,
-      confirmButtonText: 'Yes, leave',
-      cancelButtonText: 'Cancel'
+      confirmButtonText: "Yes, leave",
+      cancelButtonText: "Cancel",
     });
     if (!result.isConfirmed) return;
 
     try {
       const service = chatApi();
-      await service.deleteBoxMember(user.token, selectedBox.id, currentUserIdLocal);
+      await service.deleteBoxMember(
+        user.token,
+        selectedBox.id,
+        currentUserIdLocal
+      );
       // remove local selection so UI goes back to no-chat
       setSelectedBox(null);
       try {
@@ -480,11 +488,13 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
         /* ignore */
       }
     } catch (err) {
-      console.error('Leave group failed', err);
+      console.error("Leave group failed", err);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to leave group: ' + (err?.response?.data?.message || err.message || 'Error')
+        icon: "error",
+        title: "Error",
+        text:
+          "Failed to leave group: " +
+          (err?.response?.data?.message || err.message || "Error"),
       });
     }
   };
@@ -515,22 +525,22 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
 
     if (!isAdmin) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Permission Denied',
-        text: 'You do not have permission to disband the group.'
+        icon: "warning",
+        title: "Permission Denied",
+        text: "You do not have permission to disband the group.",
       });
       return;
     }
 
     // confirm deletion
     const result = await Swal.fire({
-      icon: 'warning',
-      title: 'Confirm Disband',
-      text: 'Are you sure you want to disband this group?',
+      icon: "warning",
+      title: "Confirm Disband",
+      text: "Are you sure you want to disband this group?",
       showCancelButton: true,
-      confirmButtonText: 'Yes, disband',
-      cancelButtonText: 'Cancel',
-      confirmButtonColor: '#d33'
+      confirmButtonText: "Yes, disband",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
     });
     if (!result.isConfirmed) return;
 
@@ -545,16 +555,18 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
         /* ignore if not available */
       }
       Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'The group has been disbanded.'
+        icon: "success",
+        title: "Success",
+        text: "The group has been disbanded.",
       });
     } catch (err) {
       console.error("Delete box failed", err);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to delete the group: ' + (err?.response?.data?.message || err.message)
+        icon: "error",
+        title: "Error",
+        text:
+          "Failed to delete the group: " +
+          (err?.response?.data?.message || err.message),
       });
     }
   };
@@ -584,7 +596,7 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
           <h2>Chat Info</h2>
         </div>
       )}
-      
+
       <div className="feature__dropdown">
         <div
           className="feature__dropdown__heading"
@@ -636,10 +648,7 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
               <span>Link</span>
             </div> */}
             {!isAdmin && (
-              <div
-                className="feature__menu__item"
-                onClick={handleLeaveGroup}
-              >
+              <div className="feature__menu__item" onClick={handleLeaveGroup}>
                 <i className="fa-solid fa-right-from-bracket"></i>
                 <span>Leave</span>
               </div>
@@ -702,7 +711,8 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
                       <div className="team-member-avatar">
                         <img
                           src={
-                            user.avatar_link
+                            user.avatar_link ||
+                            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
                           }
                           alt={user.full_name}
                           onError={(e) =>
@@ -821,8 +831,7 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
                             }}
                           >
                             <img
-                              src={
-                                u.avatar_link}
+                              src={u.avatar_link}
                               alt={u.full_name || u.email}
                             />
                             <div className="add-user-suggestion-info">
@@ -840,11 +849,7 @@ const FeatureChat = ({ onBack, showMobileBack }) => {
                   <div className="selected-add-list">
                     {selectedToAdd.map((u) => (
                       <div key={u._id || u.email} className="selected-add-chip">
-                        <img
-                          src={
-                            u.avatar_link}
-                          alt={u.full_name || u.email}
-                        />
+                        <img src={u.avatar_link} alt={u.full_name || u.email} />
                         <div className="selected-add-info">
                           <div className="name">{u.full_name || u.email}</div>
                           <div className="email">{u.email}</div>

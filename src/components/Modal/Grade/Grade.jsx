@@ -4,7 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../../../context/AuthProvider";
 import { getClasses } from "../../../service/ClassService";
 import decodeToken from "../../../service/DecodeJwt";
-import { selectCurrentClassId, selectCurrentGroupId } from "../../../redux/slice/semesterSlice";
+import {
+  selectCurrentClassId,
+  selectCurrentGroupId,
+} from "../../../redux/slice/semesterSlice";
 import { fetchUserById } from "../../../service/UserService";
 import {
   saveScoreCategory,
@@ -82,290 +85,16 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
   };
 
   // helper to fetch user profiles for a list of groupStudents
-  const fetchProfilesForGroupStudents = React.useCallback(async (groupStudents) => {
-    if (!groupStudents || groupStudents.length === 0) {
-      setStudents([]);
-      return;
-    }
-
-    if (!token) {
-      console.warn("No token available to fetch user profiles");
-      const mapped = groupStudents.map((gs, idx) => ({
-        _id: gs.groupStudentId || gs.userId || idx,
-        name: gs.userId || "Unknown",
-        email: "",
-        id: gs.userId || "",
-        status: true,
-        average: 0,
-        avatar: "",
-      }));
-      setStudents(mapped);
-      return;
-    }
-
-    setStudentsLoading(true);
-    try {
-      const promises = groupStudents.map((gs) => {
-        const uid = gs.userId || gs.groupStudentId;
-        return fetchUserById(token, uid).catch((err) => {
-          console.warn("Failed to fetch user", uid, err?.message || err);
-          return null;
-        });
-      });
-
-      const results = await Promise.all(promises);
-
-      let mapped = results.filter(Boolean).map((user) => ({
-        _id: user._id || user.user_id || user.id,
-        name: user.full_name || user.work_id || user.user_id || "Unknown",
-        email: user.email || "",
-        id: user.work_id || user.user_id || "",
-        // status/average will be computed below from score categories when available
-        status: typeof user.isActive === "boolean" ? user.isActive : true,
-        average:
-          typeof user.personal_score === "number" ? user.personal_score : 0,
-        avatar: user.avatar_link,
-      }));
-
-      // Try to compute per-student average from score categories for the selected class so the list matches DetailScore
-      try {
-        if (selectedClassId && token) {
-          let cats = [];
-          try {
-            const data = await getScoreCategoriesByClass(
-              selectedClassId,
-              token,
-              dispatch
-            );
-            cats = Array.isArray(data)
-              ? data
-              : Array.isArray(data?.data)
-              ? data.data
-              : [];
-          } catch (e) {
-            console.warn(
-              "Could not fetch categories for averaging, falling back to personal_score",
-              e?.message || e
-            );
-            cats = [];
-          }
-
-          if (cats && cats.length > 0) {
-            // compute weighted average per user
-            mapped = mapped.map((u) => {
-              let weightedSum = 0;
-              let sumWeights = 0;
-
-              // try to find raw groupStudent entry that corresponds to this mapped user (if any)
-              const extractGSId = (s) =>
-                String(
-                  s?.userId ??
-                    s?.user_id ??
-                    s?.groupStudentId ??
-                    s?.studentId ??
-                    s?.id ??
-                    s?.user?._id ??
-                    ""
-                ).trim();
-              const extractGSEmail = (s) =>
-                String(s?.email ?? s?.user?.email ?? "").toLowerCase();
-              const extractGSWorkId = (s) =>
-                String(
-                  s?.work_id ?? s?.user?.work_id ?? s?.workId ?? ""
-                ).toLowerCase();
-
-              const rawMatch = (groupStudents || []).find((gs) => {
-                const sid = extractGSId(gs);
-                if (!sid) return false;
-                // compare with mapped user ids/emails
-                const candidates = new Set(
-                  [
-                    u._id,
-                    u.id,
-                    u.user_id,
-                    String(u.id || ""),
-                    String(u._id || ""),
-                  ]
-                    .filter(Boolean)
-                    .map(String)
-                );
-                if (candidates.has(sid)) return true;
-                const semail = extractGSEmail(gs);
-                if (
-                  semail &&
-                  u.email &&
-                  String(u.email).toLowerCase() === semail
-                )
-                  return true;
-                const swork = extractGSWorkId(gs);
-                if (swork && u.id && String(u.id).toLowerCase() === swork)
-                  return true;
-                return false;
-              });
-
-              const uidCandidates = new Set(
-                [
-                  u._id,
-                  u.id,
-                  u.user_id,
-                  u.work_id,
-                  rawMatch?.groupStudentId,
-                  rawMatch?.userId,
-                  rawMatch?.id,
-                  rawMatch?._id,
-                ]
-                  .filter(Boolean)
-                  .map(String)
-              );
-
-              cats.forEach((c) => {
-                const w =
-                  typeof c.scoreCategoryWeight === "number" &&
-                  !Number.isNaN(c.scoreCategoryWeight)
-                    ? c.scoreCategoryWeight
-                    : 0;
-                if (!Array.isArray(c.scoreItems) || w <= 0) return;
-                // find score item for this user (robust id matching + email fallback)
-                const si = c.scoreItems.find((si) => {
-                  const sid = String(
-                    si.userId ?? si.user_id ?? si._id ?? si.id ?? ""
-                  ).trim();
-                  if (sid && uidCandidates.has(sid)) return true;
-                  // fallback: match by email if available
-                  const siEmail = String(
-                    si.email ?? si.userEmail ?? si.user?.email ?? ""
-                  ).toLowerCase();
-                  if (
-                    siEmail &&
-                    u.email &&
-                    String(u.email).toLowerCase() === siEmail
-                  )
-                    return true;
-                  return false;
-                });
-                const val =
-                  si &&
-                  si.scoreItemValue !== null &&
-                  si.scoreItemValue !== undefined &&
-                  !Number.isNaN(Number(si.scoreItemValue))
-                    ? Number(si.scoreItemValue)
-                    : NaN;
-                if (!Number.isNaN(val)) {
-                  weightedSum += val * w;
-                  sumWeights += w;
-                }
-              });
-              const avg =
-                sumWeights > 0
-                  ? weightedSum / sumWeights
-                  : typeof u.average === "number"
-                  ? u.average
-                  : 0;
-              return {
-                ...u,
-                average: Number(avg.toFixed(2)),
-                status: avg >= 5,
-              };
-            });
-          }
-        }
-      } catch (e) {
-        console.error("Error computing averages from categories", e);
+  const fetchProfilesForGroupStudents = React.useCallback(
+    async (groupStudents) => {
+      if (!groupStudents || groupStudents.length === 0) {
+        setStudents([]);
+        return;
       }
 
-      // If current user is a student, only show the logged-in student's row
-      if (isStudent) {
-        // build candidate ids to match against mapped entries and raw groupStudents
-        const candidateIds = new Set(
-          [
-            uid,
-            tokenId,
-            String(user?.user_id || ""),
-            String(user?.work_id || ""),
-            String(user?._id || ""),
-            String(user?.id || ""),
-          ].filter(Boolean)
-        );
-        const candidateEmail = user?.email
-          ? String(user.email).toLowerCase()
-          : "";
-        const candidateUsername = user?.username
-          ? String(user.username).toLowerCase()
-          : "";
-
-        const matches = mapped.filter((m) => {
-          const mid = String(m._id || m.id || "").trim();
-          const memail = String(m.email || "").toLowerCase();
-          const mname = String(m.name || "").toLowerCase();
-          if (candidateIds.has(mid)) return true;
-          if (candidateEmail && memail && candidateEmail === memail)
-            return true;
-          if (candidateUsername && mname && mname.includes(candidateUsername))
-            return true;
-          return false;
-        });
-
-        if (matches.length > 0) {
-          mapped = matches;
-        } else {
-          // fallback: find the raw groupStudents entry that corresponds to the logged-in user and create a placeholder
-          const extractGSId = (s) =>
-            String(
-              s?.userId ??
-                s?.user_id ??
-                s?.groupStudentId ??
-                s?.studentId ??
-                s?.id ??
-                s?.user?._id ??
-                ""
-            ).trim();
-          const rawMatch = groupStudents.find((gs) => {
-            const sid = extractGSId(gs);
-            if (candidateIds.has(sid)) return true;
-            const semail = String(
-              gs?.email ?? gs?.user?.email ?? ""
-            ).toLowerCase();
-            if (candidateEmail && semail && candidateEmail === semail)
-              return true;
-            const susername = String(
-              gs?.username ?? gs?.user?.username ?? gs?.user_name ?? ""
-            ).toLowerCase();
-            if (
-              candidateUsername &&
-              susername &&
-              susername.includes(candidateUsername)
-            )
-              return true;
-            return false;
-          });
-          if (rawMatch) {
-            mapped = [
-              {
-                _id:
-                  rawMatch.groupStudentId ||
-                  rawMatch.userId ||
-                  String(rawMatch.id || ""),
-                name:
-                  rawMatch.name ||
-                  rawMatch.userId ||
-                  candidateUsername ||
-                  "You",
-                email: rawMatch.email || "",
-                id: rawMatch.userId || rawMatch.groupStudentId || "",
-                status: true,
-                average: 0,
-                avatar: "",
-              },
-            ];
-          } else {
-            // no match at all: clear list (student sees nothing)
-            mapped = [];
-          }
-        }
-      }
-
-      if (!mapped || mapped.length === 0) {
-        const fallback = groupStudents.map((gs, idx) => ({
+      if (!token) {
+        console.warn("No token available to fetch user profiles");
+        const mapped = groupStudents.map((gs, idx) => ({
           _id: gs.groupStudentId || gs.userId || idx,
           name: gs.userId || "Unknown",
           email: "",
@@ -374,14 +103,293 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
           average: 0,
           avatar: "",
         }));
-        setStudents(isStudent ? [] : fallback);
-      } else {
         setStudents(mapped);
+        return;
       }
-    } finally {
-      setStudentsLoading(false);
-    }
-  }, [token]); // Add token as dependency for useCallback
+
+      setStudentsLoading(true);
+      try {
+        const promises = groupStudents.map((gs) => {
+          const uid = gs.userId || gs.groupStudentId;
+          return fetchUserById(token, uid).catch((err) => {
+            console.warn("Failed to fetch user", uid, err?.message || err);
+            return null;
+          });
+        });
+
+        const results = await Promise.all(promises);
+
+        let mapped = results.filter(Boolean).map((user) => ({
+          _id: user._id || user.user_id || user.id,
+          name: user.full_name || user.work_id || user.user_id || "Unknown",
+          email: user.email || "",
+          id: user.work_id || user.user_id || "",
+          // status/average will be computed below from score categories when available
+          status: typeof user.isActive === "boolean" ? user.isActive : true,
+          average:
+            typeof user.personal_score === "number" ? user.personal_score : 0,
+          avatar:
+            user.avatar_link ||
+            "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        }));
+
+        // Try to compute per-student average from score categories for the selected class so the list matches DetailScore
+        try {
+          if (selectedClassId && token) {
+            let cats = [];
+            try {
+              const data = await getScoreCategoriesByClass(
+                selectedClassId,
+                token,
+                dispatch
+              );
+              cats = Array.isArray(data)
+                ? data
+                : Array.isArray(data?.data)
+                ? data.data
+                : [];
+            } catch (e) {
+              console.warn(
+                "Could not fetch categories for averaging, falling back to personal_score",
+                e?.message || e
+              );
+              cats = [];
+            }
+
+            if (cats && cats.length > 0) {
+              // compute weighted average per user
+              mapped = mapped.map((u) => {
+                let weightedSum = 0;
+                let sumWeights = 0;
+
+                // try to find raw groupStudent entry that corresponds to this mapped user (if any)
+                const extractGSId = (s) =>
+                  String(
+                    s?.userId ??
+                      s?.user_id ??
+                      s?.groupStudentId ??
+                      s?.studentId ??
+                      s?.id ??
+                      s?.user?._id ??
+                      ""
+                  ).trim();
+                const extractGSEmail = (s) =>
+                  String(s?.email ?? s?.user?.email ?? "").toLowerCase();
+                const extractGSWorkId = (s) =>
+                  String(
+                    s?.work_id ?? s?.user?.work_id ?? s?.workId ?? ""
+                  ).toLowerCase();
+
+                const rawMatch = (groupStudents || []).find((gs) => {
+                  const sid = extractGSId(gs);
+                  if (!sid) return false;
+                  // compare with mapped user ids/emails
+                  const candidates = new Set(
+                    [
+                      u._id,
+                      u.id,
+                      u.user_id,
+                      String(u.id || ""),
+                      String(u._id || ""),
+                    ]
+                      .filter(Boolean)
+                      .map(String)
+                  );
+                  if (candidates.has(sid)) return true;
+                  const semail = extractGSEmail(gs);
+                  if (
+                    semail &&
+                    u.email &&
+                    String(u.email).toLowerCase() === semail
+                  )
+                    return true;
+                  const swork = extractGSWorkId(gs);
+                  if (swork && u.id && String(u.id).toLowerCase() === swork)
+                    return true;
+                  return false;
+                });
+
+                const uidCandidates = new Set(
+                  [
+                    u._id,
+                    u.id,
+                    u.user_id,
+                    u.work_id,
+                    rawMatch?.groupStudentId,
+                    rawMatch?.userId,
+                    rawMatch?.id,
+                    rawMatch?._id,
+                  ]
+                    .filter(Boolean)
+                    .map(String)
+                );
+
+                cats.forEach((c) => {
+                  const w =
+                    typeof c.scoreCategoryWeight === "number" &&
+                    !Number.isNaN(c.scoreCategoryWeight)
+                      ? c.scoreCategoryWeight
+                      : 0;
+                  if (!Array.isArray(c.scoreItems) || w <= 0) return;
+                  // find score item for this user (robust id matching + email fallback)
+                  const si = c.scoreItems.find((si) => {
+                    const sid = String(
+                      si.userId ?? si.user_id ?? si._id ?? si.id ?? ""
+                    ).trim();
+                    if (sid && uidCandidates.has(sid)) return true;
+                    // fallback: match by email if available
+                    const siEmail = String(
+                      si.email ?? si.userEmail ?? si.user?.email ?? ""
+                    ).toLowerCase();
+                    if (
+                      siEmail &&
+                      u.email &&
+                      String(u.email).toLowerCase() === siEmail
+                    )
+                      return true;
+                    return false;
+                  });
+                  const val =
+                    si &&
+                    si.scoreItemValue !== null &&
+                    si.scoreItemValue !== undefined &&
+                    !Number.isNaN(Number(si.scoreItemValue))
+                      ? Number(si.scoreItemValue)
+                      : NaN;
+                  if (!Number.isNaN(val)) {
+                    weightedSum += val * w;
+                    sumWeights += w;
+                  }
+                });
+                const avg =
+                  sumWeights > 0
+                    ? weightedSum / sumWeights
+                    : typeof u.average === "number"
+                    ? u.average
+                    : 0;
+                return {
+                  ...u,
+                  average: Number(avg.toFixed(2)),
+                  status: avg >= 5,
+                };
+              });
+            }
+          }
+        } catch (e) {
+          console.error("Error computing averages from categories", e);
+        }
+
+        // If current user is a student, only show the logged-in student's row
+        if (isStudent) {
+          // build candidate ids to match against mapped entries and raw groupStudents
+          const candidateIds = new Set(
+            [
+              uid,
+              tokenId,
+              String(user?.user_id || ""),
+              String(user?.work_id || ""),
+              String(user?._id || ""),
+              String(user?.id || ""),
+            ].filter(Boolean)
+          );
+          const candidateEmail = user?.email
+            ? String(user.email).toLowerCase()
+            : "";
+          const candidateUsername = user?.username
+            ? String(user.username).toLowerCase()
+            : "";
+
+          const matches = mapped.filter((m) => {
+            const mid = String(m._id || m.id || "").trim();
+            const memail = String(m.email || "").toLowerCase();
+            const mname = String(m.name || "").toLowerCase();
+            if (candidateIds.has(mid)) return true;
+            if (candidateEmail && memail && candidateEmail === memail)
+              return true;
+            if (candidateUsername && mname && mname.includes(candidateUsername))
+              return true;
+            return false;
+          });
+
+          if (matches.length > 0) {
+            mapped = matches;
+          } else {
+            // fallback: find the raw groupStudents entry that corresponds to the logged-in user and create a placeholder
+            const extractGSId = (s) =>
+              String(
+                s?.userId ??
+                  s?.user_id ??
+                  s?.groupStudentId ??
+                  s?.studentId ??
+                  s?.id ??
+                  s?.user?._id ??
+                  ""
+              ).trim();
+            const rawMatch = groupStudents.find((gs) => {
+              const sid = extractGSId(gs);
+              if (candidateIds.has(sid)) return true;
+              const semail = String(
+                gs?.email ?? gs?.user?.email ?? ""
+              ).toLowerCase();
+              if (candidateEmail && semail && candidateEmail === semail)
+                return true;
+              const susername = String(
+                gs?.username ?? gs?.user?.username ?? gs?.user_name ?? ""
+              ).toLowerCase();
+              if (
+                candidateUsername &&
+                susername &&
+                susername.includes(candidateUsername)
+              )
+                return true;
+              return false;
+            });
+            if (rawMatch) {
+              mapped = [
+                {
+                  _id:
+                    rawMatch.groupStudentId ||
+                    rawMatch.userId ||
+                    String(rawMatch.id || ""),
+                  name:
+                    rawMatch.name ||
+                    rawMatch.userId ||
+                    candidateUsername ||
+                    "You",
+                  email: rawMatch.email || "",
+                  id: rawMatch.userId || rawMatch.groupStudentId || "",
+                  status: true,
+                  average: 0,
+                  avatar: "",
+                },
+              ];
+            } else {
+              // no match at all: clear list (student sees nothing)
+              mapped = [];
+            }
+          }
+        }
+
+        if (!mapped || mapped.length === 0) {
+          const fallback = groupStudents.map((gs, idx) => ({
+            _id: gs.groupStudentId || gs.userId || idx,
+            name: gs.userId || "Unknown",
+            email: "",
+            id: gs.userId || "",
+            status: true,
+            average: 0,
+            avatar: "",
+          }));
+          setStudents(isStudent ? [] : fallback);
+        } else {
+          setStudents(mapped);
+        }
+      } finally {
+        setStudentsLoading(false);
+      }
+    },
+    [token]
+  ); // Add token as dependency for useCallback
 
   useEffect(() => {
     if (!currentSemesterId || !token) return;
@@ -401,7 +409,7 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
         console.debug("[GradesComponents] getClasses result:", data);
         const normalized = Array.isArray(data) ? data : [];
         setClasses(normalized);
-        
+
         // Don't auto-select, wait for sidebar selection
         // This allows the second useEffect to properly sync from sidebar
       } catch (e) {
@@ -421,10 +429,22 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
   // Sync sidebar selection into local state when classes or sidebar selection changes
   useEffect(() => {
     console.log("[Grade.jsx] Sync useEffect triggered");
-    console.log("[Grade.jsx] currentClassIdFromSidebar:", currentClassIdFromSidebar, "type:", typeof currentClassIdFromSidebar);
-    console.log("[Grade.jsx] currentGroupIdFromSidebar:", currentGroupIdFromSidebar, "type:", typeof currentGroupIdFromSidebar, "truthy:", !!currentGroupIdFromSidebar);
+    console.log(
+      "[Grade.jsx] currentClassIdFromSidebar:",
+      currentClassIdFromSidebar,
+      "type:",
+      typeof currentClassIdFromSidebar
+    );
+    console.log(
+      "[Grade.jsx] currentGroupIdFromSidebar:",
+      currentGroupIdFromSidebar,
+      "type:",
+      typeof currentGroupIdFromSidebar,
+      "truthy:",
+      !!currentGroupIdFromSidebar
+    );
     console.log("[Grade.jsx] classes:", classes);
-    
+
     if (!classes || classes.length === 0) {
       console.log("[Grade.jsx] No classes, returning");
       return;
@@ -433,21 +453,23 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
       console.log("[Grade.jsx] No currentClassIdFromSidebar, returning");
       return;
     }
-    
+
     const classId = currentClassIdFromSidebar;
     const cls = classes.find(
-      (c) => String(c.classesId) === String(classId) || String(c._id) === String(classId)
+      (c) =>
+        String(c.classesId) === String(classId) ||
+        String(c._id) === String(classId)
     );
-    
+
     console.log("[Grade.jsx] Found class:", cls);
-    
+
     if (!cls) {
       console.log("[Grade.jsx] Class not found, returning");
       return;
     }
-    
+
     setSelectedClassId(classId);
-    
+
     // Map groups
     const groups = (cls.groups || []).map((g) => ({
       _id: g.groupsId || g.groupId || g.id,
@@ -455,9 +477,12 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
       raw: g,
     }));
     setArea(groups);
-    
-    console.log("[Grade.jsx] Mapped groups:", groups.map(g => ({ id: g._id, name: g.name })));
-    
+
+    console.log(
+      "[Grade.jsx] Mapped groups:",
+      groups.map((g) => ({ id: g._id, name: g.name }))
+    );
+
     // Set selected group - ONLY respect sidebar selection, don't auto-select first group
     let gid = "";
     if (currentGroupIdFromSidebar) {
@@ -465,10 +490,15 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
       console.log("[Grade.jsx] Using sidebar group ID:", gid);
       setSelectedGroupId(gid);
     } else {
-      console.log("[Grade.jsx] No sidebar group ID, keeping current selection or waiting for user selection");
+      console.log(
+        "[Grade.jsx] No sidebar group ID, keeping current selection or waiting for user selection"
+      );
       // Don't auto-select first group - wait for user to select from sidebar
       // Only update if we don't have a current selection
-      if (!selectedGroupId || !groups.find(g => String(g._id) === String(selectedGroupId))) {
+      if (
+        !selectedGroupId ||
+        !groups.find((g) => String(g._id) === String(selectedGroupId))
+      ) {
         // Current selection is invalid, clear it
         setSelectedGroupId("");
         setStudents([]);
@@ -477,9 +507,9 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
       // Keep current valid selection
       gid = selectedGroupId;
     }
-    
+
     console.log("[Grade.jsx] Final selected group ID:", gid);
-    
+
     // Fetch students for the chosen group (only if we have a valid gid)
     if (gid && currentGroupIdFromSidebar) {
       const grp = groups.find((g) => String(g._id) === String(gid));
@@ -492,7 +522,13 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
         setStudents([]);
       }
     }
-  }, [currentClassIdFromSidebar, currentGroupIdFromSidebar, classes, fetchProfilesForGroupStudents, selectedGroupId]);
+  }, [
+    currentClassIdFromSidebar,
+    currentGroupIdFromSidebar,
+    classes,
+    fetchProfilesForGroupStudents,
+    selectedGroupId,
+  ]);
 
   const handleClassChange = (e) => {
     const classId = e.target.value;
@@ -658,9 +694,9 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
   const handleExport = async () => {
     if (!selectedClassId) {
       Swal.fire({
-        icon: 'warning',
-        title: 'No Class Selected',
-        text: 'Please select a class first'
+        icon: "warning",
+        title: "No Class Selected",
+        text: "Please select a class first",
       });
       return;
     }
@@ -670,9 +706,9 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
     } catch (e) {
       console.error("Export failed", e);
       Swal.fire({
-        icon: 'error',
-        title: 'Export Failed',
-        text: 'Export failed: ' + (e?.message || e)
+        icon: "error",
+        title: "Export Failed",
+        text: "Export failed: " + (e?.message || e),
       });
     } finally {
       setExporting(false);
@@ -686,40 +722,48 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
             {/* Read-only class/group display (no dropdown) */}
             <div className="class-group-display">
               <div className="class-group-item class-name" aria-label="Class">
-                {loading ? (
-                  "Loading..."
-                ) : (
-                  (() => {
-                    const cls = classes.find(
-                      (c) => String(c.classesId) === String(selectedClassId) || String(c._id) === String(selectedClassId)
-                    );
-                    const name = cls
-                      ? cls.classesName || cls.name || cls.className || "Unnamed class"
-                      : "-- Class --";
-                    return (
-                      <>
-                        <strong style={{ marginRight: 8 }}>Class</strong>
-                        <span>{name}</span>
-                      </>
-                    );
-                  })()
-                )}
+                {loading
+                  ? "Loading..."
+                  : (() => {
+                      const cls = classes.find(
+                        (c) =>
+                          String(c.classesId) === String(selectedClassId) ||
+                          String(c._id) === String(selectedClassId)
+                      );
+                      const name = cls
+                        ? cls.classesName ||
+                          cls.name ||
+                          cls.className ||
+                          "Unnamed class"
+                        : "-- Class --";
+                      return (
+                        <>
+                          <strong style={{ marginRight: 8 }}>Class</strong>
+                          <span>{name}</span>
+                        </>
+                      );
+                    })()}
               </div>
               <div className="class-group-item group-name" aria-label="Group">
-                {loading ? (
-                  "Loading..."
-                ) : (
-                  (() => {
-                    const grp = area.find((g) => String(g._id) === String(selectedGroupId));
-                    const name = grp ? grp.name || grp.groupsName || grp.groupName || "Unnamed group" : "-- Group --";
-                    return (
-                      <>
-                        <strong style={{ marginRight: 8 }}>Group</strong>
-                        <span>{name}</span>
-                      </>
-                    );
-                  })()
-                )}
+                {loading
+                  ? "Loading..."
+                  : (() => {
+                      const grp = area.find(
+                        (g) => String(g._id) === String(selectedGroupId)
+                      );
+                      const name = grp
+                        ? grp.name ||
+                          grp.groupsName ||
+                          grp.groupName ||
+                          "Unnamed group"
+                        : "-- Group --";
+                      return (
+                        <>
+                          <strong style={{ marginRight: 8 }}>Group</strong>
+                          <span>{name}</span>
+                        </>
+                      );
+                    })()}
               </div>
             </div>
           </div>
@@ -730,10 +774,15 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
               <>
                 <button
                   onClick={handleExport}
-                  title={selectedClassId ? "Export scores" : "Select a class first"}
+                  title={
+                    selectedClassId ? "Export scores" : "Select a class first"
+                  }
                   disabled={!selectedClassId || exporting}
                 >
-                  <i className="fa-solid fa-file-arrow-down" style={{ marginRight: 6 }}></i>
+                  <i
+                    className="fa-solid fa-file-arrow-down"
+                    style={{ marginRight: 6 }}
+                  ></i>
                   <span>{exporting ? "Exporting..." : "Export"}</span>
                 </button>
                 <button onClick={() => setIsAddOpen(true)} title="Add">
@@ -840,20 +889,26 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                     // only lecturers allowed, defensive check
                     if (user?.role !== "LECTURER") return;
                     // Validation: require name and a positive weight before creating
-                    const nameTrim = (newCategory.scoreCategoryName || "").trim();
+                    const nameTrim = (
+                      newCategory.scoreCategoryName || ""
+                    ).trim();
                     if (!nameTrim) {
                       Swal.fire({
-                        icon: 'warning',
-                        title: 'Required Field',
-                        text: 'Category name is required'
+                        icon: "warning",
+                        title: "Required Field",
+                        text: "Category name is required",
                       });
                       return;
                     }
-                    if (typeof newCategory.scoreCategoryWeight !== 'number' || Number.isNaN(newCategory.scoreCategoryWeight) || newCategory.scoreCategoryWeight <= 0) {
+                    if (
+                      typeof newCategory.scoreCategoryWeight !== "number" ||
+                      Number.isNaN(newCategory.scoreCategoryWeight) ||
+                      newCategory.scoreCategoryWeight <= 0
+                    ) {
                       Swal.fire({
-                        icon: 'warning',
-                        title: 'Invalid Weight',
-                        text: 'Category weight is required and must be greater than 0'
+                        icon: "warning",
+                        title: "Invalid Weight",
+                        text: "Category weight is required and must be greater than 0",
                       });
                       return;
                     }
@@ -863,9 +918,9 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                       (classes[0] && (classes[0].classesId || classes[0]._id));
                     if (!classId) {
                       Swal.fire({
-                        icon: 'warning',
-                        title: 'No Class Selected',
-                        text: 'Please select a class first'
+                        icon: "warning",
+                        title: "No Class Selected",
+                        text: "Please select a class first",
                       });
                       return;
                     }
@@ -919,9 +974,9 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                       const EPS = 1e-9;
                       if (proposedTotal - 1.0 > EPS) {
                         Swal.fire({
-                          icon: 'warning',
-                          title: 'Weight Limit Exceeded',
-                          text: 'Cannot create category — total weight would exceed 100%'
+                          icon: "warning",
+                          title: "Weight Limit Exceeded",
+                          text: "Cannot create category — total weight would exceed 100%",
                         });
                         setSavingCategory(false);
                         return;
@@ -948,9 +1003,9 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                     } catch (e) {
                       console.error("Failed to save category", e);
                       Swal.fire({
-                        icon: 'error',
-                        title: 'Save Failed',
-                        text: 'Failed to save category: ' + (e?.message || e)
+                        icon: "error",
+                        title: "Save Failed",
+                        text: "Failed to save category: " + (e?.message || e),
                       });
                     } finally {
                       setSavingCategory(false);
@@ -958,8 +1013,11 @@ const GradesComponents = ({ handleActiveDetail, handleActivityAddCore }) => {
                   }}
                   disabled={
                     savingCategory ||
-                    !(newCategory.scoreCategoryName && String(newCategory.scoreCategoryName).trim()) ||
-                    !(typeof newCategory.scoreCategoryWeight === 'number') ||
+                    !(
+                      newCategory.scoreCategoryName &&
+                      String(newCategory.scoreCategoryName).trim()
+                    ) ||
+                    !(typeof newCategory.scoreCategoryWeight === "number") ||
                     newCategory.scoreCategoryWeight <= 0
                   }
                 >

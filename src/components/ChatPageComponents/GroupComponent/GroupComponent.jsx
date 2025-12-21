@@ -33,7 +33,7 @@ const GroupComponent = () => {
   // Fetch tất cả users khi component mount
   useEffect(() => {
     let mounted = true;
-    
+
     const loadAllUsers = async () => {
       if (!authUser?.token) return;
       setLoading(true);
@@ -91,27 +91,27 @@ const GroupComponent = () => {
         decoded.id || decoded._id || decoded.userId || decoded.sub || null;
       if (currentUserId && currentUserId === targetUser._id) {
         Swal.fire({
-          icon: 'warning',
-          title: 'Invalid Action',
-          text: 'You cannot chat with yourself!'
+          icon: "warning",
+          title: "Invalid Action",
+          text: "You cannot chat with yourself!",
         });
         return;
       }
     } catch (e) {
       console.error("Lỗi decode token:", e);
       Swal.fire({
-        icon: 'error',
-        title: 'Authentication Error',
-        text: 'Unable to determine user information.'
+        icon: "error",
+        title: "Authentication Error",
+        text: "Unable to determine user information.",
       });
       return;
     }
 
     if (!currentUserId) {
       Swal.fire({
-        icon: 'error',
-        title: 'Authentication Error',
-        text: 'Unable to authenticate user.'
+        icon: "error",
+        title: "Authentication Error",
+        text: "Unable to authenticate user.",
       });
       return;
     }
@@ -134,7 +134,7 @@ const GroupComponent = () => {
       if (createdBox) {
         // Server trả về box đã tạo/đã có, set trực tiếp
         setSelectedBox(createdBox);
-        
+
         // Trigger refresh danh sách boxes
         try {
           setBoxesVersion((v) => (v || 0) + 1);
@@ -156,9 +156,9 @@ const GroupComponent = () => {
     } catch (err) {
       console.error("Tạo chat cá nhân thất bại:", err);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Unable to start conversation. Please try again.'
+        icon: "error",
+        title: "Error",
+        text: "Unable to start conversation. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -198,7 +198,8 @@ const GroupComponent = () => {
                 </div>
               )}
 
-              {!loading && searchResults.length > 0 &&
+              {!loading &&
+                searchResults.length > 0 &&
                 searchResults.map((user) => (
                   <div
                     key={user._id || user.email}
@@ -207,7 +208,10 @@ const GroupComponent = () => {
                     style={{ cursor: "pointer" }}
                   >
                     <img
-                      src={user.avatar_link || "/default-avatar.png"}
+                      src={
+                        user.avatar_link ||
+                        "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                      }
                       alt={user.full_name || user.email}
                     />
                     <div className="member-suggestion-info">

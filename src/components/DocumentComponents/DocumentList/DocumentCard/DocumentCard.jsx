@@ -9,13 +9,15 @@ import { FaTrashAlt } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { upperCaseFirstChart } from "../../../../helper/upperCaseFirstChart";
 import { useParams } from "react-router-dom";
+import decodeToken from "../../../../service/DecodeJwt";
 const DocumentCard = ({ title, data }) => {
   const [isOpenDetail, showOpenDetail] = React.useState(false);
   const [documentId, setDocumentId] = React.useState("");
   const { groupId } = useParams();
   const { user } = useAuth();
+  const userDecode = decodeToken(user.token);
   const dispatch = useDispatch();
-  const isOwner = data?.createdBy === user._id;
+  const isOwner = data?.createdBy === userDecode.id;
   console.log(isOwner);
 
   console.log(data);

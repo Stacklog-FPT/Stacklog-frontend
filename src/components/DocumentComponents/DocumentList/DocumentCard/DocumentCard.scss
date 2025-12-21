@@ -2,26 +2,26 @@
   height: 272px;
   border-radius: 20px;
   background-color: var(--bg--nav);
-  padding: 20px 20px;
+  padding: 20px;
   margin-top: 20px;
   overflow-y: auto;
   overflow-x: hidden;
+
   &__container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
     gap: 10px;
 
     &__heading {
       width: 100%;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
+
       h2 {
-        color: var(--text-color);
         font-size: 18px;
         font-weight: 600;
+        color: var(--text-color);
       }
     }
 
@@ -29,56 +29,52 @@
       width: 100%;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      justify-content: flex-start;
-      gap: 20px;
+      gap: 16px;
 
       &__item {
-        width: 560px;
+        width: 100%; // ✅ bỏ fixed 560px
+        max-width: 560px; // desktop vẫn đẹp
         height: 52px;
         display: flex;
-        align-items: flex-start;
-        justify-content: flex-start;
-        gap: 20px;
-        padding: 12px 12px 8px 12px;
+        align-items: center;
+        gap: 16px;
+        padding: 12px;
         background-color: var(--bg--color--table);
         border-radius: 10px;
 
-        button {
-          padding-left: 40px;
-          color: red;
-        }
         &:hover {
           cursor: pointer;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          transition: all 0.3s ease;
         }
+
         i {
           width: 25px;
           height: 25px;
           font-size: 14px;
           background-color: var(--bg--non--green);
           color: var(--bg--primary-color);
-          padding: 5px 10px 5px 7px;
-          border-radius: 100%;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
+
         &__content {
-          width: 75%;
+          flex: 1;
           display: flex;
           flex-direction: column;
-          align-items: flex-start;
-          justify-content: flex-start;
-          gap: 1px;
 
           &__title {
             font-size: 12px;
             font-weight: 600;
             color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
 
           &__size {
             font-size: 12px;
-            font-weight: 600;
             color: var(--text--color--gray);
           }
         }
@@ -87,21 +83,41 @@
   }
 }
 
-.btn-delete {
-  background: none;
-  border: none;
-  color: var(--text-color);
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 10px;
+@media (max-width: 1024px) {
+  .document__card {
+    height: auto;
 
-  &:hover {
-    color: var(--color--hover);
+    &__container__list__data__item {
+      max-width: 100%;
+    }
   }
 }
 
-.text-heading {
-  color: var(--text--color--gray);
-  font-size: 20px;
-  font-weight: 600;
+@media (max-width: 600px) {
+  .document__card {
+    width: 100% !important; // ❗ override inline style
+    height: auto;
+    padding: 14px;
+  }
+
+  .document__card__container__heading h2 {
+    font-size: 16px;
+  }
+
+  .document__card__container__list__data {
+    gap: 12px;
+  }
+
+  .document__card__container__list__data__item {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .btn-delete {
+    font-size: 10px;
+    border-radius: 10px;
+    background-color: transparent;
+    border: none;
+  }
 }

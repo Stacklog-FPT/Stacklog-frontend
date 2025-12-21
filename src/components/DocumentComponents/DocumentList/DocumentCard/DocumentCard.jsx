@@ -64,7 +64,7 @@ const DocumentCard = ({ title, data }) => {
     <>
       <div
         className="document__card"
-        style={{ width: groupId ? "50%" : "456" }}
+        style={{ width: groupId ? "50%" : "456px" }}
       >
         <div className="document__card__container">
           <div className="document__card__container__heading">

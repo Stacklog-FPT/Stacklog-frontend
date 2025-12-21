@@ -3,21 +3,18 @@ import "./DocumentList.scss";
 import { FaPlus } from "react-icons/fa";
 import DocumentCard from "./DocumentCard/DocumentCard";
 import UploadFile from "../../ClassComponent/CheckTaskByType/Documents/UploadFile/UploadFile";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useAuth } from "../../../context/AuthProvider";
 
 const DocumentList = () => {
   const [isOpenUpload, setIsOpenUpload] = React.useState(false);
   const { documentPerson } = useSelector((state) => state.document);
+
   const documentReport = documentPerson.filter(
     (doc) => doc.documentType === "REPORT"
   );
-  const dispatch = useDispatch();
-  const { user } = useAuth();
 
-  const handleCloseModal = () => {
-    setIsOpenUpload(false);
-  };
+  const { user } = useAuth();
 
   React.useEffect(() => {
     const handleKeyDown = (e) => {
@@ -27,7 +24,7 @@ const DocumentList = () => {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [user.token, dispatch]);
+  }, []);
 
   return (
     <>
@@ -38,7 +35,7 @@ const DocumentList = () => {
               <h2>Document</h2>
             </div>
             <div className="main__component__container__heading__btn__add">
-              <button onClick={() => setIsOpenUpload(!isOpenUpload)}>
+              <button onClick={() => setIsOpenUpload(true)}>
                 <FaPlus size={14} />
                 <span>Add</span>
               </button>
@@ -46,13 +43,14 @@ const DocumentList = () => {
           </div>
 
           <div className="document__list__container__main__content">
-            <DocumentCard title={"By me"} data={documentPerson} />
-            <DocumentCard title={"Report"} data={documentReport} />
+            <DocumentCard title="By me" data={documentPerson} />
+            <DocumentCard title="Report" data={documentReport} />
           </div>
         </div>
       </div>
+
       {isOpenUpload && (
-        <UploadFile onClose={handleCloseModal} isGroup={false} />
+        <UploadFile onClose={() => setIsOpenUpload(false)} isGroup={false} />
       )}
     </>
   );

@@ -488,11 +488,13 @@ const PlanComponent = () => {
               </div>
             )}
 
-            {isLeader && validateDate(effectiveClassObj.deadlineSubmit) && (
+            {isLeader && role === "STUDENT" && (
               <div className="plan__actions">
                 <button
                   className="sl-btn sl-btn--primary"
                   onClick={() => setShowUpload(!showUpload)}
+                  disabled={!validateDate(effectiveClassObj.deadlineSubmit)}
+                  title={!validateDate(effectiveClassObj.deadlineSubmit) ? "Lecturer has not set deadline yet" : ""}
                 >
                   <IoSend />
                   Submit
@@ -500,20 +502,60 @@ const PlanComponent = () => {
               </div>
             )}
 
-            {isLeader &&
-              validateDate(effectiveClassObj.deadlineAdd) &&
-              role === "STUDENT" && (
+            {isLeader && role === "STUDENT" && (
                 <button
                   className="sl-btn sl-btn--primary"
                   onClick={() => setAddOpen(true)}
-                  disabled={pending}
+                  disabled={pending || !validateDate(effectiveClassObj.deadlineAdd)}
                   type="button"
+                  title={!validateDate(effectiveClassObj.deadlineAdd) ? "Lecturer has not set deadline yet" : ""}
                 >
                   <i className="fa-solid fa-plus"></i>Topic
                 </button>
               )}
           </div>
         </div>
+
+        {/* Deadline info for LECTURER and STUDENT */}
+        {(role === "LECTURER" || (role === "STUDENT" && isLeader)) && (
+          <div className="plan__deadline-wrapper">
+            <div className="plan__deadline-card">
+              <div className="plan__deadline-icon plan__deadline-icon--topic">📅</div>
+              <div className="plan__deadline-content">
+                <div className="plan__deadline-label">Deadline Submit Topic</div>
+                <div className={`plan__deadline-date ${validateDate(effectiveClassObj.deadlineAdd) ? 'plan__deadline-date--valid' : 'plan__deadline-date--invalid'}`}>
+                  {effectiveClassObj.deadlineAdd ? 
+                    new Date(effectiveClassObj.deadlineAdd).toLocaleString('en-GB', { 
+                      day: '2-digit', 
+                      month: '2-digit', 
+                      year: 'numeric', 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    }) : 
+                    'Not set yet'}
+                </div>
+              </div>
+            </div>
+            
+            <div className="plan__deadline-card">
+              <div className="plan__deadline-icon plan__deadline-icon--document">📄</div>
+              <div className="plan__deadline-content">
+                <div className="plan__deadline-label">Deadline Submit Document</div>
+                <div className={`plan__deadline-date ${validateDate(effectiveClassObj.deadlineSubmit) ? 'plan__deadline-date--valid' : 'plan__deadline-date--invalid'}`}>
+                  {effectiveClassObj.deadlineSubmit ? 
+                    new Date(effectiveClassObj.deadlineSubmit).toLocaleString('en-GB', { 
+                      day: '2-digit', 
+                      month: '2-digit', 
+                      year: 'numeric', 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    }) : 
+                    'Not set yet'}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="plan__toolbar">
           {/* <div className="plan__field">

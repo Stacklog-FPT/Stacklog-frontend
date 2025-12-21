@@ -449,6 +449,109 @@
   }
 }
 
+// Deadline display styles
+.plan__deadline-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0 20px 0;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 12px 0 16px 0;
+  }
+}
+
+.plan__deadline-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--sl-surface);
+  border: 1px solid var(--sl-line);
+  border-radius: var(--sl-radius-sm);
+  padding: 14px 16px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    border-color: #045745;
+  }
+
+  @media (max-width: 720px) {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+}
+
+.plan__deadline-icon {
+  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  flex-shrink: 0;
+
+  &--topic {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  }
+
+  &--document {
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  }
+
+  @media (max-width: 720px) {
+    font-size: 24px;
+    width: 42px;
+    height: 42px;
+  }
+}
+
+.plan__deadline-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.plan__deadline-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sl-muted);
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+
+  @media (max-width: 720px) {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+}
+
+.plan__deadline-date {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+
+  &--valid {
+    color: var(--sl-success);
+  }
+
+  &--invalid {
+    color: var(--sl-danger);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 720px) {
+    font-size: 13px;
+
+    &--invalid {
+      font-size: 12px;
+    }
+  }
+}
+
 @media (max-width: 480px) {
   .plan {
     padding: 0;
@@ -505,5 +608,33 @@
     font-size: 10px;
     padding: 4px 6px;
     border-radius: 6px;
+  }
+
+  .plan__deadline-wrapper {
+    gap: 10px;
+    margin: 10px 0 12px 0;
+  }
+
+  .plan__deadline-card {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .plan__deadline-icon {
+    font-size: 20px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .plan__deadline-label {
+    font-size: 11px;
+  }
+
+  .plan__deadline-date {
+    font-size: 12px;
+
+    &--invalid {
+      font-size: 11px;
+    }
   }
 }

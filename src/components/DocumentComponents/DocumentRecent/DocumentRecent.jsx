@@ -8,9 +8,11 @@ import { useAuth } from "../../../context/AuthProvider";
 import { useDispatch } from "react-redux";
 import { deleteDocumentApi } from "../../../service/DocumentService";
 import DocumentDetail from "../DocumentDetail/DocumentDetail";
+import decodeToken from "../../../service/DecodeJwt";
 
 const DocumentRecent = ({ title, data }) => {
   const { user } = useAuth();
+  const userDecode = decodeToken(user.token);
   const { documents } = useSelector((state) => state.document);
   const [documentId, setDocumentId] = React.useState("");
   const dispatch = useDispatch();
@@ -73,7 +75,7 @@ const DocumentRecent = ({ title, data }) => {
                       {formatFileSize(item.documentSize)}
                     </span>
                   </div>
-                  {item.createdBy === user?.id && (
+                  {item.createdBy === userDecode?.id && (
                     <div
                       className="document__recent__container__main__content__item__bin"
                       onClick={(e) => handleDeleteDocument(e, item.documentId)}

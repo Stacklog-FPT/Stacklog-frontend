@@ -17,10 +17,7 @@ const DocumentCard = ({ title, data }) => {
   const { user } = useAuth();
   const userDecode = decodeToken(user.token);
   const dispatch = useDispatch();
-  const isOwner = data?.createdBy === userDecode.id;
-  console.log(isOwner);
 
-  console.log(data);
   const handleShowDetail = (id) => {
     setDocumentId(id);
     showOpenDetail(true);
@@ -91,7 +88,7 @@ const DocumentCard = ({ title, data }) => {
                       {formatFileSize(item.documentSize)}
                     </span>
                   </div>
-                  {isOwner && (
+                  {item?.createdBy === userDecode.id && (
                     <button
                       className="btn-delete"
                       onClick={(e) => handleDeleteDocument(e, item.documentId)}

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 import { deleteNotificationApi } from '../../../service/NotificationService';
 import { useDispatch } from 'react-redux';
+import { formatDateUI } from '../../../helper/formatDate';
 const TableList = ({ active, user, searchQuery, dateFilter }) => {
   const notifications = useSelector((state) => state.notification.notifications || []);
   const dispatch = useDispatch();
@@ -186,7 +187,7 @@ const TableList = ({ active, user, searchQuery, dateFilter }) => {
                   <span className="title">{r.title}</span>
                 </td>
 
-                <td className="cell-time">{r.createdAt}</td>
+                <td className="cell-time">{formatDateUI(r.createdAt, { withTime: true })}</td>
 
                 {/* <td className="cell-more">
                   <button

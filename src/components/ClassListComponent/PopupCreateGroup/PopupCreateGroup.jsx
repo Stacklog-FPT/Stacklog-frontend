@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react';
 import './PopupCreateGroup.scss';
+import { useAuth } from '../../../context/AuthProvider';
+import Swal from 'sweetalert2';
+import decodeToken from '../../../service/DecodeJwt';
 
 const PopupCreateGroup = ({
   selectedGroup,
@@ -19,14 +22,23 @@ const PopupCreateGroup = ({
   setShowCreateGroup,
   updateMemberToGroup,
 }) => {
+  const { user } = useAuth();
+  
+  // Lấy userId từ token
+  const getUserIdFromToken = () => {
+    const token = user?.token;
+    if (token) {
+      const decoded = decodeToken(token);
+      return decoded?.userId || decoded?._id || decoded?.id;
+    }
+    return null;
+  };
+  
   useEffect(() => {
-    console.log('PopupCreateGroup mounted/updated', {
-      selectedGroup,
-      selectedClass,
-      students,
-      groupName,
-    });
-  }, [selectedGroup, selectedClass, students, groupName]);
+    const currentUserId = getUserIdFromToken();
+   
+  }, [selectedGroup, selectedClass, students, groupName, user]);
+  
   // Khi chọn group, tự động điền thông tin group vào form
   useEffect(() => {
     if (selectedGroup !== 'all' && selectedGroup !== '') {
@@ -44,15 +56,29 @@ const PopupCreateGroup = ({
         );
       }
     }
-    // Nếu tạo mới thì reset form
+    // Nếu tạo mới thì reset form và tự động tick người tạo
     if (selectedGroup === 'all') {
       setGroupName('');
       setGroupDesc('');
       setGroupMax(20);
-      setGroupUserIds('');
+      
+      // Lấy userId từ token
+      const currentUserId = getUserIdFromToken();
+      
+      // Tự động thêm user hiện tại vào groupUserIds
+      if (currentUserId) {
+        const isUserInStudents = students.some(student => student._id === currentUserId);
+        if (isUserInStudents) {
+          setGroupUserIds(currentUserId);
+        } else {
+          setGroupUserIds('');
+        }
+      } else {
+        setGroupUserIds('');
+      }
     }
     // eslint-disable-next-line
-  }, [selectedGroup, selectedClass, classes]);
+  }, [selectedGroup, selectedClass, classes, students]);
 
   return (
     <div className="popup-create-class">
@@ -155,7 +181,6 @@ const PopupCreateGroup = ({
                     .map((id) => id.trim())
                     .filter((id) => id),
                 };
-                console.log('Updating group with payload:', payload);
                 updateMemberToGroup && updateMemberToGroup(payload);
                 setShowCreateGroup(false);
               }

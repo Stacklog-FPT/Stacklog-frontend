@@ -332,7 +332,7 @@ const CheckTypeByAll = () => {
         </DragOverlay>
       </DndContext>
       {/* AI Assistant floating button + modal (bottom-right) - visible only to group leader or lecturer */}
-      {(user.role === "LECTURER" || matchRole) && (
+      {(user.role === "LECTURER" || matchRole) && isAccpectTopic && (
         <ModalAI placement="bottom-right" />
       )}
     </>

@@ -37,6 +37,7 @@ const CheckTypeByList = () => {
   const dispatch = useDispatch();
   const statuses = useSelector((s) => s.status.statuses);
   const tasks = useSelector((t) => t.task.tasks);
+  const plansGroup = useSelector((state) => state.plan.plansGroup);
   const groupList = useSelector((state) => state.group.groups);
   const currentGroup = groupList.find((g) => g.groupsId === groupId);
   const [activeColumn, setActiveColumn] = useState(null);
@@ -47,6 +48,9 @@ const CheckTypeByList = () => {
   const [isSortedByPriority, setIsSortedByPriority] = useState(false);
   const [showAddSubTask, setShowAddSubTask] = useState(null);
   const matchRole = isLeader(currentGroup, decodeToken(user.token).id);
+  const isAccpectTopic = plansGroup?.some(
+    (item) => item?.status.toLowerCase() === "accepted"
+  );
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 10 },
@@ -285,7 +289,7 @@ const CheckTypeByList = () => {
         </DragOverlay>
       </DndContext>
       {/* AI Assistant floating button + modal (bottom-right) - visible only to group leader or lecturer */}
-      {(user.role === "LECTURER" || matchRole) && (
+      {(user.role === "LECTURER" || matchRole) && isAccpectTopic && (
         <ModalAI placement="bottom-right" />
       )}
     </>
